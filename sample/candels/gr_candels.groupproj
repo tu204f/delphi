@@ -1,0 +1,36 @@
+﻿<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+    <PropertyGroup>
+        <ProjectGuid>{82728A65-8190-4E88-B71F-30B3FD06D429}</ProjectGuid>
+    </PropertyGroup>
+    <ItemGroup>
+        <Projects Include="candels\candels.dproj">
+            <Dependencies/>
+        </Projects>
+    </ItemGroup>
+    <ProjectExtensions>
+        <Borland.Personality>Default.Personality.12</Borland.Personality>
+        <Borland.ProjectType/>
+        <BorlandProject>
+            <Default.Personality/>
+        </BorlandProject>
+    </ProjectExtensions>
+    <Target Name="candels">
+        <MSBuild Projects="candels\candels.dproj"/>
+    </Target>
+    <Target Name="candels:Clean">
+        <MSBuild Projects="candels\candels.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="candels:Make">
+        <MSBuild Projects="candels\candels.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="Build">
+        <CallTarget Targets="candels"/>
+    </Target>
+    <Target Name="Clean">
+        <CallTarget Targets="candels:Clean"/>
+    </Target>
+    <Target Name="Make">
+        <CallTarget Targets="candels:Make"/>
+    </Target>
+    <Import Project="$(BDS)\Bin\CodeGear.Group.Targets" Condition="Exists('$(BDS)\Bin\CodeGear.Group.Targets')"/>
+</Project>

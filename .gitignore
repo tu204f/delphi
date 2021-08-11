@@ -1,0 +1,16 @@
+$ cat .gitignore
+
+# игнорируем папки 
+__history/
+__recovery/
+Win32/
+bin/
+dcu/
+
+# игнорируем файлов
+*.res
+*.local
+*.identcache
+
+# Файлы исключения
+!trans2quik.res

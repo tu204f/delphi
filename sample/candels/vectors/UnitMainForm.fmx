@@ -1,0 +1,30 @@
+object MainForm: TMainForm
+  Left = 0
+  Top = 0
+  Caption = 'Form2'
+  ClientHeight = 480
+  ClientWidth = 640
+  FormFactor.Width = 320
+  FormFactor.Height = 480
+  FormFactor.Devices = [Desktop]
+  OnClose = FormClose
+  OnShow = FormShow
+  DesignerMasterStyle = 0
+  object ButtonLoad: TButton
+    Position.X = 4.000000000000000000
+    Position.Y = 4.000000000000000000
+    TabOrder = 0
+    Text = #1047#1072#1075#1088#1091#1079#1082#1072
+    OnClick = ButtonLoadClick
+  end
+  object ButtonCreateFolder: TButton
+    Position.X = 4.000000000000000000
+    Position.Y = 32.000000000000000000
+    Size.Width = 145.000000000000000000
+    Size.Height = 22.000000000000000000
+    Size.PlatformDefault = False
+    TabOrder = 1
+    Text = #1057#1086#1079#1076#1072#1090#1100' '#1089#1080#1089#1090#1077#1084' '#1087#1072#1087#1082#1080
+    OnClick = ButtonCreateFolderClick
+  end
+end

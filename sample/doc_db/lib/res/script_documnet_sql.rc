@@ -1,0 +1,5 @@
+CREATE_TABLE_DOCUMENTS       RCDATA "create_documents.sql"
+CREATE_NUMBER_VALUES         RCDATA "create_number_values.sql"
+CREATE_TEXT_VALUES           RCDATA "create_text_values.sql"
+CREATE_DATETIME_VALUES       RCDATA "create_datetime_values.sql"
+CREATE_BLOB_VALUES           RCDATA "create_blob_values.sql"

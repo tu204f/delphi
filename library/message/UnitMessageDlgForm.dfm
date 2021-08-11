@@ -1,0 +1,76 @@
+object MessageDlgForm: TMessageDlgForm
+  Left = 0
+  Top = 0
+  BorderIcons = [biSystemMenu]
+  Caption = 'MessageDlgForm'
+  ClientHeight = 135
+  ClientWidth = 345
+  Color = clBtnFace
+  Font.Charset = DEFAULT_CHARSET
+  Font.Color = clWindowText
+  Font.Height = -11
+  Font.Name = 'Tahoma'
+  Font.Style = []
+  OldCreateOrder = False
+  Position = poMainFormCenter
+  PixelsPerInch = 96
+  TextHeight = 13
+  object PanelClient: TPanel
+    Left = 0
+    Top = 0
+    Width = 345
+    Height = 135
+    Align = alClient
+    BevelOuter = bvNone
+    Padding.Left = 5
+    Padding.Top = 5
+    Padding.Right = 5
+    Padding.Bottom = 5
+    TabOrder = 0
+    object LabelText: TLabel
+      Left = 5
+      Top = 5
+      Width = 335
+      Height = 91
+      Align = alClient
+      AutoSize = False
+      Caption = 'LabelText'
+      WordWrap = True
+      ExplicitLeft = 8
+      ExplicitTop = 8
+      ExplicitWidth = 340
+      ExplicitHeight = 85
+    end
+    object BottomPanel: TPanel
+      Left = 5
+      Top = 96
+      Width = 335
+      Height = 34
+      Align = alBottom
+      BevelOuter = bvNone
+      TabOrder = 0
+      object BitBtnApply: TBitBtn
+        Left = 75
+        Top = 8
+        Width = 91
+        Height = 25
+        Caption = #1055#1088#1080#1085#1103#1090#1100
+        Kind = bkOK
+        NumGlyphs = 2
+        TabOrder = 0
+        OnClick = BitBtnApplyClick
+      end
+      object BitBtnCancel: TBitBtn
+        Left = 172
+        Top = 8
+        Width = 91
+        Height = 25
+        Caption = #1054#1090#1082#1083#1086#1085#1080#1090#1100
+        Kind = bkCancel
+        NumGlyphs = 2
+        TabOrder = 1
+        OnClick = BitBtnCancelClick
+      end
+    end
+  end
+end
