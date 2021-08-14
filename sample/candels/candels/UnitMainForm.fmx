@@ -2,92 +2,71 @@ object MainForm: TMainForm
   Left = 0
   Top = 0
   Caption = 'Form2'
-  ClientHeight = 488
-  ClientWidth = 633
+  ClientHeight = 624
+  ClientWidth = 874
   FormFactor.Width = 320
   FormFactor.Height = 480
   FormFactor.Devices = [Desktop]
   OnCreate = FormCreate
+  OnClose = FormClose
   DesignerMasterStyle = 0
   object TabControl: TTabControl
-    Align = Client
-    Size.Width = 633.000000000000000000
-    Size.Height = 488.000000000000000000
+    Anchors = [akLeft, akTop, akRight, akBottom]
+    Position.X = 4.000000000000000000
+    Position.Y = 40.000000000000000000
+    Size.Width = 861.000000000000000000
+    Size.Height = 577.000000000000000000
     Size.PlatformDefault = False
-    TabIndex = 0
+    TabIndex = 1
     TabOrder = 0
     TabPosition = PlatformDefault
     Sizes = (
-      633s
-      462s
-      633s
-      462s)
-    object TabItemLoad: TTabItem
-      CustomIcon = <
-        item
-        end>
-      IsSelected = True
-      Size.Width = 125.000000000000000000
-      Size.Height = 26.000000000000000000
-      Size.PlatformDefault = False
-      StyleLookup = ''
-      TabOrder = 0
-      Text = #1047#1072#1075#1088#1091#1078#1072#1077#1084' '#1076#1072#1085#1085#1099#1077
-      ExplicitSize.cx = 125.000000000000000000
-      ExplicitSize.cy = 26.000000000000000000
-      object Memo1: TMemo
-        Touch.InteractiveGestures = [Pan, LongTap, DoubleTap]
-        DataDetectorTypes = []
-        Position.X = 8.000000000000000000
-        Position.Y = 10.000000000000000000
-        Size.Width = 613.000000000000000000
-        Size.Height = 395.000000000000000000
-        Size.PlatformDefault = False
-        TabOrder = 0
-        Viewport.Width = 609.000000000000000000
-        Viewport.Height = 391.000000000000000000
-      end
-      object ButtonLoad: TButton
-        Position.X = 8.000000000000000000
-        Position.Y = 410.000000000000000000
-        TabOrder = 1
-        Text = #1047#1072#1075#1088#1091#1079#1082#1072
-        OnClick = ButtonLoadClick
-      end
-      object Button1: TButton
-        Position.X = 96.000000000000000000
-        Position.Y = 410.000000000000000000
-        TabOrder = 2
-        Text = 'Button1'
-        OnClick = Button1Click
-      end
-      object Button2: TButton
-        Position.X = 185.000000000000000000
-        Position.Y = 410.000000000000000000
-        TabOrder = 3
-        Text = 'Button2'
-        OnClick = Button2Click
-      end
-    end
-    object TabItem2: TTabItem
+      861s
+      551s
+      861s
+      551s)
+    object TabItemSource: TTabItem
       CustomIcon = <
         item
         end>
       IsSelected = False
-      Size.Width = 69.000000000000000000
+      Size.Width = 117.000000000000000000
       Size.Height = 26.000000000000000000
       Size.PlatformDefault = False
       StyleLookup = ''
       TabOrder = 0
-      Text = 'TabItem2'
-      ExplicitSize.cx = 69.000000000000000000
+      Text = #1048#1089#1090#1086#1095#1085#1080#1082' '#1076#1072#1085#1085#1099#1093
+      ExplicitSize.cx = 99.000000000000000000
       ExplicitSize.cy = 26.000000000000000000
+      object SourceLayout: TLayout
+        Align = Client
+        Size.Width = 861.000000000000000000
+        Size.Height = 551.000000000000000000
+        Size.PlatformDefault = False
+        TabOrder = 0
+      end
+    end
+    object TabItemBlocks: TTabItem
+      CustomIcon = <
+        item
+        end>
+      IsSelected = True
+      Size.Width = 54.000000000000000000
+      Size.Height = 26.000000000000000000
+      Size.PlatformDefault = False
+      StyleLookup = ''
+      TabOrder = 0
+      Text = #1041#1083#1086#1082#1080
     end
   end
-  object Timer: TTimer
-    Enabled = False
-    OnTimer = TimerTimer
-    Left = 269
-    Top = 204
+  object ButtonLoadSources: TButton
+    Position.X = 4.000000000000000000
+    Position.Y = 8.000000000000000000
+    Size.Width = 133.000000000000000000
+    Size.Height = 22.000000000000000000
+    Size.PlatformDefault = False
+    TabOrder = 1
+    Text = #1047#1072#1075#1088#1091#1079#1080#1090#1100' '#1080#1089#1090#1086#1088#1080#1102
+    OnClick = ButtonLoadSourcesClick
   end
 end

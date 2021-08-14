@@ -3,26 +3,36 @@ unit UnitMainForm;
 interface
 
 uses
-  System.SysUtils, System.Types, System.UITypes, System.Classes, System.Variants,
-  FMX.Types, FMX.Controls, FMX.Forms, FMX.Graphics, FMX.Dialogs, FMX.TabControl,
-  System.Rtti, FMX.Grid.Style, FMX.Grid, FMX.Controls.Presentation,
-  FMX.ScrollBox, FMX.Memo.Types, FMX.StdCtrls, FMX.Memo;
+  System.SysUtils,
+  System.Types,
+  System.UITypes,
+  System.Classes,
+  System.Variants,
+  FMX.Types,
+  FMX.Controls,
+  FMX.Forms,
+  FMX.Graphics,
+  FMX.Dialogs,
+  FMX.TabControl,
+  System.Rtti,
+  FMX.Grid.Style,
+  FMX.Grid,
+  FMX.Controls.Presentation,
+  FMX.ScrollBox,
+  FMX.Memo.Types,
+  FMX.StdCtrls,
+  FMX.Memo, FMX.Layouts;
 
 type
   TMainForm = class(TForm)
     TabControl: TTabControl;
-    TabItemLoad: TTabItem;
-    TabItem2: TTabItem;
-    Memo1: TMemo;
-    ButtonLoad: TButton;
-    Timer: TTimer;
-    Button1: TButton;
-    Button2: TButton;
+    TabItemSource: TTabItem;
+    ButtonLoadSources: TButton;
+    SourceLayout: TLayout;
+    TabItemBlocks: TTabItem;
     procedure FormCreate(Sender: TObject);
-    procedure ButtonLoadClick(Sender: TObject);
-    procedure Button1Click(Sender: TObject);
-    procedure TimerTimer(Sender: TObject);
-    procedure Button2Click(Sender: TObject);
+    procedure ButtonLoadSourcesClick(Sender: TObject);
+    procedure FormClose(Sender: TObject; var Action: TCloseAction);
   private
     { Private declarations }
   public
@@ -38,89 +48,36 @@ implementation
 
 uses
   Lb.ChartsFrame,
-  Lb.Candel.Source, Lb.Candel.Vector, Lb.Candel.DB;
+  Lb.SourcesFrame,
+  Lb.Candel.Source,
+  Lb.Candel.Vector,
+  Lb.Candel.DB;
 
 var
   localCandels: TSourceCandel;
-  localIndex: Integer = 0;
+  localSourcesFrame: TSourcesFrame;
+
+
+procedure TMainForm.FormClose(Sender: TObject; var Action: TCloseAction);
+begin
+  TSourcesFrame.SetFreeAndNil;
+  FreeAndNil(localCandels)
+end;
 
 procedure TMainForm.FormCreate(Sender: TObject);
 begin
   Self.Caption := 'Генерирование формы свечей';
-  TChartsFrame.GetCreateFrame(TabItem2);
+  localCandels := TSourceCandel.Create;
+  localSourcesFrame := TSourcesFrame.GetCreateFrame(SourceLayout);
 end;
 
-
-procedure TMainForm.TimerTimer(Sender: TObject);
+procedure TMainForm.ButtonLoadSourcesClick(Sender: TObject);
+var
+  xPath: String;
 begin
-  Inc(localIndex);
-  TChartsFrame.SetShowCharts(localIndex,100);
-
-  if localIndex > 700 then
-    Timer.Enabled := False;
-
+  xPath := ExtractFilePath(ParamStr(0)) + 'export.csv';
+  localCandels.SetLoadFile(xPath);
+  localSourcesFrame.SetSource(localCandels);
 end;
-
-procedure TMainForm.Button1Click(Sender: TObject);
-begin
-  localIndex := 0;
-  var xStr := TStringList.Create;
-  try
-    // ----------------------------------
-    xStr.LoadFromFile('export.csv');
-    for var S in xStr do
-    begin
-      Memo1.Lines.Add(S);
-    end;
-    // ----------------------------------
-    localCandels := TChartsFrame.GetSource;
-    localCandels.SetParserCandels(xStr);
-    TChartsFrame.SetShowCharts(localIndex,100);
-    // ----------------------------------
-  finally
-    FreeAndNil(xStr);
-  end;
-
-  Timer.Enabled := True;
-end;
-
-procedure TMainForm.Button2Click(Sender: TObject);
-begin
-  SetCreateDataBase;
-end;
-
-procedure TMainForm.ButtonLoadClick(Sender: TObject);
-begin
-  var xStr := TStringList.Create;
-  try
-    // ----------------------------------
-    xStr.LoadFromFile('export.csv');
-    for var S in xStr do
-    begin
-      Memo1.Lines.Add(S);
-    end;
-    // ----------------------------------
-    var xCandels := TChartsFrame.GetSource;
-    xCandels.SetParserCandels(xStr);
-    TChartsFrame.SetShowCharts(0,100);
-
-
-    // ----------------------------------
-
-    for var i := 10 to xCandels.Candels.Count - 1 do
-    begin
-      var xVector := TEnvelopeVector.Create;
-      xVector.SetCandels(i,10,3,xCandels.Candels);
-      xVector.SetWrite;
-      FreeAndNil(xVector);
-    end;
-
-
-    // ----------------------------------
-  finally
-    FreeAndNil(xStr);
-  end;
-end;
-
 
 end.

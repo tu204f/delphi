@@ -276,11 +276,6 @@
         </DCCReference>
         <DCCReference Include="lib\Lb.Candel.Source.pas"/>
         <DCCReference Include="lib\Lb.Candel.SysUtils.pas"/>
-        <DCCReference Include="lib\Lb.ChartsFrame.pas">
-            <Form>ChartsFrame</Form>
-            <FormType>fmx</FormType>
-            <DesignClass>TFrame</DesignClass>
-        </DCCReference>
         <DCCReference Include="lib\Lb.Candel.Vector.pas"/>
         <DCCReference Include="..\..\..\library\db\Lb.DataModuleDB.pas">
             <Form>DataModuleDB</Form>
@@ -291,6 +286,17 @@
         <DCCReference Include="..\..\..\library\Lb.Resource.Script.pas"/>
         <DCCReference Include="lib\Lb.Candel.DB.pas"/>
         <DCCReference Include="..\..\..\library\Lb.SysUtils.ISO860.pas"/>
+        <DCCReference Include="lib\source\Lb.SourcesFrame.pas">
+            <Form>SourcesFrame</Form>
+            <FormType>fmx</FormType>
+            <DesignClass>TFrame</DesignClass>
+        </DCCReference>
+        <DCCReference Include="lib\source\Lb.ChartsFrame.pas">
+            <Form>ChartsFrame</Form>
+            <FormType>fmx</FormType>
+            <DesignClass>TFrame</DesignClass>
+        </DCCReference>
+        <DCCReference Include="lib\Lb.Candel.Blocs.pas"/>
         <None Include="lib\res\db.sql"/>
         <BuildConfiguration Include="Release">
             <Key>Cfg_2</Key>

@@ -72,7 +72,8 @@ end;
 function GetSameValue(const AValue1, AValue2: Double; const AEpsilon: Integer): Boolean;
 var
   xEpsilon: Double;
-  xValue, xLowValue, xHighValue: Double;
+  //xValue,
+  xLowValue, xHighValue: Double;
 begin
   Result := False;
   if (AEpsilon > 0)  and (AEpsilon < 100) then

@@ -11,8 +11,6 @@ uses
   Lb.Candel.SysUtils;
 
 type
-
-
   ///<summary>
   /// Источние биржевых свечей
   ///</summary>
@@ -23,6 +21,7 @@ type
   public
     constructor Create;
     destructor Destroy; override;
+    procedure SetLoadFile(const AFileName: String);
     procedure SetParserCandels(const ASource: TStrings);
     procedure GetMaxAndMinValue(const ACount: Integer; out AMaxValue, AMinValue: Double); overload;
     procedure GetMaxAndMinValue(const ABeginIndex, ACount: Integer; out AMaxValue, AMinValue: Double); overload;
@@ -152,6 +151,21 @@ end;
 procedure TSourceCandel.GetMaxAndMinValue(const ACount: Integer; out AMaxValue, AMinValue: Double);
 begin
   Self.GetMaxAndMinValue(-1,ACount,AMaxValue, AMinValue);
+end;
+
+procedure TSourceCandel.SetLoadFile(const AFileName: String);
+var
+  xStr: TStrings;
+begin
+  if FileExists(AFileName) then
+    xStr := TStringList.Create;
+    try
+      xStr.Clear;
+      xStr.LoadFromFile(AFileName);
+      Self.SetParserCandels(xStr);
+    finally
+      FreeAndNil(xStr);
+    end;
 end;
 
 procedure TSourceCandel.SetParserCandels(const ASource: TStrings);
