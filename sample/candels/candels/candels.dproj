@@ -296,7 +296,7 @@
             <FormType>fmx</FormType>
             <DesignClass>TFrame</DesignClass>
         </DCCReference>
-        <DCCReference Include="lib\Lb.Candel.Blocs.pas"/>
+        <DCCReference Include="lib\Lb.Candel.Blocks.pas"/>
         <None Include="lib\res\db.sql"/>
         <BuildConfiguration Include="Release">
             <Key>Cfg_2</Key>

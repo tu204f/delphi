@@ -10,8 +10,8 @@ object SourcesFrame: TSourcesFrame
     Size.Height = 627.000000000000000000
     Size.PlatformDefault = False
     TabOrder = 0
-    Viewport.Width = 1125.000000000000000000
-    Viewport.Height = 602.000000000000000000
+    Viewport.Width = 1145.000000000000000000
+    Viewport.Height = 627.000000000000000000
     object StringColumnDate: TStringColumn
       Header = #1044#1072#1090#1072
     end

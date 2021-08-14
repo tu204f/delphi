@@ -16,7 +16,7 @@ uses
   Lb.SysUtils.ISO860 in '..\..\..\library\Lb.SysUtils.ISO860.pas',
   Lb.SourcesFrame in 'lib\source\Lb.SourcesFrame.pas' {SourcesFrame: TFrame},
   Lb.ChartsFrame in 'lib\source\Lb.ChartsFrame.pas' {ChartsFrame: TFrame},
-  Lb.Candel.Blocs in 'lib\Lb.Candel.Blocs.pas';
+  Lb.Candel.Blocks in 'lib\Lb.Candel.Blocks.pas';
 
 {$R *.res}
 
