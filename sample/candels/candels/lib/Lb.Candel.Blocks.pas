@@ -20,7 +20,6 @@ type
     constructor Create;
     destructor Destroy; override;
     ///</summary>Источник данных для блока</summary>
-    {todo: Исспользование объектов}
     property SourceCandel: TSourceCandel read FSourceCandel;
   end;
 
