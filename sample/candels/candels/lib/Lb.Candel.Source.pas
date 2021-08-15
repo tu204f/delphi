@@ -23,9 +23,12 @@ type
     destructor Destroy; override;
     procedure SetLoadFile(const AFileName: String);
     procedure SetParserCandels(const ASource: TStrings);
+    property Candels: TCandelList read FSource;
+  public {Определение предела, Максимальной и минимальной цены или объема}
+    procedure GetMaxAndMinPriceVol(out AMaxPrice, AMinPrice: Double; out AMaxVol, AMinVol: Integer);
+    procedure GetMaxAndMinValue(out AMaxValue, AMinValue: Double); overload;
     procedure GetMaxAndMinValue(const ACount: Integer; out AMaxValue, AMinValue: Double); overload;
     procedure GetMaxAndMinValue(const ABeginIndex, ACount: Integer; out AMaxValue, AMinValue: Double); overload;
-    property Candels: TCandelList read FSource;
   end;
 
 implementation
@@ -102,6 +105,35 @@ begin
   inherited;
 end;
 
+procedure TSourceCandel.GetMaxAndMinPriceVol(out AMaxPrice, AMinPrice: Double;
+  out AMaxVol, AMinVol: Integer);
+var
+  xCandel: TCandel;
+  i, iCount: Integer;
+begin
+  iCount := FSource.Count;
+  if iCount > 0 then
+  begin
+    xCandel := FSource[0];
+    AMaxPrice := xCandel.High;
+    AMinPrice := xCandel.Low;
+    AMaxVol   := xCandel.Vol;
+    AMinVol   := xCandel.Vol;
+    for i := 1 to iCount - 1 do
+    begin
+      xCandel := FSource[i];
+      if AMaxPrice < xCandel.High then
+        AMaxPrice := xCandel.High;
+      if AMinPrice > xCandel.Low then
+        AMinPrice := xCandel.Low;
+      if AMaxVol < xCandel.Vol then
+        AMaxVol := xCandel.Vol;
+      if AMaxVol > xCandel.Vol then
+        AMaxVol := xCandel.Vol;
+    end;
+  end;
+end;
+
 procedure TSourceCandel.GetMaxAndMinValue(const ABeginIndex, ACount: Integer; out AMaxValue, AMinValue: Double);
 var
   xCandel: TCandel;
@@ -151,6 +183,11 @@ end;
 procedure TSourceCandel.GetMaxAndMinValue(const ACount: Integer; out AMaxValue, AMinValue: Double);
 begin
   Self.GetMaxAndMinValue(-1,ACount,AMaxValue, AMinValue);
+end;
+
+procedure TSourceCandel.GetMaxAndMinValue(out AMaxValue, AMinValue: Double);
+begin
+  Self.GetMaxAndMinValue(-1,0,AMaxValue,AMinValue);
 end;
 
 procedure TSourceCandel.SetLoadFile(const AFileName: String);
