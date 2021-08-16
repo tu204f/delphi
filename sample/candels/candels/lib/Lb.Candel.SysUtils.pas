@@ -11,6 +11,8 @@ uses
   System.Generics.Collections;
 
 type
+  TTypePrice = (tpOpen,tpHigh,tpLow,tpClose);
+
   ///<summary>Свеча</summary>
   TCandel = record
     Date: TDateTime;
@@ -19,7 +21,7 @@ type
     High: Double;
     Low: Double;
     Close: Double;
-    Vol: Integer;
+    Vol: Double;
   end;
   TCandelList = TList<TCandel>;
 

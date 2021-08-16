@@ -50,7 +50,6 @@ uses
   Lb.ChartsFrame,
   Lb.SourcesFrame,
   Lb.Candel.Source,
-  Lb.Candel.Vector,
   Lb.Candel.DB;
 
 var

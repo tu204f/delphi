@@ -25,7 +25,7 @@ type
     procedure SetParserCandels(const ASource: TStrings);
     property Candels: TCandelList read FSource;
   public {Определение предела, Максимальной и минимальной цены или объема}
-    procedure GetMaxAndMinPriceVol(out AMaxPrice, AMinPrice: Double; out AMaxVol, AMinVol: Integer);
+    procedure GetMaxAndMinPriceVol(out AMaxPrice, AMinPrice: Double; out AMaxVol, AMinVol: Double);
     procedure GetMaxAndMinValue(out AMaxValue, AMinValue: Double); overload;
     procedure GetMaxAndMinValue(const ACount: Integer; out AMaxValue, AMinValue: Double); overload;
     procedure GetMaxAndMinValue(const ABeginIndex, ACount: Integer; out AMaxValue, AMinValue: Double); overload;
@@ -106,7 +106,7 @@ begin
 end;
 
 procedure TSourceCandel.GetMaxAndMinPriceVol(out AMaxPrice, AMinPrice: Double;
-  out AMaxVol, AMinVol: Integer);
+  out AMaxVol, AMinVol: Double);
 var
   xCandel: TCandel;
   i, iCount: Integer;

@@ -276,7 +276,6 @@
         </DCCReference>
         <DCCReference Include="lib\Lb.Candel.Source.pas"/>
         <DCCReference Include="lib\Lb.Candel.SysUtils.pas"/>
-        <DCCReference Include="lib\Lb.Candel.Vector.pas"/>
         <DCCReference Include="..\..\..\library\db\Lb.DataModuleDB.pas">
             <Form>DataModuleDB</Form>
             <FormType>dfm</FormType>

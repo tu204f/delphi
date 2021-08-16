@@ -22,6 +22,8 @@ type
     destructor Destroy; override;
     ///<summary>Формирование вектора</summary>
     procedure SetFormationVector;
+    ///<summary>Формирование источника данных, из ветора и цены</summary>
+    procedure SetFormationSource(AIndex: Integer; AMaxPrice, AMinPrice, APrice: Double; ATypePrice: TTypePrice);
     ///<summary>Источник данных для блока</summary>
     property Sources: TSourceCandel read FSources;
     ///<summary>Создаем, вектор</summary>
@@ -58,7 +60,7 @@ var
   xCandel: TCandel;
   xVector: TCandel;
   xMaxPrice, xMinPrice: Double;
-  xMaxVol, xMinVol: Integer;
+  xMaxVol, xMinVol: Double;
 begin
   FVectors.Candels.Clear;
   if FSources.Candels.Count > 0 then
@@ -72,10 +74,46 @@ begin
       xVector.High  := GetProcentVector(xMaxPrice,xMinPrice,xCandel.High);
       xVector.Low   := GetProcentVector(xMaxPrice,xMinPrice,xCandel.Low);
       xVector.Close := GetProcentVector(xMaxPrice,xMinPrice,xCandel.Close);
-      xVector.Vol   := Trunc(GetProcentVector(xMaxVol,xMinVol,xCandel.Vol) * 100);
+      xVector.Vol   := GetProcentVector(xMaxVol,xMinVol,xCandel.Vol);
       FVectors.Candels.Add(xVector);
     end;
   end;
 end;
+
+
+procedure TBlock.SetFormationSource(AIndex: Integer; AMaxPrice, AMinPrice, APrice: Double; ATypePrice: TTypePrice);
+
+  function GetToProventCandel(const AValue: Double): Double;
+  begin
+    Result := (AMaxPrice - AMinPrice) * AValue + AMinPrice;
+  end;
+
+var
+  xCandel: TCandel;
+  xVector: TCandel;
+  iCount: Integer;
+  xPrice: Double;
+begin
+  FSources.Candels.Clear;
+  iCount := FVectors.Candels.Count;
+  if (AIndex >= 0) and (AIndex < iCount) then
+  begin
+    xVector := FVectors.Candels[AIndex];
+    xPrice := xVector.Close;
+    for xVector in FVectors.Candels do
+    begin
+      xCandel.Date  := xVector.Date;
+      xCandel.Time  := xVector.Time;
+      xCandel.Open  := GetToProventCandel(xVector.Open);
+      xCandel.High  := GetToProventCandel(xVector.High);
+      xCandel.Low   := GetToProventCandel(xVector.Low);
+      xCandel.Close := GetToProventCandel(xVector.Close);
+      xCandel.Vol   := GetToProventCandel(xVector.Vol);
+      FSources.Candels.Add(xVector);
+    end;
+
+  end;
+end;
+
 
 end.

@@ -57,6 +57,8 @@ object MainForm: TMainForm
       StyleLookup = ''
       TabOrder = 0
       Text = #1041#1083#1086#1082#1080
+      ExplicitSize.cx = 54.000000000000000000
+      ExplicitSize.cy = 26.000000000000000000
     end
   end
   object ButtonLoadSources: TButton

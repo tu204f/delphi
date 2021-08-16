@@ -8,7 +8,6 @@ uses
   UnitMainForm in 'UnitMainForm.pas' {MainForm},
   Lb.Candel.Source in 'lib\Lb.Candel.Source.pas',
   Lb.Candel.SysUtils in 'lib\Lb.Candel.SysUtils.pas',
-  Lb.Candel.Vector in 'lib\Lb.Candel.Vector.pas',
   Lb.DataModuleDB in '..\..\..\library\db\Lb.DataModuleDB.pas' {DataModuleDB: TDataModule},
   Lb.Logger in '..\..\..\library\Lb.Logger.pas',
   Lb.Resource.Script in '..\..\..\library\Lb.Resource.Script.pas',

@@ -80,7 +80,7 @@ begin
       Cells[3,i] := FloatToStr(xCandel.High);
       Cells[4,i] := FloatToStr(xCandel.Low);
       Cells[5,i] := FloatToStr(xCandel.Close);
-      Cells[6,i] := IntToStr(xCandel.Vol);
+      Cells[6,i] := FloatToStr(xCandel.Vol);
     end;
   end;
 end;
