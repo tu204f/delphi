@@ -6,6 +6,9 @@
         <Projects Include="candels\candels.dproj">
             <Dependencies/>
         </Projects>
+        <Projects Include="candel_to_vector\candel_to_vector.dproj">
+            <Dependencies/>
+        </Projects>
     </ItemGroup>
     <ProjectExtensions>
         <Borland.Personality>Default.Personality.12</Borland.Personality>
@@ -23,14 +26,23 @@
     <Target Name="candels:Make">
         <MSBuild Projects="candels\candels.dproj" Targets="Make"/>
     </Target>
+    <Target Name="candel_to_vector">
+        <MSBuild Projects="candel_to_vector\candel_to_vector.dproj"/>
+    </Target>
+    <Target Name="candel_to_vector:Clean">
+        <MSBuild Projects="candel_to_vector\candel_to_vector.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="candel_to_vector:Make">
+        <MSBuild Projects="candel_to_vector\candel_to_vector.dproj" Targets="Make"/>
+    </Target>
     <Target Name="Build">
-        <CallTarget Targets="candels"/>
+        <CallTarget Targets="candels;candel_to_vector"/>
     </Target>
     <Target Name="Clean">
-        <CallTarget Targets="candels:Clean"/>
+        <CallTarget Targets="candels:Clean;candel_to_vector:Clean"/>
     </Target>
     <Target Name="Make">
-        <CallTarget Targets="candels:Make"/>
+        <CallTarget Targets="candels:Make;candel_to_vector:Make"/>
     </Target>
     <Import Project="$(BDS)\Bin\CodeGear.Group.Targets" Condition="Exists('$(BDS)\Bin\CodeGear.Group.Targets')"/>
 </Project>
