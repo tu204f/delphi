@@ -29,6 +29,8 @@ type
     procedure GetMaxAndMinValue(out AMaxValue, AMinValue: Double); overload;
     procedure GetMaxAndMinValue(const ACount: Integer; out AMaxValue, AMinValue: Double); overload;
     procedure GetMaxAndMinValue(const ABeginIndex, ACount: Integer; out AMaxValue, AMinValue: Double); overload;
+  public
+    procedure SetSelected(ACountSource, ACountVectory: Integer; ASources: TSourceCandel);
   end;
 
 implementation
@@ -85,6 +87,7 @@ begin
       xR.Low  := GetStrToFloat(xStr[4]);
       xR.Close:= GetStrToFloat(xStr[5]);
       xR.Vol  := StrToInt64Def(xStr[6],0);
+      xR.Status := -1;
     end;
   finally
     FreeAndNil(xStr);
@@ -218,8 +221,37 @@ begin
         if S.Chars[0] = '<' then
           Continue;
         xCandel := GetParserCandel(S);
+
         FSource.Add(xCandel);
       end
+    end;
+end;
+
+procedure TSourceCandel.SetSelected(ACountSource, ACountVectory: Integer; ASources: TSourceCandel);
+var
+  i, iCount: Integer;
+  xCountSource, xCountVectory: Integer;
+begin
+  if ACountSource <= 0 then
+    raise Exception.Create('Error Message: ACountSource: ' + IntToStr(ACountSource));
+
+  if ACountVectory <= 0 then
+    raise Exception.Create('Error Message: ACountVectory: ' + IntToStr(ACountVectory));
+
+  xCountSource := 0;
+  xCountVectory := 0;
+
+  iCount := ACountSource + ACountVectory;
+  if iCount > 0 then
+    for i := 0 to iCount - 1 do
+    begin
+      if xCountSource < ACountSource then
+        Inc(xCountSource)
+      else
+        Inc(xCountVectory);
+
+
+
     end;
 end;
 
