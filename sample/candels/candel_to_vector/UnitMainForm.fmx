@@ -1,10 +1,8 @@
 object MainForm: TMainForm
   Left = 0
   Top = 0
-  BorderIcons = [biSystemMenu]
-  BorderStyle = Single
   Caption = 'Form2'
-  ClientHeight = 576
+  ClientHeight = 573
   ClientWidth = 1276
   FormFactor.Width = 320
   FormFactor.Height = 480
@@ -14,23 +12,23 @@ object MainForm: TMainForm
   DesignerMasterStyle = 0
   object TabControl: TTabControl
     Position.X = 8.000000000000000000
-    Position.Y = 8.000000000000000000
+    Position.Y = 40.000000000000000000
     Size.Width = 1253.000000000000000000
-    Size.Height = 557.000000000000000000
+    Size.Height = 529.000000000000000000
     Size.PlatformDefault = False
-    TabIndex = 1
+    TabIndex = 0
     TabOrder = 0
     TabPosition = PlatformDefault
     Sizes = (
       1253s
-      531s
+      503s
       1253s
-      531s)
+      503s)
     object TabItemSource: TTabItem
       CustomIcon = <
         item
         end>
-      IsSelected = False
+      IsSelected = True
       Size.Width = 117.000000000000000000
       Size.Height = 26.000000000000000000
       Size.PlatformDefault = False
@@ -42,7 +40,7 @@ object MainForm: TMainForm
       object LayoutSource: TLayout
         Align = Client
         Size.Width = 1253.000000000000000000
-        Size.Height = 531.000000000000000000
+        Size.Height = 503.000000000000000000
         Size.PlatformDefault = False
         TabOrder = 0
       end
@@ -51,7 +49,7 @@ object MainForm: TMainForm
       CustomIcon = <
         item
         end>
-      IsSelected = True
+      IsSelected = False
       Size.Width = 59.000000000000000000
       Size.Height = 26.000000000000000000
       Size.PlatformDefault = False
@@ -63,10 +61,74 @@ object MainForm: TMainForm
       object LayoutVector: TLayout
         Align = Client
         Size.Width = 1253.000000000000000000
-        Size.Height = 531.000000000000000000
+        Size.Height = 503.000000000000000000
         Size.PlatformDefault = False
         TabOrder = 0
       end
     end
+  end
+  object ButtonLoad: TButton
+    Position.X = 8.000000000000000000
+    Position.Y = 8.000000000000000000
+    TabOrder = 1
+    Text = #1047#1072#1075#1088#1091#1079#1072#1080#1090#1100
+    OnClick = ButtonLoadClick
+  end
+  object NumberBox: TNumberBox
+    Touch.InteractiveGestures = [LongTap, DoubleTap]
+    TabOrder = 4
+    Cursor = crIBeam
+    Position.X = 92.000000000000000000
+    Position.Y = 8.000000000000000000
+    Size.Width = 153.000000000000000000
+    Size.Height = 22.000000000000000000
+    Size.PlatformDefault = False
+  end
+  object ButtonShow: TButton
+    Position.X = 248.000000000000000000
+    Position.Y = 8.000000000000000000
+    TabOrder = 5
+    Text = #1055#1086#1082#1072#1079#1072#1090#1100
+    OnClick = ButtonShowClick
+  end
+  object NumberBoxCountCandel: TNumberBox
+    Touch.InteractiveGestures = [LongTap, DoubleTap]
+    TabOrder = 3
+    Cursor = crIBeam
+    Value = 10.000000000000000000
+    Position.X = 456.000000000000000000
+    Position.Y = 8.000000000000000000
+    Size.Width = 57.000000000000000000
+    Size.Height = 22.000000000000000000
+    Size.PlatformDefault = False
+  end
+  object TextCountCandel: TText
+    Position.X = 332.000000000000000000
+    Position.Y = 8.000000000000000000
+    Size.Width = 114.000000000000000000
+    Size.Height = 21.000000000000000000
+    Size.PlatformDefault = False
+    Text = #1050#1086#1083#1080#1095#1077#1089#1090#1074#1086' '#1089#1074#1077#1095#1077#1081':'
+    TextSettings.HorzAlign = Leading
+  end
+  object Text1: TText
+    Position.X = 520.000000000000000000
+    Position.Y = 8.000000000000000000
+    Size.Width = 201.000000000000000000
+    Size.Height = 21.000000000000000000
+    Size.PlatformDefault = False
+    Text = #1050#1086#1083#1080#1095#1077#1089#1090#1074#1086' '#1089#1074#1077#1095#1077#1081' '#1076#1083#1103' '#1088#1077#1079#1091#1083#1100#1090#1072#1090#1072':'
+    TextSettings.HorzAlign = Leading
+  end
+  object NumberBoxCountResult: TNumberBox
+    Touch.InteractiveGestures = [LongTap, DoubleTap]
+    TabOrder = 2
+    Cursor = crIBeam
+    Value = 5.000000000000000000
+    Position.X = 726.000000000000000000
+    Position.Y = 8.000000000000000000
+    Size.Width = 57.000000000000000000
+    Size.Height = 22.000000000000000000
+    Size.PlatformDefault = False
   end
 end

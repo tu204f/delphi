@@ -53,7 +53,10 @@ procedure TBlock.SetFormationVector;
   begin
     Result := 0;
     if (AMaxValue > 0) and (AMinValue > 0) and (AValue > 0) then
-      Result := (AValue - AMinValue)/(AMaxValue - AMinValue);
+    begin
+      var xDelta := (AValue - AMinValue)/(AMaxValue - AMinValue);
+      Result := Trunc(xDelta * 100);
+    end;
   end;
 
 var
@@ -68,13 +71,14 @@ begin
     FSources.GetMaxAndMinPriceVol(xMaxPrice,xMinPrice,xMaxVol,xMinVol);
     for xCandel in FSources.Candels do
     begin
-      xVector.Date  := xCandel.Date;
-      xVector.Time  := xCandel.Time;
-      xVector.Open  := GetProcentVector(xMaxPrice,xMinPrice,xCandel.Open);
-      xVector.High  := GetProcentVector(xMaxPrice,xMinPrice,xCandel.High);
-      xVector.Low   := GetProcentVector(xMaxPrice,xMinPrice,xCandel.Low);
-      xVector.Close := GetProcentVector(xMaxPrice,xMinPrice,xCandel.Close);
-      xVector.Vol   := GetProcentVector(xMaxVol,xMinVol,xCandel.Vol);
+      xVector.Date   := xCandel.Date;
+      xVector.Time   := xCandel.Time;
+      xVector.Open   := GetProcentVector(xMaxPrice,xMinPrice,xCandel.Open);
+      xVector.High   := GetProcentVector(xMaxPrice,xMinPrice,xCandel.High);
+      xVector.Low    := GetProcentVector(xMaxPrice,xMinPrice,xCandel.Low);
+      xVector.Close  := GetProcentVector(xMaxPrice,xMinPrice,xCandel.Close);
+      xVector.Vol    := GetProcentVector(xMaxVol,xMinVol,xCandel.Vol);
+      xVector.Status := xCandel.Status;
       FVectors.Candels.Add(xVector);
     end;
   end;

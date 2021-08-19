@@ -30,7 +30,7 @@ type
     procedure GetMaxAndMinValue(const ACount: Integer; out AMaxValue, AMinValue: Double); overload;
     procedure GetMaxAndMinValue(const ABeginIndex, ACount: Integer; out AMaxValue, AMinValue: Double); overload;
   public
-    procedure SetSelected(ACountSource, ACountVectory: Integer; ASources: TSourceCandel);
+    function SetSelected(AIndexBegin, ACountCandel, ACountResult: Integer; ASources: TSourceCandel): Boolean;
   end;
 
 implementation
@@ -125,6 +125,8 @@ begin
     for i := 1 to iCount - 1 do
     begin
       xCandel := FSource[i];
+      if xCandel.Status in [2,3] then
+        Break;
       if AMaxPrice < xCandel.High then
         AMaxPrice := xCandel.High;
       if AMinPrice > xCandel.Low then
@@ -227,32 +229,47 @@ begin
     end;
 end;
 
-procedure TSourceCandel.SetSelected(ACountSource, ACountVectory: Integer; ASources: TSourceCandel);
+function TSourceCandel.SetSelected(AIndexBegin, ACountCandel, ACountResult: Integer; ASources: TSourceCandel): Boolean;
 var
-  i, iCount: Integer;
-  xCountSource, xCountVectory: Integer;
+  i, iCount, xInd: Integer;
+  xCountCandel: Integer;
 begin
-  if ACountSource <= 0 then
-    raise Exception.Create('Error Message: ACountSource: ' + IntToStr(ACountSource));
+  if ACountCandel <= 0 then
+    raise Exception.Create('Error Message: ACountSource: ' + IntToStr(ACountCandel));
 
-  if ACountVectory <= 0 then
-    raise Exception.Create('Error Message: ACountVectory: ' + IntToStr(ACountVectory));
+  if ACountResult <= 0 then
+    raise Exception.Create('Error Message: ACountVectory: ' + IntToStr(ACountResult));
 
-  xCountSource := 0;
-  xCountVectory := 0;
+  if not Assigned(ASources) then
+    raise Exception.Create('Error Message: Запросить количество сечей [ASources: TSourceCandel]');
 
-  iCount := ACountSource + ACountVectory;
+  ASources.Candels.Clear;
+  xCountCandel := 0;
+  // Количество свечей, которые будет использовать для анализа
+  // Количество для результатов
+  iCount := ACountCandel + ACountResult + 1;
   if iCount > 0 then
     for i := 0 to iCount - 1 do
     begin
-      if xCountSource < ACountSource then
-        Inc(xCountSource)
+      xInd := AIndexBegin + i;
+      if xInd >= Self.Candels.Count  then
+        Break;
+      var xCandel := Self.Candels[xInd];
+      if xCountCandel < ACountCandel then
+      begin
+        xCandel.Status := 1;
+        Inc(xCountCandel);
+      end
+      else if xCountCandel = ACountCandel then
+      begin
+        xCandel.Status := 2;
+        Inc(xCountCandel);
+      end
       else
-        Inc(xCountVectory);
-
-
-
+        xCandel.Status := 3;
+      ASources.Candels.Add(xCandel);
     end;
+  Result := ASources.Candels.Count = iCount;
 end;
 
 end.

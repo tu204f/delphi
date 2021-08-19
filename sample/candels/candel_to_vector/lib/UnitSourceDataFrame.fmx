@@ -1,119 +1,131 @@
 object SourceDataFrame: TSourceDataFrame
-  Size.Width = 835.000000000000000000
-  Size.Height = 476.000000000000000000
+  Size.Width = 926.000000000000000000
+  Size.Height = 495.000000000000000000
   Size.PlatformDefault = False
-  object Layout1: TLayout
+  object Rectangle: TRectangle
     Align = Client
-    Margins.Left = 5.000000000000000000
-    Margins.Top = 5.000000000000000000
-    Margins.Right = 5.000000000000000000
-    Margins.Bottom = 5.000000000000000000
-    Size.Width = 825.000000000000000000
-    Size.Height = 466.000000000000000000
+    Size.Width = 926.000000000000000000
+    Size.Height = 495.000000000000000000
     Size.PlatformDefault = False
-    TabOrder = 0
-    object Layout2: TLayout
+    object Layout1: TLayout
       Align = Client
-      Size.Width = 825.000000000000000000
-      Size.Height = 282.000000000000000000
-      Size.PlatformDefault = False
-      TabOrder = 1
-      object Label1: TLabel
-        Align = Top
-        Size.Width = 825.000000000000000000
-        Size.Height = 17.000000000000000000
-        Size.PlatformDefault = False
-        Text = #1048#1089#1090#1086#1095#1085#1080#1082#1077' '#1076#1072#1085#1085#1099#1093
-        TabOrder = 2
-      end
-      object StringGridSource: TStringGrid
-        Align = Client
-        CanFocus = True
-        ClipChildren = True
-        Size.Width = 825.000000000000000000
-        Size.Height = 265.000000000000000000
-        Size.PlatformDefault = False
-        TabOrder = 1
-        RowCount = 10
-        Options = [ColumnResize, ColumnMove, ColLines, RowLines, RowSelect, Tabs, Header, HeaderClick, AutoDisplacement]
-        Viewport.Width = 821.000000000000000000
-        Viewport.Height = 240.000000000000000000
-        object CandelColumnID: TStringColumn
-          Header = 'ID'
-        end
-        object CandelColumnDate: TStringColumn
-          Header = #1044#1072#1090#1072
-        end
-        object CandelColumnTime: TStringColumn
-          Header = #1042#1088#1077#1084#1103
-        end
-        object CandelColumnOpen: TStringColumn
-          Header = 'Open'
-        end
-        object CandelColumnHigh: TStringColumn
-          Header = 'High'
-        end
-        object CandelColumnLow: TStringColumn
-          Header = 'Low'
-        end
-        object CandelColumnClose: TStringColumn
-          Header = 'Close'
-        end
-        object CandelColumnVol: TStringColumn
-          Header = 'Vol'
-        end
-      end
-    end
-    object Layout3: TLayout
-      Align = Bottom
-      Position.Y = 282.000000000000000000
-      Size.Width = 825.000000000000000000
-      Size.Height = 184.000000000000000000
+      Margins.Left = 5.000000000000000000
+      Margins.Top = 5.000000000000000000
+      Margins.Right = 5.000000000000000000
+      Margins.Bottom = 5.000000000000000000
+      Size.Width = 916.000000000000000000
+      Size.Height = 485.000000000000000000
       Size.PlatformDefault = False
       TabOrder = 0
-      object Label2: TLabel
-        Align = Top
-        Size.Width = 825.000000000000000000
-        Size.Height = 17.000000000000000000
-        Size.PlatformDefault = False
-        Text = #1044#1072#1085#1085#1099#1077' '#1076#1083#1103' '#1088#1077#1079#1091#1083#1100#1090#1072#1090#1072
-        TabOrder = 1
-      end
-      object StringGridVector: TStringGrid
+      object Layout2: TLayout
         Align = Client
-        CanFocus = True
-        ClipChildren = True
-        Size.Width = 825.000000000000000000
-        Size.Height = 167.000000000000000000
+        Size.Width = 916.000000000000000000
+        Size.Height = 301.000000000000000000
+        Size.PlatformDefault = False
+        TabOrder = 1
+        object Label1: TLabel
+          Align = Top
+          Size.Width = 916.000000000000000000
+          Size.Height = 17.000000000000000000
+          Size.PlatformDefault = False
+          Text = #1048#1089#1090#1086#1095#1085#1080#1082#1077' '#1076#1072#1085#1085#1099#1093
+          TabOrder = 2
+        end
+        object StringGridSource: TStringGrid
+          Align = Client
+          CanFocus = True
+          ClipChildren = True
+          Size.Width = 916.000000000000000000
+          Size.Height = 284.000000000000000000
+          Size.PlatformDefault = False
+          TabOrder = 1
+          RowCount = 11
+          Options = [ColumnResize, ColumnMove, ColLines, RowLines, RowSelect, Tabs, Header, HeaderClick, AutoDisplacement]
+          Viewport.Width = 912.000000000000000000
+          Viewport.Height = 259.000000000000000000
+          object CandelColumnID: TStringColumn
+            Header = 'ID'
+          end
+          object CandelColumnDate: TStringColumn
+            Header = #1044#1072#1090#1072
+          end
+          object CandelColumnTime: TStringColumn
+            Header = #1042#1088#1077#1084#1103
+          end
+          object CandelColumnOpen: TStringColumn
+            Header = 'Open'
+          end
+          object CandelColumnHigh: TStringColumn
+            Header = 'High'
+          end
+          object CandelColumnLow: TStringColumn
+            Header = 'Low'
+          end
+          object CandelColumnClose: TStringColumn
+            Header = 'Close'
+          end
+          object CandelColumnVol: TStringColumn
+            Header = 'Vol'
+          end
+          object CandelColumnStatus: TStringColumn
+            Header = #1057#1090#1072#1090#1091#1089
+          end
+        end
+      end
+      object Layout3: TLayout
+        Align = Bottom
+        Position.Y = 301.000000000000000000
+        Size.Width = 916.000000000000000000
+        Size.Height = 184.000000000000000000
         Size.PlatformDefault = False
         TabOrder = 0
-        RowCount = 5
-        Options = [ColumnResize, ColumnMove, ColLines, RowLines, RowSelect, Tabs, Header, HeaderClick, AutoDisplacement]
-        Viewport.Width = 821.000000000000000000
-        Viewport.Height = 142.000000000000000000
-        object VectorColumnID: TStringColumn
-          Header = 'ID'
+        object Label2: TLabel
+          Align = Top
+          Size.Width = 916.000000000000000000
+          Size.Height = 17.000000000000000000
+          Size.PlatformDefault = False
+          Text = #1044#1072#1085#1085#1099#1077' '#1076#1083#1103' '#1088#1077#1079#1091#1083#1100#1090#1072#1090#1072
+          TabOrder = 1
         end
-        object VectorColumnDate: TStringColumn
-          Header = #1044#1072#1090#1072
-        end
-        object VectorColumnTime: TStringColumn
-          Header = #1042#1088#1077#1084#1103
-        end
-        object VectorColumnOpen: TStringColumn
-          Header = 'Open'
-        end
-        object VectorColumnHigh: TStringColumn
-          Header = 'High'
-        end
-        object VectorColumnLow: TStringColumn
-          Header = 'Low'
-        end
-        object VectorColumnClose: TStringColumn
-          Header = 'Close'
-        end
-        object VectorColumnVol: TStringColumn
-          Header = 'Vol'
+        object StringGridVector: TStringGrid
+          Align = Client
+          CanFocus = True
+          ClipChildren = True
+          Size.Width = 916.000000000000000000
+          Size.Height = 167.000000000000000000
+          Size.PlatformDefault = False
+          TabOrder = 0
+          RowCount = 5
+          Options = [ColumnResize, ColumnMove, ColLines, RowLines, RowSelect, Tabs, Header, HeaderClick, AutoDisplacement]
+          Viewport.Width = 912.000000000000000000
+          Viewport.Height = 142.000000000000000000
+          object VectorColumnID: TStringColumn
+            Header = 'ID'
+          end
+          object VectorColumnDate: TStringColumn
+            Header = #1044#1072#1090#1072
+          end
+          object VectorColumnTime: TStringColumn
+            Header = #1042#1088#1077#1084#1103
+          end
+          object VectorColumnOpen: TStringColumn
+            Header = 'Open'
+          end
+          object VectorColumnHigh: TStringColumn
+            Header = 'High'
+          end
+          object VectorColumnLow: TStringColumn
+            Header = 'Low'
+          end
+          object VectorColumnClose: TStringColumn
+            Header = 'Close'
+          end
+          object VectorColumnVol: TStringColumn
+            Header = 'Vol'
+          end
+          object VectorColumnStatus: TStringColumn
+            Header = #1057#1090#1072#1090#1091#1089
+          end
         end
       end
     end
