@@ -125,7 +125,7 @@ begin
     for i := 1 to iCount - 1 do
     begin
       xCandel := FSource[i];
-      if xCandel.Status in [2,3] then
+      if xCandel.Status = 3 then
         Break;
       if AMaxPrice < xCandel.High then
         AMaxPrice := xCandel.High;

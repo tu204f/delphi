@@ -16,10 +16,12 @@ object MainForm: TMainForm
     Size.Width = 1253.000000000000000000
     Size.Height = 529.000000000000000000
     Size.PlatformDefault = False
-    TabIndex = 0
+    TabIndex = 2
     TabOrder = 0
     TabPosition = PlatformDefault
     Sizes = (
+      1253s
+      503s
       1253s
       503s
       1253s
@@ -28,7 +30,7 @@ object MainForm: TMainForm
       CustomIcon = <
         item
         end>
-      IsSelected = True
+      IsSelected = False
       Size.Width = 117.000000000000000000
       Size.Height = 26.000000000000000000
       Size.PlatformDefault = False
@@ -59,6 +61,25 @@ object MainForm: TMainForm
       ExplicitSize.cx = 59.000000000000000000
       ExplicitSize.cy = 26.000000000000000000
       object LayoutVector: TLayout
+        Align = Client
+        Size.Width = 1253.000000000000000000
+        Size.Height = 503.000000000000000000
+        Size.PlatformDefault = False
+        TabOrder = 0
+      end
+    end
+    object TabItem1: TTabItem
+      CustomIcon = <
+        item
+        end>
+      IsSelected = True
+      Size.Width = 107.000000000000000000
+      Size.Height = 26.000000000000000000
+      Size.PlatformDefault = False
+      StyleLookup = ''
+      TabOrder = 0
+      Text = #1040#1085#1072#1083#1080#1079' '#1074#1077#1082#1090#1086#1088#1072
+      object LayoutAnalizVector: TLayout
         Align = Client
         Size.Width = 1253.000000000000000000
         Size.Height = 503.000000000000000000

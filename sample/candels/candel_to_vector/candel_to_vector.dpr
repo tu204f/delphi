@@ -13,7 +13,10 @@ uses
   Lb.Candel.DB in '..\candels\lib\Lb.Candel.DB.pas',
   Lb.Logger in '..\..\..\library\Lb.Logger.pas',
   Lb.Resource.Script in '..\..\..\library\Lb.Resource.Script.pas',
-  Lb.SysUtils.ISO860 in '..\..\..\library\Lb.SysUtils.ISO860.pas';
+  Lb.SysUtils.ISO860 in '..\..\..\library\Lb.SysUtils.ISO860.pas',
+  Lb.DataModuleDB in '..\..\..\library\db\Lb.DataModuleDB.pas' {DataModuleDB: TDataModule},
+  UnitParamVectorFrame in 'lib\UnitParamVectorFrame.pas' {ParamVectorFrame: TFrame},
+  Lb.ChartsFrame in '..\candels\lib\source\Lb.ChartsFrame.pas' {ChartsFrame: TFrame};
 
 {$R *.res}
 

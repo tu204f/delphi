@@ -32,6 +32,15 @@ type
 
 implementation
 
+///<summary>Сравнить два блока</summary>
+///<remarks>
+/// 1. Сравнение двух массиво
+///</remarks>
+function GetSameBlock(const ABlock1, ABlock2: TBlock): Double;
+begin
+
+end;
+
 { TBlock }
 
 constructor TBlock.Create;

@@ -35,6 +35,8 @@ type
     TextCountCandel: TText;
     Text1: TText;
     NumberBoxCountResult: TNumberBox;
+    TabItem1: TTabItem;
+    LayoutAnalizVector: TLayout;
     procedure FormShow(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure ButtonLoadClick(Sender: TObject);
@@ -84,6 +86,7 @@ begin
       localSourceCandel.SetParserCandels(xStr);
       NumberBox.Min := 0;
       NumberBox.Max := localSourceCandel.Candels.Count - 1;
+      Self.Caption := 'Загружено: ' + localSourceCandel.Candels.Count.ToString + ' свечей';
     end;
   finally
     FreeAndNil(xStr);

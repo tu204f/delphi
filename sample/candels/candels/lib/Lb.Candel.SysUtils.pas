@@ -32,7 +32,7 @@ type
   end;
   TCandelList = TList<TCandel>;
 
-/// <summary>С равниваем два числа</summary>
+/// <summary>С равниваем два числа, с точностью</summary>
 function GetSameValue(const AValue1, AValue2: Double; const AEpsilon: Integer): Boolean;
 
 implementation
@@ -43,7 +43,6 @@ uses
 function GetSameValue(const AValue1, AValue2: Double; const AEpsilon: Integer): Boolean;
 var
   xEpsilon: Double;
-  //xValue,
   xLowValue, xHighValue: Double;
 begin
   Result := False;

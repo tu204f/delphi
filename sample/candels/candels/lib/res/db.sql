@@ -20,13 +20,13 @@ create unique index if not exists uq_vector_datetime on vector(date,time);
 create table if not exists vector_value(
   vector_id text not null,     -- ключ принадлежности к вектору
   type_value integer not null, -- тип значения
-                       -- 0 - определяет вектор (опеределяющий вектор)
-                       -- 1 - определяет результат
-  open float not null, -- Цена открытие
-  high float not null, -- Максимальное занчение
-  low float not null,  -- Минимальное значение
-  close float not null,-- Цена закрытие
-  val float not null   -- Объем
+                               -- 0 - определяет вектор (опеределяющий вектор)
+                               -- 1 - определяет результат
+  open float not null,         -- Цена открытие
+  high float not null,         -- Максимальное занчение
+  low float not null,          -- Минимальное значение
+  close float not null,        -- Цена закрытие
+  val float not null           -- Объем
 );
 
 -- ----------------------------------------------------------------------------

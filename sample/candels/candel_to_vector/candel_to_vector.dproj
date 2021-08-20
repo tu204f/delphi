@@ -286,6 +286,21 @@
         <DCCReference Include="..\..\..\library\Lb.Logger.pas"/>
         <DCCReference Include="..\..\..\library\Lb.Resource.Script.pas"/>
         <DCCReference Include="..\..\..\library\Lb.SysUtils.ISO860.pas"/>
+        <DCCReference Include="..\..\..\library\db\Lb.DataModuleDB.pas">
+            <Form>DataModuleDB</Form>
+            <FormType>dfm</FormType>
+            <DesignClass>TDataModule</DesignClass>
+        </DCCReference>
+        <DCCReference Include="lib\UnitParamVectorFrame.pas">
+            <Form>ParamVectorFrame</Form>
+            <FormType>fmx</FormType>
+            <DesignClass>TFrame</DesignClass>
+        </DCCReference>
+        <DCCReference Include="..\candels\lib\source\Lb.ChartsFrame.pas">
+            <Form>ChartsFrame</Form>
+            <FormType>fmx</FormType>
+            <DesignClass>TFrame</DesignClass>
+        </DCCReference>
         <None Include="..\candels\lib\res\db.sql"/>
         <BuildConfiguration Include="Release">
             <Key>Cfg_2</Key>
