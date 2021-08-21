@@ -1,4 +1,4 @@
-unit Lb.Candel.SysUtils;
+п»їunit Lb.Candel.SysUtils;
 
 interface
 
@@ -11,9 +11,9 @@ uses
   System.Generics.Collections;
 
 type
-  ///<summary>Тип цены</summary>
+  ///<summary>РўРёРї С†РµРЅС‹</summary>
   TTypePrice = (tpOpen,tpHigh,tpLow,tpClose);
-  ///<summary>Свеча</summary>
+  ///<summary>РЎРІРµС‡Р°</summary>
   TCandel = record
     Date: TDateTime;
     Time: TDateTime;
@@ -32,7 +32,7 @@ type
   end;
   TCandelList = TList<TCandel>;
 
-/// <summary>С равниваем два числа, с точностью</summary>
+/// <summary>РЎ СЂР°РІРЅРёРІР°РµРј РґРІР° С‡РёСЃР»Р°, СЃ С‚РѕС‡РЅРѕСЃС‚СЊСЋ</summary>
 function GetSameValue(const AValue1, AValue2: Double; const AEpsilon: Integer): Boolean;
 
 implementation

@@ -1,4 +1,4 @@
-unit Lb.Candel.Blocks;
+п»їunit Lb.Candel.Blocks;
 
 interface
 
@@ -12,7 +12,7 @@ uses
   Lb.Candel.Source;
 
 type
-  ///<summary>Блок – который отвечает за данные для вектора</summary>
+  ///<summary>Р‘Р»РѕРє вЂ“ РєРѕС‚РѕСЂС‹Р№ РѕС‚РІРµС‡Р°РµС‚ Р·Р° РґР°РЅРЅС‹Рµ РґР»СЏ РІРµРєС‚РѕСЂР°</summary>
   TBlock = class(TObject)
   private
     FSources: TSourceCandel;
@@ -20,25 +20,53 @@ type
   public
     constructor Create;
     destructor Destroy; override;
-    ///<summary>Формирование вектора</summary>
+    ///<summary>Р¤РѕСЂРјРёСЂРѕРІР°РЅРёРµ РІРµРєС‚РѕСЂР°</summary>
     procedure SetFormationVector;
-    ///<summary>Формирование источника данных, из ветора и цены</summary>
+    ///<summary>Р¤РѕСЂРјРёСЂРѕРІР°РЅРёРµ РёСЃС‚РѕС‡РЅРёРєР° РґР°РЅРЅС‹С…, РёР· РІРµС‚РѕСЂР° Рё С†РµРЅС‹</summary>
     procedure SetFormationSource(AIndex: Integer; AMaxPrice, AMinPrice, APrice: Double; ATypePrice: TTypePrice);
-    ///<summary>Источник данных для блока</summary>
+    ///<summary>РСЃС‚РѕС‡РЅРёРє РґР°РЅРЅС‹С… РґР»СЏ Р±Р»РѕРєР°</summary>
     property Sources: TSourceCandel read FSources;
-    ///<summary>Создаем, вектор</summary>
+    ///<summary>РЎРѕР·РґР°РµРј, РІРµРєС‚РѕСЂ</summary>
     property Vectors: TSourceCandel read FVectors;
   end;
 
 implementation
 
-///<summary>Сравнить два блока</summary>
+///<summary>РЎСЂР°РІРЅРёС‚СЊ РґРІР° Р±Р»РѕРєР°</summary>
 ///<remarks>
-/// 1. Сравнение двух массиво
+/// РЎСЂР°РІРЅРµРЅРёРµ РґРІСѓС… Р±Р»РѕРєРѕРІ:
+///  0   - РїРѕР»СЊРЅРѕРµ СЃСЂР°РІРЅРµРЅРёРµ
+///  100 - СЂР°Р·РЅС‹Рµ Р±Р»РѕРєРё
 ///</remarks>
 function GetSameBlock(const ABlock1, ABlock2: TBlock): Double;
+var
+  xV1, xV2, xSumV: TCandel;
+  i, iCount: Integer;
 begin
+  if not Assigned(ABlock1) then
+    raise Exception.Create('Error Message: Р‘Р»РѕРє 1 РЅРµ РѕРїСЂРµРґРµР»РµРЅ');
+  if not Assigned(ABlock2) then
+    raise Exception.Create('Error Message: Р‘Р»РѕРє 2 РЅРµ РѕРїСЂРµРґРµР»РµРЅ');
 
+  iCount := ABlock1.Vectors.Candels.Count;
+  if ABlock2.Vectors.Candels.Count <> iCount then
+    raise Exception.CreateFmt('Error Message: Р‘Р»РѕРє1.Count = %d Р‘Р»РѕРє2.Count = %d',
+      [ABlock1.Vectors.Candels.Count, ABlock2.Vectors.Candels.Count]);
+
+  FillChar(xSumV,SizeOf(xSumV),0);
+  if iCount > 0 then
+    for i := 0 to iCount - 1 do
+    begin
+      xV1 := ABlock1.Vectors.Candels[i];
+      xV2 := ABlock2.Vectors.Candels[i];
+
+      xSumV.Open  := xSumV.Open  + Abs(xV1.Open  - xV2.Open);
+      xSumV.High  := xSumV.High  + Abs(xV1.High  - xV2.High);
+      xSumV.Low   := xSumV.Low   + Abs(xV1.Low   - xV2.Low);
+      xSumV.Close := xSumV.Close + Abs(xV1.Close - xV2.Close);
+      xSumV.Vol   := xSumV.Vol   + Abs(xV1.Vol   - xV2.Vol);
+    end;
+  Result := xSumV.Open + xSumV.High + xSumV.Low + xSumV.Close;
 end;
 
 { TBlock }

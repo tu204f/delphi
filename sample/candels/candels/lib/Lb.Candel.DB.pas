@@ -1,5 +1,5 @@
-(*******************************************************************************
-  Работы с базой данных, где будем хранить - напровление векторов
+п»ї(*******************************************************************************
+  Р Р°Р±РѕС‚С‹ СЃ Р±Р°Р·РѕР№ РґР°РЅРЅС‹С…, РіРґРµ Р±СѓРґРµРј С…СЂР°РЅРёС‚СЊ - РЅР°РїСЂРѕРІР»РµРЅРёРµ РІРµРєС‚РѕСЂРѕРІ
 *******************************************************************************)
 unit Lb.Candel.DB;
 
@@ -14,13 +14,13 @@ uses
   System.Generics.Collections,
   Lb.Candel.SysUtils;
 
-///<summary>Создание базы</summary>
+///<summary>РЎРѕР·РґР°РЅРёРµ Р±Р°Р·С‹</summary>
 procedure SetCreateDataBase;
-///<summary>Проверка наличие вектора</summary>
+///<summary>РџСЂРѕРІРµСЂРєР° РЅР°Р»РёС‡РёРµ РІРµРєС‚РѕСЂР°</summary>
 function GetIsVector(const ADate, ATime: TDateTime): Boolean;
-///<summary>Добавляем запись вектора</summary>
+///<summary>Р”РѕР±Р°РІР»СЏРµРј Р·Р°РїРёСЃСЊ РІРµРєС‚РѕСЂР°</summary>
 function GetInsertVector(const ADate, ATime: TDateTime): String;
-///<summary>Добавляем значения вектора</summary>
+///<summary>Р”РѕР±Р°РІР»СЏРµРј Р·РЅР°С‡РµРЅРёСЏ РІРµРєС‚РѕСЂР°</summary>
 procedure SetInsertVectorValue(AVectorID: String; ATypeValue: Integer; AOpen, AHigh, ALow, AClose, AVal: Double);
 
 implementation
@@ -74,7 +74,7 @@ begin
   Result := xS;
 end;
 
-///<summary>Проверка наличие вектора</summary>
+///<summary>РџСЂРѕРІРµСЂРєР° РЅР°Р»РёС‡РёРµ РІРµРєС‚РѕСЂР°</summary>
 function GetIsVector(const ADate, ATime: TDateTime): Boolean;
 begin
   Result := False;
@@ -86,7 +86,7 @@ begin
     Result := (xValue > 0)
 end;
 
-///<summary>Добавляем запись вектора</summary>
+///<summary>Р”РѕР±Р°РІР»СЏРµРј Р·Р°РїРёСЃСЊ РІРµРєС‚РѕСЂР°</summary>
 function GetInsertVector(const ADate, ATime: TDateTime): String;
 var
   xID: String;
@@ -106,7 +106,7 @@ begin
     Result := xID;
 end;
 
-///<summary>Добавляем значения вектора</summary>
+///<summary>Р”РѕР±Р°РІР»СЏРµРј Р·РЅР°С‡РµРЅРёСЏ РІРµРєС‚РѕСЂР°</summary>
 procedure SetInsertVectorValue(AVectorID: String; ATypeValue: Integer; AOpen, AHigh, ALow, AClose, AVal: Double);
 begin
   var xStr := TStringList.Create;

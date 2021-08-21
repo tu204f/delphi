@@ -1,4 +1,4 @@
-unit Lb.Logger;
+п»їunit Lb.Logger;
 
 interface
 
@@ -14,32 +14,32 @@ type
 
   TLogger = record
     /// <summary>
-    /// Записываем лог проведенных операциий и зарпосов
+    /// Р—Р°РїРёСЃС‹РІР°РµРј Р»РѕРі РїСЂРѕРІРµРґРµРЅРЅС‹С… РѕРїРµСЂР°С†РёРёР№ Рё Р·Р°СЂРїРѕСЃРѕРІ
     /// </summary>
     class procedure Log(S: String = ''); static;
-    /// <summary>Вывод текстовых сообщений в виде дерева, без временной индикации</summary>
+    /// <summary>Р’С‹РІРѕРґ С‚РµРєСЃС‚РѕРІС‹С… СЃРѕРѕР±С‰РµРЅРёР№ РІ РІРёРґРµ РґРµСЂРµРІР°, Р±РµР· РІСЂРµРјРµРЅРЅРѕР№ РёРЅРґРёРєР°С†РёРё</summary>
     class procedure LogTreeText(AChild: Integer; S: String); static;
-    /// <summary>Вывод текстовых сообщений в виде дерева</summary>
+    /// <summary>Р’С‹РІРѕРґ С‚РµРєСЃС‚РѕРІС‹С… СЃРѕРѕР±С‰РµРЅРёР№ РІ РІРёРґРµ РґРµСЂРµРІР°</summary>
     class procedure LogTree(AChild: Integer; S: String); static;
-    /// <summary>Сохроняем Текст</summary>
+    /// <summary>РЎРѕС…СЂРѕРЅСЏРµРј РўРµРєСЃС‚</summary>
     class procedure LogText(S: String = ''); overload; static;
 
     /// <summary>
-    /// Сохроняем Текст
+    /// РЎРѕС…СЂРѕРЅСЏРµРј РўРµРєСЃС‚
     /// </summary>
     class procedure LogText(S: String;  ACount: Integer);  overload; static;
 
     /// <summary>
-    /// Записать лог в зависемости
+    /// Р—Р°РїРёСЃР°С‚СЊ Р»РѕРі РІ Р·Р°РІРёСЃРµРјРѕСЃС‚Рё
     /// </summary>
     class procedure LogType(AType: TTypeLogger; S: String); static;
     class procedure LogForm(AFromCaption: String; S: String); static;
     /// <summary>
-    /// Удалить или очистить список log
+    /// РЈРґР°Р»РёС‚СЊ РёР»Рё РѕС‡РёСЃС‚РёС‚СЊ СЃРїРёСЃРѕРє log
     /// </summary>
     class procedure ClearLog; static;
     /// <summary>
-    /// Вывод вариантного массива
+    /// Р’С‹РІРѕРґ РІР°СЂРёР°РЅС‚РЅРѕРіРѕ РјР°СЃСЃРёРІР°
     /// </summary>
     class procedure LogArray(const AValue: Variant); static;
   end;
@@ -169,7 +169,7 @@ class procedure TLogger.LogArray(const AValue: Variant);
 var
   i, l, h: Integer;
 begin
-  TLogger.Log('Вариант массива:');
+  TLogger.Log('Р’Р°СЂРёР°РЅС‚ РјР°СЃСЃРёРІР°:');
   l := VarArrayLowBound(AValue,1);
   h := VarArrayHighBound(AValue,1);
   for i := l to h do

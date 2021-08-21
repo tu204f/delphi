@@ -1,4 +1,4 @@
-unit Lb.ChartsFrame;
+п»їunit Lb.ChartsFrame;
 
 interface
 
@@ -64,11 +64,11 @@ type
   public
     class function GetCreateFrame(const AParent: TFmxObject): TChartsFrame; static;
     class procedure SetFreeAndNil; static;
-    ///<summary>Источние данных</summary>
+    ///<summary>РСЃС‚РѕС‡РЅРёРµ РґР°РЅРЅС‹С…</summary>
     class function GetSource: TSourceCandel; static;
-    ///<summary>Показать посление свечи (в количество  ACount)</summary>
+    ///<summary>РџРѕРєР°Р·Р°С‚СЊ РїРѕСЃР»РµРЅРёРµ СЃРІРµС‡Рё (РІ РєРѕР»РёС‡РµСЃС‚РІРѕ  ACount)</summary>
     class procedure SetShowCharts(const ACount: Integer = 0); overload; static;
-    ///<summary>Показать посление свечи (в количество  ACount), начиная с ABeginIndex</summary>
+    ///<summary>РџРѕРєР°Р·Р°С‚СЊ РїРѕСЃР»РµРЅРёРµ СЃРІРµС‡Рё (РІ РєРѕР»РёС‡РµСЃС‚РІРѕ  ACount), РЅР°С‡РёРЅР°СЏ СЃ ABeginIndex</summary>
     class procedure SetShowCharts(const ABeginIndex, ACount: Integer); overload; static;
   end;
 
@@ -237,7 +237,7 @@ begin
   if Assigned(localChartsFrame) then
     Result := localChartsFrame.Source
   else
-    raise Exception.Create('Error Message: Фраме: TChartsFrame (не инициализирован)');
+    raise Exception.Create('Error Message: Р¤СЂР°РјРµ: TChartsFrame (РЅРµ РёРЅРёС†РёР°Р»РёР·РёСЂРѕРІР°РЅ)');
 end;
 
 

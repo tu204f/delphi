@@ -1,4 +1,4 @@
-unit Lb.SysUtils.ISO860;
+﻿unit Lb.SysUtils.ISO860;
 
 interface
 

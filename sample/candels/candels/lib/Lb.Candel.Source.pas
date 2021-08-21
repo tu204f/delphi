@@ -1,4 +1,4 @@
-unit Lb.Candel.Source;
+п»їunit Lb.Candel.Source;
 
 interface
 
@@ -12,7 +12,7 @@ uses
 
 type
   ///<summary>
-  /// Источние биржевых свечей
+  /// РСЃС‚РѕС‡РЅРёРµ Р±РёСЂР¶РµРІС‹С… СЃРІРµС‡РµР№
   ///</summary>
   TSourceCandel = class(TObject)
   private
@@ -24,7 +24,7 @@ type
     procedure SetLoadFile(const AFileName: String);
     procedure SetParserCandels(const ASource: TStrings);
     property Candels: TCandelList read FSource;
-  public {Определение предела, Максимальной и минимальной цены или объема}
+  public {РћРїСЂРµРґРµР»РµРЅРёРµ РїСЂРµРґРµР»Р°, РњР°РєСЃРёРјР°Р»СЊРЅРѕР№ Рё РјРёРЅРёРјР°Р»СЊРЅРѕР№ С†РµРЅС‹ РёР»Рё РѕР±СЉРµРјР°}
     procedure GetMaxAndMinPriceVol(out AMaxPrice, AMinPrice: Double; out AMaxVol, AMinVol: Double);
     procedure GetMaxAndMinValue(out AMaxValue, AMinValue: Double); overload;
     procedure GetMaxAndMinValue(const ACount: Integer; out AMaxValue, AMinValue: Double); overload;
@@ -241,12 +241,12 @@ begin
     raise Exception.Create('Error Message: ACountVectory: ' + IntToStr(ACountResult));
 
   if not Assigned(ASources) then
-    raise Exception.Create('Error Message: Запросить количество сечей [ASources: TSourceCandel]');
+    raise Exception.Create('Error Message: Р—Р°РїСЂРѕСЃРёС‚СЊ РєРѕР»РёС‡РµСЃС‚РІРѕ СЃРµС‡РµР№ [ASources: TSourceCandel]');
 
   ASources.Candels.Clear;
   xCountCandel := 0;
-  // Количество свечей, которые будет использовать для анализа
-  // Количество для результатов
+  // РљРѕР»РёС‡РµСЃС‚РІРѕ СЃРІРµС‡РµР№, РєРѕС‚РѕСЂС‹Рµ Р±СѓРґРµС‚ РёСЃРїРѕР»СЊР·РѕРІР°С‚СЊ РґР»СЏ Р°РЅР°Р»РёР·Р°
+  // РљРѕР»РёС‡РµСЃС‚РІРѕ РґР»СЏ СЂРµР·СѓР»СЊС‚Р°С‚РѕРІ
   iCount := ACountCandel + ACountResult + 1;
   if iCount > 0 then
     for i := 0 to iCount - 1 do
