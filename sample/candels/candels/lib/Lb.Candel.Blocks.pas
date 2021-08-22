@@ -30,14 +30,16 @@ type
     property Vectors: TSourceCandel read FVectors;
   end;
 
-implementation
-
 ///<summary>Сравнить два блока</summary>
 ///<remarks>
 /// Сравнение двух блоков:
 ///  0   - польное сравнение
 ///  100 - разные блоки
 ///</remarks>
+function GetSameBlock(const ABlock1, ABlock2: TBlock): Double;
+
+implementation
+
 function GetSameBlock(const ABlock1, ABlock2: TBlock): Double;
 var
   xV1, xV2, xSumV: TCandel;
@@ -59,6 +61,9 @@ begin
     begin
       xV1 := ABlock1.Vectors.Candels[i];
       xV2 := ABlock2.Vectors.Candels[i];
+
+      if xV1.Status in [2,3] then
+        Continue;
 
       xSumV.Open  := xSumV.Open  + Abs(xV1.Open  - xV2.Open);
       xSumV.High  := xSumV.High  + Abs(xV1.High  - xV2.High);

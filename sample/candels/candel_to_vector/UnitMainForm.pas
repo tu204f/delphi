@@ -41,11 +41,16 @@ type
     Layout2: TLayout;
     Button1: TButton;
     NumberBox1: TNumberBox;
+    Timer: TTimer;
+    Button2: TButton;
+    Text2: TText;
     procedure FormShow(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure ButtonLoadClick(Sender: TObject);
     procedure ButtonShowClick(Sender: TObject);
     procedure Button1Click(Sender: TObject);
+    procedure TimerTimer(Sender: TObject);
+    procedure Button2Click(Sender: TObject);
   private
     procedure SetInitializationSource;
     procedure SetFinalizationSource;
@@ -92,6 +97,39 @@ begin
     localBlock2.SetFormationVector;
     localParamVectorFrame.SetShowBlock(localBlock1,localBlock2);
   end;
+end;
+
+var
+  localIndexBegin : Integer = 0;
+  localCountCandel: Integer = 0;
+  localCountResult: Integer = 0;
+
+procedure TMainForm.TimerTimer(Sender: TObject);
+begin
+  localCountCandel := Trunc(NumberBoxCountCandel.Value);
+  localCountResult := Trunc(NumberBoxCountResult.Value);
+  if localSourceCandel.SetSelected(localIndexBegin,localCountCandel,localCountResult,localBlock2.Sources) then
+  begin
+    localBlock2.SetFormationVector;
+    localParamVectorFrame.SetShowBlock(localBlock1,localBlock2);
+
+    Text2.Text := 'Совпадение: ' + FloatToStr(GetSameBlock(localBlock1,localBlock2));
+
+  end;
+
+  Inc(localIndexBegin);
+  if localIndexBegin >= localSourceCandel.Candels.Count  then
+  begin
+
+    Timer.Enabled := False;
+  end;
+  NumberBox1.Value := localIndexBegin;
+end;
+
+procedure TMainForm.Button2Click(Sender: TObject);
+begin
+  localIndexBegin := 0;
+  Timer.Enabled := True;
 end;
 
 procedure TMainForm.ButtonLoadClick(Sender: TObject);
