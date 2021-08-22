@@ -37,10 +37,15 @@ type
     NumberBoxCountResult: TNumberBox;
     TabItem1: TTabItem;
     LayoutAnalizVector: TLayout;
+    Layout1: TLayout;
+    Layout2: TLayout;
+    Button1: TButton;
+    NumberBox1: TNumberBox;
     procedure FormShow(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure ButtonLoadClick(Sender: TObject);
     procedure ButtonShowClick(Sender: TObject);
+    procedure Button1Click(Sender: TObject);
   private
     procedure SetInitializationSource;
     procedure SetFinalizationSource;
@@ -58,18 +63,35 @@ implementation
 uses
   UnitSourceDataFrame,
   Lb.Candel.Source,
-  Lb.Candel.Blocks;
+  Lb.Candel.Blocks,
+  UnitParamVectorFrame;
 
 var
   localCandelFrame: TSourceDataFrame = nil;
   localVectorFrame: TSourceDataFrame = nil;
   localSourceCandel: TSourceCandel = nil;
-  localBlok: TBlock = nil;
+  localBlock1: TBlock = nil;
+  localBlock2: TBlock = nil;
+  localParamVectorFrame: TParamVectorFrame = nil;
 
 procedure TMainForm.FormShow(Sender: TObject);
 begin
   Self.Caption := 'Преобразование:';
   Self.SetInitializationSource;
+end;
+
+procedure TMainForm.Button1Click(Sender: TObject);
+var
+  xIndexBegin, xCountCandel, xCountResult: Integer;
+begin
+  xIndexBegin := Trunc(NumberBox1.Value);
+  xCountCandel := Trunc(NumberBoxCountCandel.Value);
+  xCountResult := Trunc(NumberBoxCountResult.Value);
+  if localSourceCandel.SetSelected(xIndexBegin,xCountCandel,xCountResult,localBlock2.Sources) then
+  begin
+    localBlock2.SetFormationVector;
+    localParamVectorFrame.SetShowBlock(localBlock1,localBlock2);
+  end;
 end;
 
 procedure TMainForm.ButtonLoadClick(Sender: TObject);
@@ -86,6 +108,11 @@ begin
       localSourceCandel.SetParserCandels(xStr);
       NumberBox.Min := 0;
       NumberBox.Max := localSourceCandel.Candels.Count - 1;
+
+
+      NumberBox1.Min := 0;
+      NumberBox1.Max := localSourceCandel.Candels.Count - 1;
+
       Self.Caption := 'Загружено: ' + localSourceCandel.Candels.Count.ToString + ' свечей';
     end;
   finally
@@ -100,9 +127,9 @@ begin
   xIndexBegin := Trunc(NumberBox.Value);
   xCountCandel := Trunc(NumberBoxCountCandel.Value);
   xCountResult := Trunc(NumberBoxCountResult.Value);
-  if localSourceCandel.SetSelected(xIndexBegin,xCountCandel,xCountResult,localBlok.Sources) then
+  if localSourceCandel.SetSelected(xIndexBegin,xCountCandel,xCountResult,localBlock1.Sources) then
     localCandelFrame.SetShowBlock(xCountCandel,xCountResult);
-  localBlok.SetFormationVector;
+  localBlock1.SetFormationVector;
   localVectorFrame.SetShowBlock(xCountCandel,xCountResult,False)
 end;
 
@@ -122,16 +149,22 @@ begin
   localVectorFrame.Parent := LayoutVector;
   localVectorFrame.Align := TAlignLayout.Client;
   // -----------------------------------------------
+  localParamVectorFrame := TParamVectorFrame.Create(Layout2);
+  localParamVectorFrame.Parent := Layout2;
+  localParamVectorFrame.Align := TAlignLayout.Client;
+  // -----------------------------------------------
   localSourceCandel := TSourceCandel.Create;
-  localBlok := TBlock.Create;
+  localBlock1 := TBlock.Create;
+  localBlock2 := TBlock.Create;
 
-  localCandelFrame.Block := localBlok;
-  localVectorFrame.Block := localBlok;
+  localCandelFrame.Block := localBlock1;
+  localVectorFrame.Block := localBlock1;
 end;
 
 procedure TMainForm.SetFinalizationSource;
 begin
-  FreeAndNil(localBlok);
+  FreeAndNil(localBlock2);
+  FreeAndNil(localBlock1);
   FreeAndNil(localSourceCandel);
   FreeAndNil(localVectorFrame);
   FreeAndNil(localCandelFrame);

@@ -20,6 +20,7 @@ type
     private
       FCandel: TCandel;
     protected
+
       LayoutHigh: TLayout;
       LayoutLow: TLayout;
       Body: TRectangle;
@@ -35,6 +36,7 @@ type
 
     TCandelLayout = class(TLayout)
     protected
+      LayoutTop: TCircle;
       Candel: TCandel;
       MaxValue: Double;
       MinValue: Double;
@@ -52,14 +54,14 @@ type
     FCalbelLayouts: TCalbelLayoutList;
   protected
     procedure ClearCandels;
-    procedure SetShowCandels;
-    procedure SetCreateCandels(const ACount: Integer); overload;
-    procedure SetCreateCandels(const ABeginIndex, ACount: Integer); overload;
     function GetCreateCandelLayout(const AIndex: Integer): TChartsFrame.TCandelLayout;
     property CalbelLayouts: TCalbelLayoutList read FCalbelLayouts;
   public
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
+    procedure SetShowCandels;
+    procedure SetCreateCandels(const ACount: Integer); overload;
+    procedure SetCreateCandels(const ABeginIndex, ACount: Integer); overload;
     property Source: TSourceCandel read FSource;
   public
     class function GetCreateFrame(const AParent: TFmxObject): TChartsFrame; static;
@@ -84,7 +86,6 @@ var
 constructor TChartsFrame.TCandel.Create(AOwner: TComponent);
 begin
   inherited;
-
   LayoutHigh := TLayout.Create(Self);
   with LayoutHigh do
   begin
@@ -168,6 +169,15 @@ end;
 constructor TChartsFrame.TCandelLayout.Create(AOwner: TComponent);
 begin
   inherited;
+
+  LayoutTop := TCircle.Create(Self);
+  with LayoutTop do
+  begin
+    Align := TAlignLayout.Top;
+    Height := 10;
+    Parent := Self;
+  end;
+
   Candel := TCandel.Create(Self);
   with Candel do
   begin
@@ -213,6 +223,20 @@ begin
       xBottomClose := Candel.Height * ((SourceCandel.Open - SourceCandel.Low)/(SourceCandel.High - SourceCandel.Low));
       Candel.Body.Fill.Color := TAlphaColorRec.Green;
     end;
+
+    case SourceCandel.Status of
+      1: begin
+        LayoutTop.Fill.Color := TAlphaColorRec.Green;
+      end;
+      2: begin
+        LayoutTop.Fill.Color := TAlphaColorRec.Yellow;
+      end;
+      3: begin
+        LayoutTop.Fill.Color := TAlphaColorRec.Red;
+      end;
+    end;
+
+
     Candel.LayoutHigh.Height := xTopOpen;
     Candel.LayoutLow.Height := xBottomClose;
     Candel.Resize;
@@ -277,7 +301,7 @@ var
 var
   xLow, xHigh: Integer;
 begin
-  if (ACount > 0) and (FSource.Candels.Count > 0) and (ACount < FSource.Candels.Count) then
+  if (ACount > 0) and (FSource.Candels.Count > 0) and (ACount <= FSource.Candels.Count) then
   begin
     FSource.GetMaxAndMinValue(ABeginIndex,ACount,xMaxValue,xMinValue);
 

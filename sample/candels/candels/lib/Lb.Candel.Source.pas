@@ -21,6 +21,7 @@ type
   public
     constructor Create;
     destructor Destroy; override;
+    procedure Assign(const ASource: TSourceCandel);
     procedure SetLoadFile(const AFileName: String);
     procedure SetParserCandels(const ASource: TStrings);
     property Candels: TCandelList read FSource;
@@ -96,6 +97,23 @@ begin
 end;
 
 { TSourceCandel }
+
+procedure TSourceCandel.Assign(const ASource: TSourceCandel);
+var
+  i, Count: Integer;
+begin
+  FSource.Clear;
+  if Assigned(ASource) then
+  begin
+    Count := ASource.Candels.Count;
+    if Count > 0 then
+      for i := 0 to Count - 1 do
+      begin
+        var xC := ASource.Candels[i];
+        Self.Candels.Add(xC);
+      end;
+  end;
+end;
 
 constructor TSourceCandel.Create;
 begin

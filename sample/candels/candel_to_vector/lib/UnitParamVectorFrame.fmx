@@ -2,12 +2,6 @@ object ParamVectorFrame: TParamVectorFrame
   Size.Width = 844.000000000000000000
   Size.Height = 471.000000000000000000
   Size.PlatformDefault = False
-  object Rectangle: TRectangle
-    Align = Client
-    Size.Width = 844.000000000000000000
-    Size.Height = 471.000000000000000000
-    Size.PlatformDefault = False
-  end
   object GridPanelLayout1: TGridPanelLayout
     Align = Client
     Size.Width = 844.000000000000000000
@@ -46,6 +40,12 @@ object ParamVectorFrame: TParamVectorFrame
       Size.Height = 461.000000000000000000
       Size.PlatformDefault = False
       TabOrder = 0
+      object RectangleLeft: TRectangle
+        Align = Client
+        Size.Width = 412.000000000000000000
+        Size.Height = 461.000000000000000000
+        Size.PlatformDefault = False
+      end
     end
     object VectorRightLayout: TLayout
       Align = Client
@@ -57,6 +57,12 @@ object ParamVectorFrame: TParamVectorFrame
       Size.Height = 461.000000000000000000
       Size.PlatformDefault = False
       TabOrder = 1
+      object RectangleRigth: TRectangle
+        Align = Client
+        Size.Width = 412.000000000000000000
+        Size.Height = 461.000000000000000000
+        Size.PlatformDefault = False
+      end
     end
   end
 end
