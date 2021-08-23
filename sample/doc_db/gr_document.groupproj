@@ -1,0 +1,48 @@
+﻿<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+    <PropertyGroup>
+        <ProjectGuid>{26DEA084-8929-4F59-ABDB-C581128B4D2D}</ProjectGuid>
+    </PropertyGroup>
+    <ItemGroup>
+        <Projects Include="sample_db\doc_db.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="document\document.dproj">
+            <Dependencies/>
+        </Projects>
+    </ItemGroup>
+    <ProjectExtensions>
+        <Borland.Personality>Default.Personality.12</Borland.Personality>
+        <Borland.ProjectType/>
+        <BorlandProject>
+            <Default.Personality/>
+        </BorlandProject>
+    </ProjectExtensions>
+    <Target Name="doc_db">
+        <MSBuild Projects="sample_db\doc_db.dproj"/>
+    </Target>
+    <Target Name="doc_db:Clean">
+        <MSBuild Projects="sample_db\doc_db.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="doc_db:Make">
+        <MSBuild Projects="sample_db\doc_db.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="document">
+        <MSBuild Projects="document\document.dproj"/>
+    </Target>
+    <Target Name="document:Clean">
+        <MSBuild Projects="document\document.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="document:Make">
+        <MSBuild Projects="document\document.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="Build">
+        <CallTarget Targets="doc_db;document"/>
+    </Target>
+    <Target Name="Clean">
+        <CallTarget Targets="doc_db:Clean;document:Clean"/>
+    </Target>
+    <Target Name="Make">
+        <CallTarget Targets="doc_db:Make;document:Make"/>
+    </Target>
+    <Import Project="$(BDS)\Bin\CodeGear.Group.Targets" Condition="Exists('$(BDS)\Bin\CodeGear.Group.Targets')"/>
+</Project>

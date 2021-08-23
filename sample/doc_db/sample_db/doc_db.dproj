@@ -104,21 +104,13 @@
         <DelphiCompile Include="$(MainSource)">
             <MainSource>MainSource</MainSource>
         </DelphiCompile>
-        <RcCompile Include="..\..\library\doc_db\res\db.rc">
+        <RcCompile Include="..\..\..\library\doc_db\res\db.rc">
             <Form>db.res</Form>
         </RcCompile>
         <DCCReference Include="UnitMainForm.pas">
             <Form>MainForm</Form>
             <FormType>dfm</FormType>
         </DCCReference>
-        <DCCReference Include="..\..\library\db\Lb.DataModuleDB.pas">
-            <Form>DataModuleDB</Form>
-            <FormType>dfm</FormType>
-            <DesignClass>TDataModule</DesignClass>
-        </DCCReference>
-        <DCCReference Include="..\..\library\Lb.Logger.pas"/>
-        <DCCReference Include="..\..\library\Lb.SysUtils.ISO860.pas"/>
-        <DCCReference Include="..\..\library\Lb.Resource.Script.pas"/>
         <DCCReference Include="UnitValueForm.pas">
             <Form>ValueForm</Form>
             <FormType>dfm</FormType>
@@ -127,10 +119,18 @@
             <Form>DocumentForm</Form>
             <FormType>dfm</FormType>
         </DCCReference>
-        <DCCReference Include="..\..\library\doc_db\Lb.Doc.DB.Params.pas"/>
-        <DCCReference Include="..\..\library\doc_db\Lb.Doc.DB.pas"/>
-        <DCCReference Include="..\..\library\doc_db\Lb.Doc.DB.Query.pas"/>
-        <None Include="..\..\library\doc_db\res\db.sql"/>
+        <DCCReference Include="..\..\..\library\db\Lb.DataModuleDB.pas">
+            <Form>DataModuleDB</Form>
+            <FormType>dfm</FormType>
+            <DesignClass>TDataModule</DesignClass>
+        </DCCReference>
+        <DCCReference Include="..\..\..\library\Lb.Logger.pas"/>
+        <DCCReference Include="..\..\..\library\Lb.SysUtils.ISO860.pas"/>
+        <DCCReference Include="..\..\..\library\doc_db\Lb.Doc.DB.Params.pas"/>
+        <DCCReference Include="..\..\..\library\doc_db\Lb.Doc.DB.pas"/>
+        <DCCReference Include="..\..\..\library\doc_db\Lb.Doc.DB.Query.pas"/>
+        <DCCReference Include="..\..\..\library\Lb.Resource.Script.pas"/>
+        <None Include="..\..\..\library\doc_db\res\db.sql"/>
         <BuildConfiguration Include="Release">
             <Key>Cfg_2</Key>
             <CfgParent>Base</CfgParent>
@@ -164,7 +164,7 @@
                         <Overwrite>true</Overwrite>
                     </Platform>
                 </DeployFile>
-                <DeployFile LocalName="..\..\library\doc_db\res\db.sql" Configuration="Debug" Class="ProjectFile">
+                <DeployFile LocalName="..\..\..\library\doc_db\res\db.sql" Configuration="Debug" Class="ProjectFile">
                     <Platform Name="Win32">
                         <RemoteDir>.\</RemoteDir>
                         <Overwrite>true</Overwrite>
