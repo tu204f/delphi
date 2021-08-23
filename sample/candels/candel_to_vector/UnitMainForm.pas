@@ -112,9 +112,10 @@ begin
   begin
     localBlock2.SetFormationVector;
     localParamVectorFrame.SetShowBlock(localBlock1,localBlock2);
-
-    Text2.Text := 'Совпадение: ' + FloatToStr(GetSameBlock(localBlock1,localBlock2));
-
+    if GetSameBlock(localBlock1,localBlock2) then
+      Text2.Text := 'Совпадение: '
+    else
+      Text2.Text := 'Нет совпадение: '
   end;
 
   Inc(localIndexBegin);

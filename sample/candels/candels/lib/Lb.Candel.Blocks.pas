@@ -36,15 +36,32 @@ type
 ///  0   - польное сравнение
 ///  100 - разные блоки
 ///</remarks>
-function GetSameBlock(const ABlock1, ABlock2: TBlock): Double;
+function GetSameBlock(const ABlock1, ABlock2: TBlock; ATypePrice: TTypePrice = TTypePrice.tpClose): Boolean;
 
 implementation
 
-function GetSameBlock(const ABlock1, ABlock2: TBlock): Double;
+///<summary>Протокольная функция</summary>
+///<remarks>Cравнении определённой точностью, если откланение DELTA_SAM</remarks>
+function GetProtocolFunction(const AValue1, AValue2: Double): Boolean;
+const
+  DELTA_SAME = 10;
 var
-  xV1, xV2, xSumV: TCandel;
+  xDelta: Double;
+begin
+  xDelta := AValue1 - AValue2;
+  if xDelta < 0 then
+    xDelta := -1 * xDelta;
+  Result := xDelta < DELTA_SAME;
+end;
+
+function GetSameBlock(const ABlock1, ABlock2: TBlock; ATypePrice: TTypePrice): Boolean;
+var
+  xResult: Boolean;
+  xV1, xV2: TCandel;
   i, iCount: Integer;
 begin
+  Result := False;
+  {todo: Нужно вести понятие протокольная функция}
   if not Assigned(ABlock1) then
     raise Exception.Create('Error Message: Блок 1 не определен');
   if not Assigned(ABlock2) then
@@ -55,7 +72,6 @@ begin
     raise Exception.CreateFmt('Error Message: Блок1.Count = %d Блок2.Count = %d',
       [ABlock1.Vectors.Candels.Count, ABlock2.Vectors.Candels.Count]);
 
-  FillChar(xSumV,SizeOf(xSumV),0);
   if iCount > 0 then
     for i := 0 to iCount - 1 do
     begin
@@ -64,14 +80,36 @@ begin
 
       if xV1.Status in [2,3] then
         Continue;
+      case ATypePrice of
+        tpNon: begin
+          xResult :=
+            GetProtocolFunction(xV1.Open ,xV2.Open) and
+            GetProtocolFunction(xV1.High ,xV2.High) and
+            GetProtocolFunction(xV1.Low  ,xV2.Low) and
+            GetProtocolFunction(xV1.Close,xV2.Close);
+        end;
+        tpOpen: begin
+          xResult :=
+            GetProtocolFunction(xV1.Open ,xV2.Open);
+        end;
+        tpHigh: begin
+          xResult :=
+            GetProtocolFunction(xV1.High ,xV2.High);
+        end;
+        tpLow: begin
+          xResult :=
+            GetProtocolFunction(xV1.Low  ,xV2.Low);
+        end;
+        tpClose: begin
+          xResult :=
+            GetProtocolFunction(xV1.Close,xV2.Close);
+        end;
+      end;
 
-      xSumV.Open  := xSumV.Open  + Abs(xV1.Open  - xV2.Open);
-      xSumV.High  := xSumV.High  + Abs(xV1.High  - xV2.High);
-      xSumV.Low   := xSumV.Low   + Abs(xV1.Low   - xV2.Low);
-      xSumV.Close := xSumV.Close + Abs(xV1.Close - xV2.Close);
-      xSumV.Vol   := xSumV.Vol   + Abs(xV1.Vol   - xV2.Vol);
+      if not xResult then
+        Break;
     end;
-  Result := xSumV.Open + xSumV.High + xSumV.Low + xSumV.Close;
+  Result := xResult;
 end;
 
 { TBlock }

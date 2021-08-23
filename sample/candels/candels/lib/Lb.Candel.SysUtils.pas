@@ -12,7 +12,7 @@ uses
 
 type
   ///<summary>Тип цены</summary>
-  TTypePrice = (tpOpen,tpHigh,tpLow,tpClose);
+  TTypePrice = (tpNon,tpOpen,tpHigh,tpLow,tpClose);
   ///<summary>Свеча</summary>
   TCandel = record
     Date: TDateTime;
