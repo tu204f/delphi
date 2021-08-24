@@ -2,7 +2,9 @@
 
 uses
   Vcl.Forms,
-  UnitDocumentForm in 'UnitDocumentForm.pas' {DocumentForm};
+  UnitDocumentForm in 'UnitDocumentForm.pas' {DocumentForm},
+  UnitScriptForm in 'UnitScriptForm.pas' {ScriptsForm},
+  UnitDocumentFileNameForm in 'UnitDocumentFileNameForm.pas' {DocumentFileNameForm};
 
 {$R *.res}
 
