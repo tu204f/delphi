@@ -16,7 +16,6 @@ uses
   System.Variants,
   System.IOUtils,
   System.Generics.Collections,
-
   Lb.Params;
 
 type
@@ -34,9 +33,12 @@ type
 
   TInfoFiles = class(TObjectList<TInfoFile>)
   private
+    FOnEventParams: TNotifyEventParams;
+    procedure DoEventParams(const APathFileName: String; ADateTime: TDateTime);
   public
     function IndexOfDateTime(const ADateTime: TDateTime): Integer;
     procedure SetInfoFile(const APathFileName: String; ADateTime: TDateTime);
+    property OnEventParams: TNotifyEventParams write FOnEventParams;
   end;
 
 implementation
@@ -44,27 +46,27 @@ implementation
 uses
   System.Threading;
 
-procedure SetSearchFile(const APath: String; OnEventParam: TNotifyEventParams);
+procedure SetSearchFile(const AInfoFiles: TInfoFiles; const APath: String);
 var
+  xS: String;
   i: Integer;
   xSDA: TStringDynArray;
+  xParams: TParams;
 begin
-
+  if not Assigned(AInfoFiles) then
+    Exit;
+  // Файлы
   xSDA := TDirectory.GetFiles(APath, '*.*');
-  for i := 0 to High(xSDA) do
+  for xS in xSDA do
   begin
     var xFile := xSDA[i];
     var xLastWriteTime := TFile.GetLastWriteTime(xFile);
-
-
-
+    AInfoFiles.SetInfoFile(xFile,xLastWriteTime);
   end;
-
-  ListBox1.Items.Add('dir');
-  SDA := TDirectory.GetDirectories(xS);
-  for xS in SDA do
-    Listbox1.Items.Add(xS);
-
+  // Папки
+  xSDA := TDirectory.GetDirectories(APath);
+  for xS in xSDA do
+    SetSearchFile(AInfoFiles,xS);
 end;
 
 { TInfoFile }
@@ -77,6 +79,23 @@ begin
 end;
 
 { TInfoFiles }
+
+procedure TInfoFiles.DoEventParams(const APathFileName: String; ADateTime: TDateTime);
+var
+  xParams: TParams;
+begin
+  if Assigned(FOnEventParams) then
+  begin
+    try
+      xParams := TParams.Create;
+      xParams.ParamByName('path_file_name').AsString := APathFileName;
+      xParams.ParamByName('date_time').AsDateTime := ADateTime;
+      FOnEventParams(Self,xParams);
+    finally
+      FreeAndNil(xParams);
+    end;
+  end;
+end;
 
 function TInfoFiles.IndexOfDateTime(const ADateTime: TDateTime): Integer;
 var
@@ -108,9 +127,13 @@ begin
   begin
     xIndex := IndexOfDateTime(ADateTime);
     Self.Insert(xIndex,xInfoFile);
+    DoEventParams(APathFileName,ADateTime);
   end
   else
+  begin
     Self.Add(xInfoFile);
+    DoEventParams(APathFileName,ADateTime);
+  end;
 end;
 
 end.
