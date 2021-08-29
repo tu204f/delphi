@@ -8,9 +8,9 @@ uses
   Lb.ConfigIniFile in '..\..\library\setting\Lb.ConfigIniFile.pas',
   Lb.Logger in '..\..\library\Lb.Logger.pas',
   Lb.SysUtils in 'lib\Lb.SysUtils.pas',
-  Lb.Threading in '..\..\library\Lb.Threading.pas',
-  Lb.Params in '..\..\library\Lb.Params.pas',
-  Lb.ApplicationVersion in '..\..\library\Lb.ApplicationVersion.pas';
+  Lb.ApplicationVersion in '..\..\library\Lb.ApplicationVersion.pas',
+  Lb.Params in 'lib\Lb.Params.pas',
+  Lb.SearchFile in 'lib\Lb.SearchFile.pas';
 
 {$R *.res}
 
