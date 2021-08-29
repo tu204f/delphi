@@ -26,7 +26,7 @@ var
 begin
   Result:='';
   try
-    s:=TResourceStream.Create(HInstance,'#1',RT_VERSION); // достаём ресурс
+    s := TResourceStream.Create(HInstance,'#1',RT_VERSION); // достаём ресурс
     if s.Size>0 then begin
       s.Read(v,SizeOf(v)); // читаем нужные нам байты
       result:=IntToStr(v.Major)+'.'+IntToStr(v.Minor)+'.'+ // вот и версия...

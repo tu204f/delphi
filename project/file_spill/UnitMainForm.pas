@@ -16,7 +16,8 @@ uses
   FMX.Dialogs,
   FMX.Controls.Presentation,
   FMX.StdCtrls,
-  FMX.Layouts, FMX.ListBox;
+  FMX.Layouts,
+  FMX.ListBox;
 
 type
   TMainForm = class(TForm)

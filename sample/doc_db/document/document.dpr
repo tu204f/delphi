@@ -4,7 +4,8 @@ uses
   Vcl.Forms,
   UnitDocumentForm in 'UnitDocumentForm.pas' {DocumentForm},
   UnitScriptForm in 'UnitScriptForm.pas' {ScriptsForm},
-  UnitDocumentFileNameForm in 'UnitDocumentFileNameForm.pas' {DocumentFileNameForm};
+  UnitDocumentFileNameForm in 'UnitDocumentFileNameForm.pas' {DocumentFileNameForm},
+  Lb.ApplicationVersion in '..\..\..\library\Lb.ApplicationVersion.pas';
 
 {$R *.res}
 
