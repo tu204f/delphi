@@ -56,9 +56,6 @@ procedure SetSearchFile(AInfoFiles: TInfoFiles; APath: String; ACallBackParams: 
 
 implementation
 
-uses
-  System.Threading;
-
 procedure SetSearchFile(AInfoFiles: TInfoFiles; APath: String; ACallBackParams: TCallBackParams = nil);
 
   procedure SetBegin;
