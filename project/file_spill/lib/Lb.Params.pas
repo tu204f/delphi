@@ -28,18 +28,20 @@ type
     function GetAsDateTime: TDateTime;
     function GetAsBoolean: Boolean;
   private
-    procedure SetAsString(const Value: String);
-    procedure SetAsInteger(const Value: Integer);
-    procedure SetAsInt64(const Value: Int64);
-    procedure SetAsDouble(const Value: Double);
-    procedure SetAsDate(const Value: TDateTime);
-    procedure SetAsTime(const Value: TDateTime);
-    procedure SetAsDateTime(const Value: TDateTime);
-    procedure SetAsBoolean(const Value: Boolean);
+    procedure SetAsString(const AValue: String);
+    procedure SetAsInteger(const AValue: Integer);
+    procedure SetAsInt64(const AValue: Int64);
+    procedure SetAsDouble(const AValue: Double);
+    procedure SetAsDate(const AValue: TDateTime);
+    procedure SetAsTime(const AValue: TDateTime);
+    procedure SetAsDateTime(const AValue: TDateTime);
+    procedure SetAsBoolean(const AValue: Boolean);
+  protected
     function GetText: String;
+    procedure SetText(const AValue: String);
   protected
     property Value: Variant read FValue write FValue;
-    property Text: String read GetText;
+    property Text: String read GetText write SetText;
   public
     constructor Create; virtual;
     destructor Destroy; override;
@@ -58,6 +60,8 @@ type
 
   ///<summary>Список параметров</summary>
   TParams = class(TParamList)
+  protected
+    function GetCreateParam: TParam;
   public
     function IndexOfName(const AName: String): Integer;
     function ParamByName(const AName: String): TParam;
@@ -66,6 +70,7 @@ type
   end;
 
   TNotifyEventParams = procedure(Sander: TObject; AParams: TParams) of object;
+  TCallBackParams = procedure(AParams: TParams);
 
 implementation
 
@@ -73,6 +78,47 @@ resourcestring
   ERROR_NAME_TYPE_PARAM = 'Неверный тип данных';
   ERROR_PARAM_BY_NAME = 'Не верное имя параметра';
 
+
+function GetParamTypeToStr(const AParamType: TParamType): String;
+begin
+  case AParamType of
+    ptStrign: Result := 'string';
+    ptInteger: Result := 'integer';
+    ptInt64: Result := 'int64';
+    ptDouble: Result := 'double';
+    ptDate: Result := 'date';
+    ptTime: Result := 'time';
+    ptDateTime: Result := 'datetime';
+    ptBoolean: Result := 'boolean';
+  else
+    Result := 'null';
+  end;
+end;
+
+function GetStrToParamType(const AParamType: String): TParamType;
+var
+  xS: String;
+begin
+  xS := AnsiLowerCase(Trim(AParamType));
+  if SameText(xS,'string') then
+    Result := TParamType.ptStrign
+  else if SameText(xS,'integer') then
+    Result := TParamType.ptInteger
+  else if SameText(xS,'int64') then
+    Result := TParamType.ptInt64
+  else if SameText(xS,'double') then
+    Result := TParamType.ptDouble
+  else if SameText(xS,'date') then
+    Result := TParamType.ptDate
+  else if SameText(xS,'time') then
+    Result := TParamType.ptTime
+  else if SameText(xS,'datetime') then
+    Result := TParamType.ptDateTime
+  else if SameText(xS,'boolean') then
+    Result := TParamType.ptBoolean
+  else
+    Result := TParamType.ptNull;
+end;
 
 { TParam }
 
@@ -90,7 +136,12 @@ end;
 
 function TParam.GetText: String;
 begin
-  Result := Self.Name + '=' + Self.AsString;
+  Result := Self.Name + ':' + GetParamTypeToStr(FDataType) + '=' + Self.AsString;
+end;
+
+procedure TParam.SetText(const AValue: String);
+begin
+  {todo: читаем список фалов}
 end;
 
 function TParam.GetAsStrign: String;
@@ -101,119 +152,135 @@ end;
 function TParam.GetAsInteger: Integer;
 begin
   if VarIsNull(FValue) then
-    Result := FValue
+    Result := 0
   else
-    Result := 0;
+    Result := FValue;
 end;
 
 function TParam.GetAsInt64: Int64;
 begin
   if VarIsNull(FValue) then
-    Result := FValue
+    Result := 0
   else
-    Result := 0;
+    Result := FValue;
 end;
 
 function TParam.GetAsDouble: Double;
 begin
   if VarIsNull(FValue) then
-    Result := FValue
+    Result := 0
   else
-    Result := 0;
+    Result := FValue;
 end;
 
 function TParam.GetAsDate: TDateTime;
 begin
   if VarIsNull(FValue) then
-    Result := FValue
+    Result := 0
   else
-    Result := 0;
+    Result := FValue;
 end;
 
 function TParam.GetAsTime: TDateTime;
 begin
   if VarIsNull(FValue) then
-    Result := FValue
+    Result := 0
   else
-    Result := 0;
+    Result := FValue;
 end;
 
 function TParam.GetAsDateTime: TDateTime;
 begin
   if VarIsNull(FValue) then
-    Result := FValue
+    Result := 0
   else
-    Result := 0;
+    Result := FValue;
 end;
 
 function TParam.GetAsBoolean: Boolean;
 begin
   if VarIsNull(FValue) then
-    Result := FValue
+    Result := False
   else
-    Result := False;
+    Result := FValue;
 end;
 
-procedure TParam.SetAsString(const Value: String);
+procedure TParam.SetAsString(const AValue: String);
 begin
-  if (FDataType = ptNull) or (FDataType = ptStrign) then
-    FValue := Value
-  else
-    raise Exception.Create('Error Message: ' + ERROR_NAME_TYPE_PARAM);
-end;
-
-procedure TParam.SetAsInteger(const Value: Integer);
-begin
-  if (FDataType = ptNull) or (FDataType = ptInteger) then
-    FValue := Value
+  if FDataType = ptNull then
+    FDataType := ptStrign;
+  if (FDataType = ptStrign) then
+    FValue := AValue
   else
     raise Exception.Create('Error Message: ' + ERROR_NAME_TYPE_PARAM);
 end;
 
-procedure TParam.SetAsInt64(const Value: Int64);
+procedure TParam.SetAsInteger(const AValue: Integer);
 begin
-  if (FDataType = ptNull) or (FDataType = ptInt64) then
-    FValue := Value
+  if FDataType = ptNull then
+    FDataType := ptInteger;
+  if (FDataType = ptInteger) then
+    FValue := AValue
   else
     raise Exception.Create('Error Message: ' + ERROR_NAME_TYPE_PARAM);
 end;
 
-procedure TParam.SetAsDouble(const Value: Double);
+procedure TParam.SetAsInt64(const AValue: Int64);
 begin
-  if (FDataType = ptNull) or (FDataType = ptDouble) then
-    FValue := Value
+  if FDataType = ptNull then
+    FDataType := ptInt64;
+  if (FDataType = ptInt64) then
+    FValue := AValue
   else
     raise Exception.Create('Error Message: ' + ERROR_NAME_TYPE_PARAM);
 end;
 
-procedure TParam.SetAsDate(const Value: TDateTime);
+procedure TParam.SetAsDouble(const AValue: Double);
 begin
-  if (FDataType = ptNull) or (FDataType = ptDate) then
-    FValue := Value
+  if FDataType = ptNull then
+    FDataType := ptDouble;
+  if (FDataType = ptDouble) then
+    FValue := AValue
   else
     raise Exception.Create('Error Message: ' + ERROR_NAME_TYPE_PARAM);
 end;
 
-procedure TParam.SetAsTime(const Value: TDateTime);
+procedure TParam.SetAsDate(const AValue: TDateTime);
 begin
-  if (FDataType = ptNull) or (FDataType = ptTime) then
-    FValue := Value
+  if FDataType = ptNull then
+    FDataType := ptDate;
+  if (FDataType = ptDate) then
+    FValue := AValue
   else
     raise Exception.Create('Error Message: ' + ERROR_NAME_TYPE_PARAM);
 end;
 
-procedure TParam.SetAsDateTime(const Value: TDateTime);
+procedure TParam.SetAsTime(const AValue: TDateTime);
 begin
-  if (FDataType = ptNull) or (FDataType = ptDateTime) then
-    FValue := Value
+  if FDataType = ptNull then
+    FDataType := ptTime;
+  if (FDataType = ptTime) then
+    FValue := AValue
   else
     raise Exception.Create('Error Message: ' + ERROR_NAME_TYPE_PARAM);
 end;
 
-procedure TParam.SetAsBoolean(const Value: Boolean);
+procedure TParam.SetAsDateTime(const AValue: TDateTime);
 begin
-  if (FDataType = ptNull) or (FDataType = ptBoolean) then
-    FValue := Value
+  if FDataType = ptNull then
+    FDataType := ptDateTime;
+  if (FDataType = ptDateTime) then
+    FValue := AValue
+  else
+    raise Exception.Create('Error Message: ' + ERROR_NAME_TYPE_PARAM);
+end;
+
+procedure TParam.SetAsBoolean(const AValue: Boolean);
+begin
+  if FDataType = ptNull then
+    FDataType := ptBoolean;
+  if (FDataType = ptBoolean) then
+    FValue := AValue
   else
     raise Exception.Create('Error Message: ' + ERROR_NAME_TYPE_PARAM);
 end;
@@ -244,7 +311,18 @@ begin
   if xIndex >= 0 then
     Result := Self.Items[xIndex]
   else
-    raise Exception.Create('Error Message: ' + ERROR_PARAM_BY_NAME);
+  begin
+    var xParam := Self.GetCreateParam;
+    xParam.Name := AName;
+    Result := xParam;
+  end;
+end;
+
+function TParams.GetCreateParam: TParam;
+begin
+  var xParam := TParam.Create;
+  Result := xParam;
+  Self.Add(xParam);
 end;
 
 procedure TParams.SetLoadParamStrings(const ASource: TStrings);
@@ -263,7 +341,11 @@ end;
 
 procedure TParams.SetSaveParamStrings(const ASource: TStrings);
 begin
-
+  for var xS in ASource do
+  begin
+    var xParam := Self.GetCreateParam;
+    xParam.Text := xS;
+  end;
 end;
 
 end.
