@@ -37,4 +37,11 @@ object MainForm: TMainForm
     Text = 'Button2'
     OnClick = Button2Click
   end
+  object Button3: TButton
+    Position.X = 188.000000000000000000
+    Position.Y = 24.000000000000000000
+    TabOrder = 4
+    Text = 'Button3'
+    OnClick = Button3Click
+  end
 end

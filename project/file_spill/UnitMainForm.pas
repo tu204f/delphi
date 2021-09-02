@@ -24,9 +24,11 @@ type
     Button1: TButton;
     ListBox1: TListBox;
     Button2: TButton;
+    Button3: TButton;
     procedure FormShow(Sender: TObject);
     procedure Button1Click(Sender: TObject);
     procedure Button2Click(Sender: TObject);
+    procedure Button3Click(Sender: TObject);
   private
     { Private declarations }
   public
@@ -107,12 +109,14 @@ var
   xInfoFiles: TInfoFiles;
 begin
   xPath := 'd:\work\';
-  xInfoFiles := TInfoFiles.Create;
-  try
-    SetSearchFile(xInfoFiles,xPath,SetCallBackParams);
-  finally
-    FreeAndNil(xInfoFiles);
-  end;
+  SetSearchFile(xPath,SetCallBackParams);
+
+end;
+
+procedure TMainForm.Button3Click(Sender: TObject);
+begin
+//  SetStopSearchFile;
+  SetSearchFileThreading('d:\work\diasoft\video\');
 end;
 
 procedure TMainForm.FormShow(Sender: TObject);
