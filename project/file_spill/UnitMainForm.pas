@@ -29,8 +29,11 @@ type
     procedure Button1Click(Sender: TObject);
     procedure Button2Click(Sender: TObject);
     procedure Button3Click(Sender: TObject);
+    procedure FormCreate(Sender: TObject);
   private
-    { Private declarations }
+  protected
+    procedure EventSearchFilesOnStart(Sender: TObject);
+    procedure EventSearchFilesOnStop(Sender: TObject);
   public
     { Public declarations }
   end;
@@ -46,6 +49,9 @@ uses
   Lb.ApplicationVersion,
   Lb.SearchFile,
   Lb.Params;
+
+var
+  localSearchFiles: TSearchFiles = nil;
 
 procedure TMainForm.Button1Click(Sender: TObject);
 var
@@ -106,17 +112,33 @@ end;
 procedure TMainForm.Button2Click(Sender: TObject);
 var
   xPath: String;
-  xInfoFiles: TInfoFiles;
 begin
   xPath := 'd:\work\';
-  SetSearchFile(xPath,SetCallBackParams);
 
 end;
 
 procedure TMainForm.Button3Click(Sender: TObject);
 begin
 //  SetStopSearchFile;
-  SetSearchFileThreading('d:\work\diasoft\video\');
+  localSearchFiles.PathDir := 'd:\work\diasoft\video\';
+  localSearchFiles.Start;
+end;
+
+procedure TMainForm.EventSearchFilesOnStart(Sender: TObject);
+begin
+  ListBox1.Items.Add('start');
+end;
+
+procedure TMainForm.EventSearchFilesOnStop(Sender: TObject);
+begin
+  ListBox1.Items.Add('stop');
+end;
+
+procedure TMainForm.FormCreate(Sender: TObject);
+begin
+  localSearchFiles := TSearchFiles.Create;
+  localSearchFiles.OnStart := EventSearchFilesOnStart;
+  localSearchFiles.OnStop := EventSearchFilesOnStop;
 end;
 
 procedure TMainForm.FormShow(Sender: TObject);

@@ -20,19 +20,28 @@ type
     tpAddDir   // Добавить папку
   );
 
-  TSearchFile = class(TObject)
+
+  ///<summary>Поиск фалов и экспорт их базу данных</summary>
+  TSearchFiles = class(TObject)
   private
+    FActive: Boolean;
+    FPathDir: String;
+    FOnStart: TNotifyEvent;
+    FOnStop: TNotifyEvent;
+  protected
+    procedure DoStart;
+    procedure DoStop;
+    procedure SetSearchPathDir;
   public
-
+    constructor Create; virtual;
+    destructor Destroy; override;
+    procedure Start;
+    procedure Stop;
+    property PathDir: String write FPathDir;
+    property Active: Boolean read FActive;
+    property OnStart: TNotifyEvent write FOnStart;
+    property OnStop: TNotifyEvent write FOnStop;
   end;
-
-///<summary>Поиск файл: в папке</summary>
-procedure SetSearchFile(APath: String; ACallBackParams: TCallBackParams = nil);
-///<summary>Остановить поиск файла</summary>
-procedure SetStopSearchFile;
-///<summary>Создаем отдельный запуска поток</summary>
-procedure SetSearchFileThreading(APath: String);
-
 
 implementation
 
@@ -66,7 +75,7 @@ begin
   end;
 end;
 
-procedure SetSearchFile(APath: String; ACallBackParams: TCallBackParams);
+procedure SetSearchFile(APath: String; ASearchFiles: TSearchFiles);
 const
   TMP_FILE_DB = 'tmp_files.sqlite';
   REAL_FILE_DB = 'files.sqlite';
@@ -75,15 +84,27 @@ var
 
   procedure SetBegin;
   begin
-    localStopSearch := False;
 
+    // Посылаем сообщение
+    TThread.Synchronize(nil,
+      procedure ()
+      begin
+        ASearchFiles.DoStart;
+      end
+    );
+
+    // Создание базы
+    localStopSearch := False;
     var xFileDB := ExtractFilePath(ParamStr(0)) + TMP_FILE_DB;
     localDB := TDataModuleDB.Create(nil);
     localDB.DefaultConnection(xFileDB);
     var xSQL := TStringList.Create;
     try
+
+      // Таблица папок
       with xSQL do
       begin
+        Clear;
         Add('create table if not exists files(');
         Add(' file_name text,');
         Add(' path text,');
@@ -92,51 +113,45 @@ var
         Add(')');
       end;
       localDB.GetExecSQL(xSQL.Text);
+
+      // Таблица файлов
+      with xSQL do
+      begin
+        Clear;
+        Add('create table if not exists files(');
+        Add(' file_name text,');
+        Add(' path text,');
+        Add(' ext text,');
+        Add(' write_time text');
+        Add(')');
+      end;
+      localDB.GetExecSQL(xSQL.Text);
+
+
       localDB.GetExecSQL('delete from files');
     finally
       FreeAndNil(xSQL);
-    end;
-
-    if Assigned(ACallBackParams) then
-    begin
-      var xParams := TParams.Create;
-      try
-        with xParams do
-        begin
-          ParamByName('type').AsInteger := Integer(TTypeSearch.tpBegin);
-        end;
-        ACallBackParams(xParams);
-      finally
-        FreeAndNil(xParams);
-      end;
     end;
   end;
 
   procedure SetEnd;
   begin
-
+    // Разрыаем соединение
     if Assigned(localDB) then
       FreeAndNil(localDB);
     localDB := nil;
 
-    var xTmpFile := ExtractFilePath(ParamStr(0)) + TMP_FILE_DB;
-    var xRealFile := ExtractFilePath(ParamStr(0)) + REAL_FILE_DB;
-    if FileExists(xTmpFile) then
-      SetCopy(xRealFile,xTmpFile);
-
-    if Assigned(ACallBackParams) then
-    begin
-      var xParams := TParams.Create;
-      try
-        with xParams do
-        begin
-          ParamByName('type').AsInteger := Integer(TTypeSearch.tpEnd);
-        end;
-        ACallBackParams(xParams);
-      finally
-        FreeAndNil(xParams);
-      end;
-    end;
+    // Событие завершение загрузки
+    TThread.Synchronize(nil,
+      procedure ()
+      begin
+        var xTmpFile := ExtractFilePath(ParamStr(0)) + TMP_FILE_DB;
+        var xRealFile := ExtractFilePath(ParamStr(0)) + REAL_FILE_DB;
+        if FileExists(xTmpFile) then
+          SetCopy(xRealFile,xTmpFile);
+        ASearchFiles.DoStop;
+      end
+    );
   end;
 
   procedure SetAddFile(const AFileName: String; const ALastWriteTime: TDateTime);
@@ -159,39 +174,14 @@ var
       localDB.GetExecSQL(xSQL.Text,[_FileName, _Path, _Ext, _WriteTime]);
     end;
 
-    if Assigned(ACallBackParams) then
-    begin
-      var xParams := TParams.Create;
-      try
-        with xParams do
-        begin
-          ParamByName('type').AsInteger := Integer(TTypeSearch.tpAddFile);
-          ParamByName('file').AsString := AFileName;
-          ParamByName('last_write_time').AsDateTime := ALastWriteTime;
-        end;
-        ACallBackParams(xParams);
-      finally
-        FreeAndNil(xParams);
-      end;
-    end;
   end;
 
   procedure SetAddDir(const ADirName: String);
   begin
-    if Assigned(ACallBackParams) then
-    begin
-      var xParams := TParams.Create;
-      try
-        with xParams do
-        begin
-          ParamByName('type').AsInteger := Integer(TTypeSearch.tpAddDir);
-          ParamByName('dir').AsString := ADirName;
-        end;
-        ACallBackParams(xParams);
-      finally
-        FreeAndNil(xParams);
-      end;
-    end;
+    {todo: дабовление ссылки}
+
+
+
   end;
 
   procedure SetSearchDir(APath: String);
@@ -228,17 +218,65 @@ begin
   SetEnd;
 end;
 
-procedure SetSearchFileThreading(APath: String);
+procedure SetSearchFileThreading(APath: String; ASearchFiles: TSearchFiles);
 var
   xTaks: ITask;
 begin
   xTaks := TTask.Create(
     procedure()
     begin
-      SetSearchFile(APath);
+      SetSearchFile(APath,ASearchFiles);
     end
   );
   xTaks.Start;
+end;
+
+{ TSearchFiles }
+
+constructor TSearchFiles.Create;
+begin
+  FPathDir := '';
+  FActive := False;
+end;
+
+destructor TSearchFiles.Destroy;
+begin
+
+  inherited;
+end;
+
+procedure TSearchFiles.DoStart;
+begin
+  FActive := True;
+  if Assigned(FOnStart) then FOnStart(Self);
+end;
+
+procedure TSearchFiles.DoStop;
+begin
+  if Assigned(FOnStop) then FOnStop(Self);
+end;
+
+procedure TSearchFiles.SetSearchPathDir;
+begin
+  if DirectoryExists(FPathDir) then
+    SetSearchFileThreading(FPathDir,Self);
+end;
+
+procedure TSearchFiles.Start;
+begin
+  if not FActive then
+  begin
+    SetSearchPathDir;
+  end;
+end;
+
+procedure TSearchFiles.Stop;
+begin
+  if FActive then
+  begin
+    FActive := False;
+    SetStopSearchFile;
+  end;
 end;
 
 end.
