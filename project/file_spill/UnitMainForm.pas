@@ -25,11 +25,13 @@ type
     ListBox1: TListBox;
     Button2: TButton;
     Button3: TButton;
+    Button4: TButton;
     procedure FormShow(Sender: TObject);
     procedure Button1Click(Sender: TObject);
     procedure Button2Click(Sender: TObject);
     procedure Button3Click(Sender: TObject);
     procedure FormCreate(Sender: TObject);
+    procedure Button4Click(Sender: TObject);
   private
   protected
     procedure EventSearchFilesOnStart(Sender: TObject);
@@ -122,6 +124,17 @@ begin
 //  SetStopSearchFile;
   localSearchFiles.PathDir := 'd:\work\diasoft\video\';
   localSearchFiles.Start;
+end;
+
+
+procedure TMainForm.Button4Click(Sender: TObject);
+var
+  xVal1, xVal2, xVal3: Integer;
+begin
+  xVal1 := 16;
+  xVal2 := 17;
+  xVal3 := xVal1 and xVal2;
+  ShowMessage('xVal3 = ' + IntToStr(xVal3))
 end;
 
 procedure TMainForm.EventSearchFilesOnStart(Sender: TObject);
