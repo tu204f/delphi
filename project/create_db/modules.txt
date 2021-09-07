@@ -1,0 +1,170 @@
+<modules>
+	<module id="" name="" description="">
+		<methods>
+			<method id="" name="" description="" result_type="">
+				<input_fields>
+					<field id="" name="" description="">
+					</field>
+					<field id="" name="" description="">
+					</field>					
+				</input_fields>
+				<input_tables>
+				</input_tables>	
+				<output_tables>
+				</output_tables>					
+			</method>
+			<method id="" name="" description="" result_type="">
+				<input_fields>
+				</input_fields>
+				<input_tables>
+				</input_tables>	
+				<output_tables>
+				</output_tables>	
+			</method>
+			<method id="" name="" description="" result_type="">
+				<input_fields>
+				</input_fields>
+				<input_tables>
+				</input_tables>	
+				<output_tables>
+				</output_tables>	
+			</method>
+		</methods>
+		<tables>
+			<table id="" name="" description="">
+				<fields>
+				</fields>
+				<indexs>
+				</indexs>				
+			</table>
+			<table id="" name="" description="">
+				<fields>
+				</fields>
+				<indexs>
+				</indexs>	
+			</table>
+			<table id="" name="" description="">
+				<fields>
+				</fields>
+				<indexs>
+				</indexs>	
+			</table>
+		</tables>
+	</module>
+	<module id="" name="" description="">
+		<methods>
+			<method id="" name="" description="" result_type="">
+				<input_fields>
+				</input_fields>
+				<input_tables>
+				</input_tables>	
+				<output_tables>
+				</output_tables>	
+			</method>
+		</methods>
+		<tables>
+			<table id="" name="" description="">
+				<fields>
+				</fields>
+				<indexs>
+				</indexs>	
+			</table>
+			<table id="" name="" description="">
+				<fields>
+				</fields>
+				<indexs>
+				</indexs>	
+			</table>
+			<table id="" name="" description="">
+				<fields>
+				</fields>
+				<indexs>
+				</indexs>	
+			</table>
+			<table id="" name="" description="">
+				<fields>
+				</fields>
+				<indexs>
+				</indexs>	
+			</table>
+			<table id="" name="" description="">
+				<fields>
+				</fields>
+				<indexs>
+				</indexs>	
+			</table>
+			<table id="" name="" description="">
+				<fields>
+				</fields>
+				<indexs>
+				</indexs>	
+			</table>
+		</tables>
+	</module>
+	<module id="" name="" description="">
+		<methods>
+			<method id="" name="" description="" result_type="">
+				<input_fields>
+				</input_fields>
+				<input_tables>
+				</input_tables>	
+				<output_tables>
+				</output_tables>	
+			</method>
+			<method id="" name="" description="" result_type="">
+				<input_fields>
+				</input_fields>
+				<input_tables>
+				</input_tables>	
+				<output_tables>
+				</output_tables>	
+			</method>
+			<method id="" name="" description="" result_type="">
+				<input_fields>
+				</input_fields>
+				<input_tables>
+				</input_tables>	
+				<output_tables>
+				</output_tables>	
+			</method>
+			<method id="" name="" description="" result_type="">
+				<input_fields>
+				</input_fields>
+				<input_tables>
+				</input_tables>	
+				<output_tables>
+				</output_tables>	
+			</method>
+			<method id="" name="" description="" result_type="">
+				<input_fields>
+				</input_fields>
+				<input_tables>
+				</input_tables>	
+				<output_tables>
+				</output_tables>	
+			</method>
+			<method id="" name="" description="" result_type="">
+				<input_fields>
+				</input_fields>
+				<input_tables>
+				</input_tables>	
+				<output_tables>
+				</output_tables>	
+			</method>
+		</methods>
+		<tables>
+			<table id="" name="" description="">
+				<fields>
+				</fields>
+				<indexs>
+				</indexs>	
+			</table>
+			<table id="" name="" description="">
+				<fields>
+				</fields>
+				<indexs>
+				</indexs>	
+			</table>
+		</tables>
+	</module>
+</modules>
