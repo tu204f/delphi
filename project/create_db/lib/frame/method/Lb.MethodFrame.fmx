@@ -1,0 +1,5 @@
+object MethodFrame: TMethodFrame
+  Size.Width = 505.000000000000000000
+  Size.Height = 302.000000000000000000
+  Size.PlatformDefault = False
+end

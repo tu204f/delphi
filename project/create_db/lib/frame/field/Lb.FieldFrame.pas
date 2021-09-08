@@ -56,6 +56,7 @@ implementation
 constructor TFieldFrame.Create(AOwner: TComponent);
 begin
   inherited Create(AOwner);
+  FField := nil;
   TSysConfig.SetTypeFields(ComboBoxFieldType.Items);
 end;
 
@@ -68,10 +69,10 @@ end;
 procedure TFieldFrame.SetField(const Value: TCrField);
 begin
   FField := Value;
-  EditID.Text := FField.ID.ToString;
-  EditFieldName.Text := FField.Name;
-  ComboBoxFieldType.ItemIndex := TSysConfig.GetIndexOfTypeField(FField.TypeField);
-  MemoDescription.Text := FField.Description;
+  EditID.Text := FField.ObjectKey;
+//  EditFieldName.Text := FField.Name;
+//  ComboBoxFieldType.ItemIndex := TSysConfig.GetIndexOfTypeField(FField.TypeField);
+//  MemoDescription.Text := FField.Description;
 end;
 
 end.

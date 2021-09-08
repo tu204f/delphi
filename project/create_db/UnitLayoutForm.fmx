@@ -1,0 +1,22 @@
+object LayoutForm: TLayoutForm
+  Left = 0
+  Top = 0
+  Caption = 'Form1'
+  ClientHeight = 437
+  ClientWidth = 613
+  FormFactor.Width = 320
+  FormFactor.Height = 480
+  FormFactor.Devices = [Desktop]
+  DesignerMasterStyle = 0
+  object Layout: TLayout
+    Align = Client
+    Margins.Left = 5.000000000000000000
+    Margins.Top = 5.000000000000000000
+    Margins.Right = 5.000000000000000000
+    Margins.Bottom = 5.000000000000000000
+    Size.Width = 603.000000000000000000
+    Size.Height = 427.000000000000000000
+    Size.PlatformDefault = False
+    TabOrder = 0
+  end
+end

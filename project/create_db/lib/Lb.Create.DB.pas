@@ -16,19 +16,25 @@ type
   ///<summary>Базовый класс</summary>
   TCustomObjectModule = class(TObject)
   private
-    FID: Integer;
+    FObjectKey: String;
     FName: String;
     FDescription: String;
     FTypeObject: TTypeObject;
+    FTimeСreation: TDateTime;
+    FTimeUpdate: TDateTime;
   protected
     procedure SetTypeObject; virtual;
   public
     constructor Create; virtual;
     destructor Destroy; override;
-    property ID: Integer read FID write FID;
+    property ObjectKey: String read FObjectKey write FObjectKey;
     property Name: String read FName write FName;
     property Description: String read FDescription write FDescription;
     property TypeObject: TTypeObject read FTypeObject;
+    property TimeСreation: TDateTime read FTimeСreation write FTimeСreation;
+    property TimeUpdate: TDateTime read FTimeUpdate write FTimeUpdate;
+  public
+    function ToCaption: String;
   end;
 
   // **************************************************************************
@@ -178,6 +184,19 @@ end;
 procedure TCustomObjectModule.SetTypeObject;
 begin
   FTypeObject := TTypeObject.toNull;
+end;
+
+function TCustomObjectModule.ToCaption: String;
+begin
+  case FTypeObject of
+    toField: Result := 'Поле';
+    toIndex: Result := 'Индекс';
+    toTable: Result := 'Таблица';
+    toMethod: Result := 'Метод';
+    toModule: Result := 'Модуль';
+  else
+    Result := 'Null'
+  end;
 end;
 
 { TCrField }

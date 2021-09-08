@@ -17,19 +17,15 @@ uses
   Lb.Create.DB, FMX.Layouts;
 
 type
+  ///<summary>Индек</summary>
   TIndexFrame = class(TFrame)
-    Layout: TLayout;
-    LayoutIndex: TLayout;
-    GridPanelLayoutField: TGridPanelLayout;
   private
     FIndexTable: TCrIndex;
-    FTable: TCrTable;
+    procedure SetIndexTable(const Value: TCrIndex);
   public
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
-    procedure SetParams(const ATable: TCrTable; const AIndexTable: TCrIndex);
-    property IndexTable: TCrIndex read FIndexTable;
-    property Table: TCrTable read FTable;
+    property IndexTable: TCrIndex read FIndexTable write SetIndexTable;
   end;
 
 implementation
@@ -41,7 +37,7 @@ implementation
 constructor TIndexFrame.Create(AOwner: TComponent);
 begin
   inherited Create(AOwner);
-
+  FIndexTable := nil;
 end;
 
 destructor TIndexFrame.Destroy;
@@ -50,10 +46,9 @@ begin
   inherited;
 end;
 
-procedure TIndexFrame.SetParams(const ATable: TCrTable; const AIndexTable: TCrIndex);
+procedure TIndexFrame.SetIndexTable(const Value: TCrIndex);
 begin
-  FIndexTable := AIndexTable;
-  FTable := ATable;
+  FIndexTable := Value;
 end;
 
 end.

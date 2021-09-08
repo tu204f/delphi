@@ -1,46 +1,5 @@
 object IndexFrame: TIndexFrame
-  Size.Width = 493.000000000000000000
-  Size.Height = 369.000000000000000000
+  Size.Width = 386.000000000000000000
+  Size.Height = 254.000000000000000000
   Size.PlatformDefault = False
-  object Layout: TLayout
-    Align = Client
-    Margins.Left = 3.000000000000000000
-    Margins.Top = 3.000000000000000000
-    Margins.Right = 3.000000000000000000
-    Margins.Bottom = 3.000000000000000000
-    Size.Width = 487.000000000000000000
-    Size.Height = 363.000000000000000000
-    Size.PlatformDefault = False
-    TabOrder = 0
-    object LayoutIndex: TLayout
-      Align = Top
-      Size.Width = 487.000000000000000000
-      Size.Height = 141.000000000000000000
-      Size.PlatformDefault = False
-      TabOrder = 1
-    end
-    object GridPanelLayoutField: TGridPanelLayout
-      Align = Client
-      Size.Width = 487.000000000000000000
-      Size.Height = 222.000000000000000000
-      Size.PlatformDefault = False
-      TabOrder = 0
-      ColumnCollection = <
-        item
-          Value = 50.000000000000000000
-        end
-        item
-          SizeStyle = Absolute
-          Value = 30.000000000000000000
-        end
-        item
-          Value = 50.000000000000000000
-        end>
-      ControlCollection = <>
-      RowCollection = <
-        item
-          Value = 100.000000000000000000
-        end>
-    end
-  end
 end
