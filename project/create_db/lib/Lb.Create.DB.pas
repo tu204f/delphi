@@ -33,7 +33,6 @@ type
 
   // **************************************************************************
   // Определяем поля
-
   ///<summary>Поле – таблицы</summary>
   TCrField = class(TCustomObjectModule)
   private
@@ -156,6 +155,7 @@ type
   // Системные функции
   TSysConfig = record
     class procedure SetTypeFields(const AFieldTypes: TStrings); static;
+    class function GetIndexOfTypeField(const AFieldType: String): Integer; static;
   end;
 
 implementation
@@ -364,6 +364,11 @@ begin
 
 
   end;
+end;
+
+class function TSysConfig.GetIndexOfTypeField(const AFieldType: String): Integer;
+begin
+  Result := 0;
 end;
 
 end.
