@@ -38,4 +38,24 @@ begin
   end;
 end;
 
+function GetResourceScritpStrings(const AResName: String; const AStrings: TStrings): String;
+var
+  xRS: TResourceStream;
+  xStr: TStrings;
+begin
+  Result := '';
+  xRS := TResourceStream.Create(HInstance,AResName,RT_RCDATA);
+  try
+    xStr := TStringList.Create;
+    try
+      xStr.LoadFromStream(xRS);
+      Result := xStr.Text;
+    finally
+      FreeAndNil(xStr);
+    end;
+  finally
+    FreeAndNil(xRS);
+  end;
+end;
+
 end.

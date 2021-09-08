@@ -258,7 +258,6 @@ end;
 procedure TParamValues.SetParamValues(Name: String; const Value: TParamValue);
 var
   xIndex: Integer;
-  xParamValue: TParamValue;
 begin
   xIndex := IndexOfName(Name);
   if xIndex >= 0 then

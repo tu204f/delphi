@@ -1,7 +1,5 @@
 ﻿program create_db;
 
-{$R 'params.res' 'lib\res\params.rc'}
-
 uses
   System.StartUpCopy,
   FMX.Forms,
@@ -26,8 +24,9 @@ uses
   Lb.Logger in '..\..\library\Lb.Logger.pas',
   Lb.SysUtils.ISO860 in '..\..\library\Lb.SysUtils.ISO860.pas',
   Lb.SysUtils.Structure in 'lib\Lb.SysUtils.Structure.pas',
-  Lb.Resource.Script in '..\..\library\Lb.Resource.Script.pas',
-  Lb.Resource.Params in 'lib\Lb.Resource.Params.pas';
+  Lb.Resource in 'lib\res\Lb.Resource.pas' {ResFrame: TFrame},
+  Lb.DomainFrame in 'lib\frame\domain\Lb.DomainFrame.pas' {DomainFrame: TFrame},
+  Lb.DomainTableFrame in 'lib\frame\domain\Lb.DomainTableFrame.pas' {DomainTableFrame: TFrame};
 
 {$R *.res}
 

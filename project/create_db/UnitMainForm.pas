@@ -22,6 +22,7 @@ type
   TMainForm = class(TForm)
     LayoutTree: TLayout;
     LayoutPage: TLayout;
+    Button1: TButton;
     procedure FormShow(Sender: TObject);
   private
     { Private declarations }

@@ -11,7 +11,7 @@ uses
 
 type
   ///<summary>Тип объекта</summary>
-  TTypeObject = (toNull, toField, toIndex, toTable, toMethod, toModule);
+  TTypeObject = (toNull, toDomain, toField, toIndex, toTable, toMethod, toModule);
 
   ///<summary>Базовый класс</summary>
   TCustomObjectModule = class(TObject)
@@ -35,6 +35,24 @@ type
     property TimeUpdate: TDateTime read FTimeUpdate write FTimeUpdate;
   public
     function ToCaption: String;
+  end;
+
+  // **************************************************************************
+  ///<summary>Описываем пользовательский тип данных</summary>
+  TCrDomain = class(TCustomObjectModule)
+  private
+  protected
+    procedure SetTypeObject; override;
+  public
+    constructor Create; override;
+    destructor Destroy; override;
+  end;
+
+  ///<summary>Список пользовательский типов</summary>
+  TCrDomains = class(TObjectList<TCrDomain>)
+  public
+    constructor Create;
+    destructor Destroy; override;
   end;
 
   // **************************************************************************
@@ -189,6 +207,7 @@ end;
 function TCustomObjectModule.ToCaption: String;
 begin
   case FTypeObject of
+    toDomain: Result := 'Domain';
     toField: Result := 'Поле';
     toIndex: Result := 'Индекс';
     toTable: Result := 'Таблица';
@@ -198,6 +217,40 @@ begin
     Result := 'Null'
   end;
 end;
+
+{ TCrDomain }
+
+constructor TCrDomain.Create;
+begin
+  inherited Create;
+
+end;
+
+destructor TCrDomain.Destroy;
+begin
+
+  inherited Destroy;
+end;
+
+procedure TCrDomain.SetTypeObject;
+begin
+  FTypeObject := TTypeObject.toDomain;
+end;
+
+{ TCrDomains }
+
+constructor TCrDomains.Create;
+begin
+  inherited Create;
+
+end;
+
+destructor TCrDomains.Destroy;
+begin
+
+  inherited Destroy;
+end;
+
 
 { TCrField }
 
@@ -389,5 +442,7 @@ class function TSysConfig.GetIndexOfTypeField(const AFieldType: String): Integer
 begin
   Result := 0;
 end;
+
+
 
 end.

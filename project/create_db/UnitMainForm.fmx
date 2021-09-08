@@ -2,7 +2,7 @@ object MainForm: TMainForm
   Left = 0
   Top = 0
   Caption = 'Form2'
-  ClientHeight = 463
+  ClientHeight = 563
   ClientWidth = 834
   FormFactor.Width = 320
   FormFactor.Height = 480
@@ -24,5 +24,14 @@ object MainForm: TMainForm
     Size.Height = 373.000000000000000000
     Size.PlatformDefault = False
     TabOrder = 3
+  end
+  object Button1: TButton
+    Position.X = 32.000000000000000000
+    Position.Y = 416.000000000000000000
+    Size.Width = 113.000000000000000000
+    Size.Height = 45.000000000000000000
+    Size.PlatformDefault = False
+    TabOrder = 4
+    Text = 'Button1'
   end
 end
