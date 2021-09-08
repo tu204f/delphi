@@ -1,0 +1,124 @@
+object ModuleFrame: TModuleFrame
+  Size.Width = 498.000000000000000000
+  Size.Height = 241.000000000000000000
+  Size.PlatformDefault = False
+  object Layout: TLayout
+    Align = Client
+    Margins.Left = 5.000000000000000000
+    Margins.Top = 5.000000000000000000
+    Margins.Right = 5.000000000000000000
+    Margins.Bottom = 5.000000000000000000
+    Size.Width = 488.000000000000000000
+    Size.Height = 231.000000000000000000
+    Size.PlatformDefault = False
+    TabOrder = 0
+    object LayoutDescription: TLayout
+      Align = Client
+      Size.Width = 488.000000000000000000
+      Size.Height = 167.000000000000000000
+      Size.PlatformDefault = False
+      TabOrder = 1
+      object TextDescription: TText
+        Align = Top
+        Size.Width = 488.000000000000000000
+        Size.Height = 21.000000000000000000
+        Size.PlatformDefault = False
+        Text = #1054#1087#1080#1089#1072#1085#1080#1077' '#1087#1086#1083#1103
+        TextSettings.HorzAlign = Leading
+      end
+      object MemoDescription: TMemo
+        Touch.InteractiveGestures = [Pan, LongTap, DoubleTap]
+        DataDetectorTypes = []
+        Align = Client
+        Size.Width = 488.000000000000000000
+        Size.Height = 146.000000000000000000
+        Size.PlatformDefault = False
+        TabOrder = 2
+        Viewport.Width = 484.000000000000000000
+        Viewport.Height = 142.000000000000000000
+      end
+    end
+    object GridPanelLayout: TGridPanelLayout
+      Align = Top
+      Size.Width = 488.000000000000000000
+      Size.Height = 64.000000000000000000
+      Size.PlatformDefault = False
+      TabOrder = 0
+      ColumnCollection = <
+        item
+          SizeStyle = Absolute
+          Value = 120.000000000000000000
+        end
+        item
+          Value = 100.000000000000000000
+        end>
+      ControlCollection = <
+        item
+          Column = 0
+          Control = TextID
+          Row = 0
+        end
+        item
+          Column = 1
+          Control = EditID
+          Row = 0
+        end
+        item
+          Column = 0
+          Control = TextName
+          Row = 1
+        end
+        item
+          Column = 1
+          Control = EditFieldName
+          Row = 1
+        end>
+      RowCollection = <
+        item
+          Value = 50.000000000000000000
+        end
+        item
+          Value = 50.000000000000000000
+        end>
+      object TextID: TText
+        Align = Client
+        Margins.Right = 3.000000000000000000
+        Size.Width = 117.000000000000000000
+        Size.Height = 32.000000000000000000
+        Size.PlatformDefault = False
+        Text = 'ID'
+        TextSettings.HorzAlign = Trailing
+      end
+      object EditID: TEdit
+        Touch.InteractiveGestures = [LongTap, DoubleTap]
+        Align = VertCenter
+        TabOrder = 0
+        ReadOnly = True
+        Position.X = 120.000000000000000000
+        Position.Y = 5.000000000000000000
+        Size.Width = 368.000000000000000000
+        Size.Height = 22.000000000000000000
+        Size.PlatformDefault = False
+      end
+      object TextName: TText
+        Align = Client
+        Margins.Right = 3.000000000000000000
+        Size.Width = 117.000000000000000000
+        Size.Height = 32.000000000000000000
+        Size.PlatformDefault = False
+        Text = #1053#1072#1080#1084#1077#1085#1086#1074#1099#1074#1072#1103' '#1087#1086#1083#1103':'
+        TextSettings.HorzAlign = Trailing
+      end
+      object EditFieldName: TEdit
+        Touch.InteractiveGestures = [LongTap, DoubleTap]
+        Align = VertCenter
+        TabOrder = 1
+        Position.X = 120.000000000000000000
+        Position.Y = 36.000000000000000000
+        Size.Width = 368.000000000000000000
+        Size.Height = 22.000003814697270000
+        Size.PlatformDefault = False
+      end
+    end
+  end
+end

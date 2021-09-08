@@ -1,0 +1,5 @@
+object IndexFrame: TIndexFrame
+  Size.Width = 386.000000000000000000
+  Size.Height = 254.000000000000000000
+  Size.PlatformDefault = False
+end
