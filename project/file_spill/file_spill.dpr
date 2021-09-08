@@ -10,7 +10,9 @@ uses
   Lb.SysUtils in 'lib\Lb.SysUtils.pas',
   Lb.ApplicationVersion in '..\..\library\Lb.ApplicationVersion.pas',
   Lb.Params in 'lib\Lb.Params.pas',
-  Lb.SearchFile in 'lib\Lb.SearchFile.pas';
+  Lb.SearchFile in 'lib\Lb.SearchFile.pas',
+  Lb.DataModuleDB in '..\..\library\db\Lb.DataModuleDB.pas' {DataModuleDB: TDataModule},
+  Lb.SysUtils.ISO860 in '..\..\library\Lb.SysUtils.ISO860.pas';
 
 {$R *.res}
 

@@ -23,10 +23,19 @@ type
   TMainForm = class(TForm)
     Button1: TButton;
     ListBox1: TListBox;
+    Button2: TButton;
+    Button3: TButton;
+    Button4: TButton;
     procedure FormShow(Sender: TObject);
     procedure Button1Click(Sender: TObject);
+    procedure Button2Click(Sender: TObject);
+    procedure Button3Click(Sender: TObject);
+    procedure FormCreate(Sender: TObject);
+    procedure Button4Click(Sender: TObject);
   private
-    { Private declarations }
+  protected
+    procedure EventSearchFilesOnStart(Sender: TObject);
+    procedure EventSearchFilesOnStop(Sender: TObject);
   public
     { Public declarations }
   end;
@@ -39,7 +48,12 @@ implementation
 {$R *.fmx}
 
 uses
-  Lb.ApplicationVersion;
+  Lb.ApplicationVersion,
+  Lb.SearchFile,
+  Lb.Params;
+
+var
+  localSearchFiles: TSearchFiles = nil;
 
 procedure TMainForm.Button1Click(Sender: TObject);
 var
@@ -64,8 +78,80 @@ begin
   SDA := TDirectory.GetDirectories(xS);
   for xS in SDA do
     Listbox1.Items.Add(xS);
-    
+end;
 
+procedure SetCallBackParams(AParams: TParams);
+
+  procedure SetLog(S: String);
+  begin
+    MainForm.ListBox1.Items.Add(S);
+  end;
+
+var
+  xS: String;
+  xLastWriteTime: TDateTime;
+  xType: TTypeSearch;
+begin
+  xType := TTypeSearch(AParams.ParamByName('type').AsInteger);
+  case xType of
+    tpBegin: SetLog('begin');   // Начало поиска
+    tpEnd: SetLog('end');     // Конец поиска
+    tpAddFile: begin
+      // Добавить файл
+      xS := AParams.ParamByName('file').AsString;
+      xLastWriteTime := AParams.ParamByName('last_write_time').AsDateTime;
+      SetLog(xS + ' ' + DateTimeToStr(xLastWriteTime));
+    end;
+    tpAddDir: begin
+      // Добавить папку
+      xS := AParams.ParamByName('dir').AsString;
+      SetLog(xS);
+    end;
+  end;
+  Application.ProcessMessages;
+end;
+
+procedure TMainForm.Button2Click(Sender: TObject);
+var
+  xPath: String;
+begin
+  xPath := 'd:\work\';
+
+end;
+
+procedure TMainForm.Button3Click(Sender: TObject);
+begin
+//  SetStopSearchFile;
+  localSearchFiles.PathDir := 'd:\work\diasoft\video\';
+  localSearchFiles.Start;
+end;
+
+
+procedure TMainForm.Button4Click(Sender: TObject);
+var
+  xVal1, xVal2, xVal3: Integer;
+begin
+  xVal1 := 16;
+  xVal2 := 17;
+  xVal3 := xVal1 and xVal2;
+  ShowMessage('xVal3 = ' + IntToStr(xVal3))
+end;
+
+procedure TMainForm.EventSearchFilesOnStart(Sender: TObject);
+begin
+  ListBox1.Items.Add('start');
+end;
+
+procedure TMainForm.EventSearchFilesOnStop(Sender: TObject);
+begin
+  ListBox1.Items.Add('stop');
+end;
+
+procedure TMainForm.FormCreate(Sender: TObject);
+begin
+  localSearchFiles := TSearchFiles.Create;
+  localSearchFiles.OnStart := EventSearchFilesOnStart;
+  localSearchFiles.OnStop := EventSearchFilesOnStop;
 end;
 
 procedure TMainForm.FormShow(Sender: TObject);

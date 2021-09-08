@@ -3,12 +3,6 @@
 interface
 
 uses
-//  System.SysUtils,
-//  System.Variants,
-//  System.Classes,
-//  System.Generics.Collections,
-//  System.IOUtils,
-
   System.SysUtils,
   System.Types,
   System.UITypes,
@@ -16,101 +10,273 @@ uses
   System.Variants,
   System.IOUtils,
   System.Generics.Collections,
-
   Lb.Params;
 
 type
-  TInfoFile = class(TObject)
-  private
-    FFileName: String;
-    FPath: String;
-    FDateTime: TDateTime;
-  public
-    procedure SetInfoFile(const APathFileName: String; ADateTime: TDateTime);
-    property FileName: String read FFileName;
-    property Path: String read FPath;
-    property DateTime: TDateTime read FDateTime;
-  end;
+  TTypeSearch = (
+    tpBegin,   // Начало поиска
+    tpEnd,     // Конец поиска
+    tpAddFile, // Добавить файл
+    tpAddDir   // Добавить папку
+  );
 
-  TInfoFiles = class(TObjectList<TInfoFile>)
+
+  ///<summary>Поиск фалов и экспорт их базу данных</summary>
+  TSearchFiles = class(TObject)
   private
+    FActive: Boolean;
+    FPathDir: String;
+    FOnStart: TNotifyEvent;
+    FOnStop: TNotifyEvent;
+  protected
+    procedure DoStart;
+    procedure DoStop;
+    procedure SetSearchPathDir;
   public
-    function IndexOfDateTime(const ADateTime: TDateTime): Integer;
-    procedure SetInfoFile(const APathFileName: String; ADateTime: TDateTime);
+    constructor Create; virtual;
+    destructor Destroy; override;
+    procedure Start;
+    procedure Stop;
+    property PathDir: String write FPathDir;
+    property Active: Boolean read FActive;
+    property OnStart: TNotifyEvent write FOnStart;
+    property OnStop: TNotifyEvent write FOnStop;
   end;
 
 implementation
 
 uses
-  System.Threading;
+  System.Threading, Lb.DataModuleDB, Lb.SysUtils.ISO860;
 
-procedure SetSearchFile(const APath: String; OnEventParam: TNotifyEventParams);
 var
-  i: Integer;
-  xSDA: TStringDynArray;
-begin
+  localStopSearch: Boolean = False;
 
-  xSDA := TDirectory.GetFiles(APath, '*.*');
-  for i := 0 to High(xSDA) do
+procedure SetStopSearchFile;
+begin
+  localStopSearch := True;
+end;
+
+procedure SetCopy(ADest, ASource: String);
+var
+  xDest: TFileStream;
+  xSource: TFileStream;
+begin
+  xSource := TFileStream.Create(ASource,fmOpenRead);
+  try
+    xSource.Position := 0;
+    xDest := TFileStream.Create(ADest,fmCreate);
+    try
+      xDest.CopyFrom(xSource);
+    finally
+      FreeAndNil(xDest);
+    end;
+  finally
+    FreeAndNil(xSource);
+  end;
+end;
+
+procedure SetSearchFile(APath: String; ASearchFiles: TSearchFiles);
+const
+  TMP_FILE_DB = 'tmp_files.sqlite';
+  REAL_FILE_DB = 'files.sqlite';
+var
+  localDB: TDataModuleDB;
+
+  procedure SetBegin;
   begin
-    var xFile := xSDA[i];
-    var xLastWriteTime := TFile.GetLastWriteTime(xFile);
+
+    // Посылаем сообщение
+    TThread.Synchronize(nil,
+      procedure ()
+      begin
+        ASearchFiles.DoStart;
+      end
+    );
+
+    // Создание базы
+    localStopSearch := False;
+    var xFileDB := ExtractFilePath(ParamStr(0)) + TMP_FILE_DB;
+    localDB := TDataModuleDB.Create(nil);
+    localDB.DefaultConnection(xFileDB);
+    var xSQL := TStringList.Create;
+    try
+
+      // Таблица папок
+      with xSQL do
+      begin
+        Clear;
+        Add('create table if not exists files(');
+        Add(' file_name text,');
+        Add(' path text,');
+        Add(' ext text,');
+        Add(' write_time text');
+        Add(')');
+      end;
+      localDB.GetExecSQL(xSQL.Text);
+
+      // Таблица файлов
+      with xSQL do
+      begin
+        Clear;
+        Add('create table if not exists files(');
+        Add(' file_name text,');
+        Add(' path text,');
+        Add(' ext text,');
+        Add(' write_time text');
+        Add(')');
+      end;
+      localDB.GetExecSQL(xSQL.Text);
+
+
+      localDB.GetExecSQL('delete from files');
+    finally
+      FreeAndNil(xSQL);
+    end;
+  end;
+
+  procedure SetEnd;
+  begin
+    // Разрыаем соединение
+    if Assigned(localDB) then
+      FreeAndNil(localDB);
+    localDB := nil;
+
+    // Событие завершение загрузки
+    TThread.Synchronize(nil,
+      procedure ()
+      begin
+        var xTmpFile := ExtractFilePath(ParamStr(0)) + TMP_FILE_DB;
+        var xRealFile := ExtractFilePath(ParamStr(0)) + REAL_FILE_DB;
+        if FileExists(xTmpFile) then
+          SetCopy(xRealFile,xTmpFile);
+        ASearchFiles.DoStop;
+      end
+    );
+  end;
+
+  procedure SetAddFile(const AFileName: String; const ALastWriteTime: TDateTime);
+  begin
+
+    var xSQL := TStringList.Create;
+    with xSQL do
+    begin
+      Add('insert into files');
+      Add('(file_name, path, ext, write_time)');
+      Add('values (:file_name, :path, :ext, :write_time)');
+    end;
+
+    if Assigned(localDB) then
+    begin
+      var _FileName := ExtractFileName(AFileName);
+      var _Path := ExtractFilePath(AFileName);
+      var _Ext := ExtractFileExt(AFileName);
+      var _WriteTime := GetDateTimeToStrISO860(ALastWriteTime);
+      localDB.GetExecSQL(xSQL.Text,[_FileName, _Path, _Ext, _WriteTime]);
+    end;
+
+  end;
+
+  procedure SetAddDir(const ADirName: String);
+  begin
+    {todo: дабовление ссылки}
 
 
 
   end;
 
-  ListBox1.Items.Add('dir');
-  SDA := TDirectory.GetDirectories(xS);
-  for xS in SDA do
-    Listbox1.Items.Add(xS);
-
-end;
-
-{ TInfoFile }
-
-procedure TInfoFile.SetInfoFile(const APathFileName: String; ADateTime: TDateTime);
-begin
-  FPath     := ExtractFilePath(APathFileName);
-  FFileName := ExtractFileName(APathFileName);
-  FDateTime := ADateTime;
-end;
-
-{ TInfoFiles }
-
-function TInfoFiles.IndexOfDateTime(const ADateTime: TDateTime): Integer;
-var
-  xInfoFile: TInfoFile;
-  i, Count: Integer;
-begin
-  Result := -1;
-  Count := Self.Count;
-  if Count > 0 then
-    for i := 0 to Count - 1 do
+  procedure SetSearchDir(APath: String);
+  var
+    xS: String;
+    xSDA: TStringDynArray;
+  begin
+    SetAddDir(APath);
+    // Перебираем все фалы
+    xSDA := TDirectory.GetFiles(APath, '*.*');
+    for xS in xSDA do
     begin
-      xInfoFile := Self.Items[i];
-      if xInfoFile.DateTime < ADateTime then
-      begin
-        Result := i;
+      if localStopSearch then
         Break;
+      var xLastWriteTime := TFile.GetLastWriteTime(xS);
+      SetAddFile(xS,xLastWriteTime);
+    end;
+    // Перебираем все папки
+    if not localStopSearch then
+    begin
+      xSDA := TDirectory.GetDirectories(APath);
+      for xS in xSDA do
+      begin
+        if localStopSearch then
+          Break;
+        SetSearchDir(xS);
       end;
     end;
+  end;
+
+begin
+  SetBegin;
+  SetSearchDir(APath);
+  SetEnd;
 end;
 
-procedure TInfoFiles.SetInfoFile(const APathFileName: String; ADateTime: TDateTime);
+procedure SetSearchFileThreading(APath: String; ASearchFiles: TSearchFiles);
 var
-  xInfoFile: TInfoFile;
+  xTaks: ITask;
 begin
-  xInfoFile := TInfoFile.Create;
-  xInfoFile.SetInfoFile(APathFileName,ADateTime);
-  var xIndex :=  Self.IndexOfDateTime(ADateTime);
-  if xIndex >= 0 then
+  xTaks := TTask.Create(
+    procedure()
+    begin
+      SetSearchFile(APath,ASearchFiles);
+    end
+  );
+  xTaks.Start;
+end;
+
+{ TSearchFiles }
+
+constructor TSearchFiles.Create;
+begin
+  FPathDir := '';
+  FActive := False;
+end;
+
+destructor TSearchFiles.Destroy;
+begin
+
+  inherited;
+end;
+
+procedure TSearchFiles.DoStart;
+begin
+  FActive := True;
+  if Assigned(FOnStart) then FOnStart(Self);
+end;
+
+procedure TSearchFiles.DoStop;
+begin
+  if Assigned(FOnStop) then FOnStop(Self);
+end;
+
+procedure TSearchFiles.SetSearchPathDir;
+begin
+  if DirectoryExists(FPathDir) then
+    SetSearchFileThreading(FPathDir,Self);
+end;
+
+procedure TSearchFiles.Start;
+begin
+  if not FActive then
   begin
-    xIndex := IndexOfDateTime(ADateTime);
-    Self.Insert(xIndex,xInfoFile);
-  end
-  else
-    Self.Add(xInfoFile);
+    SetSearchPathDir;
+  end;
+end;
+
+procedure TSearchFiles.Stop;
+begin
+  if FActive then
+  begin
+    FActive := False;
+    SetStopSearchFile;
+  end;
 end;
 
 end.

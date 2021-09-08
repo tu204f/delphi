@@ -8,9 +8,11 @@ uses
   System.Classes,
   System.Generics.Collections;
 
-
 implementation
 
-
+uses
+  System.Threading,
+  Lb.Params,
+  Lb.SearchFile;
 
 end.
