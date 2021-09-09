@@ -33,5 +33,6 @@ object MainForm: TMainForm
     Size.PlatformDefault = False
     TabOrder = 4
     Text = 'Button1'
+    OnClick = Button1Click
   end
 end

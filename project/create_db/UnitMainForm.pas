@@ -24,6 +24,7 @@ type
     LayoutPage: TLayout;
     Button1: TButton;
     procedure FormShow(Sender: TObject);
+    procedure Button1Click(Sender: TObject);
   private
     { Private declarations }
   public
@@ -43,6 +44,14 @@ uses
 
 var
   localStructure: TStructure = nil;
+
+procedure TMainForm.Button1Click(Sender: TObject);
+var
+  MyGUID : TGUID;
+begin
+ CreateGUID(MyGUID);
+ ShowMessage(GUIDToString(MyGUID));
+end;
 
 procedure TMainForm.FormShow(Sender: TObject);
 var

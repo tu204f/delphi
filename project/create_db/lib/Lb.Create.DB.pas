@@ -182,7 +182,45 @@ type
     class function GetIndexOfTypeField(const AFieldType: String): Integer; static;
   end;
 
+function GetStrToTypeObject(const ATypeObject: TTypeObject): String; inline;
+function GetTypeObjectToStr(const AValue: String): TTypeObject; inline;
+
 implementation
+
+function GetStrToTypeObject(const ATypeObject: TTypeObject): String;
+begin
+  case ATypeObject of
+    toNull: Result := 'null';
+    toDomain: Result := 'domain';
+    toField: Result := 'field';
+    toIndex: Result := 'index';
+    toTable: Result := 'table';
+    toMethod: Result := 'method';
+    toModule: Result := 'module';
+  end;
+end;
+
+function GetTypeObjectToStr(const AValue: String): TTypeObject;
+var
+  xS: String;
+begin
+  xS := AnsiLowerCase(AValue);
+  if SameText(xS,'domain') then
+    Result := TTypeObject.toDomain
+  else if SameText(xS,'field') then
+    Result := TTypeObject.toField
+  else if SameText(xS,'index') then
+    Result := TTypeObject.toIndex
+  else if SameText(xS,'table') then
+    Result := TTypeObject.toTable
+  else if SameText(xS,'method') then
+    Result := TTypeObject.toMethod
+  else if SameText(xS,'module') then
+    Result := TTypeObject.toModule
+  else
+    Result := TTypeObject.toNull;
+end;
+
 
 { TCustomObjectModule }
 

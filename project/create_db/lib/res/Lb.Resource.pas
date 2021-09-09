@@ -28,6 +28,7 @@ type
   end;
 
 procedure SetResourceParams(const AName: String; const AStrings: TStrings);
+function GetResourceText(const AName: String): String;
 
 implementation
 
@@ -53,6 +54,19 @@ end;
 procedure SetResourceParams(const AName: String; const AStrings: TStrings);
 begin
   GetRes.SetParam(AName,AStrings);
+end;
+
+function GetResourceText(const AName: String): String;
+var
+  xStr: TStrings;
+begin
+  xStr := TStringList.Create;
+  try
+    SetResourceParams(AName,xStr);
+    Result := xStr.Text;
+  finally
+    FreeAndNil(xStr);
+  end;
 end;
 
 { TResFrame }
