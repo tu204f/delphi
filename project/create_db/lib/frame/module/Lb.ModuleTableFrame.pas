@@ -1,4 +1,4 @@
-﻿unit Lb.ModulesFrame;
+﻿unit Lb.ModuleTableFrame;
 
 interface
 
@@ -20,17 +20,22 @@ uses
   FMX.ScrollBox,
   FMX.Grid,
   FMX.Layouts,
-  Lb.Create.DB;
+  Lb.Create.DB,
+  FMX.ListBox,
+  FMX.Menus;
 
 type
   ///<summary>Список модулей</summary>
   TModuleTableFrame = class(TFrame)
-    StringGrid: TStringGrid;
-    ButtonAdd: TButton;
-    ButtonEdit: TButton;
-    ButtonDelete: TButton;
-    LayoutMenu: TLayout;
     Layout: TLayout;
+    ListBox: TListBox;
+    PopupMenu: TPopupMenu;
+    MenuItemAdd: TMenuItem;
+    MenuItemChange: TMenuItem;
+    MenuItemDelete: TMenuItem;
+    procedure MenuItemAddClick(Sender: TObject);
+    procedure MenuItemChangeClick(Sender: TObject);
+    procedure MenuItemDeleteClick(Sender: TObject);
   private
     FModules: TCrModules;
     procedure SetModules(const Value: TCrModules);
@@ -43,6 +48,10 @@ type
 implementation
 
 {$R *.fmx}
+
+uses
+  Lb.Core.Events,
+  Lb.SysUtils;
 
 { TModulesFrame }
 
@@ -61,6 +70,21 @@ end;
 procedure TModuleTableFrame.SetModules(const Value: TCrModules);
 begin
   FModules := Value;
+end;
+
+procedure TModuleTableFrame.MenuItemAddClick(Sender: TObject);
+begin
+  ApplicationEvents.SetEvent(EVENT_MODULE_ADD,Self);
+end;
+
+procedure TModuleTableFrame.MenuItemChangeClick(Sender: TObject);
+begin
+  ApplicationEvents.SetEvent(EVENT_MODULE_CHANGE,Self);
+end;
+
+procedure TModuleTableFrame.MenuItemDeleteClick(Sender: TObject);
+begin
+  ApplicationEvents.SetEvent(EVENT_MODULE_DELETE,Self);
 end;
 
 end.

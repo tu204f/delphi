@@ -34,8 +34,8 @@ object FieldFrame: TFieldFrame
         Size.Height = 90.000000000000000000
         Size.PlatformDefault = False
         TabOrder = 1
-        Viewport.Width = 355.000000000000000000
-        Viewport.Height = 90.000000000000000000
+        Viewport.Width = 351.000000000000000000
+        Viewport.Height = 86.000000000000000000
       end
     end
     object GridPanelLayout: TGridPanelLayout

@@ -110,7 +110,7 @@ type
     /// ApplicationEvents.SetEvent('sys_body_close',Self,[]);
     ///</remarks>
     procedure SetEvent(AName: String; ASender: TObject; AParams: array of TParamValue); overload;
-    procedure SetEvent(AName: String; ASender: TObject; AParams: TStrings); overload;
+    procedure SetEvent(AName: String; ASender: TObject; AParams: TStrings = nil); overload;
     ///<summary>Подписаться на событие</summary>
     ///<param name='AName'>Имя события</param>
     ///<remarks>
@@ -403,7 +403,8 @@ procedure TEventParam.SetEvent(AParams: TStrings);
 begin
   if Assigned(FEventStrings) then
   begin
-    FParamStrings.Assign(AParams);
+    if Assigned(AParams) then
+      FParamStrings.Assign(AParams);
     FEventStrings(FSender,FParamStrings);
   end;
 end;

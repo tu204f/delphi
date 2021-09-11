@@ -56,8 +56,8 @@ object MethodTableFrame: TMethodTableFrame
       Size.Height = 286.000000000000000000
       Size.PlatformDefault = False
       TabOrder = 0
-      Viewport.Width = 625.000000000000000000
-      Viewport.Height = 261.000000000000000000
+      Viewport.Width = 629.000000000000000000
+      Viewport.Height = 286.000000000000000000
     end
   end
 end

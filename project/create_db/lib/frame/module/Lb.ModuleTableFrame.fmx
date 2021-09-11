@@ -1,0 +1,46 @@
+object ModuleTableFrame: TModuleTableFrame
+  Size.Width = 462.000000000000000000
+  Size.Height = 364.000000000000000000
+  Size.PlatformDefault = False
+  object Layout: TLayout
+    Align = Client
+    Margins.Left = 3.000000000000000000
+    Margins.Top = 3.000000000000000000
+    Margins.Right = 3.000000000000000000
+    Margins.Bottom = 3.000000000000000000
+    Size.Width = 456.000000000000000000
+    Size.Height = 358.000000000000000000
+    Size.PlatformDefault = False
+    TabOrder = 0
+    object ListBox: TListBox
+      Align = Client
+      PopupMenu = PopupMenu
+      Size.Width = 456.000000000000000000
+      Size.Height = 358.000000000000000000
+      Size.PlatformDefault = False
+      TabOrder = 0
+      DisableFocusEffect = True
+      DefaultItemStyles.ItemStyle = ''
+      DefaultItemStyles.GroupHeaderStyle = ''
+      DefaultItemStyles.GroupFooterStyle = ''
+      Viewport.Width = 452.000000000000000000
+      Viewport.Height = 354.000000000000000000
+    end
+  end
+  object PopupMenu: TPopupMenu
+    Left = 183
+    Top = 175
+    object MenuItemAdd: TMenuItem
+      Text = #1044#1086#1073#1072#1074#1080#1090#1100
+      OnClick = MenuItemAddClick
+    end
+    object MenuItemChange: TMenuItem
+      Text = #1048#1079#1084#1077#1085#1080#1090#1100
+      OnClick = MenuItemChangeClick
+    end
+    object MenuItemDelete: TMenuItem
+      Text = #1059#1076#1072#1083#1080#1090#1100
+      OnClick = MenuItemDeleteClick
+    end
+  end
+end

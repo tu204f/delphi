@@ -286,7 +286,7 @@
             <FormType>fmx</FormType>
             <DesignClass>TFrame</DesignClass>
         </DCCReference>
-        <DCCReference Include="lib\frame\module\Lb.ModulesFrame.pas">
+        <DCCReference Include="lib\frame\module\Lb.ModuleTableFrame.pas">
             <Form>ModuleTableFrame</Form>
             <FormType>fmx</FormType>
             <DesignClass>TFrame</DesignClass>
@@ -334,7 +334,6 @@
         <DCCReference Include="..\..\library\Lb.ApplicationVersion.pas"/>
         <DCCReference Include="..\..\library\Lb.CommandLine.pas"/>
         <DCCReference Include="..\..\library\Lb.Core.Events.pas"/>
-        <DCCReference Include="..\..\library\Lb.Core.Variants.pas"/>
         <DCCReference Include="..\..\library\Lb.Logger.pas"/>
         <DCCReference Include="..\..\library\Lb.SysUtils.ISO860.pas"/>
         <DCCReference Include="lib\Lb.SysUtils.Structure.pas"/>
@@ -350,6 +349,11 @@
         </DCCReference>
         <DCCReference Include="lib\frame\domain\Lb.DomainTableFrame.pas">
             <Form>DomainTableFrame</Form>
+            <FormType>fmx</FormType>
+            <DesignClass>TFrame</DesignClass>
+        </DCCReference>
+        <DCCReference Include="lib\frame\Lb.WinFrame.pas">
+            <Form>WinFrame</Form>
             <FormType>fmx</FormType>
             <DesignClass>TFrame</DesignClass>
         </DCCReference>

@@ -1,20 +1,20 @@
 object DomainTableFrame: TDomainTableFrame
-  Size.Width = 675.000000000000000000
-  Size.Height = 304.000000000000000000
+  Size.Width = 822.000000000000000000
+  Size.Height = 469.000000000000000000
   Size.PlatformDefault = False
   object Layout: TLayout
     Align = Client
-    Margins.Left = 3.000000000000000000
-    Margins.Top = 3.000000000000000000
-    Margins.Right = 3.000000000000000000
-    Margins.Bottom = 3.000000000000000000
-    Size.Width = 669.000000000000000000
-    Size.Height = 298.000000000000000000
+    Margins.Left = 2.000000000000000000
+    Margins.Top = 2.000000000000000000
+    Margins.Right = 2.000000000000000000
+    Margins.Bottom = 2.000000000000000000
+    Size.Width = 818.000000000000000000
+    Size.Height = 465.000000000000000000
     Size.PlatformDefault = False
     TabOrder = 0
     object LayoutMenu: TLayout
       Align = Top
-      Size.Width = 669.000000000000000000
+      Size.Width = 818.000000000000000000
       Size.Height = 28.000000000000000000
       Size.PlatformDefault = False
       TabOrder = 1
@@ -52,12 +52,12 @@ object DomainTableFrame: TDomainTableFrame
       CanFocus = True
       ClipChildren = True
       Margins.Top = 3.000000000000000000
-      Size.Width = 669.000000000000000000
-      Size.Height = 267.000000000000000000
+      Size.Width = 818.000000000000000000
+      Size.Height = 434.000000000000000000
       Size.PlatformDefault = False
       TabOrder = 0
-      Viewport.Width = 669.000000000000000000
-      Viewport.Height = 267.000000000000000000
+      Viewport.Width = 814.000000000000000000
+      Viewport.Height = 409.000000000000000000
     end
   end
 end

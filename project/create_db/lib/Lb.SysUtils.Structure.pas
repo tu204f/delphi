@@ -21,6 +21,7 @@ type
       TimeCreation: TDateTime; // время создание объекта
       TimeUpDate: TDateTime;   // время последнего обновление объекта
       Value: String;           // дополнительный параметр
+      Status: Integer;         // статус - объекта
     end;
 
     TAttribute = record
@@ -46,7 +47,6 @@ type
   private
     FFileName: String;
   protected
-    function GetCreateGUID: String;
     procedure SetCreateDataBase;
   protected
     function GetInsertObject(const ARecordObject: TRecordObject): String;
@@ -65,18 +65,37 @@ type
     destructor Destroy; override;
     procedure Open;
     procedure Close;
+    function GetCreateGUID: String;
     property FileName: String read FFileName write FFileName;
+  public {запись данных}
+    function SetRecordObject(const AParentKey: String; const AObject: TCustomObjectModule): String;
+    procedure SetDomain(const AParentKey: String; const ADomain: TCrDomain);
+    procedure SetTableDomain(const AParentKey: String; const ADomains: TCrDomains);
+    procedure SetField(const AParentKey: String; const AField: TCrField);
+    procedure SetTableField(const AParentKey: String; const AFields: TCrFields);
+    procedure SetIndex(const AParentKey: String; const AIndex: TCrIndex);
+    procedure SetTableIndex(const AParentKey: String; const AIndexs: TCrIndexs);
+    procedure SetTable(const AParentKey: String; const ATable: TCrTable);
+    procedure SetTableTables(const AParentKey: String; const ATables: TCrTables);
+    procedure SetMethod(const AParentKey: String; const AMethod: TCrMethod);
+    procedure SetTableMethods(const AParentKey: String; const AMethods: TCrMethods);
+    procedure SetModule(const AModule: TCrModule);
+    procedure SetTableModules(const AModules: TCrModules);
   end;
+
+function Structure: TStructure;
 
 implementation
 
 uses
   Data.DB,
   Lb.DataModuleDB,
-  Lb.Resource, Lb.SysUtils.ISO860;
+  Lb.Resource,
+  Lb.SysUtils.ISO860;
 
 var
   localDataBase: TDataModuleDB = nil;
+  localStructure: TStructure = nil;
 
 function GetDB: TDataModuleDB;
 begin
@@ -97,6 +116,17 @@ begin
   Result := False;
   if Assigned(localDataBase) then
     Result := localDataBase.Connected;
+end;
+
+function Structure: TStructure;
+begin
+  if not Assigned(localStructure) then
+  begin
+    localStructure := TStructure.Create;
+    localStructure.FileName := ExtractFilePath(ParamStr(0)) + 'structure.sb';
+    localStructure.Open;
+  end;
+  Result := localStructure;
 end;
 
 { TStructure.TAttribute }
@@ -151,6 +181,7 @@ end;
 destructor TStructure.Destroy;
 begin
   SetFinalization;
+  localStructure := nil;
   inherited;
 end;
 
@@ -209,7 +240,10 @@ begin
   xRecordObject := ARecordObject;
   xSQL := GetResourceText('insert_object');
 
-  xRecordObject.Key := Self.GetCreateGUID;
+  // Если ключ не определен
+  if xRecordObject.Key.IsEmpty then
+    xRecordObject.Key := Self.GetCreateGUID;
+
   xTypeObject := GetStrToTypeObject(xRecordObject.TypeObject);
   xTimeCreation := GetDateTimeToStrISO860(xRecordObject.TimeCreation);
   xTimeUpDate := GetDateTimeToStrISO860(xRecordObject.TimeUpDate);
@@ -360,7 +394,136 @@ begin
     Result := Self.GetInsertAttribute(Attribute);
 end;
 
+// ----------------------------------------------------------------------------
+
+function TStructure.SetRecordObject(const AParentKey: String; const AObject: TCustomObjectModule): String;
+var
+  xObject: TRecordObject;
+begin
+  xObject.Key          := AObject.ObjectKey;
+  xObject.ParentKey    := AParentKey;
+  xObject.Name         := AObject.Name;
+  xObject.Description  := AObject.Description;
+  xObject.TypeObject   := AObject.TypeObject;
+  xObject.TimeCreation := AObject.TimeСreation;
+  xObject.TimeUpDate   := AObject.TimeUpdate;
+  xObject.Value        := AObject.Value;
+  Result := Self.SetObject(xObject);
+end;
+
+// ----------------------------------------------------------------------------
+
+procedure TStructure.SetDomain(const AParentKey: String; const ADomain: TCrDomain);
+var
+  xParentKey: String;
+begin
+  xParentKey := Self.SetRecordObject(AParentKey,ADomain);
+  {Создание доменного типа данных}
+end;
+
+procedure TStructure.SetTableDomain(const AParentKey: String; const ADomains: TCrDomains);
+var
+  xDomain: TCrDomain;
+begin
+  for xDomain in ADomains do
+    SetDomain(AParentKey,xDomain);
+end;
+
+// ----------------------------------------------------------------------------
+
+procedure TStructure.SetField(const AParentKey: String; const AField: TCrField);
+var
+  xParentKey: String;
+begin
+  xParentKey := Self.SetRecordObject(AParentKey,AField);
+  {Поле объекта}
+end;
+
+procedure TStructure.SetTableField(const AParentKey: String; const AFields: TCrFields);
+var
+  xField: TCrField;
+begin
+  for xField in AFields do
+    SetField(AParentKey,xField);
+end;
+
+// ----------------------------------------------------------------------------
+
+procedure TStructure.SetIndex(const AParentKey: String; const AIndex: TCrIndex);
+var
+  xParentKey: String;
+begin
+  xParentKey := Self.SetRecordObject(AParentKey,AIndex);
+  SetTableField(xParentKey,AIndex.Fields);
+end;
+
+procedure TStructure.SetTableIndex(const AParentKey: String; const AIndexs: TCrIndexs);
+var
+  xIndex: TCrIndex;
+begin
+  for xIndex in AIndexs do
+    SetIndex(AParentKey,xIndex);
+end;
+
+// ----------------------------------------------------------------------------
+
+procedure TStructure.SetTable(const AParentKey: String; const ATable: TCrTable);
+var
+  xParentKey: String;
+begin
+  xParentKey := Self.SetRecordObject(AParentKey,ATable);
+  SetTableField(xParentKey,ATable.Fields);
+  SetTableIndex(xParentKey,ATable.Indexs);
+end;
+
+procedure TStructure.SetTableTables(const AParentKey: String; const ATables: TCrTables);
+var
+  xTable: TCrTable;
+begin
+  for xTable in ATables do
+    SetTable(AParentKey,xTable);
+end;
+
+// ----------------------------------------------------------------------------
+
+procedure TStructure.SetMethod(const AParentKey: String; const AMethod: TCrMethod);
+var
+  xParentKey: String;
+begin
+  xParentKey := Self.SetRecordObject(AParentKey,AMethod);
+  SetTableField(xParentKey,AMethod.InputFields);
+  SetTableTables(xParentKey,AMethod.InputTables);
+  SetTableTables(xParentKey,AMethod.OutputTables);
+end;
+
+procedure TStructure.SetTableMethods(const AParentKey: String; const AMethods: TCrMethods);
+var
+  xMethod: TCrMethod;
+begin
+  for xMethod in AMethods do
+    SetMethod(AParentKey, xMethod);
+end;
+
+procedure TStructure.SetModule(const AModule: TCrModule);
+var
+  xParentKey: String;
+begin
+  xParentKey := Self.SetRecordObject('null',AModule);
+  Self.SetTableDomain(xParentKey, AModule.Domains);
+  Self.SetTableMethods(xParentKey, AModule.Methods);
+  Self.SetTableTables(xParentKey, AModule.Tables);
+end;
+
+procedure TStructure.SetTableModules(const AModules: TCrModules);
+var
+  xModule: TCrModule;
+begin
+  for xModule in AModules do
+    SetModule(xModule);
+end;
+
 initialization
+  Structure;
 
 finalization
   SetFinalization;

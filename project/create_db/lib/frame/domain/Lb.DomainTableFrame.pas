@@ -20,7 +20,8 @@ uses
   FMX.Grid,
   FMX.Controls.Presentation,
   FMX.Layouts,
-  Lb.Create.DB;
+  Lb.Create.DB,
+  FMX.Objects;
 
 type
   TDomainTableFrame = class(TFrame)

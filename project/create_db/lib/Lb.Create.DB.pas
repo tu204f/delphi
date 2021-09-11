@@ -18,21 +18,26 @@ type
   private
     FObjectKey: String;
     FName: String;
+    FSysName: String;
     FDescription: String;
     FTypeObject: TTypeObject;
     FTimeСreation: TDateTime;
     FTimeUpdate: TDateTime;
+    FValue: String;
   protected
     procedure SetTypeObject; virtual;
   public
-    constructor Create; virtual;
+    constructor Create(const AObjectKey: String = ''); virtual;
     destructor Destroy; override;
+    procedure Assign(const AModule: TCustomObjectModule); virtual;
     property ObjectKey: String read FObjectKey write FObjectKey;
     property Name: String read FName write FName;
+    property SysName: String read FSysName write FSysName;
     property Description: String read FDescription write FDescription;
-    property TypeObject: TTypeObject read FTypeObject;
+    property TypeObject: TTypeObject read FTypeObject write FTypeObject;
     property TimeСreation: TDateTime read FTimeСreation write FTimeСreation;
     property TimeUpdate: TDateTime read FTimeUpdate write FTimeUpdate;
+    property Value: String read FValue write FValue;
   public
     function ToCaption: String;
   end;
@@ -44,7 +49,7 @@ type
   protected
     procedure SetTypeObject; override;
   public
-    constructor Create; override;
+    constructor Create(const AObjectKey: String = ''); override;
     destructor Destroy; override;
   end;
 
@@ -64,7 +69,7 @@ type
   protected
     procedure SetTypeObject; override;
   public
-    constructor Create; override;
+    constructor Create(const AObjectKey: String = ''); override;
     destructor Destroy; override;
     ///<summary>Тип полей</summary>
     property TypeField: String read FTypeField write FTypeField;
@@ -87,7 +92,7 @@ type
   protected
     procedure SetTypeObject; override;
   public
-    constructor Create; override;
+    constructor Create(const AObjectKey: String = ''); override;
     destructor Destroy; override;
     property Fields: TCrFields read FFields;
   end;
@@ -110,7 +115,7 @@ type
   protected
     procedure SetTypeObject; override;
   public
-    constructor Create; override;
+    constructor Create(const AObjectKey: String = ''); override;
     destructor Destroy; override;
     property Fields: TCrFields read FFields;
     property Indexs: TCrIndexs read FIndexs;
@@ -136,7 +141,7 @@ type
   protected
     procedure SetTypeObject; override;
   public
-    constructor Create; override;
+    constructor Create(const AObjectKey: String = ''); override;
     destructor Destroy; override;
     property ResultType: String read FResultType;
     property InputFields: TCrFields read FInputFields;
@@ -157,15 +162,17 @@ type
   ///<summary>Набор методов и таблиц</summary>
   TCrModule = class(TCustomObjectModule)
   private
+    FDomains: TCrDomains;
     FMethods: TCrMethods;
     FTables: TCrTables;
   protected
     procedure SetTypeObject; override;
   public
-    constructor Create; override;
+    constructor Create(const AObjectKey: String = ''); override;
     destructor Destroy; override;
     property Methods: TCrMethods read FMethods;
     property Tables: TCrTables read FTables;
+    property Domains: TCrDomains read FDomains;
   end;
 
   ///<summary>Список модулей</summary>
@@ -173,6 +180,7 @@ type
   public
     constructor Create;
     destructor Destroy; override;
+    function GetCreateModule: TCrModule;
   end;
 
   // **************************************************************************
@@ -185,7 +193,31 @@ type
 function GetStrToTypeObject(const ATypeObject: TTypeObject): String; inline;
 function GetTypeObjectToStr(const AValue: String): TTypeObject; inline;
 
+function CrModules: TCrModules;
+
 implementation
+
+uses
+  Lb.SysUtils;
+
+var
+  localModules: TCrModules = nil;
+
+function CrModules: TCrModules;
+begin
+  if not Assigned(localModules) then
+  begin
+    localModules := TCrModules.Create;
+  end;
+  Result := localModules;
+end;
+
+procedure SetFinalizationModules;
+begin
+  if Assigned(localModules) then
+    FreeAndNil(localModules);
+  localModules := nil;
+end;
 
 function GetStrToTypeObject(const ATypeObject: TTypeObject): String;
 begin
@@ -224,7 +256,7 @@ end;
 
 { TCustomObjectModule }
 
-constructor TCustomObjectModule.Create;
+constructor TCustomObjectModule.Create(const AObjectKey: String = '');
 begin
   Self.SetTypeObject;
   FName := '';
@@ -256,11 +288,26 @@ begin
   end;
 end;
 
+procedure TCustomObjectModule.Assign(const AModule: TCustomObjectModule);
+begin
+  if Assigned(AModule) then
+  begin
+    Self.ObjectKey := AModule.ObjectKey;
+    Self.Name := AModule.Name;
+    Self.SysName := AModule.SysName;
+    Self.Description := AModule.Description;
+    Self.TypeObject := AModule.TypeObject;
+    Self.TimeСreation := AModule.TimeСreation;
+    Self.TimeUpdate := AModule.TimeUpdate;
+    Self.Value := AModule.Value;
+  end;
+end;
+
 { TCrDomain }
 
-constructor TCrDomain.Create;
+constructor TCrDomain.Create(const AObjectKey: String = '');
 begin
-  inherited Create;
+  inherited Create(AObjectKey);
 
 end;
 
@@ -292,9 +339,9 @@ end;
 
 { TCrField }
 
-constructor TCrField.Create;
+constructor TCrField.Create(const AObjectKey: String = '');
 begin
-  inherited Create;
+  inherited Create(AObjectKey);
   FTypeField := '';
 end;
 
@@ -325,7 +372,7 @@ end;
 
 { TCrIndex }
 
-constructor TCrIndex.Create;
+constructor TCrIndex.Create(const AObjectKey: String = '');
 begin
   inherited;
 
@@ -359,9 +406,9 @@ end;
 
 { TCrTable }
 
-constructor TCrTable.Create;
+constructor TCrTable.Create(const AObjectKey: String = '');
 begin
-  inherited;
+  inherited Create(AObjectKey);
   FFields := TCrFields.Create;
   FIndexs := TCrIndexs.Create;
 end;
@@ -394,9 +441,9 @@ end;
 
 { TCrMethod }
 
-constructor TCrMethod.Create;
+constructor TCrMethod.Create(const AObjectKey: String = '');
 begin
-  inherited Create;
+  inherited Create(AObjectKey);
   FInputFields := TCrFields.Create;
   FInputTables := TCrTables.Create;
   FOutputTables := TCrTables.Create;
@@ -431,15 +478,17 @@ end;
 
 { TCrModule }
 
-constructor TCrModule.Create;
+constructor TCrModule.Create(const AObjectKey: String = '');
 begin
-  inherited Create;
+  inherited Create(AObjectKey);
   FMethods := TCrMethods.Create;
   FTables := TCrTables.Create;
+  FDomains := TCrDomains.Create;
 end;
 
 destructor TCrModule.Destroy;
 begin
+  FreeAndNil(FDomains);
   FreeAndNil(FTables);
   FreeAndNil(FMethods);
   inherited Destroy;
@@ -464,6 +513,16 @@ begin
   inherited;
 end;
 
+function TCrModules.GetCreateModule: TCrModule;
+var
+  xModule: TCrModule;
+begin
+  xModule := CrModules.GetCreateModule;
+  xModule.ObjectKey := GetCreateObjectKey;
+  Self.Add(xModule);
+  Result := xModule;
+end;
+
 { TSysConfig }
 
 class procedure TSysConfig.SetTypeFields(const AFieldTypes: TStrings);
@@ -481,6 +540,11 @@ begin
   Result := 0;
 end;
 
+initialization
+  CrModules;
+
+finalization
+  SetFinalizationModules;
 
 
 end.

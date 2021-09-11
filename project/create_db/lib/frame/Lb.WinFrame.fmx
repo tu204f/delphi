@@ -1,0 +1,95 @@
+object WinFrame: TWinFrame
+  Size.Width = 773.000000000000000000
+  Size.Height = 601.000000000000000000
+  Size.PlatformDefault = False
+  object RectangleF: TRectangle
+    Align = Client
+    Opacity = 0.500000000000000000
+    Size.Width = 773.000000000000000000
+    Size.Height = 601.000000000000000000
+    Size.PlatformDefault = False
+    Stroke.Color = claNull
+  end
+  object RectangleW: TRectangle
+    Align = Center
+    Size.Width = 563.000000000000000000
+    Size.Height = 351.000000000000000000
+    Size.PlatformDefault = False
+    object LayoutObject: TLayout
+      Align = Client
+      Padding.Right = 2.000000000000000000
+      Margins.Left = 3.000000000000000000
+      Margins.Right = 3.000000000000000000
+      Size.Width = 557.000000000000000000
+      Size.Height = 290.000000000000000000
+      Size.PlatformDefault = False
+      TabOrder = 0
+    end
+    object LayoutTop: TLayout
+      Align = Top
+      Margins.Left = 3.000000000000000000
+      Margins.Right = 3.000000000000000000
+      Position.X = 3.000000000000000000
+      Size.Width = 557.000000000000000000
+      Size.Height = 30.000000000000000000
+      Size.PlatformDefault = False
+      TabOrder = 1
+      object Line: TLine
+        Align = Client
+        LineType = Bottom
+        Size.Width = 557.000000000000000000
+        Size.Height = 30.000000000000000000
+        Size.PlatformDefault = False
+        object TitleText: TText
+          Align = Client
+          Size.Width = 557.000000000000000000
+          Size.Height = 30.000000000000000000
+          Size.PlatformDefault = False
+          Text = #1053#1072#1080#1084#1077#1085#1086#1074#1072#1085#1080#1077' '#1079#1072#1075#1086#1083#1086#1074#1082#1072
+          TextSettings.Font.Size = 18.000000000000000000
+          TextSettings.HorzAlign = Leading
+        end
+      end
+    end
+    object LineBottom: TLine
+      Align = Bottom
+      LineType = Top
+      Position.Y = 320.000000000000000000
+      Size.Width = 563.000000000000000000
+      Size.Height = 31.000000000000000000
+      Size.PlatformDefault = False
+      object LayoutBottom: TLayout
+        Align = Client
+        Margins.Left = 3.000000000000000000
+        Margins.Top = 3.000000000000000000
+        Margins.Right = 3.000000000000000000
+        Margins.Bottom = 3.000000000000000000
+        Size.Width = 557.000000000000000000
+        Size.Height = 25.000000000000000000
+        Size.PlatformDefault = False
+        TabOrder = 0
+        object ButtonApply: TButton
+          Align = Right
+          Margins.Right = 3.000000000000000000
+          Position.X = 394.000000000000000000
+          Size.Width = 80.000000000000000000
+          Size.Height = 25.000000000000000000
+          Size.PlatformDefault = False
+          TabOrder = 0
+          Text = #1055#1088#1080#1084#1077#1085#1080#1090#1100
+          OnClick = ButtonApplyClick
+        end
+        object ButtonClose: TButton
+          Align = Right
+          Position.X = 477.000000000000000000
+          Size.Width = 80.000000000000000000
+          Size.Height = 25.000000000000000000
+          Size.PlatformDefault = False
+          TabOrder = 2
+          Text = #1047#1072#1082#1088#1099#1090#1100
+          OnClick = ButtonCloseClick
+        end
+      end
+    end
+  end
+end
