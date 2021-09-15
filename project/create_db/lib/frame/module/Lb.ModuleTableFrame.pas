@@ -36,9 +36,13 @@ type
     procedure MenuItemAddClick(Sender: TObject);
     procedure MenuItemChangeClick(Sender: TObject);
     procedure MenuItemDeleteClick(Sender: TObject);
+    procedure ListBoxDblClick(Sender: TObject);
   private
     FModules: TCrModules;
     procedure SetModules(const Value: TCrModules);
+    procedure EventUpdataModuleParams(Sender: TObject; const AParams: TStrings);
+  protected
+    procedure SetUpDataModules;
   public
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
@@ -51,7 +55,7 @@ implementation
 
 uses
   Lb.Core.Events,
-  Lb.SysUtils;
+  Lb.SysUtils, Lb.ListBoxItem.Params;
 
 { TModulesFrame }
 
@@ -59,6 +63,7 @@ constructor TModuleTableFrame.Create(AOwner: TComponent);
 begin
   inherited Create(AOwner);
   FModules := nil;
+  ApplicationEvents.GetEvents(EVENT_MODULE_TABLE_UPDATA).EventStrings := EventUpdataModuleParams;
 end;
 
 destructor TModuleTableFrame.Destroy;
@@ -70,6 +75,7 @@ end;
 procedure TModuleTableFrame.SetModules(const Value: TCrModules);
 begin
   FModules := Value;
+  Self.SetUpDataModules;
 end;
 
 procedure TModuleTableFrame.MenuItemAddClick(Sender: TObject);
@@ -85,6 +91,37 @@ end;
 procedure TModuleTableFrame.MenuItemDeleteClick(Sender: TObject);
 begin
   ApplicationEvents.SetEvent(EVENT_MODULE_DELETE,Self);
+end;
+
+procedure TModuleTableFrame.EventUpdataModuleParams(Sender: TObject; const AParams: TStrings);
+begin
+  Self.SetUpDataModules;
+end;
+
+procedure TModuleTableFrame.ListBoxDblClick(Sender: TObject);
+begin
+  var xItem := TListBoxItemParams(ListBox.Selected);
+  if Assigned(xItem) then
+    ApplicationEvents.SetEvent(EVENT_MODULE_TABLE_DLCLICK,Self,xItem.Strings);
+end;
+
+procedure TModuleTableFrame.SetUpDataModules;
+var
+  xS: String;
+  xModule: TCrModule;
+begin
+  if Assigned(FModules) then
+  begin
+    ListBox.Items.Clear;
+    for xModule in FModules do
+    begin
+      var xItem := TListBoxItemParams.Create(ListBox);
+      xItem.Text := xModule.Name;
+      xItem.Params['object_key'] := xModule.ObjectKey;
+      xItem.Params['name']       := xModule.Name;
+      xItem.Parent := ListBox;
+    end;
+  end;
 end;
 
 end.

@@ -26,7 +26,12 @@ uses
   Lb.Resource in 'lib\res\Lb.Resource.pas' {ResFrame: TFrame},
   Lb.DomainFrame in 'lib\frame\domain\Lb.DomainFrame.pas' {DomainFrame: TFrame},
   Lb.DomainTableFrame in 'lib\frame\domain\Lb.DomainTableFrame.pas' {DomainTableFrame: TFrame},
-  Lb.WinFrame in 'lib\frame\Lb.WinFrame.pas' {WinFrame: TFrame};
+  Lb.WinFrame in 'lib\frame\Lb.WinFrame.pas' {WinFrame: TFrame},
+  Lb.ModuleTabItem in 'lib\Lb.ModuleTabItem.pas',
+  Lb.ListBoxItem.Params in '..\..\library\items\Lb.ListBoxItem.Params.pas',
+  Lb.ModuleUserFrame in 'lib\frame\module\Lb.ModuleUserFrame.pas' {ModuleUserFrame: TFrame},
+  Lb.TableFrame in 'lib\frame\table\Lb.TableFrame.pas' {TableFrame: TFrame},
+  Lb.TableTableFrame in 'lib\frame\table\Lb.TableTableFrame.pas' {TableTableFrame: TFrame};
 
 {$R *.res}
 

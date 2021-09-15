@@ -54,6 +54,7 @@ type
   public
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
+    property Strings: TStrings read FParams;
     property Params[Name: String]: String read GetParams write SetParams;
     property Frame: TFrame read FFrame write SetFrame;
   end;

@@ -1,0 +1,115 @@
+object ModuleUserFrame: TModuleUserFrame
+  Size.Width = 652.000000000000000000
+  Size.Height = 415.000000000000000000
+  Size.PlatformDefault = False
+  object GridPanelLayout: TGridPanelLayout
+    Align = Client
+    Size.Width = 652.000000000000000000
+    Size.Height = 415.000000000000000000
+    Size.PlatformDefault = False
+    TabOrder = 0
+    ColumnCollection = <
+      item
+        Value = 100.000000000000000000
+      end>
+    ControlCollection = <
+      item
+        Column = 0
+        Control = LayoutTables
+        Row = 0
+      end
+      item
+        Column = 0
+        Control = LayoutMethods
+        Row = 1
+      end
+      item
+        Column = 0
+        Control = Memo
+        Row = 2
+      end>
+    RowCollection = <
+      item
+        Value = 40.000000000000000000
+      end
+      item
+        Value = 40.000000000000000000
+      end
+      item
+        Value = 20.000000000000000000
+      end>
+    object LayoutTables: TLayout
+      Align = Client
+      Size.Width = 652.000000000000000000
+      Size.Height = 166.000000000000000000
+      Size.PlatformDefault = False
+      TabOrder = 0
+      object LayoutTablesTop: TLayout
+        Align = Top
+        Size.Width = 652.000000000000000000
+        Size.Height = 33.000000000000000000
+        Size.PlatformDefault = False
+        TabOrder = 0
+        object Text1: TText
+          Align = Client
+          Margins.Left = 3.000000000000000000
+          Size.Width = 649.000000000000000000
+          Size.Height = 33.000000000000000000
+          Size.PlatformDefault = False
+          Text = #1057#1087#1080#1089#1086#1082' '#1090#1072#1073#1083#1080#1094
+          TextSettings.HorzAlign = Leading
+        end
+      end
+      object LayoutTableTables: TLayout
+        Align = Client
+        Size.Width = 652.000000000000000000
+        Size.Height = 133.000000000000000000
+        Size.PlatformDefault = False
+        TabOrder = 1
+      end
+    end
+    object LayoutMethods: TLayout
+      Align = Client
+      Size.Width = 652.000000000000000000
+      Size.Height = 166.000000000000000000
+      Size.PlatformDefault = False
+      TabOrder = 1
+      object LayoutMethodsTop: TLayout
+        Align = Top
+        Size.Width = 652.000000000000000000
+        Size.Height = 33.000000000000000000
+        Size.PlatformDefault = False
+        TabOrder = 0
+        object Text2: TText
+          Align = Client
+          Margins.Left = 3.000000000000000000
+          Size.Width = 649.000000000000000000
+          Size.Height = 33.000000000000000000
+          Size.PlatformDefault = False
+          Text = #1057#1087#1080#1089#1086#1082' '#1084#1077#1090#1086#1076#1086#1074
+          TextSettings.HorzAlign = Leading
+        end
+      end
+      object LayoutTableMethods: TLayout
+        Align = Client
+        Size.Width = 652.000000000000000000
+        Size.Height = 133.000000000000000000
+        Size.PlatformDefault = False
+        TabOrder = 1
+      end
+    end
+    object Memo: TMemo
+      Touch.InteractiveGestures = [Pan, LongTap, DoubleTap]
+      DataDetectorTypes = []
+      ReadOnly = True
+      Align = Client
+      Margins.Left = 3.000000000000000000
+      Size.Width = 649.000000000000000000
+      Size.Height = 83.000000000000000000
+      Size.PlatformDefault = False
+      TabOrder = 2
+      Viewport.Width = 645.000000000000000000
+      Viewport.Height = 79.000000000000000000
+    end
+  end
+end

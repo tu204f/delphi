@@ -1,6 +1,6 @@
 object ModuleTableFrame: TModuleTableFrame
-  Size.Width = 462.000000000000000000
-  Size.Height = 364.000000000000000000
+  Size.Width = 335.000000000000000000
+  Size.Height = 439.000000000000000000
   Size.PlatformDefault = False
   object Layout: TLayout
     Align = Client
@@ -8,28 +8,29 @@ object ModuleTableFrame: TModuleTableFrame
     Margins.Top = 3.000000000000000000
     Margins.Right = 3.000000000000000000
     Margins.Bottom = 3.000000000000000000
-    Size.Width = 456.000000000000000000
-    Size.Height = 358.000000000000000000
+    Size.Width = 329.000000000000000000
+    Size.Height = 433.000000000000000000
     Size.PlatformDefault = False
     TabOrder = 0
     object ListBox: TListBox
       Align = Client
       PopupMenu = PopupMenu
-      Size.Width = 456.000000000000000000
-      Size.Height = 358.000000000000000000
+      Size.Width = 329.000000000000000000
+      Size.Height = 433.000000000000000000
       Size.PlatformDefault = False
       TabOrder = 0
+      OnDblClick = ListBoxDblClick
       DisableFocusEffect = True
       DefaultItemStyles.ItemStyle = ''
       DefaultItemStyles.GroupHeaderStyle = ''
       DefaultItemStyles.GroupFooterStyle = ''
-      Viewport.Width = 452.000000000000000000
-      Viewport.Height = 354.000000000000000000
+      Viewport.Width = 325.000000000000000000
+      Viewport.Height = 429.000000000000000000
     end
   end
   object PopupMenu: TPopupMenu
-    Left = 183
-    Top = 175
+    Left = 43
+    Top = 59
     object MenuItemAdd: TMenuItem
       Text = #1044#1086#1073#1072#1074#1080#1090#1100
       OnClick = MenuItemAddClick

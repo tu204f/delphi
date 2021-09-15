@@ -62,6 +62,8 @@ implementation
 
 {$R *.fmx}
 
+uses Lb.SysUtils.Structure, Lb.Core.Events;
+
 { TModuleFrame }
 
 constructor TModuleFrame.Create(AOwner: TComponent);
@@ -103,20 +105,37 @@ procedure TModuleFrame.SetStatus(const AStatus: TStatusFrame);
 begin
   FStatus := AStatus;
   if FStatus = TStatusFrame.fsCreate then
+  begin
     Self.Module := TCrModule.Create;
+    with Self.Module do
+    begin
+      Name := '';
+      SysName := '';
+      Description := '';
+      TimeСreation := System.SysUtils.Date + System.SysUtils.Time;
+      TimeUpdate := System.SysUtils.Date + System.SysUtils.Time;
+      Value := '';
+    end;
+  end;
 end;
 
 procedure TModuleFrame.SetApply;
 begin
   // Применить изменение
-
-
+  if Assigned(FModule) then
+  begin
+    FModule.Name := EditFieldName.Text;
+    FModule.SysName := EditFieldSysName.Text;
+    FModule.Description := MemoDescription.Lines.Text;
+    CrModules.Add(FModule);
+    Structure.SetModule(FModule);
+    ApplicationEvents.SetEvent(EVENT_MODULE_TABLE_UPDATA,Self);
+  end;
 end;
 
 procedure TModuleFrame.SetClose;
 begin
   // Отменить заявки
-
 end;
 
 end.

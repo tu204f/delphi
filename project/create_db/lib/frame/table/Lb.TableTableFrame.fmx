@@ -1,6 +1,6 @@
-object MethodTableFrame: TMethodTableFrame
-  Size.Width = 635.000000000000000000
-  Size.Height = 323.000000000000000000
+object TableTableFrame: TTableTableFrame
+  Size.Width = 721.000000000000000000
+  Size.Height = 242.000000000000000000
   Size.PlatformDefault = False
   object Layout: TLayout
     Align = Client
@@ -8,13 +8,13 @@ object MethodTableFrame: TMethodTableFrame
     Margins.Top = 3.000000000000000000
     Margins.Right = 3.000000000000000000
     Margins.Bottom = 3.000000000000000000
-    Size.Width = 629.000000000000000000
-    Size.Height = 317.000000000000000000
+    Size.Width = 715.000000000000000000
+    Size.Height = 236.000000000000000000
     Size.PlatformDefault = False
     TabOrder = 0
     object LayoutMenu: TLayout
       Align = Top
-      Size.Width = 629.000000000000000000
+      Size.Width = 715.000000000000000000
       Size.Height = 28.000000000000000000
       Size.PlatformDefault = False
       TabOrder = 1
@@ -52,12 +52,12 @@ object MethodTableFrame: TMethodTableFrame
       CanFocus = True
       ClipChildren = True
       Margins.Top = 3.000000000000000000
-      Size.Width = 629.000000000000000000
-      Size.Height = 286.000000000000000000
+      Size.Width = 715.000000000000000000
+      Size.Height = 205.000000000000000000
       Size.PlatformDefault = False
       TabOrder = 0
-      Viewport.Width = 625.000000000000000000
-      Viewport.Height = 261.000000000000000000
+      Viewport.Width = 711.000000000000000000
+      Viewport.Height = 180.000000000000000000
     end
   end
 end

@@ -16,6 +16,7 @@ type
       Key: String;             // ключ объект
       ParentKey: String;       // ключ принадлежащий объектов
       Name: String;            // наименование объекта
+      SysName: String;         // Системноение имя объекта
       Description: String;     // описание объекта
       TypeObject: TTypeObject; // тип объекта
       TimeCreation: TDateTime; // время создание объекта
@@ -44,6 +45,9 @@ type
       property AsDateTime: TDateTime read GetAsDateTime write SetAsDateTime;
     end;
 
+    TRecordObjectList = TList<TRecordObject>;
+    TAttributeList = TList<TAttribute>;
+
   private
     FFileName: String;
   protected
@@ -60,6 +64,8 @@ type
   protected
     function SetObject(const ARecordObject: TRecordObject): String;
     function SetAttribute(const Attribute: TAttribute): Boolean;
+  protected
+    procedure SetSelectedRecordObject(const ARecordObjects: TRecordObjectList);
   public
     constructor Create; virtual;
     destructor Destroy; override;
@@ -81,6 +87,8 @@ type
     procedure SetTableMethods(const AParentKey: String; const AMethods: TCrMethods);
     procedure SetModule(const AModule: TCrModule);
     procedure SetTableModules(const AModules: TCrModules);
+  public
+    procedure GetTableModules(const AModules: TCrModules);
   end;
 
 function Structure: TStructure;
@@ -253,12 +261,13 @@ begin
       [xRecordObject.Key,
        xRecordObject.ParentKey,
        xRecordObject.Name,
+       xRecordObject.SysName,
        xRecordObject.Description,
        xTypeObject,
        xTimeCreation,
        xTimeUpDate,
        xRecordObject.Value],
-      [ftString,ftString,ftString,ftString,ftString,ftString,ftString,ftString]);
+      [ftString,ftString,ftString,ftString,ftString,ftString,ftString,ftString,ftString]);
     Result := xRecordObject.Key;
   except
     Result := '';
@@ -283,13 +292,14 @@ begin
     GetDB.GetExecSQL(xSQL,
       [xRecordObject.ParentKey,
        xRecordObject.Name,
+       xRecordObject.SysName,
        xRecordObject.Description,
        xTypeObject,
        xTimeCreation,
        xTimeUpDate,
        xRecordObject.Value,
        xRecordObject.Key],
-      [ftString,ftString,ftString,ftString,ftString,ftString,ftString,ftString]);
+      [ftString,ftString,ftString,ftString,ftString,ftString,ftString,ftString,ftString]);
     Result := xRecordObject.Key;
   except
     Result := '';
@@ -403,6 +413,7 @@ begin
   xObject.Key          := AObject.ObjectKey;
   xObject.ParentKey    := AParentKey;
   xObject.Name         := AObject.Name;
+  xObject.SysName      := AObject.SysName;
   xObject.Description  := AObject.Description;
   xObject.TypeObject   := AObject.TypeObject;
   xObject.TimeCreation := AObject.TimeСreation;
@@ -521,6 +532,83 @@ begin
   for xModule in AModules do
     SetModule(xModule);
 end;
+
+// ----------------------------------------------------------------------------
+
+procedure TStructure.SetSelectedRecordObject(const ARecordObjects: TRecordObjectList);
+var
+  xSQL: String;
+  xDataSet: TDataSet;
+  xRecordObject: TRecordObject;
+var
+  xTypeObject, xTimeCreation, xTimeUpDate: String;
+begin
+  xSQL := GetResourceText('select_object');
+  xDataSet := GetDB.GetSelectCreateDataSet(xSQL);
+  if Assigned(xDataSet) then
+  begin
+    xDataSet.First;
+    while not xDataSet.Eof do
+    begin
+      with xRecordObject, xDataSet do
+      begin
+        Key         := FieldByName('key').AsString;         // ключ объект
+        ParentKey   := FieldByName('parent_key').AsString;  // ключ принадлежащий объектов
+        xRecordObject.Name := FieldByName('name').AsString; // наименование объекта
+        SysName     := FieldByName('sys_name').AsString;    //
+        Description := FieldByName('description').AsString; // описание объекта
+        // ------------------------------------------------
+        xTypeObject := FieldByName('type_object').AsString; // тип объекта
+        TypeObject  := GetTypeObjectToStr(xTypeObject);     // тип объекта
+        // -----------------------------------------------
+        xTimeCreation := FieldByName('time_creation').AsString;
+        TimeCreation  := GetStrISO860ToDateTime(xTimeCreation);
+        // -----------------------------------------------
+        xTimeUpDate := FieldByName('time_update').AsString;
+        TimeUpDate  := GetStrISO860ToDateTime(xTimeUpDate);  // время последнего обновление объекта
+        // -----------------------------------------------
+        Value  := FieldByName('value').AsString;             // дополнительный параметр
+        Status := FieldByName('status').AsInteger;           // статус - объекта
+      end;
+      ARecordObjects.Add(xRecordObject);
+      xDataSet.Next;
+    end;
+    FreeAndNil(xDataSet);
+  end;
+end;
+
+procedure TStructure.GetTableModules(const AModules: TCrModules);
+var
+  xRecordObject: TRecordObject;
+  xRecordObjects: TRecordObjectList;
+begin
+  if not Assigned(AModules) then
+    raise Exception.Create('Error Message: Не определён, объект Modules');
+  AModules.Clear;
+  xRecordObjects := TRecordObjectList.Create;
+  try
+    SetSelectedRecordObject(xRecordObjects);
+    for xRecordObject in xRecordObjects do
+    begin
+      var xCrModule := TCrModule.Create(xRecordObject.Key);
+      with xCrModule do
+      begin
+        ParentKey    := xRecordObject.ParentKey;
+        Name         := xRecordObject.Name;
+        SysName      := xRecordObject.SysName;
+        Description  := xRecordObject.Description;
+        TypeObject   := xRecordObject.TypeObject;
+        TimeСreation := xRecordObject.TimeCreation;
+        TimeUpdate   := xRecordObject.TimeUpDate;
+        Value        := xRecordObject.Value;
+      end;
+      AModules.Add(xCrModule);
+    end;
+  finally
+    FreeAndNil(xRecordObjects);
+  end;
+end;
+
 
 initialization
   Structure;

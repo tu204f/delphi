@@ -22,6 +22,9 @@ resourcestring  {Событие формы, куда буду помещать f
   EVENT_MODULE_CHANGE   = 'module_change';
   EVENT_MODULE_DELETE   = 'module_delete';
 
+  EVENT_MODULE_TABLE_UPDATA = 'module_table_updata';
+  EVENT_MODULE_TABLE_DLCLICK = 'module_table_dlclick';
+
 ///<summary>Генерирование ключа объекта</summary>
 ///<remarks>Размер ключа, генерируемого</remarks>
 function GetCreateObjectKey: String;

@@ -17,6 +17,7 @@ type
   TCustomObjectModule = class(TObject)
   private
     FObjectKey: String;
+    FParentKey: String;
     FName: String;
     FSysName: String;
     FDescription: String;
@@ -31,6 +32,7 @@ type
     destructor Destroy; override;
     procedure Assign(const AModule: TCustomObjectModule); virtual;
     property ObjectKey: String read FObjectKey write FObjectKey;
+    property ParentKey: String read FParentKey write FParentKey;
     property Name: String read FName write FName;
     property SysName: String read FSysName write FSysName;
     property Description: String read FDescription write FDescription;
@@ -261,6 +263,10 @@ begin
   Self.SetTypeObject;
   FName := '';
   FDescription := '';
+  if AObjectKey.IsEmpty then
+    FObjectKey := GetCreateObjectKey
+  else
+    FObjectKey := AObjectKey;
 end;
 
 destructor TCustomObjectModule.Destroy;
