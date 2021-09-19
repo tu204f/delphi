@@ -15,15 +15,20 @@ type
   );
 
 resourcestring  {Событие формы, куда буду помещать frame}
-  EVENT_WIN_FRAME_APPLY = 'win_frame_apply';
-  EVENT_WIN_FRAME_CLOSE = 'win_frame_close';
+  EVENT_WIN_FRAME_APPLY       = 'win_frame_apply';
+  EVENT_WIN_FRAME_CLOSE       = 'win_frame_close';
 
-  EVENT_MODULE_ADD      = 'module_add';
-  EVENT_MODULE_CHANGE   = 'module_change';
-  EVENT_MODULE_DELETE   = 'module_delete';
+  EVENT_MODULE_ADD            = 'module_add';
+  EVENT_MODULE_CHANGE         = 'module_change';
+  EVENT_MODULE_DELETED        = 'module_deleted';
 
-  EVENT_MODULE_TABLE_UPDATA = 'module_table_updata';
-  EVENT_MODULE_TABLE_DLCLICK = 'module_table_dlclick';
+  EVENT_MODULE_TABLE_UPDATA   = 'module_table_updata';
+  EVENT_MODULE_TABLE_DLCLICK  = 'module_table_dlclick';
+
+  EVENT_DOMAIN_TABLE_ADD      = 'domain_table_add';
+  EVENT_DOMAIN_TABLE_CHANGE   = 'domain_table_change';
+  EVENT_DOMAIN_TABLE_DELETED  = 'domain_table_deleted';
+
 
 ///<summary>Генерирование ключа объекта</summary>
 ///<remarks>Размер ключа, генерируемого</remarks>

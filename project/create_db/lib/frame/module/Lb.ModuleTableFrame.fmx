@@ -24,8 +24,8 @@ object ModuleTableFrame: TModuleTableFrame
       DefaultItemStyles.ItemStyle = ''
       DefaultItemStyles.GroupHeaderStyle = ''
       DefaultItemStyles.GroupFooterStyle = ''
-      Viewport.Width = 325.000000000000000000
-      Viewport.Height = 429.000000000000000000
+      Viewport.Width = 329.000000000000000000
+      Viewport.Height = 433.000000000000000000
     end
   end
   object PopupMenu: TPopupMenu

@@ -90,7 +90,7 @@ begin
   // Событие от модулей
   ApplicationEvents.GetEvents(EVENT_MODULE_ADD).EventStrings := EventModuleAddParams;
   ApplicationEvents.GetEvents(EVENT_MODULE_CHANGE).EventStrings := EventModuleChangeParams;
-  ApplicationEvents.GetEvents(EVENT_MODULE_DELETE).EventStrings := EventModuleDeleteParams;
+  ApplicationEvents.GetEvents(EVENT_MODULE_DELETED).EventStrings := EventModuleDeleteParams;
   ApplicationEvents.GetEvents(EVENT_MODULE_TABLE_DLCLICK).EventStrings := EventModuleDlClickParams;
 
 

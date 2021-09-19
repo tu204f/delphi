@@ -31,6 +31,9 @@ type
     ButtonEdit: TButton;
     ButtonDelete: TButton;
     StringGrid: TStringGrid;
+    procedure ButtonAddClick(Sender: TObject);
+    procedure ButtonEditClick(Sender: TObject);
+    procedure ButtonDeleteClick(Sender: TObject);
   private
     FDomains: TCrDomains;
     procedure SetDomains(const Value: TCrDomains);
@@ -43,6 +46,10 @@ type
 implementation
 
 {$R *.fmx}
+
+uses
+  Lb.Core.Events,
+  Lb.SysUtils;
 
 { TDomainTableFrame }
 
@@ -61,6 +68,21 @@ end;
 procedure TDomainTableFrame.SetDomains(const Value: TCrDomains);
 begin
   FDomains := Value;
+end;
+
+procedure TDomainTableFrame.ButtonAddClick(Sender: TObject);
+begin
+  // Добавить Domain
+end;
+
+procedure TDomainTableFrame.ButtonEditClick(Sender: TObject);
+begin
+  // Редактировать Domain
+end;
+
+procedure TDomainTableFrame.ButtonDeleteClick(Sender: TObject);
+begin
+  // Удалить Domain
 end;
 
 end.

@@ -90,7 +90,7 @@ end;
 
 procedure TModuleTableFrame.MenuItemDeleteClick(Sender: TObject);
 begin
-  ApplicationEvents.SetEvent(EVENT_MODULE_DELETE,Self);
+  ApplicationEvents.SetEvent(EVENT_MODULE_DELETED,Self);
 end;
 
 procedure TModuleTableFrame.EventUpdataModuleParams(Sender: TObject; const AParams: TStrings);

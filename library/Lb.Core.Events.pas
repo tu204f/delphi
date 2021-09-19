@@ -12,6 +12,9 @@ uses
   System.Variants;
 
 type
+  TTypeValue = (tpvInteger,tpvString,tpvDouble,tpvBoolean,tpvInt64);
+
+type
   ///<summary>Параметрами для передачи</summary>
   TParamValue = record
     Key: String;
@@ -63,8 +66,7 @@ type
   ///<summary>Событие с параметром</summary>
   TNotifyEventParams = procedure(Sender: TObject; const AParamValues: TParamValues) of object;
   TNotifyEventParamStrings = procedure(Sender: TObject; const AParams: TStrings) of object;
-
-
+  TNotifyEventValues = procedure(Sender: TObject; const AValues: array of Variant; const ATypeValues: array of TTypeValue) of object;
 
   ///<summary>Параметрируем событие</summary>
   TEventParam = class(TObject)
@@ -73,18 +75,26 @@ type
     FSender: TObject;
     FParams: TParamValues;
     FParamStrings: TStrings;
+    FValues: array of Variant;
+    FTypeValues: array of TTypeValue;
+  private
     FEvent: TNotifyEventParams;
     FEventStrings: TNotifyEventParamStrings;
+    FEventValues: TNotifyEventValues;
+  protected
+    procedure DoEvent;
   public
     constructor Create; virtual;
     destructor Destroy; override;
-    procedure SetEvent(AParams: array of TParamValue); overload;
-    procedure SetEvent(AParams: TStrings); overload;
+    procedure SetEvent(const AParams: array of TParamValue); overload;
+    procedure SetEvent(const AParams: TStrings); overload;
+    procedure SetEvent(const AValues: array of Variant; const ATypeValues: array of TTypeValue); overload;
     property Params: TParamValues read FParams;
     property Name: String read FName write FName;
     property Sender: TObject read FSender write FSender;
     property Event: TNotifyEventParams read FEvent write FEvent;
     property EventStrings: TNotifyEventParamStrings read FEventStrings write FEventStrings;
+    property EventValues: TNotifyEventValues read FEventValues write FEventValues;
   end;
 
   /// <summary>Список событий </summary>
@@ -111,6 +121,7 @@ type
     ///</remarks>
     procedure SetEvent(AName: String; ASender: TObject; AParams: array of TParamValue); overload;
     procedure SetEvent(AName: String; ASender: TObject; AParams: TStrings = nil); overload;
+    procedure SetEvent(AName: String; ASender: TObject; AValues: array of Variant; ATypeValues: array of TTypeValue); overload;
     ///<summary>Подписаться на событие</summary>
     ///<param name='AName'>Имя события</param>
     ///<remarks>
@@ -386,26 +397,52 @@ begin
   inherited;
 end;
 
-procedure TEventParam.SetEvent(AParams: array of TParamValue);
+procedure TEventParam.DoEvent;
+begin
+  if Assigned(FEvent) then
+    FEvent(FSender,FParams);
+  if Assigned(FEventStrings) then
+    FEventStrings(FSender,FParamStrings);
+  if Assigned(FEventValues) then
+    FEventValues(FSender,FValues,FTypeValues);
+end;
+
+procedure TEventParam.SetEvent(const AParams: array of TParamValue);
 var
   xParam: TParamValue;
 begin
-  if Assigned(FEvent) then
-  begin
-    FParams.Clear;
-    for xParam in AParams do
-      FParams.Add(xParam);
-    FEvent(FSender,FParams);
-  end;
+  FParams.Clear;
+  for xParam in AParams do
+    FParams.Add(xParam);
+  DoEvent;
 end;
 
-procedure TEventParam.SetEvent(AParams: TStrings);
+procedure TEventParam.SetEvent(const AParams: TStrings);
 begin
-  if Assigned(FEventStrings) then
+  if Assigned(AParams) then
+    FParamStrings.Assign(AParams);
+  DoEvent;
+end;
+
+procedure TEventParam.SetEvent(const AValues: array of Variant; const ATypeValues: array of TTypeValue);
+var
+  xTypeValuesLength: Integer;
+  xValuesLength: Integer;
+var
+  xL1, xL2: Integer;
+  xValue: Variant;
+  xTypeValue: TTypeValue;
+begin
+  xValuesLength := Length(AValues);
+  xTypeValuesLength := Length(ATypeValues);
+  if (xValuesLength = xTypeValuesLength) or ((xValuesLength > 0) and (xTypeValuesLength = 0)) then
   begin
-    if Assigned(AParams) then
-      FParamStrings.Assign(AParams);
-    FEventStrings(FSender,FParamStrings);
+    SetLength(FValues,xValuesLength);
+    for var i := 0 to xValuesLength do
+      FValues[i] := AValues[i];
+    for var i := 0 to xTypeValuesLength do
+      FTypeValues[i] := ATypeValues[i];
+    DoEvent;
   end;
 end;
 
@@ -490,6 +527,20 @@ begin
   end;
 end;
 
+procedure TNotifyEvents.SetEvent(AName: String; ASender: TObject;
+  AValues: array of Variant; ATypeValues: array of TTypeValue);
+var
+  xIndex: Integer;
+  xEvent: TEventParam;
+begin
+  xIndex := IndexOf(AName);
+  if xIndex >= 0 then
+  begin
+    xEvent := FEvents[xIndex];
+    xEvent.Sender := ASender;
+    xEvent.SetEvent(AValues,ATypeValues);
+  end;
+end;
 
 function TNotifyEvents.GetEvents(AName: String): TEventParam;
 var

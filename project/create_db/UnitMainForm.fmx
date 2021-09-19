@@ -2,8 +2,8 @@ object MainForm: TMainForm
   Left = 0
   Top = 0
   Caption = 'Form2'
-  ClientHeight = 547
-  ClientWidth = 1105
+  ClientHeight = 558
+  ClientWidth = 753
   FormFactor.Width = 320
   FormFactor.Height = 480
   FormFactor.Devices = [Desktop]
@@ -12,17 +12,17 @@ object MainForm: TMainForm
   DesignerMasterStyle = 0
   object TabControl: TTabControl
     Align = Client
-    Size.Width = 1105.000000000000000000
-    Size.Height = 547.000000000000000000
+    Size.Width = 753.000000000000000000
+    Size.Height = 558.000000000000000000
     Size.PlatformDefault = False
     TabIndex = 1
     TabOrder = 2
     TabPosition = PlatformDefault
     Sizes = (
-      1105s
-      521s
-      1105s
-      521s)
+      753s
+      532s
+      753s
+      532s)
     object TabItemDataBase: TTabItem
       CustomIcon = <
         item
@@ -35,23 +35,25 @@ object MainForm: TMainForm
       StyleLookup = ''
       TabOrder = 0
       Text = #1041#1072#1079#1072' '#1076#1072#1085#1085#1099#1093': '
+      ExplicitSize.cx = 95.000000000000000000
+      ExplicitSize.cy = 26.000000000000000000
       object Layout: TLayout
         Align = Client
-        Size.Width = 1105.000000000000000000
-        Size.Height = 521.000000000000000000
+        Size.Width = 753.000000000000000000
+        Size.Height = 532.000000000000000000
         Size.PlatformDefault = False
         TabOrder = 2
         object LayoutModule: TLayout
           Align = Left
           Size.Width = 265.000000000000000000
-          Size.Height = 521.000000000000000000
+          Size.Height = 532.000000000000000000
           Size.PlatformDefault = False
           TabOrder = 0
         end
         object LayoutClient: TLayout
           Align = Client
-          Size.Width = 840.000000000000000000
-          Size.Height = 521.000000000000000000
+          Size.Width = 488.000000000000000000
+          Size.Height = 532.000000000000000000
           Size.PlatformDefault = False
           TabOrder = 1
         end
@@ -69,11 +71,13 @@ object MainForm: TMainForm
       StyleLookup = ''
       TabOrder = 0
       Text = #1058#1080#1087' '#1076#1072#1085#1085#1099#1093
+      ExplicitSize.cx = 85.000000000000000000
+      ExplicitSize.cy = 26.000000000000000000
       object LayoutDomain: TLayout
         Align = Client
         Margins.Top = 3.000000000000000000
-        Size.Width = 1105.000000000000000000
-        Size.Height = 518.000000000000000000
+        Size.Width = 753.000000000000000000
+        Size.Height = 529.000000000000000000
         Size.PlatformDefault = False
         TabOrder = 0
       end
