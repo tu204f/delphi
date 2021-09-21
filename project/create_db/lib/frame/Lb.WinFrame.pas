@@ -54,6 +54,8 @@ type
     function GetTitle: String;
     procedure SetTitle(const Value: String);
     procedure SetWin(const Value: TFrame);
+  protected
+    procedure SetFinalizationWin;
   public
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
@@ -77,12 +79,17 @@ end;
 
 destructor TWinFrame.Destroy;
 begin
+  Self.SetFinalizationWin;
+  inherited;
+end;
+
+procedure TWinFrame.SetFinalizationWin;
+begin
   if Assigned(FWin) then
   begin
     FreeAndNil(FWin);
     FWin := nil;
   end;
-  inherited;
 end;
 
 function TWinFrame.GetTitle: String;
@@ -122,6 +129,8 @@ begin
   finally
     FreeAndNil(xStr);
   end;
+
+  Self.SetFinalizationWin;
 end;
 
 procedure TWinFrame.ButtonCloseClick(Sender: TObject);
@@ -140,6 +149,8 @@ begin
   finally
     FreeAndNil(xStr);
   end;
+
+  Self.SetFinalizationWin;
 end;
 
 

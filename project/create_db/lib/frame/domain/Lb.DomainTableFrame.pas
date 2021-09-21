@@ -72,17 +72,17 @@ end;
 
 procedure TDomainTableFrame.ButtonAddClick(Sender: TObject);
 begin
-  // Добавить Domain
+  ApplicationEvents.SetEvent(EVENT_DOMAIN_TABLE_ADD,Self);
 end;
 
 procedure TDomainTableFrame.ButtonEditClick(Sender: TObject);
 begin
-  // Редактировать Domain
+  ApplicationEvents.SetEvent(EVENT_DOMAIN_TABLE_CHANGE,Self);
 end;
 
 procedure TDomainTableFrame.ButtonDeleteClick(Sender: TObject);
 begin
-  // Удалить Domain
+  ApplicationEvents.SetEvent(EVENT_DOMAIN_TABLE_DELETED,Self);
 end;
 
 end.

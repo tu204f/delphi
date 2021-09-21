@@ -63,10 +63,19 @@ type
     property AsInt64[Name: String]: Int64 read GetAsInt64 write SetAsInt64;
   end;
 
-  ///<summary>Событие с параметром</summary>
-  TNotifyEventParams = procedure(Sender: TObject; const AParamValues: TParamValues) of object;
-  TNotifyEventParamStrings = procedure(Sender: TObject; const AParams: TStrings) of object;
-  TNotifyEventValues = procedure(Sender: TObject; const AValues: array of Variant; const ATypeValues: array of TTypeValue) of object;
+  { Событие с параметром }
+  TNotifyEventParam = procedure(Sender: TObject; const AParamValues: TParamValues) of object;
+  TNotifyEventStringsParam = procedure(Sender: TObject; const AParams: TStrings) of object;
+  TNotifyEventValue = procedure(Sender: TObject; const AValues: array of Variant; const ATypeValues: array of TTypeValue) of object;
+
+  { todo: Множественой рассылки объекта }
+  ///<summary>Объект - событий</summary>
+  TRecordNotifyEvent = record
+    EventParam: TNotifyEventParam;
+    EventStringsParam: TNotifyEventStringsParam;
+    EventValue: TNotifyEventValue;
+  end;
+  TNotifyEventRecordList = TList<TRecordNotifyEvent>;
 
   ///<summary>Параметрируем событие</summary>
   TEventParam = class(TObject)
@@ -78,9 +87,9 @@ type
     FValues: array of Variant;
     FTypeValues: array of TTypeValue;
   private
-    FEvent: TNotifyEventParams;
-    FEventStrings: TNotifyEventParamStrings;
-    FEventValues: TNotifyEventValues;
+    FEvent: TNotifyEventParam;
+    FEventStrings: TNotifyEventStringsParam;
+    FEventValue: TNotifyEventValue;
   protected
     procedure DoEvent;
   public
@@ -92,9 +101,9 @@ type
     property Params: TParamValues read FParams;
     property Name: String read FName write FName;
     property Sender: TObject read FSender write FSender;
-    property Event: TNotifyEventParams read FEvent write FEvent;
-    property EventStrings: TNotifyEventParamStrings read FEventStrings write FEventStrings;
-    property EventValues: TNotifyEventValues read FEventValues write FEventValues;
+    property Event: TNotifyEventParam read FEvent write FEvent;
+    property EventStrings: TNotifyEventStringsParam read FEventStrings write FEventStrings;
+    property EventValue: TNotifyEventValue read FEventValue write FEventValue;
   end;
 
   /// <summary>Список событий </summary>
@@ -403,8 +412,8 @@ begin
     FEvent(FSender,FParams);
   if Assigned(FEventStrings) then
     FEventStrings(FSender,FParamStrings);
-  if Assigned(FEventValues) then
-    FEventValues(FSender,FValues,FTypeValues);
+  if Assigned(FEventValue) then
+    FEventValue(FSender,FValues,FTypeValues);
 end;
 
 procedure TEventParam.SetEvent(const AParams: array of TParamValue);

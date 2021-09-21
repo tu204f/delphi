@@ -55,12 +55,18 @@ type
     procedure SetShowWinFrame(const ATitle: String; const AFrame: TFrame = nil);
     procedure SetCloseWinFrame;
   private
+    //
     procedure EventApplyParams(Sender: TObject; const AParams: TStrings);
     procedure EventCloseParams(Sender: TObject; const AParams: TStrings);
+    //
     procedure EventModuleAddParams(Sender: TObject; const AParams: TStrings);
     procedure EventModuleChangeParams(Sender: TObject; const AParams: TStrings);
     procedure EventModuleDeleteParams(Sender: TObject; const AParams: TStrings);
     procedure EventModuleDlClickParams(Sender: TObject; const AParams: TStrings);
+    //
+    procedure EventDomainTableAdd(Sender: TObject; const AParams: TStrings);
+    procedure EventDomainTableChange(Sender: TObject; const AParams: TStrings);
+    procedure EventDomainTableDeleted(Sender: TObject; const AParams: TStrings);
   public
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
@@ -77,7 +83,7 @@ uses
   Lb.ApplicationVersion,
   Lb.SysUtils.Structure,
   Lb.ModuleFrame,
-  Lb.Create.DB;
+  Lb.Create.DB, Lb.DomainFrame;
 
 constructor TMainForm.Create(AOwner: TComponent);
 begin
@@ -92,6 +98,11 @@ begin
   ApplicationEvents.GetEvents(EVENT_MODULE_CHANGE).EventStrings := EventModuleChangeParams;
   ApplicationEvents.GetEvents(EVENT_MODULE_DELETED).EventStrings := EventModuleDeleteParams;
   ApplicationEvents.GetEvents(EVENT_MODULE_TABLE_DLCLICK).EventStrings := EventModuleDlClickParams;
+
+  // Событие Domain
+  ApplicationEvents.GetEvents(EVENT_DOMAIN_TABLE_ADD).EventStrings := EventDomainTableAdd;
+  ApplicationEvents.GetEvents(EVENT_DOMAIN_TABLE_CHANGE).EventStrings := EventDomainTableChange;
+  ApplicationEvents.GetEvents(EVENT_DOMAIN_TABLE_DELETED).EventStrings := EventDomainTableDeleted;
 
 
   Self.SetInitializationWinFrame;
@@ -228,7 +239,29 @@ end;
 
 procedure TMainForm.EventModuleDlClickParams(Sender: TObject; const AParams: TStrings);
 begin
+  //
+end;
 
+// ****************************************************************************
+// Событие домина
+
+procedure TMainForm.EventDomainTableAdd(Sender: TObject; const AParams: TStrings);
+var
+  xDomainFrame: TDomainFrame;
+begin
+  xDomainFrame := TDomainFrame.Create(nil);
+  xDomainFrame.Status := TStatusFrame.fsCreate;
+  Self.SetShowWinFrame('Создать Domain',xDomainFrame);
+end;
+
+procedure TMainForm.EventDomainTableChange(Sender: TObject; const AParams: TStrings);
+begin
+  //
+end;
+
+procedure TMainForm.EventDomainTableDeleted(Sender: TObject; const AParams: TStrings);
+begin
+  //
 end;
 
 end.
