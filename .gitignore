@@ -11,6 +11,10 @@ dcu/
 *.res
 *.local
 *.identcache
+*.pdf
+*.dbg
+*.dmp
+
 
 # Файлы исключения
 !trans2quik.res
