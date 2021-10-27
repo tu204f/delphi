@@ -1,0 +1,48 @@
+﻿<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+    <PropertyGroup>
+        <ProjectGuid>{601B8C59-0F54-48F7-B06C-1D7E56609A06}</ProjectGuid>
+    </PropertyGroup>
+    <ItemGroup>
+        <Projects Include="app_gen_file\gen_file.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="app_sort_file\sort_file.dproj">
+            <Dependencies/>
+        </Projects>
+    </ItemGroup>
+    <ProjectExtensions>
+        <Borland.Personality>Default.Personality.12</Borland.Personality>
+        <Borland.ProjectType/>
+        <BorlandProject>
+            <Default.Personality/>
+        </BorlandProject>
+    </ProjectExtensions>
+    <Target Name="gen_file">
+        <MSBuild Projects="app_gen_file\gen_file.dproj"/>
+    </Target>
+    <Target Name="gen_file:Clean">
+        <MSBuild Projects="app_gen_file\gen_file.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="gen_file:Make">
+        <MSBuild Projects="app_gen_file\gen_file.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="sort_file">
+        <MSBuild Projects="app_sort_file\sort_file.dproj"/>
+    </Target>
+    <Target Name="sort_file:Clean">
+        <MSBuild Projects="app_sort_file\sort_file.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="sort_file:Make">
+        <MSBuild Projects="app_sort_file\sort_file.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="Build">
+        <CallTarget Targets="gen_file;sort_file"/>
+    </Target>
+    <Target Name="Clean">
+        <CallTarget Targets="gen_file:Clean;sort_file:Clean"/>
+    </Target>
+    <Target Name="Make">
+        <CallTarget Targets="gen_file:Make;sort_file:Make"/>
+    </Target>
+    <Import Project="$(BDS)\Bin\CodeGear.Group.Targets" Condition="Exists('$(BDS)\Bin\CodeGear.Group.Targets')"/>
+</Project>
