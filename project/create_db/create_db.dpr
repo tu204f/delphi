@@ -31,7 +31,8 @@ uses
   Lb.ListBoxItem.Params in '..\..\library\items\Lb.ListBoxItem.Params.pas',
   Lb.ModuleUserFrame in 'lib\frame\module\Lb.ModuleUserFrame.pas' {ModuleUserFrame: TFrame},
   Lb.TableFrame in 'lib\frame\table\Lb.TableFrame.pas' {TableFrame: TFrame},
-  Lb.TableTableFrame in 'lib\frame\table\Lb.TableTableFrame.pas' {TableTableFrame: TFrame};
+  Lb.TableTableFrame in 'lib\frame\table\Lb.TableTableFrame.pas' {TableTableFrame: TFrame},
+  DSC.SysUtils in 'lib\dsc\DSC.SysUtils.pas';
 
 {$R *.res}
 

@@ -15,7 +15,7 @@ object MainForm: TMainForm
     Size.Width = 753.000000000000000000
     Size.Height = 558.000000000000000000
     Size.PlatformDefault = False
-    TabIndex = 0
+    TabIndex = 1
     TabOrder = 2
     TabPosition = PlatformDefault
     Sizes = (
@@ -28,7 +28,7 @@ object MainForm: TMainForm
         item
         end>
       TextSettings.HorzAlign = Leading
-      IsSelected = True
+      IsSelected = False
       Size.Width = 95.000000000000000000
       Size.Height = 26.000000000000000000
       Size.PlatformDefault = False
@@ -64,7 +64,7 @@ object MainForm: TMainForm
         item
         end>
       TextSettings.HorzAlign = Leading
-      IsSelected = False
+      IsSelected = True
       Size.Width = 85.000000000000000000
       Size.Height = 26.000000000000000000
       Size.PlatformDefault = False
