@@ -2,8 +2,8 @@ object MainForm: TMainForm
   Left = 0
   Top = 0
   Caption = 'Form2'
-  ClientHeight = 558
-  ClientWidth = 753
+  ClientHeight = 597
+  ClientWidth = 764
   FormFactor.Width = 320
   FormFactor.Height = 480
   FormFactor.Devices = [Desktop]
@@ -12,74 +12,58 @@ object MainForm: TMainForm
   DesignerMasterStyle = 0
   object TabControl: TTabControl
     Align = Client
-    Size.Width = 753.000000000000000000
-    Size.Height = 558.000000000000000000
+    Margins.Left = 5.000000000000000000
+    Margins.Top = 5.000000000000000000
+    Margins.Right = 5.000000000000000000
+    Margins.Bottom = 5.000000000000000000
+    Size.Width = 754.000000000000000000
+    Size.Height = 587.000000000000000000
     Size.PlatformDefault = False
-    TabIndex = 1
+    TabIndex = 0
     TabOrder = 2
     TabPosition = PlatformDefault
     Sizes = (
-      753s
-      532s
-      753s
-      532s)
-    object TabItemDataBase: TTabItem
+      754s
+      561s
+      754s
+      561s)
+    object TabItemElementaDB: TTabItem
       CustomIcon = <
         item
         end>
-      TextSettings.HorzAlign = Leading
-      IsSelected = False
-      Size.Width = 95.000000000000000000
-      Size.Height = 26.000000000000000000
-      Size.PlatformDefault = False
-      StyleLookup = ''
-      TabOrder = 0
-      Text = #1041#1072#1079#1072' '#1076#1072#1085#1085#1099#1093': '
-      ExplicitSize.cx = 95.000000000000000000
-      ExplicitSize.cy = 26.000000000000000000
-      object Layout: TLayout
-        Align = Client
-        Size.Width = 753.000000000000000000
-        Size.Height = 532.000000000000000000
-        Size.PlatformDefault = False
-        TabOrder = 2
-        object LayoutModule: TLayout
-          Align = Left
-          Size.Width = 265.000000000000000000
-          Size.Height = 532.000000000000000000
-          Size.PlatformDefault = False
-          TabOrder = 0
-        end
-        object LayoutClient: TLayout
-          Align = Client
-          Size.Width = 488.000000000000000000
-          Size.Height = 532.000000000000000000
-          Size.PlatformDefault = False
-          TabOrder = 1
-        end
-      end
-    end
-    object TabItemDomain: TTabItem
-      CustomIcon = <
-        item
-        end>
-      TextSettings.HorzAlign = Leading
       IsSelected = True
-      Size.Width = 85.000000000000000000
+      Size.Width = 150.000000000000000000
       Size.Height = 26.000000000000000000
       Size.PlatformDefault = False
       StyleLookup = ''
       TabOrder = 0
-      Text = #1058#1080#1087' '#1076#1072#1085#1085#1099#1093
-      ExplicitSize.cx = 85.000000000000000000
-      ExplicitSize.cy = 26.000000000000000000
-      object LayoutDomain: TLayout
+      Text = #1069#1083#1077#1084#1077#1085#1090#1099' '#1073#1072#1079#1099' '#1076#1072#1085#1085#1099#1093
+    end
+    object TabItemScrip: TTabItem
+      CustomIcon = <
+        item
+        end>
+      IsSelected = False
+      Size.Width = 134.000000000000000000
+      Size.Height = 26.000000000000000000
+      Size.PlatformDefault = False
+      StyleLookup = ''
+      TabOrder = 0
+      Text = #1057#1082#1088#1080#1087#1090' '#1073#1072#1079#1099' '#1076#1072#1085#1085#1099#1093
+      object MemoWork: TMemo
+        Touch.InteractiveGestures = [Pan, LongTap, DoubleTap]
+        DataDetectorTypes = []
         Align = Client
-        Margins.Top = 3.000000000000000000
-        Size.Width = 753.000000000000000000
-        Size.Height = 529.000000000000000000
+        Margins.Left = 5.000000000000000000
+        Margins.Top = 5.000000000000000000
+        Margins.Right = 5.000000000000000000
+        Margins.Bottom = 5.000000000000000000
+        Size.Width = 744.000000000000000000
+        Size.Height = 551.000000000000000000
         Size.PlatformDefault = False
         TabOrder = 0
+        Viewport.Width = 740.000000000000000000
+        Viewport.Height = 547.000000000000000000
       end
     end
   end

@@ -26,17 +26,14 @@ uses
   Lb.ModuleTableFrame,
   Lb.WinFrame,
   Lb.ModuleUserFrame,
-  Lb.DomainTableFrame;
+  Lb.DomainTableFrame, FMX.Memo.Types, FMX.ScrollBox, FMX.Memo;
 
 type
   TMainForm = class(TForm)
-    Layout: TLayout;
-    LayoutModule: TLayout;
-    LayoutClient: TLayout;
     TabControl: TTabControl;
-    TabItemDataBase: TTabItem;
-    TabItemDomain: TTabItem;
-    LayoutDomain: TLayout;
+    TabItemElementaDB: TTabItem;
+    TabItemScrip: TTabItem;
+    MemoWork: TMemo;
     procedure FormShow(Sender: TObject);
     procedure FormResize(Sender: TObject);
   protected
@@ -113,6 +110,8 @@ end;
 
 destructor TMainForm.Destroy;
 begin
+
+
   if Assigned(DomainTableFrame) then
     FreeAndNil(DomainTableFrame);
 
@@ -157,6 +156,7 @@ end;
 
 procedure TMainForm.SetInitializationModule;
 begin
+(*
   ModuleTableFrame := TModuleTableFrame.Create(nil);
   ModuleTableFrame.Parent := LayoutModule;
   ModuleTableFrame.Align := TAlignLayout.Client;
@@ -164,6 +164,7 @@ begin
 
   Structure.GetTableModules(CrModules);
   ModuleTableFrame.Modules := CrModules;
+*)
 end;
 
 procedure TMainForm.SetInitializationWinFrame;
@@ -175,16 +176,20 @@ end;
 
 procedure TMainForm.SetInitializationModuleUserFrame;
 begin
+(*
   ModuleUserFrame := TModuleUserFrame.Create(Self);
   ModuleUserFrame.Parent := LayoutClient;
   ModuleUserFrame.Align := TAlignLayout.Client;
+*)
 end;
 
 procedure TMainForm.SetInitializationDomainTableFrame;
 begin
+(*
   DomainTableFrame := TDomainTableFrame.Create(Self);
   DomainTableFrame.Parent := LayoutDomain;
   DomainTableFrame.Align := TAlignLayout.Client;
+*)
 end;
 
 procedure TMainForm.SetShowWinFrame(const ATitle: String; const AFrame: TFrame = nil);

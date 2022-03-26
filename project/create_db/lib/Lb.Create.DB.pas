@@ -11,16 +11,26 @@ uses
 
 type
   ///<summary>Тип объекта</summary>
-  TTypeObject = (toNull, toDomain, toField, toIndex, toTable, toMethod, toModule);
+  TTypeObject = (
+    toNull,
+    toDomain,
+    toField,
+    toIndex,
+    toTable,
+    toMethod,
+    toModule
+  );
 
   ///<summary>Базовый класс</summary>
   TCustomObjectModule = class(TObject)
   private
     FObjectKey: String;
     FParentKey: String;
+  private
     FName: String;
     FSysName: String;
     FDescription: String;
+  private
     FTypeObject: TTypeObject;
     FTimeСreation: TDateTime;
     FTimeUpdate: TDateTime;
@@ -31,14 +41,17 @@ type
     constructor Create(const AObjectKey: String = ''); virtual;
     destructor Destroy; override;
     procedure Assign(const AModule: TCustomObjectModule); virtual;
+
     property ObjectKey: String read FObjectKey write FObjectKey;
     property ParentKey: String read FParentKey write FParentKey;
     property Name: String read FName write FName;
     property SysName: String read FSysName write FSysName;
     property Description: String read FDescription write FDescription;
+
     property TypeObject: TTypeObject read FTypeObject write FTypeObject;
     property TimeСreation: TDateTime read FTimeСreation write FTimeСreation;
     property TimeUpdate: TDateTime read FTimeUpdate write FTimeUpdate;
+
     property Value: String read FValue write FValue;
   public
     function ToCaption: String;

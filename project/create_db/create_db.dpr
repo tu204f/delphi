@@ -32,7 +32,8 @@ uses
   Lb.ModuleUserFrame in 'lib\frame\module\Lb.ModuleUserFrame.pas' {ModuleUserFrame: TFrame},
   Lb.TableFrame in 'lib\frame\table\Lb.TableFrame.pas' {TableFrame: TFrame},
   Lb.TableTableFrame in 'lib\frame\table\Lb.TableTableFrame.pas' {TableTableFrame: TFrame},
-  DSC.SysUtils in 'lib\dsc\DSC.SysUtils.pas';
+  DSC.SysUtils in 'lib\dsc\DSC.SysUtils.pas',
+  Lb.Element.DB in 'lib\Lb.Element.DB.pas';
 
 {$R *.res}
 
