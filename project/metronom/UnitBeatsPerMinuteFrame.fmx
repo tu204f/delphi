@@ -1,0 +1,95 @@
+object BeatsPerMinuteFrame: TBeatsPerMinuteFrame
+  Size.Width = 369.000000000000000000
+  Size.Height = 346.000000000000000000
+  Size.PlatformDefault = False
+  object Layout: TLayout
+    Align = Client
+    Size.Width = 369.000000000000000000
+    Size.Height = 346.000000000000000000
+    Size.PlatformDefault = False
+    TabOrder = 0
+    object GridPanelLayout: TGridPanelLayout
+      Align = Client
+      Size.Width = 369.000000000000000000
+      Size.Height = 346.000000000000000000
+      Size.PlatformDefault = False
+      TabOrder = 0
+      ColumnCollection = <
+        item
+          Value = 80.000000000000000000
+        end
+        item
+          Value = 20.000000000000000000
+        end>
+      ControlCollection = <
+        item
+          Column = 0
+          Control = Circle
+          Row = 0
+        end
+        item
+          Column = 1
+          Control = LayoutTools
+          Row = 0
+        end>
+      RowCollection = <
+        item
+          Value = 100.000000000000000000
+        end>
+      object Circle: TCircle
+        Align = Client
+        Margins.Left = 10.000000000000000000
+        Margins.Top = 10.000000000000000000
+        Margins.Right = 10.000000000000000000
+        Margins.Bottom = 10.000000000000000000
+        Size.Width = 275.200012207031300000
+        Size.Height = 326.000000000000000000
+        Size.PlatformDefault = False
+        Stroke.Thickness = 10.000000000000000000
+        object Text: TText
+          Align = Center
+          HitTest = False
+          Size.Width = 153.000000000000000000
+          Size.Height = 129.000000000000000000
+          Size.PlatformDefault = False
+          Text = '150'
+          TextSettings.Font.Size = 90.000000000000000000
+        end
+      end
+      object LayoutTools: TLayout
+        Align = Client
+        Size.Width = 73.799987792968750000
+        Size.Height = 346.000000000000000000
+        Size.PlatformDefault = False
+        TabOrder = 1
+        object ButtonPlus: TButton
+          Align = Top
+          Size.Width = 73.799987792968750000
+          Size.Height = 65.000000000000000000
+          Size.PlatformDefault = False
+          StyleLookup = 'arrowuptoolbutton'
+          TabOrder = 0
+          Text = 'ButtonPlus'
+          OnClick = ButtonPlusClick
+        end
+        object ButtonMinus: TButton
+          Align = Bottom
+          Position.Y = 281.000000000000000000
+          Size.Width = 73.799987792968750000
+          Size.Height = 65.000000000000000000
+          Size.PlatformDefault = False
+          StyleLookup = 'arrowdowntoolbutton'
+          TabOrder = 1
+          Text = 'ButtonMinus'
+          OnClick = ButtonMinusClick
+        end
+      end
+    end
+  end
+  object Timer: TTimer
+    Enabled = False
+    OnTimer = TimerTimer
+    Left = 145
+    Top = 48
+  end
+end

@@ -29,9 +29,9 @@ object MainForm: TMainForm
   end
   object MemoLog: TMemo
     Left = 8
-    Top = 446
+    Top = 334
     Width = 813
-    Height = 148
+    Height = 260
     ScrollBars = ssVertical
     TabOrder = 1
   end
@@ -48,7 +48,7 @@ object MainForm: TMainForm
     Left = 8
     Top = 99
     Width = 813
-    Height = 341
+    Height = 198
     ColCount = 10
     DefaultRowHeight = 18
     FixedCols = 0
@@ -66,6 +66,15 @@ object MainForm: TMainForm
     RowCount = 2
     Options = [goFixedVertLine, goFixedHorzLine, goVertLine, goHorzLine, goRangeSelect, goRowSelect, goFixedRowDefAlign]
     TabOrder = 4
+  end
+  object ButtonStream: TButton
+    Left = 8
+    Top = 303
+    Width = 105
+    Height = 25
+    Caption = 'ButtonStream'
+    TabOrder = 5
+    OnClick = ButtonStreamClick
   end
   object Timer: TTimer
     Enabled = False

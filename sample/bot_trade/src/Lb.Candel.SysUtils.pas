@@ -36,13 +36,19 @@ type
   TCnadelStream = class(TObject)
   private
     FStream: TStream;
+    FFileName: String;
     function GetEOF: Boolean;
+    procedure SetFileName(const Value: String);
+  protected
+    procedure CheсkStream;
+    function GetLine: String;
   public
     constructor Create; virtual;
     destructor Destroy; override;
-    procedure First;
-    procedure Next;
+    function First: TCandel;
+    function Next: TCandel;
     property EOF: Boolean read GetEOF;
+    property FileName: String read FFileName write SetFileName;
   end;
 
 /// <summary>С равниваем два числа, с точностью</summary>
@@ -178,7 +184,7 @@ end;
 
 constructor TCnadelStream.Create;
 begin
-
+  FStream := nil;
 end;
 
 destructor TCnadelStream.Destroy;
@@ -187,19 +193,67 @@ begin
   inherited;
 end;
 
-procedure TCnadelStream.First;
+procedure TCnadelStream.CheсkStream;
 begin
+  if not Assigned(FStream) then
+    raise Exception.Create('Error Message: Stream не определен');
+end;
 
+function TCnadelStream.GetLine: String;
+const
+  SIZE_BUFFER = 256;
+var
+  xLengthByte: Integer;
+  xOldPosition: Int64;
+  xBytes: TBytes;
+  xByte: Byte;
+  xS: String;
+begin
+  xOldPosition := FStream.Position;
+  SetLength(xBytes,SIZE_BUFFER);
+  FStream.Read(xBytes,SIZE_BUFFER);
+  xLengthByte := 0;
+  for xByte in xBytes do
+  begin
+    if (xByte = 13) then
+    begin
+      FStream.Position := xOldPosition + xLengthByte + 2;
+      Break;
+    end
+    else
+    begin
+      Inc(xLengthByte);
+      xS := xS + Chr(xByte);
+    end;
+  end;
+  Result := xS;
+end;
+
+function TCnadelStream.First: TCandel;
+begin
+  CheсkStream;
+  FStream.Position := 0;
+  Result := TCandel.Cretae(GetLine);
+end;
+
+function TCnadelStream.Next: TCandel;
+begin
+  CheсkStream;
+  Result := TCandel.Cretae(GetLine);
 end;
 
 function TCnadelStream.GetEOF: Boolean;
 begin
-
+  CheсkStream;
+  Result := FStream.Position >= FStream.Size;
 end;
 
-procedure TCnadelStream.Next;
+procedure TCnadelStream.SetFileName(const Value: String);
 begin
-
+  FFileName := Value;
+  if Assigned(FStream) then
+    FreeAndNil(FStream);
+  FStream := TFileStream.Create(FFileName,fmOpenRead);
 end;
 
 end.

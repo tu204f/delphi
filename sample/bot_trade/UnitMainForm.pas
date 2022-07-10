@@ -16,12 +16,14 @@ type
     ButtonStart: TButton;
     StrGrid: TStringGrid;
     CurrentStrGrid: TStringGrid;
+    ButtonStream: TButton;
     procedure FormShow(Sender: TObject);
     procedure ButtonLoadClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure ButtonStartClick(Sender: TObject);
     procedure TimerTimer(Sender: TObject);
+    procedure ButtonStreamClick(Sender: TObject);
   private
     FIndexCandel: Integer;
     procedure _Start;
@@ -129,6 +131,30 @@ begin
     _Stop
   else
     _Start;
+end;
+
+procedure TMainForm.ButtonStreamClick(Sender: TObject);
+var
+  xS: String;
+  xL: INteger;
+  xCnadelStream: TCnadelStream;
+begin
+  xCnadelStream := TCnadelStream.Create;
+  try
+    xL := 100;
+    xCnadelStream.FileName := 'd:\work\git\delphi\sample\data\sber\data.csv';
+    xS := xCnadelStream.First.ToString;
+    while not xCnadelStream.EOF do
+    begin
+      xS := xCnadelStream.Next.ToString;
+      MemoLog.Lines.Add(xS);
+      Dec(xL);
+      if xL <= 0 then
+        Break;
+    end;
+  finally
+    FreeAndNil(xCnadelStream);
+  end;
 end;
 
 procedure TMainForm.TimerTimer(Sender: TObject);

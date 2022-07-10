@@ -6,6 +6,8 @@ __recovery/
 Win32/
 bin/
 dcu/
+Android/
+Android64/
 
 # игнорируем файлов
 *.res
@@ -18,3 +20,5 @@ dcu/
 
 # Файлы исключения
 !trans2quik.res
+*.csv
+*.zip
