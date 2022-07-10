@@ -30,7 +30,6 @@ object ConnectQuikForm: TConnectQuikForm
     Height = 25
     Caption = #1043#1077#1085#1077#1088#1072#1090#1086#1088' '#1057#1082#1088#1080#1087#1090#1072' 1'
     TabOrder = 0
-    OnClick = Button1Click
   end
   object Button2: TButton
     Left = 147
@@ -49,6 +48,16 @@ object ConnectQuikForm: TConnectQuikForm
     Caption = #1048#1089#1090#1086#1095#1085#1080#1082' '#1076#1072#1085#1085#1099#1093' 1'
     TabOrder = 2
     OnClick = ButtonSource1Click
+  end
+  object StrGrid: TStringGrid
+    Left = 8
+    Top = 8
+    Width = 489
+    Height = 484
+    DefaultRowHeight = 18
+    FixedCols = 0
+    Options = [goFixedVertLine, goFixedHorzLine, goVertLine, goHorzLine, goRangeSelect, goRowSelect, goFixedRowDefAlign]
+    TabOrder = 3
   end
   object Timer1: TTimer
     OnTimer = Timer1Timer

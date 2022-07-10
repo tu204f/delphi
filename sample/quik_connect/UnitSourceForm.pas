@@ -14,7 +14,9 @@ uses
   Vcl.Dialogs,
   Vcl.ComCtrls,
   Vcl.Grids,
-  Lb.SysUtils.Table, Vcl.ExtCtrls;
+  Lb.SysUtils.Table,
+  Lb.SysUtils.CandeTable,
+  Vcl.ExtCtrls;
 
 type
   TSourceForm = class(TForm)

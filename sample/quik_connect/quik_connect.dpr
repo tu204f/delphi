@@ -18,7 +18,8 @@ uses
   QuikTrans2Order in '..\..\library\trade\libquik\QuikTrans2Order.pas',
   QuikTrans2QuikAPI in '..\..\library\trade\libquik\QuikTrans2QuikAPI.pas',
   QuikTransOrder in '..\..\library\trade\libquik\QuikTransOrder.pas',
-  UnitSourceForm in 'UnitSourceForm.pas' {SourceForm};
+  UnitSourceForm in 'UnitSourceForm.pas' {SourceForm},
+  Lb.SysUtils.CandeTable in 'Lb.SysUtils.CandeTable.pas';
 
 {$R *.res}
 
