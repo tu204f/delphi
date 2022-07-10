@@ -12,7 +12,7 @@ uses
 
 type
   ///<summary>Таблица Финансовых инструментов</summary>
-  TSecurity = class(TQuikTable)
+  TTabSecurity = class(TQuikTable)
   private
     function GetLast: Double;
     function GetCellByNameAndCode(const ANameField, ASecCode: String): TCell;
@@ -29,39 +29,30 @@ type
     property MinStep: Double read GetMinStep;
   end;
 
-  {$DEFINE SOURCE_MA}
-  ///<summary>Источник данных</summary>
-  TSourceCandel = class(TQuikTable)
+  // дописываем поля - по надобности
+
+  ///<summary>Таблица сделок</summary>
+  TTabTrades = class(TQuikTable)
   private
-    function GetDate: TDateTime;
-    function GetTime: TDateTime;
-    function GetClose: Double;
-    function GetHigh: Double;
-    function GetLow: Double;
-    function GetOpen: Double;
-  {$IFDEF SOURCE_MA}
+  public
+  end;
+
+  ///<summary>Таблица заявок</summary>
+  TTabOrders= class(TQuikTable)
   private
-    function GetMovingAverage: Double;
-  {$ENDIF}
   public
-    procedure SetLast(const ACount: Integer = 0);
-    property Date: TDateTime read GetDate;
-    property Time: TDateTime read GetTime;
-    property Open: Double read GetOpen;
-    property High: Double read GetHigh;
-    property Low: Double read GetLow;
-    property Close: Double read GetClose;
-  {$IFDEF SOURCE_MA}
+  end;
+
+  ///<summary>Стакан</summary>
+  TTabBook = class(TQuikTable)
+  private
   public
-    property MovingAverage: Double read GetMovingAverage;
-  {$ENDIF}
   end;
 
 var
-  Security: TSecurity = nil;
+  Security: TTabSecurity = nil;
   Trades: TQuikTable = nil;
   Orders: TQuikTable = nil;
-  SourceCandel: TSourceCandel = nil;
 
 procedure SetInitializationTable;
 function GetIsQuikTable: Boolean;
@@ -78,10 +69,10 @@ end;
 
 procedure SetInitializationTable;
 begin
-  Security := TSecurity(GetQuikTableByName('security'));
+  Security := TTabSecurity(GetQuikTableByName('security'));
   Trades := GetQuikTableByName('orders');
   Orders := GetQuikTableByName('trades');
-  SourceCandel := TSourceCandel(GetQuikTableByName('source_code_1'));
+  //SourceCandel := TSourceCandel(GetQuikTableByName('source_code_1'));
   //SourceCode2 := GetQuikTableByName('source_code_2');
 end;
 
@@ -90,8 +81,7 @@ begin
   Result :=
     Assigned(Security) and
     Assigned(Trades) and
-    Assigned(Orders) and
-    Assigned(SourceCandel);
+    Assigned(Orders);
     //and Assigned(SourceCode2);
 end;
 
@@ -110,15 +100,15 @@ begin
   end;
 end;
 
-{ TSecurity }
+{ TTabSecurity }
 
-function TSecurity.GetCellByNameAndCode(const ANameField, ASecCode: String): TCell;
+function TTabSecurity.GetCellByNameAndCode(const ANameField, ASecCode: String): TCell;
 begin
   Self.SetRowSecCode(ASecCode);
   Result := Self.ByName[ANameField];
 end;
 
-procedure TSecurity.SetRowSecCode(const ASecCode: String);
+procedure TTabSecurity.SetRowSecCode(const ASecCode: String);
 begin
   {todo: Перебираем - все строки кода, другой способ поиска}
   Self.Fisrt;
@@ -131,72 +121,25 @@ begin
   end;
 end;
 
-function TSecurity.GetLast: Double;
+function TTabSecurity.GetLast: Double;
 begin
   Result := Self.ByName['LAST'].AsDouble;
 end;
 
-function TSecurity.GetBid: Double;
+function TTabSecurity.GetBid: Double;
 begin
   Result := Self.ByName['BID'].AsDouble;
 end;
 
-function TSecurity.GetOffer: Double;
+function TTabSecurity.GetOffer: Double;
 begin
   Result := Self.ByName['OFFER'].AsDouble;
 end;
 
-function TSecurity.GetMinStep: Double;
+function TTabSecurity.GetMinStep: Double;
 begin
   Result := Self.ByName['SEC_PRICE_STEP'].AsDouble;
 end;
-
-{ TSourceCandel }
-
-procedure TSourceCandel.SetLast(const ACount: Integer);
-begin
-  if Self.Count > 0 then
-    Self.RowID := (Self.Count - 1) - ACount
-  else
-    Self.Last;
-end;
-
-function TSourceCandel.GetDate: TDateTime;
-begin
-  Result := Self.ByName['DATE'].AsDate;
-end;
-
-function TSourceCandel.GetTime: TDateTime;
-begin
-  Result := Self.ByName['TIME'].AsTime;
-end;
-
-function TSourceCandel.GetOpen: Double;
-begin
-  Result := Self.ByName['OPEN'].AsDouble;
-end;
-
-function TSourceCandel.GetHigh: Double;
-begin
-  Result := Self.ByName['HIGH'].AsDouble;
-end;
-
-function TSourceCandel.GetLow: Double;
-begin
-  Result := Self.ByName['LOW'].AsDouble;
-end;
-
-function TSourceCandel.GetClose: Double;
-begin
-  Result := Self.ByName['CLOSE'].AsDouble;
-end;
-
-{$IFDEF SOURCE_MA}
-function TSourceCandel.GetMovingAverage: Double;
-begin
-  Result := Self.ByName['MA'].AsDouble;
-end;
-{$ENDIF}
 
 initialization
 

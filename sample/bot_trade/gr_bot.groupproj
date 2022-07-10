@@ -1,0 +1,96 @@
+﻿<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+    <PropertyGroup>
+        <ProjectGuid>{02788123-F9B2-4A93-B044-437CB2F67A62}</ProjectGuid>
+    </PropertyGroup>
+    <ItemGroup>
+        <Projects Include="trade_bot.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="test_bot.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="import.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="test_bot_db.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="bot v2\bot_v2.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="bot v3\bot_3v.dproj">
+            <Dependencies/>
+        </Projects>
+    </ItemGroup>
+    <ProjectExtensions>
+        <Borland.Personality>Default.Personality.12</Borland.Personality>
+        <Borland.ProjectType/>
+        <BorlandProject>
+            <Default.Personality/>
+        </BorlandProject>
+    </ProjectExtensions>
+    <Target Name="trade_bot">
+        <MSBuild Projects="trade_bot.dproj"/>
+    </Target>
+    <Target Name="trade_bot:Clean">
+        <MSBuild Projects="trade_bot.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="trade_bot:Make">
+        <MSBuild Projects="trade_bot.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="test_bot">
+        <MSBuild Projects="test_bot.dproj"/>
+    </Target>
+    <Target Name="test_bot:Clean">
+        <MSBuild Projects="test_bot.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="test_bot:Make">
+        <MSBuild Projects="test_bot.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="import">
+        <MSBuild Projects="import.dproj"/>
+    </Target>
+    <Target Name="import:Clean">
+        <MSBuild Projects="import.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="import:Make">
+        <MSBuild Projects="import.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="test_bot_db">
+        <MSBuild Projects="test_bot_db.dproj"/>
+    </Target>
+    <Target Name="test_bot_db:Clean">
+        <MSBuild Projects="test_bot_db.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="test_bot_db:Make">
+        <MSBuild Projects="test_bot_db.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="bot_v2">
+        <MSBuild Projects="bot v2\bot_v2.dproj"/>
+    </Target>
+    <Target Name="bot_v2:Clean">
+        <MSBuild Projects="bot v2\bot_v2.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="bot_v2:Make">
+        <MSBuild Projects="bot v2\bot_v2.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="bot_3v">
+        <MSBuild Projects="bot v3\bot_3v.dproj"/>
+    </Target>
+    <Target Name="bot_3v:Clean">
+        <MSBuild Projects="bot v3\bot_3v.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="bot_3v:Make">
+        <MSBuild Projects="bot v3\bot_3v.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="Build">
+        <CallTarget Targets="trade_bot;test_bot;import;test_bot_db;bot_v2;bot_3v"/>
+    </Target>
+    <Target Name="Clean">
+        <CallTarget Targets="trade_bot:Clean;test_bot:Clean;import:Clean;test_bot_db:Clean;bot_v2:Clean;bot_3v:Clean"/>
+    </Target>
+    <Target Name="Make">
+        <CallTarget Targets="trade_bot:Make;test_bot:Make;import:Make;test_bot_db:Make;bot_v2:Make;bot_3v:Make"/>
+    </Target>
+    <Import Project="$(BDS)\Bin\CodeGear.Group.Targets" Condition="Exists('$(BDS)\Bin\CodeGear.Group.Targets')"/>
+</Project>

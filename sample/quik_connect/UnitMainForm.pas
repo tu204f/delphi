@@ -14,7 +14,7 @@ uses
   Vcl.Dialogs,
   Vcl.StdCtrls,
   Quik.ValueTable,
-  Quik.Manager.DDE, Vcl.ExtCtrls;
+  Quik.Manager.DDE, Vcl.ExtCtrls, Vcl.Grids;
 
 type
   TConnectQuikForm = class(TForm)
@@ -23,8 +23,8 @@ type
     Button2: TButton;
     Timer1: TTimer;
     ButtonSource1: TButton;
+    StrGrid: TStringGrid;
     procedure FormShow(Sender: TObject);
-    procedure Button1Click(Sender: TObject);
     procedure Button2Click(Sender: TObject);
     procedure Timer1Timer(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
@@ -46,21 +46,22 @@ implementation
 uses
   Lb.Script.QPile,
   Lb.SysUtils.Table,
-  Lb.Operation.V1, UnitSourceForm;
+  Lb.Operation.V1,
+  UnitSourceForm;
 
 var
   OperationTrade: TOperationTrade = nil;
-
-procedure TConnectQuikForm.FormClose(Sender: TObject; var Action: TCloseAction);
-begin
-  FreeAndNil(OperationTrade);
-  OperationTrade := nil;
-end;
 
 procedure TConnectQuikForm.FormShow(Sender: TObject);
 begin
   QuikManagerTable.OnAddValueBlock := EventAddValueBlock;
   OperationTrade := TOperationTrade.Create;
+end;
+
+procedure TConnectQuikForm.FormClose(Sender: TObject; var Action: TCloseAction);
+begin
+  FreeAndNil(OperationTrade);
+  OperationTrade := nil;
 end;
 
 procedure TConnectQuikForm.Timer1Timer(Sender: TObject);
@@ -73,33 +74,12 @@ begin
     SetInitializationTable;
 end;
 
-procedure TConnectQuikForm.Button1Click(Sender: TObject);
-var
-  xStr: TStrings;
-begin
-  try
-    var xCaption := 'cap_sr';
-    xStr := TStringList.Create;
-    try
-      var xS := GetResourceScritpQPL(xCaption,'SRU1','SPBFUT','MA_1',1,100);
-      xStr.Text := xS;
-      xStr.SaveToFile(xCaption + '.qpl')
-    finally
-      FreeAndNil(xStr);
-    end;
-  except on E: Exception do
-    raise Exception.Create('Error Message: ' + sLineBreak);
-  end;
-end;
-
 procedure TConnectQuikForm.Button2Click(Sender: TObject);
-var
-  xStr: TStrings;
 begin
-  var xCaption := 'cap_gz';
-  xStr := TStringList.Create;
+  var xCaption := 'cap_sr';
+  var xStr := TStringList.Create;
   try
-    var xS := GetResourceScritpQPL(xCaption,'GZU1','SPBFUT','MA_2',1,100);
+    var xS := GetResourceScritpQPL(xCaption,'SRM2','SPBFUT','MA',1,100);
     xStr.Text := xS;
     xStr.SaveToFile(xCaption + '.qpl')
   finally
@@ -109,14 +89,54 @@ end;
 
 procedure TConnectQuikForm.ButtonSource1Click(Sender: TObject);
 begin
-  var xSourceForm := TSourceForm.Create(nil);
-  xSourceForm.SourceCandel := SourceCandel;
-  xSourceForm.Show;
+  // Показать выводимые данные на форму
+  //var xSourceForm := TSourceForm.Create(nil);
+  //xSourceForm.SourceCandel := SourceCandel;
+  //xSourceForm.Show;
+end;
+
+var
+  IndexFile: Integer = 0;
+
+procedure SetSaveFile(AQuikTable: TQuikTable);
+var
+  xStr: TStrings;
+begin
+  Inc(IndexFile);
+  var S := 'book_file_' + IntToStr(IndexFile) + '.bk';
+  xStr := TStringList.Create;
+  try
+    xStr.Add(FormatDateTime('yyyymmdd hhnnsszzz',Date + Time));
+    for var j := 0 to AQuikTable.RowCount - 1 do
+    begin
+      var xTmpS := '';
+      for var i := 0 to AQuikTable.ColCount - 1 do
+        xTmpS := xTmpS + AQuikTable.Cells[i,j].AsString + ';';
+      xStr.Add(xTmpS);
+    end;
+    var xPath := ExtractFilePath(ParamStr(0)) + 'book' + '/';
+    xStr.SaveToFile(xPath + S);
+  finally
+    FreeAndNil(xStr);
+  end;
 end;
 
 procedure TConnectQuikForm.EventAddValueBlock(Sender: TObject;
   APointCells: TPointCells; AQuikTable: TQuikTable);
 begin
+  if SameText(AQuikTable.Name,'book_srm2') then
+  begin
+    SetSaveFile(AQuikTable);
+
+
+    StrGrid.ColCount := AQuikTable.ColCount;
+    StrGrid.RowCount := AQuikTable.RowCount;
+
+    for var i := 0 to AQuikTable.ColCount - 1 do
+      for var j := 0 to AQuikTable.RowCount - 1 do
+        StrGrid.Cells[i,j] := AQuikTable.Cells[i,j].AsString;
+
+  end;
   LabelStatus.Caption := 'Состоние загрузка: ' + APointCells.ToString + ' :: ' + AQuikTable.Name;
 end;
 

@@ -5,6 +5,8 @@ unit Lb.DataModuleDB;
 
 interface
 
+{$DEFINE FMX}
+
 uses
   System.SysUtils,
   System.Classes,
