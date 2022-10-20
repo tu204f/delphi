@@ -1,4 +1,4 @@
-PORTFOLIO_EX IR_{CAPTION};
+PORTFOLIO_EX INFO ROBOT;
 DESCRIPTION Алгоритм забирает N баров с графика инструмента;
 CLIENTS_LIST  ALL_CLIENTS;
 FIRMS_LIST ALL_FIRMS;
@@ -7,12 +7,12 @@ USE_CASE_SENSITIVE_CONSTANTS;
 
 PROGRAM
    ' =========ПОЛЬЗОВАТЕЛЬСКИЕ НАСТРОЙКИ=============
-   INSTRUMENT="{INSTRUMENT}" ' код инструмента
-   CLASSCODE="{CLASSCODE}" ' код группы
-   NUMBER={COUNT_CANDEL} ' количество забираемых баров с графика
-   INTERVAL={INTERVAL} ' таймфрейм на открытом графике в минутах (0 < INTERVAL < 60)
+   INSTRUMENT="SRZ2" ' код инструмента
+   CLASSCODE="SPBFUT" ' код группы
+   NUMBER=50 ' количество забираемых баров с графика
+   INTERVAL=5 ' таймфрейм на открытом графике в минутах (0 < INTERVAL < 60)
   
-   ACCOUNT="L00-00000000" ' здесь вводится номер Вашего счёта на ММВБ
+ ACCOUNT="L00-00000000" ' здесь вводится номер Вашего счёта на ММВБ
    CLIENTCODE="00000" ' здесь вводится Ваш код клиента
  
    ' ====================ПЕРЕМЕННЫЕ==================
@@ -23,7 +23,7 @@ PROGRAM
    ' ===============СЕРВЕРНЫЕ ДАТА И ВРЕМЯ===============
    SERVERDATE=GET_INFO_PARAM("TRADEDATE")  ' дата сервера в формате DD.MM.YYYY
    SERVERTIME=GET_INFO_PARAM("SERVERTIME") ' время сервера в формате HH:MM:SS
-   DATETIME (SERVERDATE,SERVERTIME)        ' вызов функции даты-времени
+   DATETIME (SERVERDATE,SERVERTIME) ' вызов функции даты-времени
   
    CURTIME=0+CURTIME ' перевод времени в число
   
@@ -32,14 +32,13 @@ PROGRAM
             BARCOUNT=GET_COLLECTION_COUNT(BARLIST) 'считаем количество баров в коллекции BARLIST  
 
   	
-'-----------реверс массива данных
+	'-----------реверс массива данных
 '	BARLIST_R=CREATE_COLLECTION() ' создаём список баров в виде MAP-массива
 '  	FOR I FROM 0 TO BARCOUNT
 '	BARLIST_R=INSERT_COLLECTION_ITEM(BARLIST_R,0,GET_COLLECTION_ITEM(BARLIST, I))' Поместили текущий бар в коллекцию
 '	END FOR
 'MESSAGE("Коллекция создана "&BARLIST&" Lowlast= "&GET_VALUE(GET_COLLECTION_ITEM(BARLIST_R, 1),"LOW"), 1)
 '---------------------- поиск ЧС
-
 RES=0
 RES_up=0
 
@@ -58,13 +57,11 @@ RES_up=0
                              OUTPUT=SET_VALUE(OUTPUT,"HIGH", GET_VALUE(CAN_CUR,"HIGH"))
                              OUTPUT=SET_VALUE(OUTPUT,"LOW", GET_VALUE(CAN_CUR,"LOW"))
                              OUTPUT=SET_VALUE(OUTPUT,"CLOSE", GET_VALUE(CAN_CUR,"CLOSE"))
-                             OUTPUT=SET_VALUE(OUTPUT,"MA", GET_VALUE(CAN_CUR,"MA"))
 
                      ADD_ITEM(I,OUTPUT)
   		    END FOR
    END IF
-
-
+ 
    ' ===============ФУНКЦИИ===============
    ' ФУНКЦИЯ СЕРВЕРНЫХ ДАТЫ И ВРЕМЕНИ
    FUNC DATETIME(FSERVERDATE,FSERVERTIME)
@@ -103,26 +100,24 @@ RES_up=0
   
             ' ФУНКЦИЯ OHLC (забора N последних баров)
    FUNC OHLC(FNUMBER)
-
             IF INTERVAL<0 or INTERVAL>60
                      MESSAGE("INTERVAL вне допустимого диапазона",1)
                      RETURN
             END IF
-   
             SERVERDATE=GET_INFO_PARAM("TRADEDATE")  ' дата сервера в формате DD.MM.YYYY
             SERVERTIME=GET_INFO_PARAM("SERVERTIME") ' время сервера в формате HH:MM:SS
-   
             DATETIME (SERVERDATE, SERVERTIME) ' вызов функции даты-времени
+ 
             CURMIN = INTERVAL*FLOOR(CURMIN/INTERVAL) ' округляем остаток до INTERVAL`а
             BARLIST=CREATE_COLLECTION() ' создаём список баров в виде MAP-массива
  
   
-            FOR I FROM 1 TO FNUMBER
+           FOR I FROM 1 TO FNUMBER
                     ' CURMIN=CURMIN-INTERVAL ' откат на интервал назад
-                    IF CURMIN<0
-                            CURMIN=60+CURMIN
-                            CURHOUR=CURHOUR-1
-                            IF CURHOUR<10
+                     IF CURMIN<0
+                             CURMIN=60+CURMIN
+                             CURHOUR=CURHOUR-1
+                             IF CURHOUR<10
                                       CURHOUR=23
                                       CURDAY=CURDAY-1
                                       IF CURDAY<1
@@ -152,58 +147,48 @@ RES_up=0
                                                END IF
                                       END IF
                              END IF
-                    END IF
-                    CURDATE(CURYEAR,CURMONTH,CURDAY) ' перевод даты в текстовый формат
-                    CURTIME(CURHOUR,CURMIN,0) ' перевод времени в текстовый формат
-
-                    CANDLE=GET_CANDLE(CLASSCODE,INSTRUMENT, "", INTERVAL & "", "PRICE", CURDATE, CURTIME) ' получаем OHLC по CURDATE, CURTIME
-
-
-                    ' округление OPEN до второго знака после запятой и добавление в MAP-массив CANDLE
-                    OPEN=GET_VALUE (CANDLE, "OPEN")
-
-                    'MESSAGE("OHLC   Date = "&CURDATE&"  "&CURTIME&"  "&INSTRUMENT,1)
-                    ROUND(OPEN,2)
-                    OPEN=0+RESULT
-                    CANDLE=SET_VALUE(CANDLE,"OPEN",OPEN)
+                     END IF
+                     CURDATE(CURYEAR,CURMONTH,CURDAY) ' перевод даты в текстовый формат
+                     CURTIME(CURHOUR,CURMIN,0) ' перевод времени в текстовый формат
  
-                    IF OPEN>0' свеча существует
-                            ' округление остальных цен до второго знака после запятой и добавление в MAP-массив CANDLE
-                            HIGH=GET_VALUE (CANDLE, "HIGH")
-                            ROUND(HIGH,2)
-                            HIGH=0+RESULT ' округлили HIGH до второго знака после запятой
-                            CANDLE=SET_VALUE(CANDLE,"HIGH",HIGH) ' добавили HIGH в MAP-массив
+                     CANDLE=GET_CANDLE(CLASSCODE,INSTRUMENT, "", INTERVAL & "", "PRICE", CURDATE, CURTIME) ' получаем OHLC по CURDATE, CURTIME
 
-                            LOW=GET_VALUE (CANDLE, "LOW")
-                            ROUND(LOW,2)
-                            LOW=0+RESULT ' округлили LOW до второго знака после запятой
-                            CANDLE=SET_VALUE(CANDLE,"LOW",LOW) ' добавили LOW в MAP-массив
+                     ' округление OPEN до второго знака после запятой и добавление в MAP-массив CANDLE
 
-                            CLOSE=GET_VALUE (CANDLE, "CLOSE")
-                            ROUND(CLOSE,2)
-                            CLOSE=0+RESULT ' округлили CLOSE до второго знака после запятой
-                            CANDLE=SET_VALUE(CANDLE,"CLOSE",CLOSE) ' добавили CLOSE в MAP-массив
+ 
+                     OPEN=GET_VALUE (CANDLE, "OPEN")
+ 'MESSAGE("OHLC   Date = "&CURDATE&"  "&CURTIME&"  "&INSTRUMENT,1)					
+                     ROUND(OPEN,2)
+                     OPEN=0+RESULT
+                     CANDLE=SET_VALUE(CANDLE,"OPEN",OPEN)
+ 
+                     IF OPEN>0' свеча существует
+                             ' округление остальных цен до второго знака после запятой и добавление в MAP-массив CANDLE
+                             HIGH=GET_VALUE (CANDLE, "HIGH")
+                             ROUND(HIGH,2)
+                             HIGH=0+RESULT ' округлили HIGH до второго знака после запятой
+                             CANDLE=SET_VALUE(CANDLE,"HIGH",HIGH) ' добавили HIGH в MAP-массив
+                            
+                             LOW=GET_VALUE (CANDLE, "LOW")
+                             ROUND(LOW,2)
+                             LOW=0+RESULT ' округлили LOW до второго знака после запятой
+                             CANDLE=SET_VALUE(CANDLE,"LOW",LOW) ' добавили LOW в MAP-массив                     
+                            
+                             CLOSE=GET_VALUE (CANDLE, "CLOSE")
+                             ROUND(CLOSE,2)
+                             CLOSE=0+RESULT ' округлили CLOSE до второго знака после запятой
+                             CANDLE=SET_VALUE(CANDLE,"CLOSE",CLOSE) ' добавили CLOSE в MAP-массив
 			     
-                            CANDLE=SET_VALUE(CANDLE,"DATE", CURDATE) ' добавили дату в MAP-массив
-                            CANDLE=SET_VALUE(CANDLE,"TIME", CURTIME) ' добавилиC время в MAP-массив
-
-
-                            ' Получение значение индекатора с графика
-                            ' Индикатор одна линия
-                            SLICE=GET_CANDLE_EX("{MA}",CURDATE,CURTIME)
-                            LINES=GET_VALUE(SLICE,"LINES")
-                            LINE=GET_COLLECTION_ITEM(LINES,0)
-                            MA_VALUE=GET_VALUE(LINE,"CLOSE")
-                            CANDLE=SET_VALUE(CANDLE,"MA",MA_VALUE)
-
-
-                            BARLIST=INSERT_COLLECTION_ITEM(BARLIST,0,CANDLE)' Поместили текущий бар в коллекцию
-                  END IF
-		              IF GET_COLLECTION_COUNT(BARLIST) > NUMBER '---- набрали нужное кол-во баров
-                            BREAK
-                            RETURN
-                  END IF
-	                 CURMIN=CURMIN-INTERVAL ' откат на интервал назад
+							CANDLE=SET_VALUE(CANDLE,"DATE", CURDATE) ' добавили дату в MAP-массив
+							CANDLE=SET_VALUE(CANDLE,"TIME", CURTIME) ' добавилиC время в MAP-массив
+                            
+                             BARLIST=INSERT_COLLECTION_ITEM(BARLIST,0,CANDLE)' Поместили текущий бар в коллекцию
+                     END IF
+		     IF GET_COLLECTION_COUNT(BARLIST) > NUMBER '---- набрали нужное кол-во баров
+                             BREAK
+                             RETURN
+                     END IF
+	    CURMIN=CURMIN-INTERVAL ' откат на интервал назад
             END FOR
    END FUNC
  
@@ -219,19 +204,19 @@ RES_up=0
  
    ' ФУНКЦИЯОКРУГЛЕНИЯ
    FUNC ROUND (V,SCALE)
-            RESULT=V 'APPLY_SCALE(V,SCALE)' передаём в функцию число для округления и разрядность округления
+            RESULT=APPLY_SCALE(V,SCALE)' передаём в функцию число для округления и разрядность округления
    END FUNC
  
 END_PROGRAM
  
 PARAMETER SERVERDATE;
-PARAMETER_TITLE Date;
+PARAMETER_TITLE Дата;
 PARAMETER_DESCRIPTION Текущаядата;
 PARAMETER_TYPE STRING(10);
 END
  
 PARAMETER SERVERTIME;
-PARAMETER_TITLE Time;
+PARAMETER_TITLE Время;
 PARAMETER_DESCRIPTION Текущеевремя;
 PARAMETER_TYPE STRING(10);
 END
@@ -239,31 +224,25 @@ END
 PARAMETER OPEN;
 PARAMETER_TITLE Open;
 PARAMETER_DESCRIPTION цена открытия;
-PARAMETER_TYPE NUMERIC(6,4);
+PARAMETER_TYPE NUMERIC(6,0);
 END
  
 PARAMETER HIGH;
 PARAMETER_TITLE High;
 PARAMETER_DESCRIPTION максимум;
-PARAMETER_TYPE NUMERIC(6,4);
+PARAMETER_TYPE NUMERIC(6,0);
 END
 
 PARAMETER LOW;
 PARAMETER_TITLE Low;
 PARAMETER_DESCRIPTION минимум;
-PARAMETER_TYPE NUMERIC(6,4);
+PARAMETER_TYPE NUMERIC(6,0);
 END
 
 PARAMETER CLOSE;
 PARAMETER_TITLE Close;
 PARAMETER_DESCRIPTION цена закрытия;
-PARAMETER_TYPE NUMERIC(6,4);
+PARAMETER_TYPE NUMERIC(6,0);
 END
-
-PARAMETER MA;
-PARAMETER_TITLE MA;
-PARAMETER_DESCRIPTION Средняя цена;
-PARAMETER_TYPE NUMERIC(6,4);
-END
-
+ 
 END_PORTFOLIO_EX

@@ -114,19 +114,10 @@
         <DCCReference Include="..\..\library\trade\quik\Quik.ValueTable.pas"/>
         <DCCReference Include="..\..\library\Lb.Logger.pas"/>
         <DCCReference Include="..\..\library\trade\script\Lb.Script.QPile.pas"/>
-        <DCCReference Include="operation\Lb.Operation.V1.pas"/>
-        <DCCReference Include="Lb.SysUtils.Table.pas"/>
-        <DCCReference Include="Lb.Level.pas"/>
-        <DCCReference Include="operation\Lb.Custom.Trade.pas"/>
         <DCCReference Include="..\..\library\trade\libquik\BTMemoryModule.pas"/>
         <DCCReference Include="..\..\library\trade\libquik\QuikTrans2Order.pas"/>
         <DCCReference Include="..\..\library\trade\libquik\QuikTrans2QuikAPI.pas"/>
         <DCCReference Include="..\..\library\trade\libquik\QuikTransOrder.pas"/>
-        <DCCReference Include="UnitSourceForm.pas">
-            <Form>SourceForm</Form>
-            <FormType>dfm</FormType>
-        </DCCReference>
-        <DCCReference Include="Lb.SysUtils.CandeTable.pas"/>
         <None Include="..\..\library\trade\script\candles.qpl"/>
         <BuildConfiguration Include="Release">
             <Key>Cfg_2</Key>
@@ -154,7 +145,7 @@
                 </Excluded_Packages>
             </Delphi.Personality>
             <Deployment Version="3">
-                <DeployFile LocalName="Win32\Debug\quik_connect.exe" Configuration="Debug" Class="ProjectOutput">
+                <DeployFile LocalName="bin\quik_connect.exe" Configuration="Debug" Class="ProjectOutput">
                     <Platform Name="Win32">
                         <RemoteName>quik_connect.exe</RemoteName>
                         <Overwrite>true</Overwrite>

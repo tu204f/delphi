@@ -44,42 +44,29 @@ object MainForm: TMainForm
     TabOrder = 2
     OnClick = ButtonStartClick
   end
-  object StrGrid: TStringGrid
-    Left = 8
-    Top = 99
-    Width = 813
-    Height = 198
-    ColCount = 10
-    DefaultRowHeight = 18
-    FixedCols = 0
-    Options = [goFixedVertLine, goFixedHorzLine, goVertLine, goHorzLine, goRangeSelect, goRowSelect, goFixedRowDefAlign]
-    TabOrder = 3
-  end
-  object CurrentStrGrid: TStringGrid
-    Left = 8
-    Top = 39
-    Width = 813
-    Height = 54
-    ColCount = 10
-    DefaultRowHeight = 18
-    FixedCols = 0
-    RowCount = 2
-    Options = [goFixedVertLine, goFixedHorzLine, goVertLine, goHorzLine, goRangeSelect, goRowSelect, goFixedRowDefAlign]
-    TabOrder = 4
-  end
   object ButtonStream: TButton
     Left = 8
     Top = 303
     Width = 105
     Height = 25
     Caption = 'ButtonStream'
-    TabOrder = 5
+    TabOrder = 3
     OnClick = ButtonStreamClick
+  end
+  object CandelGrid: TStringGrid
+    Left = 8
+    Top = 39
+    Width = 561
+    Height = 258
+    ColCount = 7
+    DefaultRowHeight = 18
+    FixedCols = 0
+    Options = [goFixedVertLine, goFixedHorzLine, goVertLine, goHorzLine, goRangeSelect, goRowSelect, goFixedRowDefAlign]
+    TabOrder = 4
   end
   object Timer: TTimer
     Enabled = False
     Interval = 500
-    OnTimer = TimerTimer
     Left = 280
     Top = 100
   end

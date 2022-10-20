@@ -11,8 +11,6 @@ object ConnectQuikForm: TConnectQuikForm
   Font.Name = 'Tahoma'
   Font.Style = []
   OldCreateOrder = False
-  OnClose = FormClose
-  OnShow = FormShow
   PixelsPerInch = 96
   TextHeight = 13
   object LabelStatus: TLabel
@@ -47,7 +45,6 @@ object ConnectQuikForm: TConnectQuikForm
     Height = 25
     Caption = #1048#1089#1090#1086#1095#1085#1080#1082' '#1076#1072#1085#1085#1099#1093' 1'
     TabOrder = 2
-    OnClick = ButtonSource1Click
   end
   object StrGrid: TStringGrid
     Left = 8

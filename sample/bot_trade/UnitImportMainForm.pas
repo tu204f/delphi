@@ -9,7 +9,7 @@ uses
   FMX.Memo;
 
 type
-
+  {todo: Проработать список задач}
   TOnProgerss = procedure(const AValue, AValueMax: Integer) of object;
 
   TMainForm = class(TForm)
@@ -17,6 +17,7 @@ type
     OpenDialog: TOpenDialog;
     MemoLog: TMemo;
     ProgressBar1: TProgressBar;
+    Button1: TButton;
     procedure ImportButtonClick(Sender: TObject);
   private
     { Private declarations }
@@ -38,7 +39,8 @@ implementation
 uses
   Data.DB,
   Lb.Candel.SysUtils,
-  Lb.DataModuleDB, Lb.SysUtils.ISO860;
+  Lb.DataModuleDB,
+  Lb.SysUtils.ISO860;
 
 var
   localDataModuleDB: TDataModuleDB = nil;

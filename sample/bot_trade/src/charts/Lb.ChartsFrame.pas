@@ -7,7 +7,6 @@ uses
   FMX.Types, FMX.Graphics, FMX.Controls, FMX.Forms, FMX.Dialogs, FMX.StdCtrls,
   FMX.Objects, FMX.Layouts,
   Lb.Candel.SysUtils,
-  Lb.Candel.Source,
   System.Generics.Collections;
 
 type

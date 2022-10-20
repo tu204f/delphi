@@ -5,7 +5,7 @@ uses
   FMX.Forms,
   UnitMainForm in 'UnitMainForm.pas' {MainForm},
   Lb.Candel.Source in '..\src\Lb.Candel.Source.pas',
-  Lb.Candel.SysUtils in '..\src\Lb.Candel.SysUtils.pas',
+  Lb.SysUtils.Candel in '..\src\Lb.SysUtils.Candel.pas',
   Lb.Vecrot.Candel in '..\bot v2\src\Lb.Vecrot.Candel.pas',
   Lb.ChartsFrame in 'src\Lb.ChartsFrame.pas' {CandelsCharFrame: TFrame},
   Lb.Black.Box in 'src\Lb.Black.Box.pas',

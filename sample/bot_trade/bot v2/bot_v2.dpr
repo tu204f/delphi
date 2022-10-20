@@ -6,7 +6,7 @@ uses
   UnitMainForm in 'UnitMainForm.pas' {MainForm},
   Lb.ABot in 'src\Lb.ABot.pas',
   Lb.Candel.Source in '..\src\Lb.Candel.Source.pas',
-  Lb.Candel.SysUtils in '..\src\Lb.Candel.SysUtils.pas',
+  Lb.SysUtils.Candel in '..\src\Lb.SysUtils.Candel.pas',
   Lb.Vecrot.Candel in 'src\Lb.Vecrot.Candel.pas';
 
 {$R *.res}

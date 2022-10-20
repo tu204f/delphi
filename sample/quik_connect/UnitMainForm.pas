@@ -13,8 +13,8 @@ uses
   Vcl.Forms,
   Vcl.Dialogs,
   Vcl.StdCtrls,
-  Quik.ValueTable,
-  Quik.Manager.DDE, Vcl.ExtCtrls, Vcl.Grids;
+  Vcl.ExtCtrls,
+  Vcl.Grids;
 
 type
   TConnectQuikForm = class(TForm)
@@ -24,16 +24,12 @@ type
     Timer1: TTimer;
     ButtonSource1: TButton;
     StrGrid: TStringGrid;
-    procedure FormShow(Sender: TObject);
     procedure Button2Click(Sender: TObject);
     procedure Timer1Timer(Sender: TObject);
-    procedure FormClose(Sender: TObject; var Action: TCloseAction);
-    procedure ButtonSource1Click(Sender: TObject);
   private
     { Private declarations }
   public
     { Public declarations }
-    procedure EventAddValueBlock(Sender: TObject; APointCells: TPointCells; AQuikTable: TQuikTable);
   end;
 
 var
@@ -42,27 +38,6 @@ var
 implementation
 
 {$R *.dfm}
-
-uses
-  Lb.Script.QPile,
-  Lb.SysUtils.Table,
-  Lb.Operation.V1,
-  UnitSourceForm;
-
-var
-  OperationTrade: TOperationTrade = nil;
-
-procedure TConnectQuikForm.FormShow(Sender: TObject);
-begin
-  QuikManagerTable.OnAddValueBlock := EventAddValueBlock;
-  OperationTrade := TOperationTrade.Create;
-end;
-
-procedure TConnectQuikForm.FormClose(Sender: TObject; var Action: TCloseAction);
-begin
-  FreeAndNil(OperationTrade);
-  OperationTrade := nil;
-end;
 
 procedure TConnectQuikForm.Timer1Timer(Sender: TObject);
 begin
@@ -85,14 +60,6 @@ begin
   finally
     FreeAndNil(xStr);
   end;
-end;
-
-procedure TConnectQuikForm.ButtonSource1Click(Sender: TObject);
-begin
-  // Показать выводимые данные на форму
-  //var xSourceForm := TSourceForm.Create(nil);
-  //xSourceForm.SourceCandel := SourceCandel;
-  //xSourceForm.Show;
 end;
 
 var

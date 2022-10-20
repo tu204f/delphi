@@ -1,0 +1,52 @@
+object BarFrame: TBarFrame
+  Size.Width = 92.000000000000000000
+  Size.Height = 491.000000000000000000
+  Size.PlatformDefault = False
+  object Layout: TLayout
+    Align = Client
+    Margins.Left = 1.000000000000000000
+    Margins.Top = 2.000000000000000000
+    Margins.Right = 1.000000000000000000
+    Margins.Bottom = 2.000000000000000000
+    Size.Width = 90.000000000000000000
+    Size.Height = 487.000000000000000000
+    Size.PlatformDefault = False
+    TabOrder = 0
+    object Rectangle1: TRectangle
+      Align = Client
+      Fill.Color = claNull
+      Size.Width = 90.000000000000000000
+      Size.Height = 487.000000000000000000
+      Size.PlatformDefault = False
+      Stroke.Thickness = 0.500000000000000000
+      Stroke.Dash = Dash
+      object LineBody: TLine
+        LineType = Left
+        Position.X = 40.000000000000000000
+        Position.Y = 48.000000000000000000
+        Size.Width = 9.000000000000000000
+        Size.Height = 233.000000000000000000
+        Size.PlatformDefault = False
+        Stroke.Thickness = 2.000000000000000000
+      end
+      object LineClose: TLine
+        LineType = Top
+        Position.X = 8.000000000000000000
+        Position.Y = 217.000000000000000000
+        Size.Width = 33.000000000000000000
+        Size.Height = 25.000000000000000000
+        Size.PlatformDefault = False
+        Stroke.Thickness = 2.000000000000000000
+      end
+      object LineOpen: TLine
+        LineType = Top
+        Position.X = 40.000000000000000000
+        Position.Y = 97.000000000000000000
+        Size.Width = 33.000000000000000000
+        Size.Height = 25.000000000000000000
+        Size.PlatformDefault = False
+        Stroke.Thickness = 2.000000000000000000
+      end
+    end
+  end
+end

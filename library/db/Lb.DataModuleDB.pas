@@ -5,8 +5,6 @@ unit Lb.DataModuleDB;
 
 interface
 
-{$DEFINE FMX}
-
 uses
   System.SysUtils,
   System.Classes,
@@ -52,6 +50,8 @@ const
   WAITING_TIME = 600;
 
 type
+  {todo: Доработать модуль что можно было работать с разными транзакциями}
+
   TReturning = record
     Name: String;
     ValueType: TFieldType;

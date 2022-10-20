@@ -14,24 +14,23 @@ type
     ButtonLoad: TButton;
     MemoLog: TMemo;
     ButtonStart: TButton;
-    StrGrid: TStringGrid;
-    CurrentStrGrid: TStringGrid;
     ButtonStream: TButton;
+    CandelGrid: TStringGrid;
     procedure FormShow(Sender: TObject);
-    procedure ButtonLoadClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure ButtonStartClick(Sender: TObject);
-    procedure TimerTimer(Sender: TObject);
     procedure ButtonStreamClick(Sender: TObject);
+    procedure ButtonLoadClick(Sender: TObject);
   private
-    FIndexCandel: Integer;
-    procedure _Start;
-    procedure _Stop;
+    procedure SetCandelGrid(const ARowID: Integer; ACandel: TCandel);
+    procedure Start;
+    procedure Stop;
+    procedure Next;
   protected
     procedure SetLog(S: String);
   public
-    SourceCandel: TSourceCandel;
+    CandelStream: TCandelStream;
   end;
 
 var
@@ -41,25 +40,16 @@ implementation
 
 {$R *.dfm}
 
-uses
-  BotTrade;
-
-var
-  localDefaultBot: TDefaultBot = nil;
-
-
 { TMainForm }
 
 procedure TMainForm.FormCreate(Sender: TObject);
 begin
-  SourceCandel := TSourceCandel.Create;
-  localDefaultBot := TDefaultBot.Create;
+  CandelStream := TCandelStream.Create;
 end;
 
 procedure TMainForm.FormDestroy(Sender: TObject);
 begin
-  FreeAndNil(localDefaultBot);
-  FreeAndNil(SourceCandel);
+  FreeAndNil(CandelStream);
 end;
 
 procedure TMainForm.FormShow(Sender: TObject);
@@ -69,26 +59,19 @@ procedure TMainForm.FormShow(Sender: TObject);
     with AGrid.Rows[0] do
     begin
       Clear;
-      Add('OpenDate');
-      Add('OpenTime');
-      Add('CloseDate');
-      Add('CloseTime');
+      Add('Date');
+      Add('Time');
       Add('Open');
+      Add('High');
+      Add('Low');
       Add('Close');
-      Add('Quantity');
-      Add('Direction');
-      Add('Status');
-      Add('Profit');
+      Add('Value');
     end;
   end;
 
 begin
   Self.Caption := 'Работы объекта';
-
-  _GridTitle(StrGrid);
-  _GridTitle(CurrentStrGrid);
-
-  localDefaultBot.Init(150,30);
+  _GridTitle(CandelGrid);
 end;
 
 procedure TMainForm.SetLog(S: String);
@@ -99,137 +82,96 @@ begin
   MemoLog.Lines.Add(xS);
 end;
 
-procedure TMainForm.ButtonLoadClick(Sender: TObject);
-var
-  xPath: String;
+procedure TMainForm.Start;
 begin
-  xPath := ExtractFilePath(ParamStr(0)) + 'source' + PathDelim + 'candel.csv';
-  SourceCandel.SetLoadFile(xPath);
-  SetLog('Количество свечей: Count: ' + IntToStr(SourceCandel.Candels.Count));
+//  if SourceCandel.Candels.Count > 0 then
+//  begin
+//    FIndexCandel := 0;
+//    ButtonStart.Caption := 'Стоп';
+//    Timer.Enabled := True;
+//  end;
 end;
 
-procedure TMainForm._Start;
-begin
-  if SourceCandel.Candels.Count > 0 then
-  begin
-    FIndexCandel := 0;
-    ButtonStart.Caption := 'Стоп';
-    Timer.Enabled := True;
-  end;
-end;
-
-procedure TMainForm._Stop;
+procedure TMainForm.Stop;
 begin
   ButtonStart.Caption := 'Старт';
   Timer.Enabled := False;
 end;
 
+procedure TMainForm.SetCandelGrid(const ARowID: Integer; ACandel: TCandel);
+begin
+  with CandelGrid.Rows[ARowID] do
+  begin
+    Clear;
+    Add(DateToStr(ACandel.Date));
+    Add(TimeToStr(ACandel.Time));
+    Add(FloatToStr(ACandel.Open));
+    Add(FloatToStr(ACandel.High));
+    Add(FloatToStr(ACandel.Low));
+    Add(FloatToStr(ACandel.Close));
+    Add(FloatToStr(ACandel.Vol));
+  end;
+end;
+
+procedure TMainForm.Next;
+const
+  SIZE_COUNT_CANDEL = 10;
+var
+  i: Integer;
+begin
+  CandelStream.First;
+  i := 1;
+  while i <= SIZE_COUNT_CANDEL do
+  begin
+    SetCandelGrid(i,CandelStream.Candel);
+    CandelStream.Next;
+    Inc(i);
+  end;
+  CandelGrid.RowCount := SIZE_COUNT_CANDEL + 1;
+end;
+
+procedure TMainForm.ButtonLoadClick(Sender: TObject);
+begin
+  // Сразу загружаем определеное количетсов свечей
+  // И наченаем иметации, торговых операци
+  // а взадачу ИИ - в ходит на учиться торговать
+  // Определяем путь к файлу
+  CandelStream.FileName := 'd:\work\git\delphi\sample\data\sber\data.csv';
+  // Читаем первый блок данных и выводим в таблицу
+  Next;
+end;
+
 procedure TMainForm.ButtonStartClick(Sender: TObject);
 begin
-  // Старт стоп жизни
+  // Старт - ратации
   if Timer.Enabled then
-    _Stop
+    Stop
   else
-    _Start;
+    Start;
 end;
 
 procedure TMainForm.ButtonStreamClick(Sender: TObject);
 var
   xS: String;
   xL: INteger;
-  xCnadelStream: TCnadelStream;
+  xCandelStream: TCandelStream;
 begin
-  xCnadelStream := TCnadelStream.Create;
+  xCandelStream := TCandelStream.Create;
   try
     xL := 100;
-    xCnadelStream.FileName := 'd:\work\git\delphi\sample\data\sber\data.csv';
-    xS := xCnadelStream.First.ToString;
-    while not xCnadelStream.EOF do
+    xCandelStream.FileName := 'd:\work\git\delphi\sample\data\sber\data.csv';
+    xS := xCandelStream.First.ToString;
+    while not xCandelStream.EOF do
     begin
-      xS := xCnadelStream.Next.ToString;
+      xS := xCandelStream.Next.ToString;
       MemoLog.Lines.Add(xS);
       Dec(xL);
       if xL <= 0 then
         Break;
     end;
   finally
-    FreeAndNil(xCnadelStream);
+    FreeAndNil(xCandelStream);
   end;
-end;
-
-procedure TMainForm.TimerTimer(Sender: TObject);
-
-  procedure _CurrentShowGrid;
-  var
-    xTradePosition: TTradePosition;
-  begin
-    xTradePosition := localDefaultBot.Position;
-      with CurrentStrGrid.Rows[1] do
-      begin
-        Clear;
-        Add(DateToStr(xTradePosition.OpenDate));
-        Add(TimeToStr(xTradePosition.OpenTime));
-        Add(DateToStr(xTradePosition.CloseDate));
-        Add(TimeToStr(xTradePosition.CloseTime));
-        Add(FloatToStr(xTradePosition.Open));
-        Add(FloatToStr(xTradePosition.Close));
-        Add(IntToStr(xTradePosition.Quantity));
-        Add(GetDirectionToStr(xTradePosition.Direction));
-        Add(GetStatusToStr(xTradePosition.Status));
-        Add(FloatToStr(xTradePosition.GetProfitPerUnit));
-      end;
-  end;
-
-  procedure _ShowGrid;
-  var
-    xTradePosition: TTradePosition;
-  begin
-    var xInd := 1;
-    StrGrid.RowCount := localDefaultBot.Positions.Count + 2;
-    for xTradePosition in localDefaultBot.Positions do
-    begin
-      with StrGrid.Rows[xInd] do
-      begin
-        Clear;
-        Add(DateToStr(xTradePosition.OpenDate));
-        Add(TimeToStr(xTradePosition.OpenTime));
-        Add(DateToStr(xTradePosition.CloseDate));
-        Add(TimeToStr(xTradePosition.CloseTime));
-        Add(FloatToStr(xTradePosition.Open));
-        Add(FloatToStr(xTradePosition.Close));
-        Add(IntToStr(xTradePosition.Quantity));
-        Add(GetDirectionToStr(xTradePosition.Direction));
-        Add(GetStatusToStr(xTradePosition.Status));
-        Add(FloatToStr(xTradePosition.GetProfitPerUnit));
-      end;
-      Inc(xInd);
-    end;
-  end;
-
-
-  procedure _NextCandel;
-  begin
-    Inc(FIndexCandel);
-    if FIndexCandel >= SourceCandel.Candels.Count then
-    begin
-      localDefaultBot.ExecutionStop;
-      _Stop;
-      _ShowGrid;
-      _CurrentShowGrid;
-    end;
-  end;
-
-
-var
-  xCandel: TCandel;
-begin
-  xCandel := SourceCandel.Candels[FIndexCandel];
-
-  localDefaultBot.ExecutionLastCandel(xCandel);
-  _ShowGrid;
-  _CurrentShowGrid;
-
-  _NextCandel;
 end;
 
 end.

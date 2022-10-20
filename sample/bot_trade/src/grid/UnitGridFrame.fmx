@@ -1,0 +1,102 @@
+object GirdFrame: TGirdFrame
+  Size.Width = 742.000000000000000000
+  Size.Height = 326.000000000000000000
+  Size.PlatformDefault = False
+  object LayoutSource: TLayout
+    Align = Client
+    Size.Width = 742.000000000000000000
+    Size.Height = 186.000000000000000000
+    Size.PlatformDefault = False
+    TabOrder = 0
+    object StringGridSource: TStringGrid
+      Align = Client
+      CanFocus = True
+      ClipChildren = True
+      Size.Width = 742.000000000000000000
+      Size.Height = 161.000000000000000000
+      Size.PlatformDefault = False
+      TabOrder = 0
+      RowCount = 5
+      Viewport.Width = 742.000000000000000000
+      Viewport.Height = 161.000000000000000000
+      object ColumnSourceDate: TStringColumn
+        Header = ' '#1044#1072#1090#1072
+      end
+      object ColumnSourceTime: TStringColumn
+        Header = #1042#1088#1077#1084#1103
+      end
+      object ColumnSourceOpen: TStringColumn
+        Header = 'Open'
+      end
+      object ColumnSourceHigh: TStringColumn
+        Header = 'High'
+      end
+      object ColumnSourceLow: TStringColumn
+        Header = 'Low'
+      end
+      object ColumnSourceClose: TStringColumn
+        Header = 'Close'
+      end
+      object ColumnSourceVol: TStringColumn
+        Header = 'Vol'
+      end
+    end
+    object TextSourceText: TText
+      Align = Top
+      Size.Width = 742.000000000000000000
+      Size.Height = 25.000000000000000000
+      Size.PlatformDefault = False
+      Text = #1050#1086#1083#1080#1095#1077#1089#1090#1074#1086':'
+      TextSettings.HorzAlign = Leading
+    end
+  end
+  object LayoutFurute: TLayout
+    Align = Bottom
+    Position.Y = 186.000000000000000000
+    Size.Width = 742.000000000000000000
+    Size.Height = 140.000000000000000000
+    Size.PlatformDefault = False
+    TabOrder = 1
+    object StringGridFuture: TStringGrid
+      Align = Client
+      CanFocus = True
+      ClipChildren = True
+      Size.Width = 742.000000000000000000
+      Size.Height = 115.000000000000000000
+      Size.PlatformDefault = False
+      TabOrder = 0
+      RowCount = 3
+      Viewport.Width = 742.000000000000000000
+      Viewport.Height = 115.000000000000000000
+      object ColumnFutureDate: TStringColumn
+        Header = ' '#1044#1072#1090#1072
+      end
+      object ColumnFutureTime: TStringColumn
+        Header = #1042#1088#1077#1084#1103
+      end
+      object ColumnFutureOpen: TStringColumn
+        Header = 'Open'
+      end
+      object ColumnFutureHigh: TStringColumn
+        Header = 'High'
+      end
+      object ColumnFutureLow: TStringColumn
+        Header = 'Low'
+      end
+      object ColumnFutureClose: TStringColumn
+        Header = 'Close'
+      end
+      object ColumnFutureVol: TStringColumn
+        Header = 'Vol'
+      end
+    end
+    object TextFutureText: TText
+      Align = Top
+      Size.Width = 742.000000000000000000
+      Size.Height = 25.000000000000000000
+      Size.PlatformDefault = False
+      Text = #1050#1086#1083#1080#1095#1077#1089#1090#1074#1086':'
+      TextSettings.HorzAlign = Leading
+    end
+  end
+end

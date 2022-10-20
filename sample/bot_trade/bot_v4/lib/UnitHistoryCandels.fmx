@@ -1,0 +1,107 @@
+object HistoryFrame: THistoryFrame
+  Size.Width = 1006.000000000000000000
+  Size.Height = 484.000000000000000000
+  Size.PlatformDefault = False
+  object GridPanelLayout: TGridPanelLayout
+    Align = Client
+    Size.Width = 711.000000000000000000
+    Size.Height = 484.000000000000000000
+    Size.PlatformDefault = False
+    TabOrder = 0
+    ColumnCollection = <
+      item
+        Value = 100.000000000000000000
+      end>
+    ControlCollection = <
+      item
+        Column = 0
+        Control = Rectangle1
+        Row = 0
+      end
+      item
+        Column = 0
+        Control = Rectangle2
+        Row = 1
+      end>
+    RowCollection = <
+      item
+        Value = 50.000000000000000000
+      end
+      item
+        Value = 50.000000000000000000
+      end
+      item
+        SizeStyle = Auto
+      end>
+    object Rectangle1: TRectangle
+      Align = Client
+      Margins.Bottom = 2.500000000000000000
+      Size.Width = 711.000000000000000000
+      Size.Height = 239.500000000000000000
+      Size.PlatformDefault = False
+      object Text1: TText
+        Align = Top
+        Size.Width = 711.000000000000000000
+        Size.Height = 30.000000000000000000
+        Size.PlatformDefault = False
+        Text = '_BASE'
+      end
+      object Layout1: TLayout
+        Align = Client
+        Size.Width = 711.000000000000000000
+        Size.Height = 209.500000000000000000
+        Size.PlatformDefault = False
+        TabOrder = 1
+      end
+    end
+    object Rectangle2: TRectangle
+      Align = Client
+      Margins.Top = 2.500000000000000000
+      Size.Width = 711.000000000000000000
+      Size.Height = 239.500000000000000000
+      Size.PlatformDefault = False
+      object Text2: TText
+        Align = Top
+        Size.Width = 711.000000000000000000
+        Size.Height = 30.000000000000000000
+        Size.PlatformDefault = False
+        Text = '_DATA'
+      end
+      object Layout2: TLayout
+        Align = Client
+        Size.Width = 711.000000000000000000
+        Size.Height = 209.500000000000000000
+        Size.PlatformDefault = False
+        TabOrder = 1
+      end
+    end
+  end
+  object LayoutResultList: TLayout
+    Align = Right
+    Margins.Left = 5.000000000000000000
+    Position.X = 716.000000000000000000
+    Size.Width = 290.000000000000000000
+    Size.Height = 484.000000000000000000
+    Size.PlatformDefault = False
+    TabOrder = 2
+    object ListBox: TListBox
+      Align = Client
+      Size.Width = 290.000000000000000000
+      Size.Height = 484.000000000000000000
+      Size.PlatformDefault = False
+      TabOrder = 0
+      DisableFocusEffect = True
+      DefaultItemStyles.ItemStyle = ''
+      DefaultItemStyles.GroupHeaderStyle = ''
+      DefaultItemStyles.GroupFooterStyle = ''
+      Viewport.Width = 286.000000000000000000
+      Viewport.Height = 480.000000000000000000
+    end
+  end
+  object Timer: TTimer
+    Enabled = False
+    OnTimer = TimerTimer
+    Left = 304
+    Top = 136
+  end
+end

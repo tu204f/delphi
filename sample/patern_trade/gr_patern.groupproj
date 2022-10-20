@@ -1,0 +1,36 @@
+﻿<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+    <PropertyGroup>
+        <ProjectGuid>{F763E3F1-A678-42C2-B8B1-E631B7F695B0}</ProjectGuid>
+    </PropertyGroup>
+    <ItemGroup>
+        <Projects Include="patern.v1\patern.v1.dproj">
+            <Dependencies/>
+        </Projects>
+    </ItemGroup>
+    <ProjectExtensions>
+        <Borland.Personality>Default.Personality.12</Borland.Personality>
+        <Borland.ProjectType/>
+        <BorlandProject>
+            <Default.Personality/>
+        </BorlandProject>
+    </ProjectExtensions>
+    <Target Name="patern_v1">
+        <MSBuild Projects="patern.v1\patern.v1.dproj"/>
+    </Target>
+    <Target Name="patern_v1:Clean">
+        <MSBuild Projects="patern.v1\patern.v1.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="patern_v1:Make">
+        <MSBuild Projects="patern.v1\patern.v1.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="Build">
+        <CallTarget Targets="patern_v1"/>
+    </Target>
+    <Target Name="Clean">
+        <CallTarget Targets="patern_v1:Clean"/>
+    </Target>
+    <Target Name="Make">
+        <CallTarget Targets="patern_v1:Make"/>
+    </Target>
+    <Import Project="$(BDS)\Bin\CodeGear.Group.Targets" Condition="Exists('$(BDS)\Bin\CodeGear.Group.Targets')"/>
+</Project>

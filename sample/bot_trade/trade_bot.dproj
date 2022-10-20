@@ -106,9 +106,8 @@
             <Form>MainForm</Form>
             <FormType>dfm</FormType>
         </DCCReference>
-        <DCCReference Include="BotTrade.pas"/>
         <DCCReference Include="src\Lb.Candel.Source.pas"/>
-        <DCCReference Include="src\Lb.Candel.SysUtils.pas"/>
+        <DCCReference Include="src\Lb.SysUtils.Candel.pas"/>
         <BuildConfiguration Include="Release">
             <Key>Cfg_2</Key>
             <CfgParent>Base</CfgParent>

@@ -10,16 +10,10 @@ uses
   Quik.ValueTable in '..\..\library\trade\quik\Quik.ValueTable.pas',
   Lb.Logger in '..\..\library\Lb.Logger.pas',
   Lb.Script.QPile in '..\..\library\trade\script\Lb.Script.QPile.pas',
-  Lb.Operation.V1 in 'operation\Lb.Operation.V1.pas',
-  Lb.SysUtils.Table in 'Lb.SysUtils.Table.pas',
-  Lb.Level in 'Lb.Level.pas',
-  Lb.Custom.Trade in 'operation\Lb.Custom.Trade.pas',
   BTMemoryModule in '..\..\library\trade\libquik\BTMemoryModule.pas',
   QuikTrans2Order in '..\..\library\trade\libquik\QuikTrans2Order.pas',
   QuikTrans2QuikAPI in '..\..\library\trade\libquik\QuikTrans2QuikAPI.pas',
-  QuikTransOrder in '..\..\library\trade\libquik\QuikTransOrder.pas',
-  UnitSourceForm in 'UnitSourceForm.pas' {SourceForm},
-  Lb.SysUtils.CandeTable in 'Lb.SysUtils.CandeTable.pas';
+  QuikTransOrder in '..\..\library\trade\libquik\QuikTransOrder.pas';
 
 {$R *.res}
 

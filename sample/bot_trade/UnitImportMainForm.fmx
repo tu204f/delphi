@@ -2,7 +2,7 @@ object MainForm: TMainForm
   Left = 0
   Top = 0
   Caption = 'Form4'
-  ClientHeight = 296
+  ClientHeight = 522
   ClientWidth = 637
   FormFactor.Width = 320
   FormFactor.Height = 480
@@ -22,13 +22,13 @@ object MainForm: TMainForm
     Touch.InteractiveGestures = [Pan, LongTap, DoubleTap]
     DataDetectorTypes = []
     Position.X = 8.000000000000000000
-    Position.Y = 180.000000000000000000
+    Position.Y = 64.000000000000000000
     Size.Width = 617.000000000000000000
-    Size.Height = 105.000000000000000000
+    Size.Height = 441.000000000000000000
     Size.PlatformDefault = False
     TabOrder = 2
     Viewport.Width = 613.000000000000000000
-    Viewport.Height = 101.000000000000000000
+    Viewport.Height = 437.000000000000000000
   end
   object ProgressBar1: TProgressBar
     Orientation = Horizontal
@@ -39,7 +39,16 @@ object MainForm: TMainForm
     Size.PlatformDefault = False
   end
   object OpenDialog: TOpenDialog
-    Left = 68
-    Top = 96
+    Left = 404
+    Top = 80
+  end
+  object Button1: TButton
+    Position.X = 520.000000000000000000
+    Position.Y = 8.000000000000000000
+    Size.Width = 104.000000000000000000
+    Size.Height = 22.000000000000000000
+    Size.PlatformDefault = False
+    TabOrder = 5
+    Text = 'Button1'
   end
 end

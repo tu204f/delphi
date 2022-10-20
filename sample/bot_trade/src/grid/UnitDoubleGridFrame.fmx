@@ -1,0 +1,49 @@
+object DoubleGridFrame: TDoubleGridFrame
+  Size.Width = 506.000000000000000000
+  Size.Height = 254.000000000000000000
+  Size.PlatformDefault = False
+  object GridPanelLayout: TGridPanelLayout
+    Align = Client
+    Size.Width = 506.000000000000000000
+    Size.Height = 254.000000000000000000
+    Size.PlatformDefault = False
+    TabOrder = 0
+    ColumnCollection = <
+      item
+        Value = 100.000000000000000000
+      end>
+    ControlCollection = <
+      item
+        Column = 0
+        Control = LayoutLeft
+        Row = 0
+      end
+      item
+        Column = 0
+        Control = LayoutRight
+        Row = 1
+      end>
+    RowCollection = <
+      item
+        Value = 50.000000000000000000
+      end
+      item
+        Value = 50.000000000000000000
+      end>
+    object LayoutLeft: TLayout
+      Align = Client
+      Size.Width = 506.000000000000000000
+      Size.Height = 127.000000000000000000
+      Size.PlatformDefault = False
+      TabOrder = 0
+    end
+    object LayoutRight: TLayout
+      Align = Client
+      Anchors = []
+      Size.Width = 506.000000000000000000
+      Size.Height = 127.000000000000000000
+      Size.PlatformDefault = False
+      TabOrder = 1
+    end
+  end
+end

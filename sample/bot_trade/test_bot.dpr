@@ -5,7 +5,7 @@ uses
   FMX.Forms,
   UnitTestMainForm in 'UnitTestMainForm.pas' {MainForm},
   Lb.Candel.Source in 'src\Lb.Candel.Source.pas',
-  Lb.Candel.SysUtils in 'src\Lb.Candel.SysUtils.pas',
+  Lb.SysUtils.Candel in 'src\Lb.SysUtils.Candel.pas',
   BotTrade in 'BotTrade.pas',
   Lb.Logger in '..\..\library\Lb.Logger.pas';
 
