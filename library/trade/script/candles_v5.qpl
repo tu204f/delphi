@@ -1,0 +1,144 @@
+PORTFOLIO_EX SRZ2_V;
+DESCRIPTION SRZ2_V_10;
+CLIENTS_LIST ALL_CLIENTS;
+FIRMS_LIST ALL_FIRMS;
+
+PROGRAM
+	' Настраиваемые параметры
+	ClassCodeList = "SPBFUT" 		' код класса инструмента
+	Instrument    = "SRZ2"   		' название инструмента
+	Interval      = 5        		' интервал (таймфрейм) на графике
+	DayToFind     = 15       		' сколько дней назад искать свечи (можно уменьшить, чтобы ускорить работу программы)
+	CandleToFind  = 50       		' сколько свечей надо найти
+	
+	OutFile       = "C:\quotes.csv" ' файл, куда записывать данные в формате CSV
+
+	DELETE_ALL_ITEMS()
+	CandleCount=0
+	CurYear  = get_value(GET_DATETIME(), "YEAR")
+	CurMonth = get_value(GET_DATETIME(), "MONTH")
+	CurDay   = get_value(GET_DATETIME(), "DAY")
+	CurHour  = GET_VALUE(GET_DATETIME(), "Hour")
+	CurMin   = GET_VALUE(GET_DATETIME(), "Min")
+	CurMin   = Interval * Floor(CurMin/Interval) ' округляем минуты до «интервальных»
+	ID = "ID2" ' идентификатор графика
+
+for i from 1 to (DayToFind*24)*(Floor(60/Interval))
+TextData=fTextData(CurYear,CurMonth,CurDay) &""
+TextTime=fTextTime(CurHour,CurMin) & ""
+if (CandleCount<CandleToFind) ' если нашли сколько нам надо свечей — гоняем пустой цикл
+Candle=GET_CANDLE(ClassCodeList,Instrument, "", Interval & "", «PRICE», TextData, TextTime)
+Open=GET_VALUE (Candle, «Open»)+0
+if (Open>0)
+CandleCount=CandleCount+1
+High=GET_VALUE (Candle, «High»)+0
+Low=GET_VALUE (Candle, «Low»)+0
+Close=GET_VALUE (Candle, «Close»)+0
+Volume=GET_VALUE (Candle, «Volume»)+0
+
+o1=0+GET_VALUE(GET_VALUE(GET_CANDLE_EX(ID,TextData,TextTime),«LINES»),«OPEN»)
+h1=0+GET_VALUE(GET_VALUE(GET_CANDLE_EX(ID,TextData,TextTime),«LINES»),«HIGH»)
+l1=0+GET_VALUE(GET_VALUE(GET_CANDLE_EX(ID,TextData,TextTime),«LINES»),«LOW»)
+c1=0+GET_VALUE(GET_VALUE(GET_CANDLE_EX(ID,TextData,TextTime),«LINES»),«CLOSE»)
+v1=0+GET_VALUE(GET_VALUE(GET_CANDLE_EX(ID,TextData,TextTime),«LINES»),«VOLUME»)
+
+output=CREATE_MAP()
+output=SET_VALUE(output,«Date»,TextData)
+output=SET_VALUE(output,«Time»,TextTime)
+'output=SET_VALUE(output,«Open»,Open)
+'output=SET_VALUE(output,«High»,High)
+'output=SET_VALUE(output,«Low»,Low)
+'output=SET_VALUE(output,«Close»,Close)
+'output=SET_VALUE(output,«Volume»,Volume)
+output=SET_VALUE(output,«Open»,o1)
+output=SET_VALUE(output,«High»,h1)
+output=SET_VALUE(output,«Low»,l1)
+output=SET_VALUE(output,«Close»,c1)
+output=SET_VALUE(output,«Volume»,v1)
+ADD_ITEM(CandleCount,output)
+WRITELN(OutFile, TextData & "," & TextTime & "," & Open & "," & High & "," & Low & "," & Close)
+end if
+' откат на «интервал» назад
+CurMin=CurMin-Interval
+if CurMin<0
+CurMin=60+CurMin
+CurHour=CurHour-1
+if CurHour<0
+CurHour=23
+CurDay=CurDay-1
+if curDay<1
+CurDay=31
+CurMonth=CurMonth-1
+if CurMonth<1
+CurMonth=12
+CurYear=CurYear-1
+if CurYear<0
+message («Не найдены котировки до рождества Христова! <img src=»www.trade-bot.ru/wp-includes/images/smilies/icon_biggrin.gif" alt=":-D" class=«wp-smiley»> ",1)
+end if
+end if
+end if
+end if
+end if
+end if
+end for
+
+' функция перевода даты в текстовый формат
+func fTextData(Year,Month,Day)
+if (LEN(Month) < 2)
+Month = «0» & Month
+end if
+if (LEN(Day) < 2)
+Day = «0» & Day
+end if
+result = Year & Month & Day
+end func
+
+' функция перевода времени в текстовый формат
+func fTextTime(Hour,Min,Sec)
+if (LEN(Hour) < 2)
+Hour = «0» & Hour
+end if
+if (LEN(Min) < 2)
+Min = «0» & Min
+end if
+result = Hour & Min & «00»
+end func
+
+END_PROGRAM
+
+PARAMETER Date;
+PARAMETER_TITLE Дата;
+PARAMETER_DESCRIPTION Дата;
+PARAMETER_TYPE STRING(30);
+END
+PARAMETER Time;
+PARAMETER_TITLE Время;
+PARAMETER_DESCRIPTION Время;
+PARAMETER_TYPE STRING(30);
+END
+PARAMETER Open;
+PARAMETER_TITLE Open;
+PARAMETER_DESCRIPTION Open;
+PARAMETER_TYPE NUMERIC(10,6);
+END
+PARAMETER High;
+PARAMETER_TITLE High;
+PARAMETER_DESCRIPTION High;
+PARAMETER_TYPE NUMERIC(10,6);
+END
+PARAMETER Low;
+PARAMETER_TITLE Low;
+PARAMETER_DESCRIPTION Low;
+PARAMETER_TYPE NUMERIC(10,6);
+END
+PARAMETER Close;
+PARAMETER_TITLE Close;
+PARAMETER_DESCRIPTION Close;
+PARAMETER_TYPE NUMERIC(10,6);
+END
+PARAMETER Volume;
+PARAMETER_TITLE Volume;
+PARAMETER_DESCRIPTION Volume;
+PARAMETER_TYPE NUMERIC(10,6);
+END
+END_PORTFOLIO_EX
