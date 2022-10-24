@@ -54,6 +54,7 @@ begin
   ledClassCode.Text    := TSetting.ReadString('config.sys.classcode','');
   cbInterval.ItemIndex := TSetting.ReadInteger('config.sys.interval',0);
   UpDown.Position      := TSetting.ReadInteger('config.sys.countbar',20);
+  SaveDialog.InitialDir  := TSetting.ReadString('config.sys.qpl_dir','');
 
 end;
 
@@ -61,30 +62,31 @@ procedure TScriptForm.ButtonCreateScriptClick(Sender: TObject);
 
   procedure _SaveParam;
   begin
+    // Так делать не нужно
     TSetting.WriteString('config.sys.title',ledTitli.Text);
     TSetting.WriteString('config.sys.description',ledDescription.Text);
     TSetting.WriteString('config.sys.seccode',ledSecCode.Text);
     TSetting.WriteString('config.sys.classcode',ledClassCode.Text);
     TSetting.WriteInteger('config.sys.interval',cbInterval.ItemIndex);
     TSetting.WriteInteger('config.sys.countbar',UpDown.Position);
+    TSetting.WriteString('config.sys.qpl_dir',ExtractFilePath(SaveDialog.FileName));
   end;
 
   function _Interval: Integer;
   begin
     case cbInterval.ItemIndex of
-        //1: Result := 1;
-        2: Result := 2;
-        3: Result := 3;
-        4: Result := 4;
-        5: Result := 5;
-        6: Result := 6;
-       10: Result := 10;
-       15: Result := 15;
-       20: Result := 20;
-       30: Result := 30;
-       60: Result := 60;
-      120: Result := 120;
-      240: Result := 240;
+        1: Result := 2;
+        2: Result := 3;
+        3: Result := 4;
+        4: Result := 5;
+        5: Result := 6;
+        6: Result := 10;
+        7: Result := 15;
+        8: Result := 20;
+        9: Result := 30;
+       10: Result := 60;
+       11: Result := 120;
+       12: Result := 240;
     else
       Result := 1;
     end;
@@ -92,17 +94,19 @@ procedure TScriptForm.ButtonCreateScriptClick(Sender: TObject);
 
 var
   xStr: TStrings;
+  xInterval: Integer;
 begin
   if SaveDialog.Execute then
   begin
     xStr := TStringList.Create;
     try
+      xInterval := _Interval;
       xStr.Text := GetResourceScritpQPL(
         ledTitli.Text,
         ledDescription.Text,
         ledSecCode.Text,
         ledClassCode.Text,
-        _Interval,
+        xInterval,
         UpDown.Position
       );
       xStr.SaveToFile(SaveDialog.FileName);

@@ -1,0 +1,36 @@
+﻿<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+    <PropertyGroup>
+        <ProjectGuid>{0AB20F5B-7723-46DE-AA60-799AB8BEB2DB}</ProjectGuid>
+    </PropertyGroup>
+    <ItemGroup>
+        <Projects Include="script\script.dproj">
+            <Dependencies/>
+        </Projects>
+    </ItemGroup>
+    <ProjectExtensions>
+        <Borland.Personality>Default.Personality.12</Borland.Personality>
+        <Borland.ProjectType/>
+        <BorlandProject>
+            <Default.Personality/>
+        </BorlandProject>
+    </ProjectExtensions>
+    <Target Name="script">
+        <MSBuild Projects="script\script.dproj"/>
+    </Target>
+    <Target Name="script:Clean">
+        <MSBuild Projects="script\script.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="script:Make">
+        <MSBuild Projects="script\script.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="Build">
+        <CallTarget Targets="script"/>
+    </Target>
+    <Target Name="Clean">
+        <CallTarget Targets="script:Clean"/>
+    </Target>
+    <Target Name="Make">
+        <CallTarget Targets="script:Make"/>
+    </Target>
+    <Import Project="$(BDS)\Bin\CodeGear.Group.Targets" Condition="Exists('$(BDS)\Bin\CodeGear.Group.Targets')"/>
+</Project>

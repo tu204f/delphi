@@ -76,11 +76,10 @@ implementation
 
 uses
 {$IFDEF MSWINDOWS}
-  Vcl.Forms,
+  Vcl.Forms;
 {$ELSE}
-  FMX.Forms,
+  FMX.Forms;
 {$ENDIF}
-  Lb.Logger;
 
 type
   TParam = record
@@ -216,7 +215,8 @@ begin
       FMemIniFile.UpdateFile;
     except
       on E : Exception do
-        TLogger.LogForm('win_xp','global_ini_files.set_post ' + E.ClassName + ' ' + E.Message);
+
+        //TLogger.LogForm('win_xp','global_ini_files.set_post ' + E.ClassName + ' ' + E.Message);
     end;
   finally
     SetUnLock;
