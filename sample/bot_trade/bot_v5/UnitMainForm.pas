@@ -63,9 +63,14 @@ type
     procedure FormShow(Sender: TObject);
     procedure ListBoxResultClick(Sender: TObject);
   private
-    FStructurePaterns: TStructurePaternList;
+
+    FStructureSearch: TStructureSearch;
+
+    //FStructurePaterns: TStructurePaternList;
     FStructures: TMemoryStructures;
-    FSearchStructures: TMemoryStructures;
+
+    // FSearchStructures: TMemoryStructures;
+
     FVectorStructure: TVectorStructure;
     procedure SetSelectStructure(const AStrings: TStrings; const AStructure: TStructure);
     procedure SetAddStructurePatern(const AVectorStructure: TVectorStructure; const ALengthPrice, ALengthVol: Double);
@@ -100,9 +105,12 @@ begin
   inherited Create(AOwner);
 
   FStructures := TMemoryStructures.Create;
-  FSearchStructures := TMemoryStructures.Create;
+  //FSearchStructures := TMemoryStructures.Create;
   FVectorStructure := TVectorStructure.Create;
-  FStructurePaterns := TStructurePaternList.Create;
+  //FStructurePaterns := TStructurePaternList.Create;
+
+  FStructureSearch := TStructureSearch.Create;
+
 
   SetInitializationChar;
 end;
@@ -113,11 +121,14 @@ begin
   FreeAndNil(CharLeft);
   FreeAndNil(CharRight);
 
-  FreeAndNil(FStructurePaterns);
+  //FreeAndNil(FStructurePaterns);
   FreeAndNil(FVectorStructure);
 
-  FreeAndNil(FSearchStructures);
+  //FreeAndNil(FSearchStructures);
   FreeAndNil(FStructures);
+
+  FreeAndNil(FStructureSearch);
+
   inherited;
 end;
 
@@ -161,10 +172,13 @@ begin
   FStructures.FutureCount := FUTURE_COUNT;
   FStructures.FirstStructure;
 
-  FSearchStructures.FileName := FILE_NAME_TEST;
-  FSearchStructures.SourceCount := SOURCE_COUNT;
-  FSearchStructures.FutureCount := FUTURE_COUNT;
-  FSearchStructures.FirstStructure;
+  FStructureSearch := TStructureSearch.Create;
+
+
+  //FSearchStructures.FileName := FILE_NAME_TEST;
+  //FSearchStructures.SourceCount := SOURCE_COUNT;
+  //FSearchStructures.FutureCount := FUTURE_COUNT;
+  //FSearchStructures.FirstStructure;
 
 
   FVectorStructure.Transform(FStructures.Structure);
@@ -185,13 +199,15 @@ end;
 
 procedure TMainForm.ButtonForClick(Sender: TObject);
 begin
+  // Старт перебора данных
+
   ListBoxResult.Items.Clear;
-  FStructurePaterns.Clear;
+  //FStructurePaterns.Clear;
   Timer.Enabled := not Timer.Enabled;
   if Timer.Enabled then
   begin
     ButtonFor.Text := 'Остановить перебор';
-    FSearchStructures.FirstStructure;
+    //FSearchStructures.FirstStructure;
   end
   else
   begin

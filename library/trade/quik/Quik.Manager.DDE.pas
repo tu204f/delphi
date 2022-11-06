@@ -1,6 +1,6 @@
 unit Quik.Manager.DDE;
 
-//{$I quik_connect.inc}
+{$I quik_connect.inc}
 
 (*******************************************************************************
     Модуль переднозначен для получение данных с трогового терминала
@@ -21,6 +21,18 @@ uses
 
 const { базовые настройки QUIK }
   SERVICE_NAME   = 'table';
+
+(*
+  Формируем запрос на системные таблицы
+  procedure TQuikManagerTable.SetInitialization;
+
+  security    - Финансовый инструменты
+  trades      - Проведенные сделки
+  orders      - Проведенные заявки
+  stop_orders - Стоп заявка
+
+*)
+
 
 type
   TPokeAction = (paAccept, paPass, paReject);
@@ -49,8 +61,10 @@ function QuikManagerTable: TQuikManagerTable;
 implementation
 
 uses
-  VCL.Forms,
-  Lb.Logger;
+{$IFDEF LOG_QUIK}
+  Lb.Logger,
+{$ENDIF}
+  VCL.Forms;
 
 var
   localQuikManagerTable: TQuikManagerTable = nil;
@@ -191,11 +205,9 @@ begin
   xValueBlock.Row2 := xRow2;
   xValueBlock.Col1 := xCol1;
   xValueBlock.Col2 := xCol2;
-
-  {$IFDEF TABLE_DDE}
+  {$IFDEF LOG_QUIK_TABLE}
   TLogger.LogForm('table',ANameTable + '; size = ' + IntToStr(ASize) + '; cells [' + ACells + ']');
   {$ENDIF}
-
   QuikManagerTable.SetValueBlock(xValueBlock);
 end;
 

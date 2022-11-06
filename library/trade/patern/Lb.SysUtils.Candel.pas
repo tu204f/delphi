@@ -194,15 +194,51 @@ type
   TStructurePaternList = TObjectList<TStructurePatern>;
 
 
+  ///<summary>Создаем массив близких структур по вектору</summary>
+  TStructureSearch = class(TObject)
+  public type
+    TSearchThread = class(TThread)
+    private
+      FStructureSearch: TStructureSearch;
+    protected
+      procedure DoAddStructurePatern;
+      procedure Execute; override;
+    public
+      constructor Create(AStructureSearch: TStructureSearch);
+      destructor Destroy; override;
+    end;
+  private
+    FFileName: String;
+    FSourceCount: Integer;
+    FFutureCount: Integer;
+    FVectorStructure: TVectorStructure;
+    FStructurePaterns: TStructurePaternList;
+    procedure SetVectorStructure(const Value: TVectorStructure);
+  protected
+    FOnAddStructurePatern: TNotifyEvent;
+    procedure DoAddStructurePatern;
+  public
+    constructor Create; virtual;
+    destructor Destroy; override;
+    property StructurePaterns: TStructurePaternList read FStructurePaterns;
+    property VectorStructure: TVectorStructure read FVectorStructure write SetVectorStructure;
+    property FileName: String read FFileName write FFileName;
+    property SourceCount: Integer read FSourceCount write FSourceCount;
+    property FutureCount: Integer read FFutureCount write FFutureCount;
+    property OnAddStructurePatern: TNotifyEvent write FOnAddStructurePatern;
+  end;
 
-
-
-/// <summary>С равниваем два числа, с точностью</summary>
-function GetSameValue(const AValue1, AValue2: Double; const AEpsilon: Integer): Boolean;
-/// <summary>Копирование свечай</summary>
-procedure MoveCandels(const ASource, ADest: TCandelList);
-/// <summary>Сократить значение работы</summary>
-procedure CutDownCandels(const ASource: TCandelList; ACount: Integer);
+type
+  TVectorAPI = record
+    /// <summary>С равниваем два числа, с точностью</summary>
+    class function GetSameValue(const AValue1, AValue2: Double; const AEpsilon: Integer): Boolean; static;
+    /// <summary>Копирование свечай</summary>
+    class procedure MoveCandels(const ASource, ADest: TCandelList); static;
+    /// <summary>Сократить значение работы</summary>
+    class procedure CutDownCandels(const ASource: TCandelList; ACount: Integer); static;
+    /// <summary>Польное сравнение векторов</summary>
+    class function SameStructureSource(const AStructure1, AStructure2: TStructure): Boolean; static;
+  end;
 
 implementation
 
@@ -211,24 +247,6 @@ uses
   System.Math;
 
 (******************************************************************************)
-(* Математека - работы с вектором                                             *)
-
-(******************************************************************************)
-
-function GetSameValue(const AValue1, AValue2: Double; const AEpsilon: Integer): Boolean;
-var
-  xEpsilon: Double;
-  xLowValue, xHighValue: Double;
-begin
-  Result := False;
-  if (AEpsilon > 0)  and (AEpsilon < 100) then
-  begin
-    xLowValue := Min(AValue1,AValue2);
-    xHighValue := Max(AValue1,AValue2);
-    xEpsilon := (xHighValue - xLowValue)/xHighValue;
-    Result := AEpsilon > (xEpsilon * 100);
-  end;
-end;
 
 function GetToDate(S: String): TDateTime;
 begin
@@ -297,8 +315,6 @@ begin
     if not xS.IsEmpty then
       xStr.Add(xS);
 
-
-
     if xStr.Count >= 7 then
     begin
       xR.Date := GetToDate(xStr[0]);
@@ -314,9 +330,6 @@ begin
   end;
   Result := xR;
 end;
-
-(* ************************************************************************** *)
-(* Для транформации векторного массива *)
 
 /// <summary>Получаем последний значение цены и объема</summary>
 procedure SetLastPriceAndVol(const ACandels: TCandelList; var APrice, AVol: Double);
@@ -354,10 +367,28 @@ begin
   end;
 end;
 
+(******************************************************************************)
+(* Математека - работы с вектором                                             *)
+(******************************************************************************)
 
-(* ************************************************************************** *)
+{ TVectorAPI }
 
-procedure MoveCandels(const ASource, ADest: TCandelList);
+class function TVectorAPI.GetSameValue(const AValue1, AValue2: Double; const AEpsilon: Integer): Boolean;
+var
+  xEpsilon: Double;
+  xLowValue, xHighValue: Double;
+begin
+  Result := False;
+  if (AEpsilon > 0)  and (AEpsilon < 100) then
+  begin
+    xLowValue := Min(AValue1,AValue2);
+    xHighValue := Max(AValue1,AValue2);
+    xEpsilon := (xHighValue - xLowValue)/xHighValue;
+    Result := AEpsilon > (xEpsilon * 100);
+  end;
+end;
+
+class procedure TVectorAPI.MoveCandels(const ASource, ADest: TCandelList);
 begin
   // Копировать
   ADest.Clear;
@@ -365,11 +396,59 @@ begin
     ADest.Add(xC);
 end;
 
-procedure CutDownCandels(const ASource: TCandelList; ACount: Integer);
+class procedure TVectorAPI.CutDownCandels(const ASource: TCandelList; ACount: Integer);
 begin
   // Удалить лишние значение, сократить до нужного размера
   while ASource.Count > ACount do
     ASource.Delete(0);
+end;
+
+class function TVectorAPI.SameStructureSource(const AStructure1, AStructure2: TStructure): Boolean;
+
+  function _SameValue(const AValue1, AValue2: Double): Boolean;
+  var
+    xValue1, xValue2: Integer;
+  begin
+    xValue1 := Trunc(AValue1);
+    xValue2 := Trunc(AValue2);
+    Result := xValue1 = xValue2;
+  end;
+
+
+  function _SameCandel(const ACandel1, ACandel2: TCandel): Boolean;
+  begin
+    Result := _SameValue(ACandel1.Open,  ACandel2.Open) and
+              _SameValue(ACandel1.High,  ACandel2.High) and
+              _SameValue(ACandel1.Low,   ACandel2.Low)  and
+              _SameValue(ACandel1.Close, ACandel2.Close);
+  end;
+
+var
+  xC1, xC2: TCandel;
+  xCount1, xCount2: Integer;
+begin
+  Result := False;
+
+  if not Assigned(AStructure1) then
+    Exit;
+
+  if not Assigned(AStructure2) then
+    Exit;
+
+  xCount1 := AStructure1.SourceVectors.Count;
+  xCount2 := AStructure2.SourceVectors.Count;
+  if (xCount1 > 1) and (xCount1 = xCount2) then
+  begin
+    // На одну свечу меньше так как последния свяча постоянно обновляется
+    for var i := 0 to xCount1 - 2 do
+    begin
+      xC1 := AStructure1.SourceVectors[i];
+      xC2 := AStructure2.SourceVectors[i];
+      if not _SameCandel(xC1,xC2) then
+        Exit;
+    end;
+    Result := True;
+  end;
 end;
 
 (* ************************************************************************** *)
@@ -992,6 +1071,157 @@ destructor TStructurePatern.Destroy;
 begin
   FreeAndNil(FStructure);
   inherited;
+end;
+
+{ TStructureSearch.TSearchThread }
+
+constructor TStructureSearch.TSearchThread.Create(AStructureSearch: TStructureSearch);
+begin
+  inherited Create(True);
+  FStructureSearch := AStructureSearch;
+end;
+
+destructor TStructureSearch.TSearchThread.Destroy;
+begin
+  inherited;
+end;
+
+procedure TStructureSearch.TSearchThread.DoAddStructurePatern;
+begin
+  // Послать сообщений
+  TThread.Synchronize(nil,
+    procedure ()
+    begin
+      FStructureSearch.DoAddStructurePatern;
+    end
+  );
+end;
+
+procedure TStructureSearch.TSearchThread.Execute;
+
+  function _GetCreateStructurePatern(const AVectorStructure: TVectorStructure; const ALengthPrice, ALengthVol: Double): TStructurePatern;
+  var
+    xPatern: TStructurePatern;
+  begin
+    {Создание структуры}
+    xPatern := TStructurePatern.Create;
+    xPatern.Structure.Assign(AVectorStructure);
+    xPatern.LengthPrice := ALengthPrice;
+    xPatern.LengthVol := ALengthVol;
+    Result := xPatern;
+  end;
+
+  procedure _SetAddStructurePatern(const AVectorStructure: TVectorStructure; const ALengthPrice, ALengthVol: Double);
+  const
+    STRUCTURE_PATERNS_COUNT = 100;
+  var
+    i, iCount: Integer;
+    xStructurePatern: TStructurePatern;
+    xPatern: TStructurePatern;
+  var
+    xSng: Boolean;
+  begin
+    xSng := False;
+
+    iCount := FStructureSearch.StructurePaterns.Count;
+    if iCount > 0 then
+    begin
+      // ---------------------------------------------------------------------
+      // Находим ближайшие патерны
+      for i := 0 to iCount - 1 do
+      begin
+        xStructurePatern := FStructureSearch.StructurePaterns[i];
+        if xStructurePatern.LengthPrice > ALengthPrice then
+        begin
+          xPatern := _GetCreateStructurePatern(AVectorStructure, ALengthPrice, ALengthVol);
+          FStructureSearch.StructurePaterns.Insert(i,xPatern);
+          DoAddStructurePatern;
+          xSng := True;
+          Break;
+        end;
+      end;
+      // ---------------------------------------------------------------------
+      // Добавляем первый патерн
+      if (not xSng) and (FStructureSearch.StructurePaterns.Count < STRUCTURE_PATERNS_COUNT) then
+      begin
+        xPatern := _GetCreateStructurePatern(AVectorStructure, ALengthPrice, ALengthVol);
+        FStructureSearch.StructurePaterns.Add(xPatern);
+        DoAddStructurePatern;
+      end;
+      // Контролируем количество, найденных патернов
+      if iCount > STRUCTURE_PATERNS_COUNT then
+        FStructureSearch.StructurePaterns.Delete(iCount - 1);
+    end
+    else
+    begin
+      xPatern := _GetCreateStructurePatern(AVectorStructure, ALengthPrice, ALengthVol);
+      FStructureSearch.StructurePaterns.Add(xPatern);
+      DoAddStructurePatern;
+    end;
+  end;
+
+var
+  xVectorStructure: TVectorStructure;
+  xLengthPrice, xLengthVol: Double;
+  xSearchStructures: TMemoryStructures;
+begin
+  if Assigned(FStructureSearch) then
+  begin
+    FStructureSearch.StructurePaterns.Clear;
+    xSearchStructures := TMemoryStructures.Create;
+
+    // Условие структуры
+    xSearchStructures.FileName    := FStructureSearch.FileName;
+    xSearchStructures.SourceCount := FStructureSearch.SourceCount;
+    xSearchStructures.FutureCount := FStructureSearch.FutureCount;
+
+    {todo: Переработать структуру в обратном порядке}
+    xSearchStructures.FirstStructure;
+    while not xSearchStructures.EOF do
+    begin
+      xVectorStructure := TVectorStructure.Create;
+      try
+        xVectorStructure.Transform(xSearchStructures.Structure);
+        if TMathVector.IsComparisonStructure(FStructureSearch.VectorStructure, xVectorStructure) then
+        begin
+          TMathVector.SetSubtractStructure(FStructureSearch.VectorStructure, xVectorStructure, xLengthPrice, xLengthVol);
+          _SetAddStructurePatern(xVectorStructure, xLengthPrice, xLengthVol);
+        end;
+      finally
+        FreeAndNil(xVectorStructure);
+      end;
+      xSearchStructures.NextStructure;
+    end;
+  end;
+end;
+
+{ TStructureSearch }
+
+constructor TStructureSearch.Create;
+begin
+  FStructurePaterns := TStructurePaternList.Create;
+  FVectorStructure := TVectorStructure.Create;
+end;
+
+destructor TStructureSearch.Destroy;
+begin
+  FreeAndNil(FVectorStructure);
+  FreeAndNil(FStructurePaterns);
+  inherited;
+end;
+
+procedure TStructureSearch.DoAddStructurePatern;
+begin
+  if Assigned(FOnAddStructurePatern) then
+    FOnAddStructurePatern(Self);
+end;
+
+procedure TStructureSearch.SetVectorStructure(const Value: TVectorStructure);
+begin
+  if not TVectorAPI.SameStructureSource(Value,FVectorStructure) then
+  begin
+
+  end;
 end;
 
 end.

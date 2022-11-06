@@ -19,13 +19,16 @@ uses
 type
   TConnectQuikForm = class(TForm)
     LabelStatus: TLabel;
-    Button1: TButton;
-    Button2: TButton;
-    Timer1: TTimer;
-    ButtonSource1: TButton;
+    Timer: TTimer;
     StrGrid: TStringGrid;
-    procedure Button2Click(Sender: TObject);
-    procedure Timer1Timer(Sender: TObject);
+    ComboBoxQuikTables: TComboBox;
+    Label1: TLabel;
+    ButtonUpData: TButton;
+    StartTimer: TButton;
+    procedure FormShow(Sender: TObject);
+    procedure ButtonUpDataClick(Sender: TObject);
+    procedure StartTimerClick(Sender: TObject);
+    procedure TimerTimer(Sender: TObject);
   private
     { Private declarations }
   public
@@ -39,72 +42,52 @@ implementation
 
 {$R *.dfm}
 
-procedure TConnectQuikForm.Timer1Timer(Sender: TObject);
+uses
+  Quik.Manager.DDE,
+  Quik.ValueTable;
+
+var
+  QuikTable: TQuikTable = nil;
+
+procedure TConnectQuikForm.FormShow(Sender: TObject);
 begin
-  if GetIsQuikTable then
+  Self.Caption := 'Работа транслирование скрипта';
+end;
+
+procedure TConnectQuikForm.ButtonUpDataClick(Sender: TObject);
+begin
+  QuikManagerTable.SetNameTables(ComboBoxQuikTables.Items);
+  ComboBoxQuikTables.ItemIndex := 0;
+end;
+
+procedure TConnectQuikForm.StartTimerClick(Sender: TObject);
+var
+  xItemIndex: Integer;
+begin
+  Timer.Enabled := not Timer.Enabled;
+  if Timer.Enabled then
   begin
-    // контролируем позицию  по бумагам
+    xItemIndex := ComboBoxQuikTables.ItemIndex;
+    ButtonUpData.Caption := 'Стоп';
+    QuikTable := QuikManagerTable.Tables[xItemIndex];
   end
   else
-    SetInitializationTable;
+    ButtonUpData.Caption := 'Старт'
 end;
 
-procedure TConnectQuikForm.Button2Click(Sender: TObject);
+procedure TConnectQuikForm.TimerTimer(Sender: TObject);
 begin
-  var xCaption := 'cap_sr';
-  var xStr := TStringList.Create;
-  try
-    var xS := GetResourceScritpQPL(xCaption,'SRM2','SPBFUT','MA',1,100);
-    xStr.Text := xS;
-    xStr.SaveToFile(xCaption + '.qpl')
-  finally
-    FreeAndNil(xStr);
-  end;
-end;
-
-var
-  IndexFile: Integer = 0;
-
-procedure SetSaveFile(AQuikTable: TQuikTable);
-var
-  xStr: TStrings;
-begin
-  Inc(IndexFile);
-  var S := 'book_file_' + IntToStr(IndexFile) + '.bk';
-  xStr := TStringList.Create;
-  try
-    xStr.Add(FormatDateTime('yyyymmdd hhnnsszzz',Date + Time));
-    for var j := 0 to AQuikTable.RowCount - 1 do
-    begin
-      var xTmpS := '';
-      for var i := 0 to AQuikTable.ColCount - 1 do
-        xTmpS := xTmpS + AQuikTable.Cells[i,j].AsString + ';';
-      xStr.Add(xTmpS);
-    end;
-    var xPath := ExtractFilePath(ParamStr(0)) + 'book' + '/';
-    xStr.SaveToFile(xPath + S);
-  finally
-    FreeAndNil(xStr);
-  end;
-end;
-
-procedure TConnectQuikForm.EventAddValueBlock(Sender: TObject;
-  APointCells: TPointCells; AQuikTable: TQuikTable);
-begin
-  if SameText(AQuikTable.Name,'book_srm2') then
+  if Assigned(QuikTable) then
   begin
-    SetSaveFile(AQuikTable);
-
-
-    StrGrid.ColCount := AQuikTable.ColCount;
-    StrGrid.RowCount := AQuikTable.RowCount;
-
-    for var i := 0 to AQuikTable.ColCount - 1 do
-      for var j := 0 to AQuikTable.RowCount - 1 do
-        StrGrid.Cells[i,j] := AQuikTable.Cells[i,j].AsString;
-
+    StrGrid.RowCount := QuikTable.RowCount + 1;
+    StrGrid.ColCount := QuikTable.ColCount + 1;
+    for var xRow := 0 to QuikTable.RowCount - 1 do
+      for var xCol := 0 to QuikTable.ColCount - 1 do
+      begin
+        var xC := QuikTable.Cells[xCol,xRow];
+        StrGrid.Cells[xCol, xRow] := xC.AsString;
+      end;
   end;
-  LabelStatus.Caption := 'Состоние загрузка: ' + APointCells.ToString + ' :: ' + AQuikTable.Name;
 end;
 
 end.

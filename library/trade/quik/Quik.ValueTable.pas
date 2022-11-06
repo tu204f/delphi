@@ -88,8 +88,13 @@ type
   public
     procedure Fisrt;
     procedure Next;
+
     procedure Last;
+    procedure Prior;
+
     function EOF: Boolean;
+    function BOF: Boolean;
+
     property RowID: Integer read FRowID write FRowID;
     function AsInteger(const ANameField: String): Integer;
     function AsDouble(const ANameField: String): Double;
@@ -136,6 +141,7 @@ type
     FOnAddValueBlock: TOnAddValueBlock;
   protected
     procedure SetAddTable(const AName: String);
+    ///<summary>“аблица инициализации систем таблицы</summary>
     procedure SetInitialization; virtual;
   public
     constructor Create;
@@ -474,9 +480,19 @@ begin
   Inc(FRowID);
 end;
 
+procedure TQuikTable.Prior;
+begin
+  Dec(FRowID);
+end;
+
 function TQuikTable.EOF: Boolean;
 begin
   Result := FRowID >= Self.RowCount;
+end;
+
+function TQuikTable.BOF: Boolean;
+begin
+  Result := FRowID <= 0;
 end;
 
 function TQuikTable.AsInteger(const ANameField: String): Integer;
@@ -531,6 +547,7 @@ begin
       Result := VarToStrDef(xValue.Value,'');
   end;
 end; 
+
 
 function TQuikTable.GetIsRowSearchParam(const ARow: Integer; const AValue: Variant): Boolean;
 var

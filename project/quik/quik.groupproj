@@ -6,6 +6,9 @@
         <Projects Include="script\script.dproj">
             <Dependencies/>
         </Projects>
+        <Projects Include="one_tool_v2\one_sec.dproj">
+            <Dependencies/>
+        </Projects>
     </ItemGroup>
     <ProjectExtensions>
         <Borland.Personality>Default.Personality.12</Borland.Personality>
@@ -23,14 +26,23 @@
     <Target Name="script:Make">
         <MSBuild Projects="script\script.dproj" Targets="Make"/>
     </Target>
+    <Target Name="one_sec">
+        <MSBuild Projects="one_tool_v2\one_sec.dproj"/>
+    </Target>
+    <Target Name="one_sec:Clean">
+        <MSBuild Projects="one_tool_v2\one_sec.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="one_sec:Make">
+        <MSBuild Projects="one_tool_v2\one_sec.dproj" Targets="Make"/>
+    </Target>
     <Target Name="Build">
-        <CallTarget Targets="script"/>
+        <CallTarget Targets="script;one_sec"/>
     </Target>
     <Target Name="Clean">
-        <CallTarget Targets="script:Clean"/>
+        <CallTarget Targets="script:Clean;one_sec:Clean"/>
     </Target>
     <Target Name="Make">
-        <CallTarget Targets="script:Make"/>
+        <CallTarget Targets="script:Make;one_sec:Make"/>
     </Target>
     <Import Project="$(BDS)\Bin\CodeGear.Group.Targets" Condition="Exists('$(BDS)\Bin\CodeGear.Group.Targets')"/>
 </Project>

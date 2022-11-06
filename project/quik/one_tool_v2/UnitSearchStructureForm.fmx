@@ -1,0 +1,34 @@
+object SearchStructureForm: TSearchStructureForm
+  Left = 0
+  Top = 0
+  Caption = #1060#1086#1088#1084#1072': '#1056#1077#1079#1091#1083#1100#1090#1072#1090' '#1087#1086#1080#1089#1082#1072
+  ClientHeight = 479
+  ClientWidth = 476
+  FormFactor.Width = 320
+  FormFactor.Height = 480
+  FormFactor.Devices = [Desktop]
+  DesignerMasterStyle = 0
+  object StrGrid: TStringGrid
+    CanFocus = True
+    ClipChildren = True
+    Position.X = 12.000000000000000000
+    Position.Y = 52.000000000000000000
+    Size.Width = 441.000000000000000000
+    Size.Height = 293.000000000000000000
+    Size.PlatformDefault = False
+    TabOrder = 1
+    Viewport.Width = 421.000000000000000000
+    Viewport.Height = 268.000000000000000000
+    object StringColumnID: TStringColumn
+      Header = 'ID'
+    end
+    object StringColumnLengthPrice: TStringColumn
+      Header = #1041#1083#1080#1079#1072#1089#1090#1100' '#1087#1086' '#1062#1077#1085#1077
+      Size.Width = 140.000000000000000000
+    end
+    object StringColumnLengthValue: TStringColumn
+      Header = #1041#1083#1080#1079#1077#1089#1090#1100' '#1087#1086' '#1054#1073#1098#1077#1084#1091
+      Size.Width = 140.000000000000000000
+    end
+  end
+end

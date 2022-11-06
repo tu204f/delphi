@@ -1,0 +1,99 @@
+object MainForm: TMainForm
+  Left = 0
+  Top = 0
+  Caption = 'Form4'
+  ClientHeight = 572
+  ClientWidth = 1033
+  FormFactor.Width = 320
+  FormFactor.Height = 480
+  FormFactor.Devices = [Desktop]
+  DesignerMasterStyle = 0
+  object ButtonQuikTableGrid: TButton
+    Position.X = 8.000000000000000000
+    Position.Y = 544.000000000000000000
+    Size.Width = 205.000000000000000000
+    Size.Height = 22.000000000000000000
+    Size.PlatformDefault = False
+    TabOrder = 0
+    Text = #1055#1086#1083#1091#1095#1072#1077#1084#1099' '#1090#1072#1073#1083#1080#1094#1099' '#1080#1079' Quik'
+    OnClick = ButtonQuikTableGridClick
+  end
+  object GridPanelLayoutPrice: TGridPanelLayout
+    Position.X = 8.000000000000000000
+    Position.Y = 8.000000000000000000
+    Size.Width = 1017.000000000000000000
+    Size.Height = 501.000000000000000000
+    Size.PlatformDefault = False
+    TabOrder = 2
+    ColumnCollection = <
+      item
+        Value = 50.000000000000000000
+      end
+      item
+        Value = 50.000000000000000000
+      end>
+    ControlCollection = <
+      item
+        Column = 0
+        Control = LayoutQuikBar
+        Row = 0
+      end
+      item
+        Column = 1
+        Control = LayoutExpectation
+        Row = 0
+      end>
+    RowCollection = <
+      item
+        Value = 100.000000000000000000
+      end>
+    object LayoutQuikBar: TLayout
+      Align = Client
+      Margins.Left = 2.000000000000000000
+      Margins.Top = 2.000000000000000000
+      Margins.Right = 1.000000000000000000
+      Margins.Bottom = 2.000000000000000000
+      Size.Width = 505.500000000000000000
+      Size.Height = 497.000000000000000000
+      Size.PlatformDefault = False
+      TabOrder = 1
+    end
+    object LayoutExpectation: TLayout
+      Align = Client
+      Margins.Left = 1.000000000000000000
+      Margins.Top = 2.000000000000000000
+      Margins.Right = 2.000000000000000000
+      Margins.Bottom = 2.000000000000000000
+      Size.Width = 505.500000000000000000
+      Size.Height = 497.000000000000000000
+      Size.PlatformDefault = False
+      TabOrder = 0
+    end
+  end
+  object ButtonStart: TButton
+    Position.X = 8.000000000000000000
+    Position.Y = 516.000000000000000000
+    Size.Width = 125.000000000000000000
+    Size.Height = 22.000000000000000000
+    Size.PlatformDefault = False
+    TabOrder = 3
+    Text = #1057#1090#1072#1088#1090' '#1086#1073#1085#1086#1074#1083#1077#1085#1080#1077
+    OnClick = ButtonStartClick
+  end
+  object Timer: TTimer
+    Enabled = False
+    OnTimer = TimerTimer
+    Left = 346
+    Top = 146
+  end
+  object ButtonSearchStructure: TButton
+    Position.X = 216.000000000000000000
+    Position.Y = 544.000000000000000000
+    Size.Width = 97.000000000000000000
+    Size.Height = 22.000000000000000000
+    Size.PlatformDefault = False
+    TabOrder = 5
+    Text = #1057#1090#1072#1088#1090' '#1087#1086#1080#1089#1082#1072
+    OnClick = ButtonSearchStructureClick
+  end
+end
