@@ -33,7 +33,6 @@ uses
 type
   TMainForm = class(TForm)
     W: TLayout;
-    Timer: TTimer;
     ListBoxLeft: TListBox;
     ListBoxRigth: TListBox;
     Text1: TText;
@@ -59,22 +58,15 @@ type
     procedure ButtonOpenClick(Sender: TObject);
     procedure ButtonNextClick(Sender: TObject);
     procedure ButtonForClick(Sender: TObject);
-    procedure TimerTimer(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure ListBoxResultClick(Sender: TObject);
   private
-
     FStructureSearch: TStructureSearch;
-
-    //FStructurePaterns: TStructurePaternList;
     FStructures: TMemoryStructures;
-
-    // FSearchStructures: TMemoryStructures;
-
     FVectorStructure: TVectorStructure;
     procedure SetSelectStructure(const AStrings: TStrings; const AStructure: TStructure);
-    procedure SetAddStructurePatern(const AVectorStructure: TVectorStructure; const ALengthPrice, ALengthVol: Double);
-    procedure SetStructurePaternResult;
+    procedure StructureSearchOnAddStructurePatern(Sender: TObject);
+    procedure StructureSearchOnStopSearchThread(Sender: TObject);
   protected
     CharLeft, CharRight: TBarsFrame;
     procedure SetInitializationChar;
@@ -103,32 +95,23 @@ const
 constructor TMainForm.Create(AOwner: TComponent);
 begin
   inherited Create(AOwner);
-
   FStructures := TMemoryStructures.Create;
-  //FSearchStructures := TMemoryStructures.Create;
   FVectorStructure := TVectorStructure.Create;
-  //FStructurePaterns := TStructurePaternList.Create;
 
   FStructureSearch := TStructureSearch.Create;
-
+  FStructureSearch.OnAddStructurePatern := StructureSearchOnAddStructurePatern;
+  FStructureSearch.OnStopSearchThread := StructureSearchOnStopSearchThread;
 
   SetInitializationChar;
 end;
 
 destructor TMainForm.Destroy;
 begin
-
   FreeAndNil(CharLeft);
   FreeAndNil(CharRight);
-
-  //FreeAndNil(FStructurePaterns);
   FreeAndNil(FVectorStructure);
-
-  //FreeAndNil(FSearchStructures);
   FreeAndNil(FStructures);
-
   FreeAndNil(FStructureSearch);
-
   inherited;
 end;
 
@@ -137,9 +120,9 @@ begin
   Self.Caption := 'Производим поиск структуры:';
 end;
 
+
 procedure TMainForm.SetInitializationChar;
 begin
-
   CharLeft := TBarsFrame.Create(nil);
   CharLeft.Parent := LayoutChartLeft;
   CharLeft.Align := TAlignLayout.Client;
@@ -147,7 +130,6 @@ begin
   CharRight := TBarsFrame.Create(nil);
   CharRight.Parent := LayoutCharRight;
   CharRight.Align := TAlignLayout.Client;
-
 end;
 
 procedure TMainForm.SetSelectStructure(const AStrings: TStrings; const AStructure: TStructure);
@@ -161,10 +143,39 @@ begin
     AStrings.Add(xC.ToStringShort);
 end;
 
+procedure TMainForm.StructureSearchOnAddStructurePatern(Sender: TObject);
+var
+  xS: String;
+  i, iCount: Integer;
+  xStructurePatern: TStructurePatern;
+begin
+  ListBoxResult.BeginUpdate;
+  try
+    ListBoxResult.Items.Clear;
+    iCount := FStructureSearch.StructurePaterns.Count;
+    if iCount > 0 then
+      for i := 0 to iCount - 1 do
+      begin
+        xStructurePatern := FStructureSearch.StructurePaterns[i];
+        xS := 'patern ' +
+          xStructurePatern.LengthPrice.ToString + '; ' +
+          xStructurePatern.LengthVol.ToString + ';';
+        ListBoxResult.Items.Add(xS);
+      end;
+  finally
+    ListBoxResult.EndUpdate;
+  end;
+end;
+
+procedure TMainForm.StructureSearchOnStopSearchThread(Sender: TObject);
+begin
+  Text2.Text := 'Стоп потока';
+end;
+
 procedure TMainForm.ButtonOpenClick(Sender: TObject);
 const
-  SOURCE_COUNT = 3;
-  FUTURE_COUNT = 2;
+  SOURCE_COUNT = 15;
+  FUTURE_COUNT = 5;
 
 begin
   FStructures.FileName := FILE_NAME_TEST;
@@ -172,20 +183,16 @@ begin
   FStructures.FutureCount := FUTURE_COUNT;
   FStructures.FirstStructure;
 
-  FStructureSearch := TStructureSearch.Create;
-
-
-  //FSearchStructures.FileName := FILE_NAME_TEST;
-  //FSearchStructures.SourceCount := SOURCE_COUNT;
-  //FSearchStructures.FutureCount := FUTURE_COUNT;
-  //FSearchStructures.FirstStructure;
+  FStructureSearch.FileName := FILE_NAME_TEST;
+  FStructureSearch.SourceCount := SOURCE_COUNT;
+  FStructureSearch.FutureCount := FUTURE_COUNT;
 
 
   FVectorStructure.Transform(FStructures.Structure);
   SetSelectStructure(ListBoxLeft.Items,FVectorStructure);
 
-  CharLeft.SetShowStructure(FVectorStructure);
 
+  CharLeft.SetShowStructure(FVectorStructure);
 end;
 
 procedure TMainForm.ButtonNextClick(Sender: TObject);
@@ -201,138 +208,12 @@ procedure TMainForm.ButtonForClick(Sender: TObject);
 begin
   // Старт перебора данных
 
-  ListBoxResult.Items.Clear;
-  //FStructurePaterns.Clear;
-  Timer.Enabled := not Timer.Enabled;
-  if Timer.Enabled then
-  begin
-    ButtonFor.Text := 'Остановить перебор';
-    //FSearchStructures.FirstStructure;
-  end
-  else
-  begin
-    ButtonFor.Text := 'Старт перебора';
-  end;
+  Text1.Text := 'Старт потока';
+  Text2.Text := '';
+
+  FStructureSearch.SetVectorStructure(FVectorStructure);
 end;
 
-procedure TMainForm.TimerTimer(Sender: TObject);
-var
-  xVectorStructure: TVectorStructure;
-  xLengthPrice, xLengthVol: Double;
-begin
-  {$IFDEF DEBUG}
-  TLogger.LogTree(0,'Читаем следующий итерации');
-  {$ENDIF}
-  // по поисковой структуре
-  if not FSearchStructures.EOF then
-  begin
-    xVectorStructure := TVectorStructure.Create;
-    try
-      xVectorStructure.Transform(FSearchStructures.Structure);
-      SetSelectStructure(ListBoxRigth.Items,xVectorStructure);
-      if TMathVector.IsComparisonStructure(FVectorStructure, xVectorStructure) then
-      begin
-        TMathVector.SetSubtractStructure(FVectorStructure, xVectorStructure, xLengthPrice, xLengthVol);
-        Text1.Text := 'LengthPrice := ' + FloatToStr(xLengthPrice);
-        Text2.Text := 'LengthVol := ' + FloatToStr(xLengthVol);
-        SetAddStructurePatern(xVectorStructure, xLengthPrice, xLengthVol);
-      end;
-    finally
-      FreeAndNil(xVectorStructure);
-    end;
-    FSearchStructures.NextStructure;
-  end
-  else
-  begin
-    Timer.Enabled := False;
-    ButtonFor.Text := 'Старт перебора';
-  end;
-end;
-
-procedure TMainForm.SetAddStructurePatern(const AVectorStructure: TVectorStructure; const ALengthPrice, ALengthVol: Double);
-const
-  STRUCTURE_PATERNS_COUNT = 100;
-
-var
-  i, iCount: Integer;
-  xStructurePatern: TStructurePatern;
-  xPatern: TStructurePatern;
-var
-  xSng: Boolean;
-begin
-  xSng := False;
-
-  iCount := FStructurePaterns.Count;
-  if iCount > 0 then
-  begin
-
-    for i := 0 to iCount - 1 do
-    begin
-      xStructurePatern := FStructurePaterns[i];
-      if xStructurePatern.LengthPrice > ALengthPrice then
-      begin
-
-        xPatern := TStructurePatern.Create;
-        xPatern.Structure.Assign(AVectorStructure);
-        xPatern.LengthPrice := ALengthPrice;
-        xPatern.LengthVol := ALengthVol;
-
-        FStructurePaterns.Insert(i,xPatern);
-
-        SetStructurePaternResult;
-
-        xSng := True;
-
-        Break;
-      end;
-    end;
-
-    if (not xSng) and (FStructurePaterns.Count < STRUCTURE_PATERNS_COUNT) then
-    begin
-      xPatern := TStructurePatern.Create;
-      xPatern.Structure.Assign(AVectorStructure);
-      xPatern.LengthPrice := ALengthPrice;
-      xPatern.LengthVol := ALengthVol;
-
-      FStructurePaterns.Add(xPatern);
-
-      SetStructurePaternResult;
-    end;
-
-    if iCount > STRUCTURE_PATERNS_COUNT then
-      FStructurePaterns.Delete(iCount - 1);
-
-  end
-  else
-  begin
-    xPatern := TStructurePatern.Create;
-    xPatern.Structure.Assign(AVectorStructure);
-    xPatern.LengthPrice := ALengthPrice;
-    xPatern.LengthVol := ALengthVol;
-
-    FStructurePaterns.Add(xPatern);
-
-    SetStructurePaternResult;
-  end;
-
-end;
-
-procedure TMainForm.SetStructurePaternResult;
-var
-  xS: String;
-begin
-  ListBoxResult.BeginUpdate;
-  try
-    ListBoxResult.Items.Clear;
-    for var xPatern in FStructurePaterns do
-    begin
-      xS := xPatern.LengthPrice.ToString + '; ' + xPatern.LengthVol.ToString;
-      ListBoxResult.Items.Add(xS);
-    end;
-  finally
-    ListBoxResult.EndUpdate;
-  end;
-end;
 
 procedure TMainForm.ListBoxResultClick(Sender: TObject);
 var
@@ -342,9 +223,11 @@ begin
   xIndex := ListBoxResult.ItemIndex;
   if xIndex >= 0 then
   begin
-    xStructurePatern := FStructurePaterns[xIndex];
+    xStructurePatern := FStructureSearch.StructurePaterns[xIndex];
+    SetSelectStructure(ListBoxRigth.Items,xStructurePatern.Structure);
     CharRight.SetShowStructure(xStructurePatern.Structure);
   end;
 end;
+
 
 end.

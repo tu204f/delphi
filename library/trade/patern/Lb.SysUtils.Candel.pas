@@ -208,24 +208,30 @@ type
       destructor Destroy; override;
     end;
   private
+    FSearchThread: TSearchThread;
+    procedure SetStopSearchThread;
+  private
     FFileName: String;
     FSourceCount: Integer;
     FFutureCount: Integer;
     FVectorStructure: TVectorStructure;
     FStructurePaterns: TStructurePaternList;
-    procedure SetVectorStructure(const Value: TVectorStructure);
   protected
+    FOnStopSearchThread: TNotifyEvent;
     FOnAddStructurePatern: TNotifyEvent;
     procedure DoAddStructurePatern;
+    procedure SearchThreadOnTerminate(Sender: TObject);
+    property VectorStructure: TVectorStructure read FVectorStructure;
   public
     constructor Create; virtual;
     destructor Destroy; override;
+    procedure SetVectorStructure(const AVectorStructure: TVectorStructure);
     property StructurePaterns: TStructurePaternList read FStructurePaterns;
-    property VectorStructure: TVectorStructure read FVectorStructure write SetVectorStructure;
     property FileName: String read FFileName write FFileName;
     property SourceCount: Integer read FSourceCount write FSourceCount;
     property FutureCount: Integer read FFutureCount write FFutureCount;
     property OnAddStructurePatern: TNotifyEvent write FOnAddStructurePatern;
+    property OnStopSearchThread: TNotifyEvent write FOnStopSearchThread;
   end;
 
 type
@@ -668,9 +674,8 @@ begin
   CandelsNextOneStep(ASelectCount,ACandels);
 end;
 
-
-var
-  IndexNext: Integer = 0;
+//var
+//  IndexNext: Integer = 0;
 
 procedure TMemoryCandels.CandelsNextOneStep(const ASelectCount: Integer; const ACandels: TCandelList);
 var
@@ -678,24 +683,24 @@ var
   xLine: String;
   xPosition: Int64;
 begin
-  {$IFDEF DEBUG}
-  Inc(IndexNext);
-
-  if IndexNext = 4191 then
-  begin
-
-    with TStringList.Create do
-    begin
-      Clear;
-      Free;
-    end;
-
-  end;
-
-
-  TLogger.LogTree(0,'TMemoryCandels.CandelsNextOneStep: ' + IndexNext.ToString);
-  TLogger.LogTreeText(3,'>> ASelectCount = ' + ASelectCount.ToString);
-  {$ENDIF}
+//  {$IFDEF DEBUG}
+//  Inc(IndexNext);
+//
+//  if IndexNext = 4191 then
+//  begin
+//
+//    with TStringList.Create do
+//    begin
+//      Clear;
+//      Free;
+//    end;
+//
+//  end;
+//
+//
+//  TLogger.LogTree(0,'TMemoryCandels.CandelsNextOneStep: ' + IndexNext.ToString);
+//  TLogger.LogTreeText(3,'>> ASelectCount = ' + ASelectCount.ToString);
+//  {$ENDIF}
 
   if not Assigned(ACandels) then
     raise Exception.Create('Error Message: Массив не определен');
@@ -706,9 +711,9 @@ begin
     ACandels.Clear;
     // Читаем первую свечу
     xLine := GetLine(TIntegration.tiForward);
-    {$IFDEF DEBUG}
-    TLogger.LogTreeText(3,'>> ' + xLine);
-    {$ENDIF}
+//    {$IFDEF DEBUG}
+//    TLogger.LogTreeText(3,'>> ' + xLine);
+//    {$ENDIF}
     xC := TCandel.Cretae(xLine);
     ACandels.Add(xC);
     xPosition := FStream.Position;
@@ -716,15 +721,15 @@ begin
     for var i := 1 to ASelectCount - 1 do
     begin
       xLine := GetLine(TIntegration.tiForward);
-      {$IFDEF DEBUG}
-      TLogger.LogTreeText(3,'>> ' + xLine);
-      {$ENDIF}
+//      {$IFDEF DEBUG}
+//      TLogger.LogTreeText(3,'>> ' + xLine);
+//      {$ENDIF}
       xC := TCandel.Cretae(xLine);
       ACandels.Add(xC);
     end;
-    {$IFDEF DEBUG}
-    TLogger.LogTreeText(3,'>> ' + ACandels.Count.ToString);
-    {$ENDIF}
+//    {$IFDEF DEBUG}
+//    TLogger.LogTreeText(3,'>> ' + ACandels.Count.ToString);
+//    {$ENDIF}
     FStream.Position := xPosition;
   end;
 end;
@@ -1190,6 +1195,11 @@ begin
       finally
         FreeAndNil(xVectorStructure);
       end;
+
+      // Выход из потока
+      if Self.Terminated then
+        Break;
+
       xSearchStructures.NextStructure;
     end;
   end;
@@ -1199,12 +1209,14 @@ end;
 
 constructor TStructureSearch.Create;
 begin
+  FSearchThread := nil;
   FStructurePaterns := TStructurePaternList.Create;
   FVectorStructure := TVectorStructure.Create;
 end;
 
 destructor TStructureSearch.Destroy;
 begin
+  SetStopSearchThread;
   FreeAndNil(FVectorStructure);
   FreeAndNil(FStructurePaterns);
   inherited;
@@ -1216,11 +1228,34 @@ begin
     FOnAddStructurePatern(Self);
 end;
 
-procedure TStructureSearch.SetVectorStructure(const Value: TVectorStructure);
+procedure TStructureSearch.SearchThreadOnTerminate(Sender: TObject);
 begin
-  if not TVectorAPI.SameStructureSource(Value,FVectorStructure) then
+  if FSearchThread = Sender then
   begin
+    if Assigned(FOnStopSearchThread) then
+      FOnStopSearchThread(Self);
+    FSearchThread := nil;
+  end;
+end;
 
+procedure TStructureSearch.SetStopSearchThread;
+begin
+  if Assigned(FSearchThread) then
+  begin
+    FSearchThread.Terminate;
+    FSearchThread := nil;
+  end;
+end;
+
+procedure TStructureSearch.SetVectorStructure(const AVectorStructure: TVectorStructure);
+begin
+  if not TVectorAPI.SameStructureSource(AVectorStructure,FVectorStructure) then
+  begin
+    SetStopSearchThread;
+    FVectorStructure.Assign(AVectorStructure);
+    FSearchThread := TSearchThread.Create(Self);
+    FSearchThread.OnTerminate := SearchThreadOnTerminate;
+    FSearchThread.Start;
   end;
 end;
 

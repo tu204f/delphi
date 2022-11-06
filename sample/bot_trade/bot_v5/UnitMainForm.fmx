@@ -9,13 +9,6 @@ object MainForm: TMainForm
   FormFactor.Devices = [Desktop]
   OnShow = FormShow
   DesignerMasterStyle = 0
-  object Timer: TTimer
-    Enabled = False
-    Interval = 50
-    OnTimer = TimerTimer
-    Left = 304
-    Top = 244
-  end
   object LayoutClient: TLayout
     Align = Client
     Margins.Left = 5.000000000000000000
