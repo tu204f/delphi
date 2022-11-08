@@ -196,21 +196,6 @@
             <Form>MainForm</Form>
             <FormType>fmx</FormType>
         </DCCReference>
-        <DCCReference Include="..\src\charts.v3\UnitBarsFrame.pas">
-            <Form>BarsFrame</Form>
-            <FormType>fmx</FormType>
-            <DesignClass>TFrame</DesignClass>
-        </DCCReference>
-        <DCCReference Include="..\src\charts.v3\UnitBarFrame.pas">
-            <Form>BarFrame</Form>
-            <FormType>fmx</FormType>
-            <DesignClass>TFrame</DesignClass>
-        </DCCReference>
-        <DCCReference Include="..\src\charts.v3\UnitDoubleBarsFrame.pas">
-            <Form>DoubleBarsFrame</Form>
-            <FormType>fmx</FormType>
-            <DesignClass>TFrame</DesignClass>
-        </DCCReference>
         <DCCReference Include="..\src\grid\UnitGridFrame.pas">
             <Form>GirdFrame</Form>
             <FormType>fmx</FormType>
@@ -225,6 +210,16 @@
         <DCCReference Include="..\..\..\library\trade\patern\Lb.SysUtils.Candel.pas"/>
         <DCCReference Include="..\..\..\library\trade\patern\Lb.SysUtils.SearhPatern.pas"/>
         <DCCReference Include="..\..\..\library\trade\patern\Lb.SysUtils.StructureFile.pas"/>
+        <DCCReference Include="..\..\..\library\trade\patern\chart\UnitBarFrame.pas">
+            <Form>BarFrame</Form>
+            <FormType>fmx</FormType>
+            <DesignClass>TFrame</DesignClass>
+        </DCCReference>
+        <DCCReference Include="..\..\..\library\trade\patern\chart\UnitBarsFrame.pas">
+            <Form>BarsFrame</Form>
+            <FormType>fmx</FormType>
+            <DesignClass>TFrame</DesignClass>
+        </DCCReference>
         <BuildConfiguration Include="Release">
             <Key>Cfg_2</Key>
             <CfgParent>Base</CfgParent>

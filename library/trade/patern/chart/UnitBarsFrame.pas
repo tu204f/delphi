@@ -30,7 +30,7 @@ type
   private
     FBarFrames: TBarFrameList;
     procedure SetCreateBarFrames;
-    function GetCountBars: Integer;
+    //function GetCountBars: Integer;
   private
     FMaxValue: Double;
     FMinValue: Double;
@@ -64,6 +64,7 @@ begin
   inherited;
 end;
 
+(*
 function TBarsFrame.GetCountBars: Integer;
 begin
   if Assigned(FStructure) then
@@ -74,6 +75,7 @@ begin
   else
     Result := COUNT_SOURCE + COUNT_FUTURE;
 end;
+*)
 
 procedure TBarsFrame.SetCreateBarFrames;
 var
@@ -114,6 +116,10 @@ end;
 
 procedure TBarsFrame.SetMaxAndMinValue(var AMaxValue, AMinValue: Double);
 
+  //{$DEFINE DEFAULT_MAX_MIN_VALUE}
+
+  {$IFDEF DEFAULT_MAX_MIN_VALUE}
+  {$ELSE}
   procedure _SetMaxAndMin(const ACandels: TCandelList; var AMaxValue, AMinValue: Double);
   var
     i, iCount: Integer;
@@ -146,11 +152,19 @@ procedure TBarsFrame.SetMaxAndMinValue(var AMaxValue, AMinValue: Double);
       end;
     end;
   end;
+  {$ENDIF}
 
+{$IFDEF DEFAULT_MAX_MIN_VALUE}
+{$ELSE}
 var
   i, iCount: Integer;
   xCandel: TCandel;
+{$ENDIF}
 begin
+{$IFDEF DEFAULT_MAX_MIN_VALUE}
+  AMaxValue := 200;
+  AMinValue := 0;
+{$ELSE}
   AMaxValue := 0;
   AMinValue := 0;
 
@@ -178,6 +192,7 @@ begin
       if xCandel.Low  < AMinValue then AMinValue := xCandel.Low;
     end;
   end;
+{$ENDIF}
 
 end;
 
@@ -224,6 +239,10 @@ begin
     begin
       xBar := _NewBar(xIndex);
       xCandel := FStructure.SourceVectors.Items[i];
+      if i = (iCount - 1) then
+        xCandel.Status := TTypeCandel.tcCurrent
+      else
+        xCandel.Status := TTypeCandel.tcSource;
       xBar.SetCandel(FMaxValue,FMinValue,xCandel);
       Inc(xIndex);
     end;

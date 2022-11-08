@@ -7,7 +7,7 @@ uses
   FMX.Types, FMX.Controls, FMX.Forms, FMX.Graphics, FMX.Dialogs,
   FMX.Controls.Presentation, FMX.StdCtrls, FMX.Layouts,
   UnitBarsFrame,
-  Lb.SysUtils.Candel;
+  Lb.SysUtils.Candel, FMX.ListBox, FMX.Objects;
 
 type
   TMainForm = class(TForm)
@@ -18,14 +18,24 @@ type
     ButtonStart: TButton;
     Timer: TTimer;
     ButtonSearchStructure: TButton;
+    ListBox1: TListBox;
+    Text1: TText;
+    Text2: TText;
+    ProgressBar1: TProgressBar;
+    Timer1: TTimer;
     procedure ButtonQuikTableGridClick(Sender: TObject);
     procedure ButtonStartClick(Sender: TObject);
     procedure TimerTimer(Sender: TObject);
     procedure ButtonSearchStructureClick(Sender: TObject);
+    procedure ListBox1Click(Sender: TObject);
+    procedure Timer1Timer(Sender: TObject);
   private
     QuikBars: TBarsFrame;
     BookBars: TBarsFrame;
     VectorStructure: TVectorStructure;
+    StructureSearch: TStructureSearch;
+    procedure StructureSearchOnAddStructurePatern(Sender: TObject);
+    procedure StructureSearchOnStopSearchThread(Sender: TObject);
   public
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
@@ -44,8 +54,10 @@ uses
   UnitQuikTableGridForm;
 
 const
-  SOURCE_COUNT = 20;
-  FUTURE_COUNT = 5;
+  FILE_NAME_TEST   = 'd:\work\git\delphi\sample\bot_trade\bin\data\sber\source.csv';
+
+  SOURCE_COUNT = 5;
+  FUTURE_COUNT = 3;
 
 { TMainForm }
 
@@ -57,6 +69,8 @@ begin
   else
     ButtonStart.Text := 'Старт';
 end;
+
+
 
 
 procedure TMainForm.TimerTimer(Sender: TObject);
@@ -142,6 +156,15 @@ begin
     VectorStructure.Transform(xValueStructure);
     // ----------------------------------------
     // Включить поиск
+
+
+    StructureSearch.FileName := FILE_NAME_TEST;
+    StructureSearch.SourceCount := SOURCE_COUNT;
+    StructureSearch.FutureCount := FUTURE_COUNT;
+    Text1.Text := 'Старт потока';
+    Text2.Text := '';
+    StructureSearch.SetVectorStructure(VectorStructure);
+
     QuikBars.SetShowStructure(VectorStructure);
   finally
     FreeAndNil(xValueStructure);
@@ -160,6 +183,12 @@ begin
   BookBars.Align := TAlignLayout.Client;
 
   VectorStructure := TVectorStructure.Create;
+
+
+  StructureSearch := TStructureSearch.Create;
+  StructureSearch.OnAddStructurePatern := StructureSearchOnAddStructurePatern;
+  StructureSearch.OnStopSearchThread := StructureSearchOnStopSearchThread;
+
 end;
 
 destructor TMainForm.Destroy;
@@ -167,7 +196,30 @@ begin
   FreeAndNil(VectorStructure);
   FreeAndNil(BookBars);
   FreeAndNil(QuikBars);
+
+  FreeAndNil(StructureSearch);
   inherited;
+end;
+
+procedure TMainForm.ListBox1Click(Sender: TObject);
+
+  procedure _SetStructurePaternResult(const AIndex: Integer);
+  var
+    xStructurePatern: TStructurePatern;
+  begin
+    if AIndex >= 0 then
+    begin
+      xStructurePatern := StructureSearch.StructurePaterns[AIndex];
+      BookBars.SetShowStructure(xStructurePatern.Structure);
+    end;
+  end;
+
+var
+  xIndex: Integer;
+begin
+  xIndex := ListBox1.ItemIndex;
+  if xIndex >= 0 then
+    _SetStructurePaternResult(xIndex);
 end;
 
 procedure TMainForm.ButtonQuikTableGridClick(Sender: TObject);
@@ -178,6 +230,49 @@ end;
 procedure TMainForm.ButtonSearchStructureClick(Sender: TObject);
 begin
   // Запускаем поиск
+end;
+
+procedure TMainForm.StructureSearchOnAddStructurePatern(Sender: TObject);
+var
+  xIndex: Integer;
+  xS: String;
+  i, iCount: Integer;
+  xStructurePatern: TStructurePatern;
+begin
+  ListBox1.BeginUpdate;
+  try
+    ListBox1.Items.Clear;
+    iCount := StructureSearch.StructurePaterns.Count;
+    if iCount > 0 then
+      for i := 0 to iCount - 1 do
+      begin
+        xStructurePatern := StructureSearch.StructurePaterns[i];
+        xS := 'patern ' +
+          xStructurePatern.LengthPrice.ToString + '; ' +
+          xStructurePatern.LengthVol.ToString + ';';
+        ListBox1.Items.Add(xS);
+      end;
+  finally
+    ListBox1.EndUpdate;
+  end;
+
+  //xIndex := StructureSearch.ResultTrandPatern;
+  //if xIndex >= 0 then
+  //  SetStructurePaternResult(xIndex);
+end;
+
+procedure TMainForm.StructureSearchOnStopSearchThread(Sender: TObject);
+begin
+  Text2.Text := 'Стоп потока';
+end;
+
+procedure TMainForm.Timer1Timer(Sender: TObject);
+begin
+  if Assigned(StructureSearch) then
+  begin
+
+    ProgressBar1.Value := StructureSearch.ProgressReading;
+  end;
 end;
 
 end.

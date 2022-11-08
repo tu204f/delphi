@@ -20,36 +20,32 @@ object BarFrame: TBarFrame
       Size.PlatformDefault = False
       Stroke.Thickness = 0.500000000000000000
       Stroke.Dash = Dash
-      object LayoutBar: TLayout
+      object LayoutCandel: TLayout
         Align = Client
-        Margins.Top = 3.000000000000000000
-        Margins.Bottom = 3.000000000000000000
         Size.Width = 90.000000000000000000
-        Size.Height = 481.000000000000000000
+        Size.Height = 487.000000000000000000
         Size.PlatformDefault = False
         TabOrder = 0
-        object LineBody: TLine
+        object LineCandelHL: TLine
           LineType = Left
-          Position.X = 40.000000000000000000
-          Position.Y = 8.000000000000000000
+          Position.X = 44.000000000000000000
+          Position.Y = 12.000000000000000000
           Size.Width = 9.000000000000000000
           Size.Height = 157.000000000000000000
           Size.PlatformDefault = False
           Stroke.Thickness = 2.000000000000000000
         end
-        object LineClose: TLine
-          LineType = Top
-          Position.X = 8.000000000000000000
-          Position.Y = 133.000000000000000000
-          Size.Width = 33.000000000000000000
-          Size.Height = 25.000000000000000000
+        object RectangleBody: TRectangle
+          Position.X = 20.000000000000000000
+          Position.Y = 40.000000000000000000
+          Size.Width = 45.000000000000000000
+          Size.Height = 105.000000000000000000
           Size.PlatformDefault = False
-          Stroke.Thickness = 2.000000000000000000
         end
-        object LineOpen: TLine
+        object LineFlet: TLine
           LineType = Top
-          Position.X = 40.000000000000000000
-          Position.Y = 45.000000000000000000
+          Position.X = 24.000000000000000000
+          Position.Y = 177.000000000000000000
           Size.Width = 33.000000000000000000
           Size.Height = 25.000000000000000000
           Size.PlatformDefault = False

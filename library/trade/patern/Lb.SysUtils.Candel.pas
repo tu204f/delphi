@@ -14,6 +14,7 @@ type
   /// Определям тип свячи
   TTypeCandel = (
     tcSource, // источник данных
+    tcCurrent,// Текущая свеча
     tcFuture  // Будушие свиячи
   );
 
@@ -112,6 +113,7 @@ type
     FFutureCount: Integer;
     FValueStructure: TValueStructure;
     function GetEOF: Boolean;
+    function GetProgressReading: Integer;
   public
     constructor Create; override;
     destructor Destroy; override;
@@ -122,6 +124,7 @@ type
     property Structure: TValueStructure read FValueStructure;
     property SourceCount: Integer read FSourceCount write FSourceCount;
     property FutureCount: Integer read FFutureCount write FFutureCount;
+    property ProgressReading: Integer read GetProgressReading;
   end;
 
   ///<summary>Структура данных</summary>
@@ -216,15 +219,21 @@ type
     FFutureCount: Integer;
     FVectorStructure: TVectorStructure;
     FStructurePaterns: TStructurePaternList;
+    FProgressReading: Integer;
   protected
     FOnStopSearchThread: TNotifyEvent;
     FOnAddStructurePatern: TNotifyEvent;
     procedure DoAddStructurePatern;
     procedure SearchThreadOnTerminate(Sender: TObject);
+    procedure SetProgressReading(const AProgressReading: Integer);
     property VectorStructure: TVectorStructure read FVectorStructure;
   public
     constructor Create; virtual;
     destructor Destroy; override;
+
+    {todo: подвопросом что делать}
+    function ResultTrandPatern: Integer;
+
     procedure SetVectorStructure(const AVectorStructure: TVectorStructure);
     property StructurePaterns: TStructurePaternList read FStructurePaterns;
     property FileName: String read FFileName write FFileName;
@@ -232,6 +241,7 @@ type
     property FutureCount: Integer read FFutureCount write FFutureCount;
     property OnAddStructurePatern: TNotifyEvent write FOnAddStructurePatern;
     property OnStopSearchThread: TNotifyEvent write FOnStopSearchThread;
+    property ProgressReading: Integer read FProgressReading;
   end;
 
 type
@@ -773,6 +783,14 @@ begin
   Result := Self.CandelEOF;
 end;
 
+function TMemoryStructures.GetProgressReading: Integer;
+var
+  xProgressReading: Double;
+begin
+  xProgressReading := FStream.Position/FStream.Size;
+  Result := Trunc(xProgressReading * 100);
+end;
+
 procedure TMemoryStructures.NextStructure;
 
   procedure _NextStructureSource(const ASourceCandels, ACandels: TCandelList);
@@ -1049,16 +1067,34 @@ begin
 end;
 
 class procedure TMathVector.SetSubtractStructure(const AStructure1, AStructure2: TStructure; var ALengthPrice, ALengthVol: Double);
+
+  procedure _SetSourceVectorCandels(ASource, ADest: TCandelList);
+  begin
+    // Удалить последнию свячу
+    ADest.Clear;
+    for var i := 0 to ASource.Count - 2 do
+    begin
+      var xC := ASource[i];
+      ADest.Add(xC);
+    end;
+  end;
+
 var
-  xResult: TCandelList;
+  xResult, xSource1, xSource2: TCandelList;
 begin
   ALengthPrice := 0; 
   ALengthVol := 0;
   xResult := TCandelList.Create;
-  try 
-    TMathVector.SetSubtract(AStructure1.SourceVectors,AStructure2.SourceVectors,xResult);
+  xSource1:= TCandelList.Create;
+  xSource2:= TCandelList.Create;
+  try
+    _SetSourceVectorCandels(AStructure1.SourceVectors, xSource1);
+    _SetSourceVectorCandels(AStructure2.SourceVectors, xSource2);
+    TMathVector.SetSubtract(xSource1, xSource2, xResult);
     TMathVector.SetLength(xResult,ALengthPrice, ALengthVol);
   finally
+    FreeAndNil(xSource1);
+    FreeAndNil(xSource2);
     FreeAndNil(xResult);
   end;
 end;
@@ -1184,6 +1220,7 @@ begin
     xSearchStructures.FirstStructure;
     while not xSearchStructures.EOF do
     begin
+      FStructureSearch.SetProgressReading(xSearchStructures.ProgressReading);
       xVectorStructure := TVectorStructure.Create;
       try
         xVectorStructure.Transform(xSearchStructures.Structure);
@@ -1199,6 +1236,8 @@ begin
       // Выход из потока
       if Self.Terminated then
         Break;
+
+
 
       xSearchStructures.NextStructure;
     end;
@@ -1228,6 +1267,50 @@ begin
     FOnAddStructurePatern(Self);
 end;
 
+function TStructureSearch.ResultTrandPatern: Integer;
+var
+  xBuyCount, xSellCount: Integer;
+  xBuyInd, xSellInd: Integer;
+  i, iCount: Integer;
+  xCandel: TCandel;
+  xStructurePatern: TStructurePatern;
+begin
+  Result := -1;
+  xBuyInd := -1;
+  xSellInd := -1;
+
+  xBuyCount := 0;
+  xSellCount := 0;
+  iCount := FStructurePaterns.Count;
+  if iCount > 0 then
+    for i := 0 to iCount - 1 do
+    begin
+      xStructurePatern := FStructurePaterns[i];
+      xCandel := xStructurePatern.Structure.FutureVectors[0];
+      if xCandel.Close > xCandel.Open then
+      begin
+        if xBuyInd < 0 then
+          xBuyInd := i;
+        Inc(xBuyCount);
+      end
+      else if xCandel.Close < xCandel.Open then
+      begin
+        if xSellInd < 0 then
+          xSellInd := i;
+        Inc(xSellCount);
+      end;
+    end;
+  if (xBuyCount > 0) or (xSellCount > 0) then
+  begin
+    if xBuyCount > xSellCount then
+      Result := xBuyInd
+    else if xBuyCount < xSellCount then
+      Result := xSellInd
+    else
+      Result := 0;
+  end;
+end;
+
 procedure TStructureSearch.SearchThreadOnTerminate(Sender: TObject);
 begin
   if FSearchThread = Sender then
@@ -1236,6 +1319,11 @@ begin
       FOnStopSearchThread(Self);
     FSearchThread := nil;
   end;
+end;
+
+procedure TStructureSearch.SetProgressReading(const AProgressReading: Integer);
+begin
+  FProgressReading := AProgressReading;
 end;
 
 procedure TStructureSearch.SetStopSearchThread;

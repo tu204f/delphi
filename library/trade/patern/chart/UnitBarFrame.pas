@@ -2,7 +2,8 @@ unit UnitBarFrame;
 
 interface
 
-{todo: Для красоты все оформить ввиде свечей}
+{$DEFINE PRICE_BAR}
+{$DEFINE PRICE_CANDEL}
 
 uses
   System.SysUtils,
@@ -25,11 +26,11 @@ type
   ///<summary>Одна свеча</summary>
   TBarFrame = class(TFrame)
     Layout: TLayout;
-    LineBody: TLine;
-    LineOpen: TLine;
-    LineClose: TLine;
     Rectangle1: TRectangle;
-    LayoutBar: TLayout;
+    LayoutCandel: TLayout;
+    LineCandelHL: TLine;
+    RectangleBody: TRectangle;
+    LineFlet: TLine;
   private
     FMaxValue: Double;
     FMinValue: Double;
@@ -108,57 +109,107 @@ end;
 
 procedure TBarFrame.SetShowCandel;
 
-  function GetPositionY(const APrice, AMaxValue, AMinValue: Double; const AHieght: Single): Single;
+  function _GetPositionY(const APrice, AMaxValue, AMinValue: Double; const AHieght: Single): Single;
   begin
     Result := 0;
     if (AMaxValue <> AMinValue) then
       Result := AHieght * ((AMaxValue - APrice)/(AMaxValue - AMinValue));
   end;
 
+  function _GetColorFillBody: TAlphaColor;
+  begin
+    if FCandel.Open < FCandel.Close then
+      Result := TAlphaColorRec.Lightgreen
+    else if FCandel.Open > FCandel.Close then
+      Result := TAlphaColorRec.Lightpink
+    else
+      Result := TAlphaColorRec.Gray
+  end;
+
+  function _GetPrice(const AValue1, AValue2: Double; const ActiveMaxValue: Boolean): Double;
+  begin
+    if ActiveMaxValue then
+    begin
+      if AValue1 > AValue2 then
+        Result := AValue1
+      else
+        Result := AValue2;
+    end
+    else
+    begin
+      if AValue1 < AValue2 then
+        Result := AValue1
+      else
+        Result := AValue2;
+    end;
+  end;
+
   procedure _SetShowCandelImage;
   var
-    xOpen, xHigh, xLow, xClose: Single;
+    xTopPrice, xBottomPrice: Double;
+    xTopBody, xHigh, xLow, xBottomBody: Single;
     X, Y, xWidth, xHeight, xDeltaWidth: Single;
   begin
-    xOpen  := GetPositionY(FCandel.Open,  FMaxValue, FMinValue, LayoutBar.Height);
-    xHigh  := GetPositionY(FCandel.High,  FMaxValue, FMinValue, LayoutBar.Height);
-    xLow   := GetPositionY(FCandel.Low,   FMaxValue, FMinValue, LayoutBar.Height);
-    xClose := GetPositionY(FCandel.Close, FMaxValue, FMinValue, LayoutBar.Height);
 
+    xTopPrice := _GetPrice(FCandel.Open, FCandel.Close, True);
+    xBottomPrice := _GetPrice(FCandel.Open, FCandel.Close, False);
 
-    xDeltaWidth := Rectangle1.Width/2; // - (LineBody.Stroke.Thickness/2);
+    xTopBody    := _GetPositionY(xTopPrice,     FMaxValue, FMinValue, LayoutCandel.Height);
+    xHigh       := _GetPositionY(FCandel.High,  FMaxValue, FMinValue, LayoutCandel.Height);
+    xLow        := _GetPositionY(FCandel.Low,   FMaxValue, FMinValue, LayoutCandel.Height);
+    xBottomBody := _GetPositionY(xBottomPrice,  FMaxValue, FMinValue, LayoutCandel.Height);
 
     case FCandel.Status of
-      tcSource: Rectangle1.Fill.Color := TAlphaColorRec.Null;
-      tcFuture: Rectangle1.Fill.Color := TAlphaColorRec.Lime;
+      tcCurrent: Rectangle1.Fill.Color := TAlphaColorRec.Yellow;
+      tcSource : Rectangle1.Fill.Color := TAlphaColorRec.Null;
+      tcFuture : Rectangle1.Fill.Color := TAlphaColorRec.Lime;
     end;
 
+    if xTopBody >= xBottomBody  then
+    begin
+      LineFlet.Visible := True;
+      RectangleBody.Visible := False;
+    end
+    else
+    begin
+      LineFlet.Visible := False;
+      RectangleBody.Visible := True;
+    end;
+
+
+    xDeltaWidth := LayoutCandel.Width/2; // - (LineBody.Stroke.Thickness/2);
 
     // Тело бара
     X := xDeltaWidth;
     Y := xHigh;
     xHeight := xLow - xHigh;
-    xWidth := LineBody.Stroke.Thickness;
-    LineBody.SetBounds(X, Y, xWidth, xHeight);
+    xWidth := LineCandelHL.Width;
+    LineCandelHL.SetBounds(X, Y, xWidth, xHeight);
 
-    // Открытие
-    X := 0;
-    Y := xOpen;
-    xHeight := LineBody.Stroke.Thickness;
-    xWidth := xDeltaWidth + LineBody.Stroke.Thickness;
-    LineOpen.SetBounds(X, Y, xWidth, xHeight);
+    if RectangleBody.Visible then
+    begin
+      X := LineCandelHL.Stroke.Thickness;
+      Y := xTopBody;
+      xHeight := xBottomBody - xTopBody;
+      xWidth  := LayoutCandel.Width - 2 * LineCandelHL.Stroke.Thickness;
+      RectangleBody.SetBounds(X,Y,xWidth,xHeight);
 
+      LineCandelHL.Stroke.Color := GetColorBody;
+      RectangleBody.Stroke.Color := GetColorBody;
+      RectangleBody.Fill.Color := _GetColorFillBody;
+    end
+    else
+    begin
+      X := LineCandelHL.Stroke.Thickness;
+      Y := xTopBody;
+      xHeight := LineCandelHL.Height;
+      xWidth  := LayoutCandel.Width - 2 * LineCandelHL.Stroke.Thickness;
+      LineFlet.SetBounds(X,Y,xWidth,xHeight);
 
-    // Открытие
-    X := xDeltaWidth - LineBody.Stroke.Thickness/2;
-    Y := xClose;
-    xHeight := LineBody.Stroke.Thickness;
-    xWidth := xDeltaWidth + LineBody.Stroke.Thickness;
-    LineClose.SetBounds(X, Y, xWidth, xHeight);
+      LineCandelHL.Stroke.Color := GetColorBody;
+      LineFlet.Stroke.Color := GetColorBody;
+    end;
 
-    LineBody.Stroke.Color := GetColorBody;
-    LineOpen.Stroke.Color := GetColorBody;
-    LineClose.Stroke.Color := GetColorBody;
   end;
 
 begin

@@ -3,7 +3,7 @@ object MainForm: TMainForm
   Top = 0
   Caption = 'Form4'
   ClientHeight = 572
-  ClientWidth = 1033
+  ClientWidth = 972
   FormFactor.Width = 320
   FormFactor.Height = 480
   FormFactor.Devices = [Desktop]
@@ -21,10 +21,10 @@ object MainForm: TMainForm
   object GridPanelLayoutPrice: TGridPanelLayout
     Position.X = 8.000000000000000000
     Position.Y = 8.000000000000000000
-    Size.Width = 1017.000000000000000000
+    Size.Width = 645.000000000000000000
     Size.Height = 501.000000000000000000
     Size.PlatformDefault = False
-    TabOrder = 2
+    TabOrder = 3
     ColumnCollection = <
       item
         Value = 50.000000000000000000
@@ -46,6 +46,9 @@ object MainForm: TMainForm
     RowCollection = <
       item
         Value = 100.000000000000000000
+      end
+      item
+        SizeStyle = Auto
       end>
     object LayoutQuikBar: TLayout
       Align = Client
@@ -53,7 +56,7 @@ object MainForm: TMainForm
       Margins.Top = 2.000000000000000000
       Margins.Right = 1.000000000000000000
       Margins.Bottom = 2.000000000000000000
-      Size.Width = 505.500000000000000000
+      Size.Width = 319.500000000000000000
       Size.Height = 497.000000000000000000
       Size.PlatformDefault = False
       TabOrder = 1
@@ -64,7 +67,7 @@ object MainForm: TMainForm
       Margins.Top = 2.000000000000000000
       Margins.Right = 2.000000000000000000
       Margins.Bottom = 2.000000000000000000
-      Size.Width = 505.500000000000000000
+      Size.Width = 319.500000000000000000
       Size.Height = 497.000000000000000000
       Size.PlatformDefault = False
       TabOrder = 0
@@ -76,7 +79,7 @@ object MainForm: TMainForm
     Size.Width = 125.000000000000000000
     Size.Height = 22.000000000000000000
     Size.PlatformDefault = False
-    TabOrder = 3
+    TabOrder = 4
     Text = #1057#1090#1072#1088#1090' '#1086#1073#1085#1086#1074#1083#1077#1085#1080#1077
     OnClick = ButtonStartClick
   end
@@ -92,8 +95,51 @@ object MainForm: TMainForm
     Size.Width = 97.000000000000000000
     Size.Height = 22.000000000000000000
     Size.PlatformDefault = False
-    TabOrder = 5
+    TabOrder = 6
     Text = #1057#1090#1072#1088#1090' '#1087#1086#1080#1089#1082#1072
     OnClick = ButtonSearchStructureClick
+  end
+  object ListBox1: TListBox
+    Anchors = []
+    Position.X = 662.000000000000000000
+    Position.Y = 9.000000000000000000
+    Size.Width = 303.000000000000000000
+    Size.Height = 500.000000000000000000
+    Size.PlatformDefault = False
+    TabOrder = 2
+    OnClick = ListBox1Click
+    DisableFocusEffect = True
+    DefaultItemStyles.ItemStyle = ''
+    DefaultItemStyles.GroupHeaderStyle = ''
+    DefaultItemStyles.GroupFooterStyle = ''
+    Viewport.Width = 299.000000000000000000
+    Viewport.Height = 496.000000000000000000
+  end
+  object Text1: TText
+    Position.X = 328.000000000000000000
+    Position.Y = 516.000000000000000000
+    Size.Width = 185.000000000000000000
+    Size.Height = 21.000000000000000000
+    Size.PlatformDefault = False
+  end
+  object Text2: TText
+    Position.X = 328.000000000000000000
+    Position.Y = 540.000000000000000000
+    Size.Width = 185.000000000000000000
+    Size.Height = 21.000000000000000000
+    Size.PlatformDefault = False
+  end
+  object ProgressBar1: TProgressBar
+    Orientation = Horizontal
+    Position.X = 520.000000000000000000
+    Position.Y = 540.000000000000000000
+    Size.Width = 261.000000000000000000
+    Size.Height = 20.000000000000000000
+    Size.PlatformDefault = False
+  end
+  object Timer1: TTimer
+    OnTimer = Timer1Timer
+    Left = 570
+    Top = 374
   end
 end

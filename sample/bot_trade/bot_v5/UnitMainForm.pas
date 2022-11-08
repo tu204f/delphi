@@ -67,6 +67,7 @@ type
     procedure SetSelectStructure(const AStrings: TStrings; const AStructure: TStructure);
     procedure StructureSearchOnAddStructurePatern(Sender: TObject);
     procedure StructureSearchOnStopSearchThread(Sender: TObject);
+    procedure SetStructurePaternResult(const AIndex: Integer);
   protected
     CharLeft, CharRight: TBarsFrame;
     procedure SetInitializationChar;
@@ -143,8 +144,10 @@ begin
     AStrings.Add(xC.ToStringShort);
 end;
 
+
 procedure TMainForm.StructureSearchOnAddStructurePatern(Sender: TObject);
 var
+  xIndex: Integer;
   xS: String;
   i, iCount: Integer;
   xStructurePatern: TStructurePatern;
@@ -165,6 +168,11 @@ begin
   finally
     ListBoxResult.EndUpdate;
   end;
+
+  xIndex := FStructureSearch.ResultTrandPatern;
+  if xIndex >= 0 then
+    SetStructurePaternResult(xIndex);
+
 end;
 
 procedure TMainForm.StructureSearchOnStopSearchThread(Sender: TObject);
@@ -174,7 +182,7 @@ end;
 
 procedure TMainForm.ButtonOpenClick(Sender: TObject);
 const
-  SOURCE_COUNT = 15;
+  SOURCE_COUNT = 25;
   FUTURE_COUNT = 5;
 
 begin
@@ -218,12 +226,19 @@ end;
 procedure TMainForm.ListBoxResultClick(Sender: TObject);
 var
   xIndex: Integer;
-  xStructurePatern: TStructurePatern;
 begin
   xIndex := ListBoxResult.ItemIndex;
   if xIndex >= 0 then
+    SetStructurePaternResult(xIndex);
+end;
+
+procedure TMainForm.SetStructurePaternResult(const AIndex: Integer);
+var
+  xStructurePatern: TStructurePatern;
+begin
+  if AIndex >= 0 then
   begin
-    xStructurePatern := FStructureSearch.StructurePaterns[xIndex];
+    xStructurePatern := FStructureSearch.StructurePaterns[AIndex];
     SetSelectStructure(ListBoxRigth.Items,xStructurePatern.Structure);
     CharRight.SetShowStructure(xStructurePatern.Structure);
   end;
