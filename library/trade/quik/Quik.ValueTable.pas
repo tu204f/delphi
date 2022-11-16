@@ -158,8 +158,6 @@ procedure SetStringToQuikTable(AQuikTable: TQuikTable; AStrings: TStrings);
 
 implementation
 
-uses Lb.Logger;
-
 procedure SetStringToQuikTable(AQuikTable: TQuikTable; AStrings: TStrings);
 var
   xS: String;

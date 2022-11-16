@@ -254,7 +254,10 @@ begin
     begin
       xBar := _NewBar(xIndex);
       xCandel := FStructure.FutureVectors.Items[i];
-      xCandel.Status := TTypeCandel.tcFuture;
+      if i = 0 then
+        xCandel.Status := TTypeCandel.toLookingFor
+      else
+        xCandel.Status := TTypeCandel.tcFuture;
       xBar.SetCandel(FMaxValue,FMinValue,xCandel);
       Inc(xIndex);
     end;

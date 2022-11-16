@@ -140,7 +140,7 @@
         <Manifest_File>$(BDS)\bin\default_app.manifest</Manifest_File>
         <UWP_DelphiLogo44>$(BDS)\bin\Artwork\Windows\UWP\delphi_UwpDefault_44.png</UWP_DelphiLogo44>
         <UWP_DelphiLogo150>$(BDS)\bin\Artwork\Windows\UWP\delphi_UwpDefault_150.png</UWP_DelphiLogo150>
-        <DCC_ExeOutput>.\bin</DCC_ExeOutput>
+        <DCC_ExeOutput>.\\..\bin</DCC_ExeOutput>
         <DCC_DcuOutput>.\dcu</DCC_DcuOutput>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Base_Win64)'!=''">
@@ -214,7 +214,6 @@
             <DesignClass>TFrame</DesignClass>
         </DCCReference>
         <DCCReference Include="..\..\..\library\trade\patern\Lb.SysUtils.Candel.pas"/>
-        <DCCReference Include="..\..\..\library\trade\patern\Lb.SysUtils.SearhPatern.pas"/>
         <DCCReference Include="..\..\..\library\trade\patern\Lb.SysUtils.StructureFile.pas"/>
         <DCCReference Include="UnitSearchStructureForm.pas">
             <Form>SearchStructureForm</Form>

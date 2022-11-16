@@ -20,7 +20,6 @@ uses
   UnitBarFrame in '..\..\..\library\trade\patern\chart\UnitBarFrame.pas' {BarFrame: TFrame},
   UnitBarsFrame in '..\..\..\library\trade\patern\chart\UnitBarsFrame.pas' {BarsFrame: TFrame},
   Lb.SysUtils.Candel in '..\..\..\library\trade\patern\Lb.SysUtils.Candel.pas',
-  Lb.SysUtils.SearhPatern in '..\..\..\library\trade\patern\Lb.SysUtils.SearhPatern.pas',
   Lb.SysUtils.StructureFile in '..\..\..\library\trade\patern\Lb.SysUtils.StructureFile.pas',
   UnitSearchStructureForm in 'UnitSearchStructureForm.pas' {SearchStructureForm};
 

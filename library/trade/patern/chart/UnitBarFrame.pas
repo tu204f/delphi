@@ -160,9 +160,10 @@ procedure TBarFrame.SetShowCandel;
     xBottomBody := _GetPositionY(xBottomPrice,  FMaxValue, FMinValue, LayoutCandel.Height);
 
     case FCandel.Status of
-      tcCurrent: Rectangle1.Fill.Color := TAlphaColorRec.Yellow;
-      tcSource : Rectangle1.Fill.Color := TAlphaColorRec.Null;
-      tcFuture : Rectangle1.Fill.Color := TAlphaColorRec.Lime;
+      tcCurrent   : Rectangle1.Fill.Color := TAlphaColorRec.Yellow;
+      tcSource    : Rectangle1.Fill.Color := TAlphaColorRec.Null;
+      toLookingFor: Rectangle1.Fill.Color := TAlphaColorRec.Limegreen;
+      tcFuture    : Rectangle1.Fill.Color := TAlphaColorRec.Lime;
     end;
 
     if xTopBody >= xBottomBody  then

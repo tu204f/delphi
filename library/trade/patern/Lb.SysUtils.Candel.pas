@@ -13,9 +13,10 @@ uses
 type
   /// Определям тип свячи
   TTypeCandel = (
-    tcSource, // источник данных
-    tcCurrent,// Текущая свеча
-    tcFuture  // Будушие свиячи
+    tcSource,     // источник данных
+    tcCurrent,    // Текущая свеча
+    toLookingFor, // Искомое
+    tcFuture      // Будушие свиячи
   );
 
   ///<summary>Тип цены</summary>
@@ -38,7 +39,7 @@ type
     function GetPrice(ATypePrice: TTypePrice): Double;
     procedure SetPrice(ATypePrice: TTypePrice; const Value: Double);
   public
-    constructor Create(ADate, ATime: TDateTime; AOpen, AHigh, ALow, AClose, AVol: Double); overload;
+    constructor Create(ADate, ATime: TDateTime; AOpen, AHigh, ALow, AClose, AVol: Double; AStatus: TTypeCandel); overload;
     constructor CreateCandel(ACandel: TCandel); overload;
     constructor Cretae(AValue: String); overload;
     function ToString: String;
@@ -50,6 +51,20 @@ type
 
   ///<summary>Список свечей</summary>
   TCandelList = TList<TCandel>;
+
+  TTiket = record
+    Date: TDateTime;
+    Time: TDateTime;
+    Price: Double;
+    Vol: Double;
+  public
+    constructor Create(ADate, ATime: TDateTime; APrice, AVol: Double); overload;
+    constructor Create(ATiket: TTiket); overload;
+    constructor Cretae(AValue: String); overload;
+  end;
+
+  ///<summary>Массив тикитов</summary>
+  TTiketList = TList<TTiket>;
 
 type
   TStructure = class;
@@ -102,6 +117,34 @@ type
     property FileName: String read FFileName write SetFileName;
   end;
 
+  TMemoryTikets = class(TObject)
+  private
+    FFileName: String;
+    FIndex: Integer;
+    FTiket: TTiket;
+    FStrings: TStrings;
+    function GetCount: Integer;
+    function GetTikets(Index: Integer): TTiket;
+    procedure SetFileName(const Value: String);
+  protected
+    property Strings: TStrings read FStrings;
+  public
+    constructor Create; virtual;
+    destructor Destroy; override;
+    procedure Clear;
+    property FileName: String read FFileName write SetFileName;
+    property Tiket: TTiket read FTiket;
+    property Tikets[Index: Integer]: TTiket read GetTikets;
+    property Count: Integer read GetCount;
+  public
+    procedure First;
+    procedure Next;
+    procedure Last;
+    procedure Prior;
+    function EOF: Boolean;
+    function BOF: Boolean;
+  end;
+
   ///<summary>По блочно читаем данные из памяти (точнее по структурно)</summary>
   TMemoryStructures = class(TMemoryCandels)
   public const
@@ -127,12 +170,16 @@ type
     property ProgressReading: Integer read GetProgressReading;
   end;
 
+
+
   ///<summary>Структура данных</summary>
   TStructure = class(TObject)
   private
     FStatus: TTypeStructure;
     FSourceVectors: TCandelList;
     FFutureVectors: TCandelList;
+  protected
+    procedure SetStatusCandels;
   public
     constructor Create; virtual;
     destructor Destroy; override;
@@ -176,6 +223,9 @@ type
     class procedure SetSubtract(const AValue1, AValue2, AResult: TCandelList); static;
     class function IsComparisonStructure(const AStructure1, AStructure2: TStructure): Boolean; static;
     class procedure SetSubtractStructure(const AStructure1, AStructure2: TStructure; var ALengthPrice, ALengthVol: Double); static;
+
+    class procedure LengthCandel(const ACandel1, ACandel2: TCandel; var ALengthPrice, ALengthVol: Double); static;
+
   end;
 
 type
@@ -234,7 +284,7 @@ type
     {todo: подвопросом что делать}
     function ResultTrandPatern: Integer;
 
-    procedure SetVectorStructure(const AVectorStructure: TVectorStructure);
+    function GetVectorStructure(const AVectorStructure: TVectorStructure): Boolean;
     property StructurePaterns: TStructurePaternList read FStructurePaterns;
     property FileName: String read FFileName write FFileName;
     property SourceCount: Integer read FSourceCount write FSourceCount;
@@ -299,6 +349,29 @@ begin
       S[xIndex] := ',';
     Result := StrToFloatDef(S,0);
   end;
+end;
+
+procedure ParserStrings(const AValue: String; AStrings: TStrings);
+begin
+  if AValue.IsEmpty then
+    raise Exception.Create('Error Message: Значение для парсенга пустое');
+  if not Assigned(AStrings) then
+    raise Exception.Create('Error Message: не определен AStrings: TStrings');
+  var xS := '';
+  AStrings.Clear;
+  for var xC in AValue do
+  begin
+    if xC = ';' then
+    begin
+      if not xS.IsEmpty then
+        AStrings.Add(xS);
+      xS := '';
+    end
+    else
+      xS := xS + xC;
+  end;
+  if not xS.IsEmpty then
+    AStrings.Add(xS);
 end;
 
 // <DATE>;<TIME>;<OPEN>;<HIGH>;<LOW>;<CLOSE>;<VOL>
@@ -471,7 +544,7 @@ end;
 
 { TCandel }
 
-constructor TCandel.Create(ADate, ATime: TDateTime; AOpen, AHigh, ALow, AClose, AVol: Double);
+constructor TCandel.Create(ADate, ATime: TDateTime; AOpen, AHigh, ALow, AClose, AVol: Double; AStatus: TTypeCandel);
 begin
   with Self do
   begin
@@ -482,12 +555,13 @@ begin
     Low := ALow;
     Close := AClose;
     Vol := AVol;
+    Status := AStatus;
   end;
 end;
 
 constructor TCandel.CreateCandel(ACandel: TCandel);
 begin
-  Self.Create(ACandel.Date,ACandel.Time,ACandel.Open,ACandel.High,ACandel.Low,ACandel.Close,ACandel.Vol);
+  Self.Create(ACandel.Date,ACandel.Time,ACandel.Open,ACandel.High,ACandel.Low,ACandel.Close,ACandel.Vol,ACandel.Status);
 end;
 
 constructor TCandel.Cretae(AValue: String);
@@ -555,6 +629,47 @@ begin
     IntToStr(Trunc(Self.Close)) + ';' +
     IntToStr(Trunc(Self.Vol));
   Result := xS;
+end;
+
+{ TTiket }
+
+constructor TTiket.Create(ADate, ATime: TDateTime; APrice, AVol: Double);
+begin
+  Date := ADate;
+  Time := ATime;
+  Price:= APrice;
+  Vol  := AVol;
+end;
+
+constructor TTiket.Create(ATiket: TTiket);
+begin
+  Self.Create(ATiket.Date,ATiket.Time,ATiket.Price,ATiket.Vol);
+end;
+
+constructor TTiket.Cretae(AValue: String);
+
+  function _GetStr(AStrings: TStrings; AIndex: Integer): String;
+  begin
+    Result := '';
+    if not Assigned(AStrings) then
+      Exit;
+    if (AIndex >= 0) and (AIndex < AStrings.Count) then
+      Result := AStrings[AIndex];
+  end;
+
+var
+  xStr: TStrings;
+begin
+  xStr := TStringList.Create;
+  try
+    ParserStrings(AValue,xStr);
+    Self.Date  := GetToDate(_GetStr(xStr,1));
+    Self.Time  := GetToTime(_GetStr(xStr,2));
+    Self.Price := GetStrToFloat(_GetStr(xStr,3));
+    Self.Vol   := GetStrToFloat(_GetStr(xStr,4));
+  finally
+    FreeAndNil(xStr);
+  end;
 end;
 
 { TMemoryCandels }
@@ -750,6 +865,86 @@ begin
   FLine := GetLine(TIntegration.tiBack);
 end;
 
+
+{ TMemoryTikets }
+
+constructor TMemoryTikets.Create;
+begin
+  FIndex := 0;
+  FStrings := TStringList.Create;
+end;
+
+destructor TMemoryTikets.Destroy;
+begin
+  FreeAndNil(FStrings);
+  inherited;
+end;
+
+procedure TMemoryTikets.Clear;
+begin
+  FIndex := 0;
+  FStrings.Clear;
+end;
+
+function TMemoryTikets.GetCount: Integer;
+begin
+  Result := FStrings.Count;
+end;
+
+function TMemoryTikets.GetTikets(Index: Integer): TTiket;
+begin
+  if (Index < 0) and (Index > FStrings.Count) then
+    raise Exception.Create('Error Message: Выход за границы массива');
+  FIndex := Index;
+  Result := TTiket.Cretae(FStrings[Index]);
+end;
+
+procedure TMemoryTikets.First;
+begin
+  FIndex := 0;
+  FTiket := Tiket.Cretae(FStrings[FIndex]);
+end;
+
+procedure TMemoryTikets.Next;
+begin
+  Inc(FIndex);
+  FTiket := Tiket.Cretae(FStrings[FIndex]);
+
+
+  {doto: добавить последний тикит}
+
+end;
+
+procedure TMemoryTikets.Prior;
+begin
+  FIndex := FStrings.Count - 1;
+  FTiket := Tiket.Cretae(FStrings[FIndex]);
+end;
+
+procedure TMemoryTikets.Last;
+begin
+  Dec(FIndex);
+  FTiket := Tiket.Cretae(FStrings[FIndex]);
+end;
+
+function TMemoryTikets.EOF: Boolean;
+begin
+  Result := FIndex >= (FStrings.Count - 1);
+end;
+
+function TMemoryTikets.BOF: Boolean;
+begin
+  Result := FIndex < 0;
+end;
+
+procedure TMemoryTikets.SetFileName(const Value: String);
+begin
+  FFileName := Value;
+  FStrings.LoadFromFile(FFileName);
+  if FStrings.Count > 0 then
+    FStrings.Delete(0);
+end;
+
 { TMemoryStructures }
 
 constructor TMemoryStructures.Create;
@@ -827,6 +1022,7 @@ begin
     _NextStructureSource(xCandels, FValueStructure.SourceVectors);
     _NextStructureFuture(xCandels, FValueStructure.FutureVectors);
     Inc(FIndexCandel); {индекс работы}
+    FValueStructure.SetStatusCandels;
   finally
     FreeAndNil(xCandels);
   end;
@@ -860,13 +1056,43 @@ procedure TStructure.Assign(AStructure: TStructure);
   begin
     ADesc.Clear;
     for var xC in ASource do
-      ADesc.Add(xC);
+      ADesc.Add(TCandel.CreateCandel(xC));
   end;
 
 begin
   FStatus := AStructure.Status;
   _AssingCandels(AStructure.SourceVectors,FSourceVectors);
   _AssingCandels(AStructure.FutureVectors,FFutureVectors);
+end;
+
+procedure TStructure.SetStatusCandels;
+var
+  xCandel: TCandel;
+  i, iCount: Integer;
+begin
+  iCount := FSourceVectors.Count;
+  if iCount > 0 then
+    for i := 0 to iCount - 1 do
+    begin
+      xCandel := FSourceVectors[i];
+      if i = (iCount - 1) then
+        xCandel.Status := TTypeCandel.tcCurrent
+      else
+        xCandel.Status := TTypeCandel.tcSource;
+      FSourceVectors[i] := xCandel;
+    end;
+
+  iCount := FFutureVectors.Count;
+  if iCount > 0 then
+    for i := 0 to iCount - 1 do
+    begin
+      xCandel := FSourceVectors[i];
+      if i = 0 then
+        xCandel.Status := TTypeCandel.toLookingFor
+      else
+        xCandel.Status := TTypeCandel.tcFuture;
+      FSourceVectors[i] := xCandel;
+    end;
 end;
 
 { TVectorStructure }
@@ -896,6 +1122,7 @@ begin
   //SetLastPriceAndVol(AValueStructure.SourceVectors,xPrice,xVol);
   _SetTransformSource(AValueStructure, xMaxPrice, xMinPrice, xMaxVol, xMinVol);
   _SetTransformFuture(AValueStructure, xMaxPrice, xMinPrice, xMaxVol, xMinVol);
+  SetStatusCandels;
 end;
 
 { TValueStructure }
@@ -963,13 +1190,14 @@ procedure TValueStructure.Transform(const AVectorStructure: TVectorStructure; co
 begin
   _SetTransformCandels(AVectorStructure.SourceVectors,FSourceVectors,APrice, AVol);
   _SetTransformCandels(AVectorStructure.FutureVectors,FFutureVectors,APrice, AVol);
+  SetStatusCandels;
 end;
 
 { TMathVector }
 
 class function TMathVector.IsComparisonStructure(const AStructure1, AStructure2: TStructure): Boolean;
 const
-  IS_COMPARISON_STRUCTURE = 50;
+  IS_COMPARISON_STRUCTURE = 20;
 
 
   function _GetLenght(const ACandel1, ACandel2: TCandel): Double;
@@ -1015,6 +1243,26 @@ begin
     end;
   end;
   Result := xIsComparison;
+end;
+
+class procedure TMathVector.LengthCandel(const ACandel1, ACandel2: TCandel; var ALengthPrice, ALengthVol: Double);
+var
+  xC: TCandel;
+begin
+  xC.Open  := ACandel1.Open  - ACandel2.Open;
+  xC.High  := ACandel1.High  - ACandel2.High;
+  xC.Low   := ACandel1.Low   - ACandel2.Low;
+  xC.Close := ACandel1.Close - ACandel2.Close;
+  xC.Vol   := ACandel1.Vol   - ACandel2.Vol;
+
+  var xSum :=
+    Power(xC.Open,2) +
+    Power(xC.High,2) +
+    Power(xC.Low,2) +
+    Power(xC.Close,2);
+
+  ALengthPrice := Power(xSum,0.5);
+  ALengthVol := Abs(xC.Vol);
 end;
 
 class procedure TMathVector.SetLength(const ACandels: TCandelList; var ALengthPrice, ALengthVol: Double);
@@ -1220,6 +1468,7 @@ begin
     xSearchStructures.FirstStructure;
     while not xSearchStructures.EOF do
     begin
+
       FStructureSearch.SetProgressReading(xSearchStructures.ProgressReading);
       xVectorStructure := TVectorStructure.Create;
       try
@@ -1236,8 +1485,6 @@ begin
       // Выход из потока
       if Self.Terminated then
         Break;
-
-
 
       xSearchStructures.NextStructure;
     end;
@@ -1335,9 +1582,10 @@ begin
   end;
 end;
 
-procedure TStructureSearch.SetVectorStructure(const AVectorStructure: TVectorStructure);
+function TStructureSearch.GetVectorStructure(const AVectorStructure: TVectorStructure): Boolean;
 begin
-  if not TVectorAPI.SameStructureSource(AVectorStructure,FVectorStructure) then
+  Result := not TVectorAPI.SameStructureSource(AVectorStructure,FVectorStructure);
+  if Result then
   begin
     SetStopSearchThread;
     FVectorStructure.Assign(AVectorStructure);
@@ -1346,5 +1594,6 @@ begin
     FSearchThread.Start;
   end;
 end;
+
 
 end.

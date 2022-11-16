@@ -208,7 +208,7 @@
         </DCCReference>
         <DCCReference Include="..\..\..\library\Lb.Logger.pas"/>
         <DCCReference Include="..\..\..\library\trade\patern\Lb.SysUtils.Candel.pas"/>
-        <DCCReference Include="..\..\..\library\trade\patern\Lb.SysUtils.SearhPatern.pas"/>
+        <DCCReference Include="..\..\..\library\trade\patern\Lb.SysUtils.Living.pas"/>
         <DCCReference Include="..\..\..\library\trade\patern\Lb.SysUtils.StructureFile.pas"/>
         <DCCReference Include="..\..\..\library\trade\patern\chart\UnitBarFrame.pas">
             <Form>BarFrame</Form>

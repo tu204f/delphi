@@ -23,8 +23,6 @@ uses
   UnitDoubleGridFrame,
   FMX.ListBox,
   FMX.Objects,
-  Lb.SysUtils.SearhPatern,
-
   FireDAC.Stan.Intf, FireDAC.Stan.Option,
   FireDAC.Stan.Param, FireDAC.Stan.Error, FireDAC.DatS, FireDAC.Phys.Intf,
   FireDAC.DApt.Intf,
@@ -55,11 +53,15 @@ type
     LayoutChartLeft: TLayout;
     LayoutCharRight: TLayout;
     GridPanelLayout1: TGridPanelLayout;
+    Timer: TTimer;
+    ButtonStart: TButton;
     procedure ButtonOpenClick(Sender: TObject);
     procedure ButtonNextClick(Sender: TObject);
     procedure ButtonForClick(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure ListBoxResultClick(Sender: TObject);
+    procedure TimerTimer(Sender: TObject);
+    procedure ButtonStartClick(Sender: TObject);
   private
     FStructureSearch: TStructureSearch;
     FStructures: TMemoryStructures;
@@ -180,10 +182,11 @@ begin
   Text2.Text := 'Стоп потока';
 end;
 
+
 procedure TMainForm.ButtonOpenClick(Sender: TObject);
 const
-  SOURCE_COUNT = 25;
-  FUTURE_COUNT = 5;
+  SOURCE_COUNT = 3;
+  FUTURE_COUNT = 2;
 
 begin
   FStructures.FileName := FILE_NAME_TEST;
@@ -203,6 +206,30 @@ begin
   CharLeft.SetShowStructure(FVectorStructure);
 end;
 
+procedure TMainForm.ButtonStartClick(Sender: TObject);
+begin
+  Timer.Enabled := not Timer.Enabled;
+  if Timer.Enabled then
+    ButtonStart.Text := 'Остановить процесс'
+  else
+    ButtonStart.Text := 'Продолжить';
+end;
+
+procedure TMainForm.TimerTimer(Sender: TObject);
+begin
+  //
+  if FStructures.EOF then
+  begin
+    Timer.Enabled := False;
+  end else
+  begin
+    FStructures.NextStructure;
+    FVectorStructure.Transform(FStructures.Structure);
+    SetSelectStructure(ListBoxLeft.Items,FVectorStructure);
+    CharLeft.SetShowStructure(FVectorStructure);
+  end;
+end;
+
 procedure TMainForm.ButtonNextClick(Sender: TObject);
 begin
   // По выбранной структуре
@@ -219,7 +246,7 @@ begin
   Text1.Text := 'Старт потока';
   Text2.Text := '';
 
-  FStructureSearch.SetVectorStructure(FVectorStructure);
+  FStructureSearch.GetVectorStructure(FVectorStructure);
 end;
 
 

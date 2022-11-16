@@ -57,7 +57,7 @@ const
   FILE_NAME_TEST   = 'd:\work\git\delphi\sample\bot_trade\bin\data\sber\source.csv';
 
   SOURCE_COUNT = 5;
-  FUTURE_COUNT = 3;
+  FUTURE_COUNT = 2;
 
 { TMainForm }
 
@@ -156,16 +156,13 @@ begin
     VectorStructure.Transform(xValueStructure);
     // ----------------------------------------
     // Включить поиск
-
-
     StructureSearch.FileName := FILE_NAME_TEST;
     StructureSearch.SourceCount := SOURCE_COUNT;
     StructureSearch.FutureCount := FUTURE_COUNT;
     Text1.Text := 'Старт потока';
-    Text2.Text := '';
-    StructureSearch.SetVectorStructure(VectorStructure);
-
     QuikBars.SetShowStructure(VectorStructure);
+    if StructureSearch.GetVectorStructure(VectorStructure) then
+      Text2.Text := '';
   finally
     FreeAndNil(xValueStructure);
   end;
