@@ -10,6 +10,9 @@ uses
   System.Variants,
   System.Generics.Collections;
 
+
+/// Привет как дела
+
 type
   /// Определям тип свячи
   TTypeCandel = (
