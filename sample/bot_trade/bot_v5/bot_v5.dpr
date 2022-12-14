@@ -7,11 +7,11 @@ uses
   UnitGridFrame in '..\src\grid\UnitGridFrame.pas' {GirdFrame: TFrame},
   UnitDoubleGridFrame in '..\src\grid\UnitDoubleGridFrame.pas' {DoubleGridFrame: TFrame},
   Lb.Logger in '..\..\..\library\Lb.Logger.pas',
-  Lb.SysUtils.Candel in '..\..\..\library\trade\patern\Lb.SysUtils.Candel.pas',
   Lb.SysUtils.Living in '..\..\..\library\trade\patern\Lb.SysUtils.Living.pas',
   Lb.SysUtils.StructureFile in '..\..\..\library\trade\patern\Lb.SysUtils.StructureFile.pas',
   UnitBarFrame in '..\..\..\library\trade\patern\chart\UnitBarFrame.pas' {BarFrame: TFrame},
-  UnitBarsFrame in '..\..\..\library\trade\patern\chart\UnitBarsFrame.pas' {BarsFrame: TFrame};
+  UnitBarsFrame in '..\..\..\library\trade\patern\chart\UnitBarsFrame.pas' {BarsFrame: TFrame},
+  Lb.SysUtils.Candel in '..\..\..\library\trade\patern\Lb.SysUtils.Candel.pas';
 
 {$R *.res}
 

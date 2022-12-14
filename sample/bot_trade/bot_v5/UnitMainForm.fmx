@@ -168,8 +168,8 @@ object MainForm: TMainForm
           DefaultItemStyles.ItemStyle = ''
           DefaultItemStyles.GroupHeaderStyle = ''
           DefaultItemStyles.GroupFooterStyle = ''
-          Viewport.Width = 233.000000000000000000
-          Viewport.Height = 362.000000000000000000
+          Viewport.Width = 237.000000000000000000
+          Viewport.Height = 366.000000000000000000
         end
         object TextLeft: TText
           Align = Top
@@ -198,8 +198,8 @@ object MainForm: TMainForm
           DefaultItemStyles.ItemStyle = ''
           DefaultItemStyles.GroupHeaderStyle = ''
           DefaultItemStyles.GroupFooterStyle = ''
-          Viewport.Width = 232.000000000000000000
-          Viewport.Height = 362.000000000000000000
+          Viewport.Width = 236.000000000000000000
+          Viewport.Height = 366.000000000000000000
         end
         object TextRigth: TText
           Align = Top
@@ -237,8 +237,8 @@ object MainForm: TMainForm
           DefaultItemStyles.ItemStyle = ''
           DefaultItemStyles.GroupHeaderStyle = ''
           DefaultItemStyles.GroupFooterStyle = ''
-          Viewport.Width = 232.000000000000000000
-          Viewport.Height = 362.000000000000000000
+          Viewport.Width = 236.000000000000000000
+          Viewport.Height = 366.000000000000000000
         end
         object Text3: TText
           Align = Top

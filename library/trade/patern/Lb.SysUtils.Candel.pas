@@ -10,9 +10,6 @@ uses
   System.Variants,
   System.Generics.Collections;
 
-
-/// Привет как дела
-
 type
   /// Определям тип свячи
   TTypeCandel = (
@@ -64,6 +61,9 @@ type
     constructor Create(ADate, ATime: TDateTime; APrice, AVol: Double); overload;
     constructor Create(ATiket: TTiket); overload;
     constructor Cretae(AValue: String); overload;
+    function ToString: String;
+  public
+    class function SameTiket(const ATiket1, ATiket2: TTiket): Boolean; static;
   end;
 
   ///<summary>Массив тикитов</summary>
@@ -88,7 +88,8 @@ type
   TTypeStructure = (
     tsNull,
     tsValue,
-    tsVector
+    tsVector,
+    tsVectorWord
   );
 
   ///<summary>Помещаем все массив свечей в память в потоке</summary>
@@ -120,6 +121,7 @@ type
     property FileName: String read FFileName write SetFileName;
   end;
 
+  ///<summary>Хранит в памети тиковые данные</summary>
   TMemoryTikets = class(TObject)
   private
     FFileName: String;
@@ -174,7 +176,6 @@ type
   end;
 
 
-
   ///<summary>Структура данных</summary>
   TStructure = class(TObject)
   private
@@ -204,6 +205,17 @@ type
   public
     constructor Create; override;
     ///<summary>При образование данных из значений, в целое число от 0 до 100</summary>
+    procedure Transform(const AValueStructure: TValueStructure);
+  end;
+
+  ///<summary>Словарный вектор</summary>
+  TVectorStructureWord = class(TStructure)
+  public const
+    WORD_CHR = 'ABCDEFGHIJKLMNOPQRSTUVXYZ';
+    WORD_CNT = 25;
+  public
+    constructor Create; override;
+    ///<summary>В пределах ограниченных значение</summary>
     procedure Transform(const AValueStructure: TValueStructure);
   end;
 
@@ -313,6 +325,7 @@ implementation
 
 uses
   Lb.Logger,
+  System.DateUtils,
   System.Math;
 
 (******************************************************************************)
@@ -673,6 +686,22 @@ begin
   finally
     FreeAndNil(xStr);
   end;
+end;
+
+function TTiket.ToString: String;
+begin
+  var xS :=
+    'D: ' + DateToStr(Self.Date) +
+  '; T:'  + TimeToStr(Self.Time) +
+  '; P:'  + FloatToStr(Self.Price) +
+  '; V:'  + FloatToStr(Self.Vol) + ';';
+  Result := xS;
+end;
+
+class function TTiket.SameTiket(const ATiket1, ATiket2: TTiket): Boolean;
+begin
+  Result := SameTime(ATiket1.Time,ATiket2.Time) and
+            (ATiket1.Price = ATiket2.Price)
 end;
 
 { TMemoryCandels }
@@ -1126,6 +1155,24 @@ begin
   _SetTransformSource(AValueStructure, xMaxPrice, xMinPrice, xMaxVol, xMinVol);
   _SetTransformFuture(AValueStructure, xMaxPrice, xMinPrice, xMaxVol, xMinVol);
   SetStatusCandels;
+end;
+
+{ TVectorStructureWord }
+
+constructor TVectorStructureWord.Create;
+begin
+  inherited;
+  FStatus := TTypeStructure.tsVector;
+end;
+
+
+
+procedure TVectorStructureWord.Transform(const AValueStructure: TValueStructure);
+var
+  xMaxPrice, xMinPrice, xMaxVol, xMinVol: Double;
+begin
+  AValueStructure.MaxAndMin(xMaxPrice, xMinPrice, xMaxVol, xMinVol);
+
 end;
 
 { TValueStructure }
@@ -1597,6 +1644,5 @@ begin
     FSearchThread.Start;
   end;
 end;
-
 
 end.

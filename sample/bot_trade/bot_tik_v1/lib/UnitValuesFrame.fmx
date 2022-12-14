@@ -1,0 +1,20 @@
+object ValuesFrame: TValuesFrame
+  Size.Width = 257.000000000000000000
+  Size.Height = 896.000000000000000000
+  Size.PlatformDefault = False
+  OnResize = FrameResize
+  OnResized = FrameResized
+  object ListBox: TListBox
+    Align = Client
+    Size.Width = 257.000000000000000000
+    Size.Height = 896.000000000000000000
+    Size.PlatformDefault = False
+    TabOrder = 0
+    DisableFocusEffect = True
+    DefaultItemStyles.ItemStyle = ''
+    DefaultItemStyles.GroupHeaderStyle = ''
+    DefaultItemStyles.GroupFooterStyle = ''
+    Viewport.Width = 253.000000000000000000
+    Viewport.Height = 892.000000000000000000
+  end
+end
