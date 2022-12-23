@@ -1,0 +1,36 @@
+object FormMain: TFormMain
+  Left = 0
+  Top = 0
+  Caption = 'Form4'
+  ClientHeight = 593
+  ClientWidth = 485
+  FormFactor.Width = 320
+  FormFactor.Height = 480
+  FormFactor.Devices = [Desktop]
+  DesignerMasterStyle = 0
+  object ButtonStartAnsStop: TButton
+    Position.X = 8.000000000000000000
+    Position.Y = 8.000000000000000000
+    Size.Width = 181.000000000000000000
+    Size.Height = 37.000000000000000000
+    Size.PlatformDefault = False
+    TabOrder = 0
+    Text = #1057#1090#1072#1088#1090
+    OnClick = ButtonStartAnsStopClick
+  end
+  object Timer: TTimer
+    Enabled = False
+    Interval = 100
+    OnTimer = TimerTimer
+    Left = 200
+    Top = 16
+  end
+  object Layout1: TLayout
+    Position.X = 8.000000000000000000
+    Position.Y = 52.000000000000000000
+    Size.Width = 181.000000000000000000
+    Size.Height = 533.000000000000000000
+    Size.PlatformDefault = False
+    TabOrder = 4
+  end
+end

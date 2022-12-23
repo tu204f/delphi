@@ -198,11 +198,8 @@ begin
   FStructureSearch.SourceCount := SOURCE_COUNT;
   FStructureSearch.FutureCount := FUTURE_COUNT;
 
-
   FVectorStructure.Transform(FStructures.Structure);
   SetSelectStructure(ListBoxLeft.Items,FVectorStructure);
-
-
   CharLeft.SetShowStructure(FVectorStructure);
 end;
 

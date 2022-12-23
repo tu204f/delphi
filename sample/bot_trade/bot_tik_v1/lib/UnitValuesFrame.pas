@@ -84,7 +84,6 @@ var
   xCount: Integer;
   xHeight: Single;
 begin
-  // 2 * COUNT_ITEM + 1 Создаем
   xCount := 2 * COUNT_ITEM;
   while ListBox.Count <= xCount do
   begin

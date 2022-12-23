@@ -1,0 +1,40 @@
+object LineFrame: TLineFrame
+  Size.Width = 105.000000000000000000
+  Size.Height = 646.000000000000000000
+  Size.PlatformDefault = False
+  object Layout: TLayout
+    Align = Client
+    Size.Width = 105.000000000000000000
+    Size.Height = 646.000000000000000000
+    Size.PlatformDefault = False
+    TabOrder = 0
+    object Rectangle: TRectangle
+      Align = Client
+      Size.Width = 105.000000000000000000
+      Size.Height = 646.000000000000000000
+      Size.PlatformDefault = False
+      Stroke.Color = xFFE0E0E0
+      object LayoutLine: TLayout
+        Align = Client
+        Size.Width = 79.000000000000000000
+        Size.Height = 646.000000000000000000
+        Size.PlatformDefault = False
+        TabOrder = 2
+      end
+      object LayoutInd: TLayout
+        Align = Right
+        Position.X = 79.000000000000000000
+        Size.Width = 26.000000000000000000
+        Size.Height = 646.000000000000000000
+        Size.PlatformDefault = False
+        TabOrder = 3
+      end
+    end
+  end
+  object Timer: TTimer
+    Interval = 100
+    OnTimer = TimerTimer
+    Left = 36
+    Top = 116
+  end
+end

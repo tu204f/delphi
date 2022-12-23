@@ -9,6 +9,9 @@
         <Projects Include="bot_tik_v1\bot_tik_v1.dproj">
             <Dependencies/>
         </Projects>
+        <Projects Include="bot_tikt_v2\bot_v2.dproj">
+            <Dependencies/>
+        </Projects>
     </ItemGroup>
     <ProjectExtensions>
         <Borland.Personality>Default.Personality.12</Borland.Personality>
@@ -35,14 +38,23 @@
     <Target Name="bot_tik_v1:Make">
         <MSBuild Projects="bot_tik_v1\bot_tik_v1.dproj" Targets="Make"/>
     </Target>
+    <Target Name="bot_v2">
+        <MSBuild Projects="bot_tikt_v2\bot_v2.dproj"/>
+    </Target>
+    <Target Name="bot_v2:Clean">
+        <MSBuild Projects="bot_tikt_v2\bot_v2.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="bot_v2:Make">
+        <MSBuild Projects="bot_tikt_v2\bot_v2.dproj" Targets="Make"/>
+    </Target>
     <Target Name="Build">
-        <CallTarget Targets="bot_v5;bot_tik_v1"/>
+        <CallTarget Targets="bot_v5;bot_tik_v1;bot_v2"/>
     </Target>
     <Target Name="Clean">
-        <CallTarget Targets="bot_v5:Clean;bot_tik_v1:Clean"/>
+        <CallTarget Targets="bot_v5:Clean;bot_tik_v1:Clean;bot_v2:Clean"/>
     </Target>
     <Target Name="Make">
-        <CallTarget Targets="bot_v5:Make;bot_tik_v1:Make"/>
+        <CallTarget Targets="bot_v5:Make;bot_tik_v1:Make;bot_v2:Make"/>
     </Target>
     <Import Project="$(BDS)\Bin\CodeGear.Group.Targets" Condition="Exists('$(BDS)\Bin\CodeGear.Group.Targets')"/>
 </Project>

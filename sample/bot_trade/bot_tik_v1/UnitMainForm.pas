@@ -13,9 +13,11 @@ uses
   FMX.Forms,
   FMX.Graphics,
   FMX.Dialogs,
-  Lb.SysUtils.Candel, FMX.Controls.Presentation, FMX.StdCtrls, FMX.Memo.Types,
+  Lb.SysUtils.Candel,
+  FMX.Controls.Presentation, FMX.StdCtrls, FMX.Memo.Types,
   FMX.ScrollBox, FMX.Memo, FMX.Objects, System.Rtti, FMX.Grid.Style, FMX.Grid,
-  FMX.Edit, FMX.Layouts;
+  FMX.Edit, FMX.Layouts, System.Actions, FMX.ActnList,
+  UnitValuesFrame;
 
 type
   TMainForm = class(TForm)
@@ -26,6 +28,7 @@ type
     StringColumnVol: TStringColumn;
     StringColumnIndex: TStringColumn;
     StringColumnInd: TStringColumn;
+    Layout1: TLayout;
     procedure TimerTimer(Sender: TObject);
     procedure ButtonStartAndStopClick(Sender: TObject);
     procedure FormShow(Sender: TObject);
@@ -34,7 +37,6 @@ type
     MemoryTikets: TMemoryTikets;
     FBufferTikets: TTiketList;
   private
-
   public
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
