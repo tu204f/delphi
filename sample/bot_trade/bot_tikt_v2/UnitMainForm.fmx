@@ -42,8 +42,8 @@ object FormMain: TFormMain
     Size.Height = 525.000000000000000000
     Size.PlatformDefault = False
     TabOrder = 8
-    Viewport.Width = 613.000000000000000000
-    Viewport.Height = 500.000000000000000000
+    Viewport.Width = 633.000000000000000000
+    Viewport.Height = 525.000000000000000000
     object StringColumn1: TStringColumn
       Header = 'OpenPrice'
     end

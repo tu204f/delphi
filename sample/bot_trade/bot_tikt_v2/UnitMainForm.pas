@@ -17,7 +17,9 @@ uses
   FMX.ListBox, FMX.Objects,
   UnitLineFrame,
   FMX.Memo.Types, FMX.ScrollBox, FMX.Memo, System.Rtti,
-  FMX.Grid.Style, FMX.Grid;
+  FMX.Grid.Style,
+  FMX.Grid,
+  Lb.Line;
 
 type
   TFormMain = class(TForm)
