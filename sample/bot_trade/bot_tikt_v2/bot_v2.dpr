@@ -7,7 +7,8 @@ uses
   Lb.SysUtils.Candel in '..\..\..\library\trade\patern\Lb.SysUtils.Candel.pas',
   Lb.Logger in '..\..\..\library\Lb.Logger.pas',
   Lb.Bot in 'lb\Lb.Bot.pas',
-  UnitLineFrame in 'lb\UnitLineFrame.pas' {LineFrame: TFrame};
+  UnitLineFrame in 'lb\UnitLineFrame.pas' {LineFrame: TFrame},
+  Lb.Line in 'lb\Lb.Line.pas';
 
 {$R *.res}
 

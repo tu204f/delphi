@@ -15,18 +15,29 @@ uses
   FMX.Dialogs,
   Lb.SysUtils.Candel, FMX.Controls.Presentation, FMX.StdCtrls, FMX.Layouts,
   FMX.ListBox, FMX.Objects,
-  UnitLineFrame;
+  UnitLineFrame,
+  FMX.Memo.Types, FMX.ScrollBox, FMX.Memo, System.Rtti,
+  FMX.Grid.Style, FMX.Grid;
 
 type
   TFormMain = class(TForm)
     ButtonStartAnsStop: TButton;
     Timer: TTimer;
     Layout1: TLayout;
+    StrGrid: TStringGrid;
+    StringColumn1: TStringColumn;
+    StringColumn2: TStringColumn;
+    StringColumn3: TStringColumn;
+    StringColumn4: TStringColumn;
+    StringColumn5: TStringColumn;
+    StringColumn6: TStringColumn;
+    Text1: TText;
     procedure ButtonStartAnsStopClick(Sender: TObject);
     procedure TimerTimer(Sender: TObject);
   private
     { Private declarations }
     procedure SetTitleButtom;
+    procedure EventChangeBlock(Sender: TObject; APrice: Double; ATypeBlock: TTypeBlock);
   public
     MemoryTikets: TMemoryTikets;
     LineFrame: TLineFrame;
@@ -55,6 +66,7 @@ begin
   LineFrame := TLineFrame.Create(nil);
   LineFrame.Parent := Layout1;
   LineFrame.Align := TAlignLayout.Client;
+  LineFrame.LineTikets.OnChangeBlock := EventChangeBlock;
 end;
 
 destructor TFormMain.Destroy;
@@ -82,6 +94,34 @@ begin
 end;
 
 procedure TFormMain.TimerTimer(Sender: TObject);
+
+  procedure _SetUpGrid;
+  var
+    xSum: Double;
+    xTrade: TTrade;
+    i, iCount: Integer;
+  begin
+    xSum := 0;
+    iCount := LineFrame.LineTikets.Trades.Items.Count;
+    if iCount > 0 then
+      for i := 0 to iCount - 1 do
+      begin
+        xTrade := LineFrame.LineTikets.Trades.Items[i];
+        // ---------------------------------------------
+        StrGrid.Cells[0,i] := xTrade.OpenPrice.ToString;
+        StrGrid.Cells[1,i] := xTrade.Quantity.ToString;
+        StrGrid.Cells[2,i] := xTrade.BuySell;
+        StrGrid.Cells[3,i] := xTrade.ClosePrice.ToString;
+        StrGrid.Cells[4,i] := xTrade.Profit.ToString;
+        case xTrade.Status of
+          stOpen: StrGrid.Cells[5,i] := 'open';
+          stClose: StrGrid.Cells[5,i] := 'close';
+        end;
+        xSum := xSum + xTrade.Profit;
+      end;
+    Text1.Text := xSum.ToString;
+  end;
+
 var
   xTiket: TTiket;
 begin
@@ -96,6 +136,13 @@ begin
     LineFrame.AddTiket(xTiket.Price,xTiket.Vol);
     MemoryTikets.Next;
   end;
+
+  _SetUpGrid;
+end;
+
+procedure TFormMain.EventChangeBlock(Sender: TObject; APrice: Double; ATypeBlock: TTypeBlock);
+begin
+  //
 end;
 
 end.

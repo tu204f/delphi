@@ -3,7 +3,7 @@ object FormMain: TFormMain
   Top = 0
   Caption = 'Form4'
   ClientHeight = 593
-  ClientWidth = 485
+  ClientWidth = 833
   FormFactor.Width = 320
   FormFactor.Height = 480
   FormFactor.Devices = [Desktop]
@@ -20,10 +20,10 @@ object FormMain: TFormMain
   end
   object Timer: TTimer
     Enabled = False
-    Interval = 100
+    Interval = 50
     OnTimer = TimerTimer
-    Left = 200
-    Top = 16
+    Left = 140
+    Top = 132
   end
   object Layout1: TLayout
     Position.X = 8.000000000000000000
@@ -32,5 +32,42 @@ object FormMain: TFormMain
     Size.Height = 533.000000000000000000
     Size.PlatformDefault = False
     TabOrder = 4
+  end
+  object StrGrid: TStringGrid
+    CanFocus = True
+    ClipChildren = True
+    Position.X = 196.000000000000000000
+    Position.Y = 60.000000000000000000
+    Size.Width = 633.000000000000000000
+    Size.Height = 525.000000000000000000
+    Size.PlatformDefault = False
+    TabOrder = 8
+    Viewport.Width = 613.000000000000000000
+    Viewport.Height = 500.000000000000000000
+    object StringColumn1: TStringColumn
+      Header = 'OpenPrice'
+    end
+    object StringColumn2: TStringColumn
+      Header = 'Quantity'
+    end
+    object StringColumn3: TStringColumn
+      Header = 'BuySell'
+    end
+    object StringColumn4: TStringColumn
+      Header = 'ClosePrice'
+    end
+    object StringColumn5: TStringColumn
+      Header = 'Profit'
+    end
+    object StringColumn6: TStringColumn
+      Header = 'Status'
+    end
+  end
+  object Text1: TText
+    Position.X = 196.000000000000000000
+    Position.Y = 4.000000000000000000
+    Size.Width = 381.000000000000000000
+    Size.Height = 50.000000000000000000
+    Size.PlatformDefault = False
   end
 end
