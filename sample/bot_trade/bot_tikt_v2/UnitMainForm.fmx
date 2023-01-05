@@ -37,13 +37,13 @@ object FormMain: TFormMain
     CanFocus = True
     ClipChildren = True
     Position.X = 196.000000000000000000
-    Position.Y = 60.000000000000000000
+    Position.Y = 208.000000000000000000
     Size.Width = 633.000000000000000000
-    Size.Height = 525.000000000000000000
+    Size.Height = 377.000000000000000000
     Size.PlatformDefault = False
     TabOrder = 8
-    Viewport.Width = 633.000000000000000000
-    Viewport.Height = 525.000000000000000000
+    Viewport.Width = 613.000000000000000000
+    Viewport.Height = 352.000000000000000000
     object StringColumn1: TStringColumn
       Header = 'OpenPrice'
     end
@@ -64,10 +64,18 @@ object FormMain: TFormMain
     end
   end
   object Text1: TText
-    Position.X = 196.000000000000000000
-    Position.Y = 4.000000000000000000
+    Position.X = 192.000000000000000000
+    Position.Y = 52.000000000000000000
     Size.Width = 381.000000000000000000
     Size.Height = 50.000000000000000000
     Size.PlatformDefault = False
+  end
+  object TextTiket: TText
+    Position.X = 196.000000000000000000
+    Position.Y = 8.000000000000000000
+    Size.Width = 629.000000000000000000
+    Size.Height = 37.000000000000000000
+    Size.PlatformDefault = False
+    TextSettings.HorzAlign = Leading
   end
 end

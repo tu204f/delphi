@@ -34,6 +34,7 @@ type
     StringColumn5: TStringColumn;
     StringColumn6: TStringColumn;
     Text1: TText;
+    TextTiket: TText;
     procedure ButtonStartAnsStopClick(Sender: TObject);
     procedure TimerTimer(Sender: TObject);
   private
@@ -138,6 +139,8 @@ begin
     LineFrame.AddTiket(xTiket.Price,xTiket.Vol);
     MemoryTikets.Next;
   end;
+
+  TextTiket.Text := 'Тикет: ' + xTiket.ToString;
 
   _SetUpGrid;
 end;
