@@ -8,7 +8,11 @@ uses
   Lb.Logger in '..\..\..\library\Lb.Logger.pas',
   Lb.Bot in 'lb\Lb.Bot.pas',
   UnitLineFrame in 'lb\UnitLineFrame.pas' {LineFrame: TFrame},
-  Lb.Line in 'lb\Lb.Line.pas';
+  Lb.Line in 'lb\Lb.Line.pas',
+  UnitBlocksFrame in 'lb\UnitBlocksFrame.pas' {BlocksFrame: TFrame},
+  Lb.Blocks in 'lb\Lb.Blocks.pas',
+  UnitBlockFrame in 'lb\UnitBlockFrame.pas' {BlockFrame: TFrame},
+  Lb.Trades in 'lb\Lb.Trades.pas';
 
 {$R *.res}
 

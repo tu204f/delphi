@@ -2,22 +2,12 @@ object FormMain: TFormMain
   Left = 0
   Top = 0
   Caption = 'Form4'
-  ClientHeight = 593
-  ClientWidth = 833
+  ClientHeight = 669
+  ClientWidth = 739
   FormFactor.Width = 320
   FormFactor.Height = 480
   FormFactor.Devices = [Desktop]
   DesignerMasterStyle = 0
-  object ButtonStartAnsStop: TButton
-    Position.X = 8.000000000000000000
-    Position.Y = 8.000000000000000000
-    Size.Width = 181.000000000000000000
-    Size.Height = 37.000000000000000000
-    Size.PlatformDefault = False
-    TabOrder = 0
-    Text = #1057#1090#1072#1088#1090
-    OnClick = ButtonStartAnsStopClick
-  end
   object Timer: TTimer
     Enabled = False
     Interval = 50
@@ -25,25 +15,22 @@ object FormMain: TFormMain
     Left = 140
     Top = 132
   end
-  object Layout1: TLayout
-    Position.X = 8.000000000000000000
-    Position.Y = 52.000000000000000000
-    Size.Width = 181.000000000000000000
-    Size.Height = 533.000000000000000000
-    Size.PlatformDefault = False
-    TabOrder = 4
-  end
   object StrGrid: TStringGrid
+    Align = Bottom
     CanFocus = True
     ClipChildren = True
-    Position.X = 196.000000000000000000
-    Position.Y = 208.000000000000000000
-    Size.Width = 633.000000000000000000
-    Size.Height = 377.000000000000000000
+    Margins.Left = 5.000000000000000000
+    Margins.Top = 5.000000000000000000
+    Margins.Right = 5.000000000000000000
+    Margins.Bottom = 5.000000000000000000
+    Position.X = 5.000000000000000000
+    Position.Y = 499.000000000000000000
+    Size.Width = 729.000000000000000000
+    Size.Height = 165.000000000000000000
     Size.PlatformDefault = False
-    TabOrder = 8
-    Viewport.Width = 613.000000000000000000
-    Viewport.Height = 352.000000000000000000
+    TabOrder = 6
+    Viewport.Width = 709.000000000000000000
+    Viewport.Height = 140.000000000000000000
     object StringColumn1: TStringColumn
       Header = 'OpenPrice'
     end
@@ -63,19 +50,47 @@ object FormMain: TFormMain
       Header = 'Status'
     end
   end
-  object Text1: TText
-    Position.X = 192.000000000000000000
-    Position.Y = 52.000000000000000000
-    Size.Width = 381.000000000000000000
+  object LayoutClient: TLayout
+    Align = Client
+    Margins.Left = 5.000000000000000000
+    Margins.Right = 5.000000000000000000
+    Size.Width = 729.000000000000000000
+    Size.Height = 439.000000000000000000
+    Size.PlatformDefault = False
+    TabOrder = 8
+  end
+  object LayoutMenu: TLayout
+    Align = Top
+    Margins.Left = 5.000000000000000000
+    Margins.Top = 5.000000000000000000
+    Margins.Right = 5.000000000000000000
+    Position.X = 5.000000000000000000
+    Position.Y = 5.000000000000000000
+    Size.Width = 729.000000000000000000
     Size.Height = 50.000000000000000000
     Size.PlatformDefault = False
-  end
-  object TextTiket: TText
-    Position.X = 196.000000000000000000
-    Position.Y = 8.000000000000000000
-    Size.Width = 629.000000000000000000
-    Size.Height = 37.000000000000000000
-    Size.PlatformDefault = False
-    TextSettings.HorzAlign = Leading
+    TabOrder = 10
+    object ButtonStartAnsStop: TButton
+      Align = Left
+      Margins.Top = 5.000000000000000000
+      Margins.Bottom = 5.000000000000000000
+      Position.Y = 5.000000000000000000
+      Size.Width = 181.000000000000000000
+      Size.Height = 40.000000000000000000
+      Size.PlatformDefault = False
+      TabOrder = 0
+      Text = #1057#1090#1072#1088#1090
+      OnClick = ButtonStartAnsStopClick
+    end
+    object TextTiket: TText
+      Align = Client
+      Margins.Left = 5.000000000000000000
+      Margins.Top = 5.000000000000000000
+      Margins.Bottom = 5.000000000000000000
+      Size.Width = 543.000000000000000000
+      Size.Height = 40.000000000000000000
+      Size.PlatformDefault = False
+      TextSettings.HorzAlign = Leading
+    end
   end
 end

@@ -14,9 +14,13 @@ uses
   FMX.Graphics,
   FMX.Dialogs,
   Lb.SysUtils.Candel, FMX.Controls.Presentation, FMX.StdCtrls, FMX.Layouts,
-  FMX.ListBox, FMX.Objects,
-  UnitLineFrame,
-  FMX.Memo.Types, FMX.ScrollBox, FMX.Memo, System.Rtti,
+  FMX.ListBox,
+  FMX.Objects,
+  UnitBlocksFrame,
+  FMX.Memo.Types,
+  FMX.ScrollBox,
+  FMX.Memo,
+  System.Rtti,
   FMX.Grid.Style,
   FMX.Grid,
   Lb.Line;
@@ -25,7 +29,6 @@ type
   TFormMain = class(TForm)
     ButtonStartAnsStop: TButton;
     Timer: TTimer;
-    Layout1: TLayout;
     StrGrid: TStringGrid;
     StringColumn1: TStringColumn;
     StringColumn2: TStringColumn;
@@ -33,17 +36,17 @@ type
     StringColumn4: TStringColumn;
     StringColumn5: TStringColumn;
     StringColumn6: TStringColumn;
-    Text1: TText;
     TextTiket: TText;
+    LayoutClient: TLayout;
+    LayoutMenu: TLayout;
     procedure ButtonStartAnsStopClick(Sender: TObject);
     procedure TimerTimer(Sender: TObject);
   private
     { Private declarations }
     procedure SetTitleButtom;
-    procedure EventChangeBlock(Sender: TObject; APrice: Double; ATypeBlock: TTypeBlock);
   public
     MemoryTikets: TMemoryTikets;
-    LineFrame: TLineFrame;
+    Blocks: TBlocksFrame;
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
   end;
@@ -54,6 +57,7 @@ var
 implementation
 
 {$R *.fmx}
+
 
 const
   FILE_NAME_TIKE     = 'd:\work\git\delphi\sample\bot_trade\bin\data\sber\SPFB.SBRF-12.22_221111_221111.csv';
@@ -66,15 +70,15 @@ begin
   inherited;
   MemoryTikets := TMemoryTikets.Create;
 
-  LineFrame := TLineFrame.Create(nil);
-  LineFrame.Parent := Layout1;
-  LineFrame.Align := TAlignLayout.Client;
-  LineFrame.LineTikets.OnChangeBlock := EventChangeBlock;
+  Blocks := TBlocksFrame.Create(nil);
+  Blocks.Parent := LayoutClient;
+  Blocks.Align := TAlignLayout.Client;
+
 end;
 
 destructor TFormMain.Destroy;
 begin
-  FreeAndNil(LineFrame);
+  FreeAndNil(Blocks);
   FreeAndNil(MemoryTikets);
   inherited;
 end;
@@ -98,56 +102,59 @@ end;
 
 procedure TFormMain.TimerTimer(Sender: TObject);
 
-  procedure _SetUpGrid;
-  var
-    xSum: Double;
-    xTrade: TTrade;
-    i, iCount: Integer;
-  begin
-    xSum := 0;
-    iCount := LineFrame.LineTikets.Trades.Items.Count;
-    if iCount > 0 then
-      for i := 0 to iCount - 1 do
-      begin
-        xTrade := LineFrame.LineTikets.Trades.Items[i];
-        // ---------------------------------------------
-        StrGrid.Cells[0,i] := xTrade.OpenPrice.ToString;
-        StrGrid.Cells[1,i] := xTrade.Quantity.ToString;
-        StrGrid.Cells[2,i] := xTrade.BuySell;
-        StrGrid.Cells[3,i] := xTrade.ClosePrice.ToString;
-        StrGrid.Cells[4,i] := xTrade.Profit.ToString;
-        case xTrade.Status of
-          stOpen: StrGrid.Cells[5,i] := 'open';
-          stClose: StrGrid.Cells[5,i] := 'close';
-        end;
-        xSum := xSum + xTrade.Profit;
-      end;
-    Text1.Text := xSum.ToString;
-  end;
+//  procedure _SetUpGrid;
+//  var
+//    xSum: Double;
+//    xTrade: TTrade;
+//    i, iCount: Integer;
+//  begin
+//    xSum := 0;
+//    iCount := LineFrame.LineTikets.Trades.Items.Count;
+//    if iCount > 0 then
+//      for i := 0 to iCount - 1 do
+//      begin
+//        xTrade := LineFrame.LineTikets.Trades.Items[i];
+//        // ---------------------------------------------
+//        StrGrid.Cells[0,i] := xTrade.OpenPrice.ToString;
+//        StrGrid.Cells[1,i] := xTrade.Quantity.ToString;
+//        StrGrid.Cells[2,i] := xTrade.BuySell;
+//        StrGrid.Cells[3,i] := xTrade.ClosePrice.ToString;
+//        StrGrid.Cells[4,i] := xTrade.Profit.ToString;
+//        case xTrade.Status of
+//          stOpen: StrGrid.Cells[5,i] := 'open';
+//          stClose: StrGrid.Cells[5,i] := 'close';
+//        end;
+//        xSum := xSum + xTrade.Profit;
+//      end;
+//    //Text1.Text := xSum.ToString;
+//  end;
 
 var
   xTiket: TTiket;
 begin
-  if MemoryTikets.EOF then
-  begin
-    Timer.Enabled := False;
-    SetTitleButtom;
-  end
-  else
-  begin
-    xTiket := MemoryTikets.Tiket;
-    LineFrame.AddTiket(xTiket.Price,xTiket.Vol);
-    MemoryTikets.Next;
+  try
+    if MemoryTikets.EOF then
+    begin
+      Timer.Enabled := False;
+      SetTitleButtom;
+    end
+    else
+    begin
+      xTiket := MemoryTikets.Tiket;
+      Blocks.SetTikit(xTiket.Price,xTiket.Vol);
+      MemoryTikets.Next;
+    end;
+    TextTiket.Text := 'Тикет: ' + xTiket.ToString;
+  except
+    on E: Exception do
+    begin
+      ShowMessage(E.Message);
+      Timer.Enabled := False;
+      SetTitleButtom;
+    end;
   end;
 
-  TextTiket.Text := 'Тикет: ' + xTiket.ToString;
 
-  _SetUpGrid;
-end;
-
-procedure TFormMain.EventChangeBlock(Sender: TObject; APrice: Double; ATypeBlock: TTypeBlock);
-begin
-  //
 end;
 
 end.
