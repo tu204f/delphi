@@ -5,7 +5,7 @@ interface
 uses
   Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
   Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.StdCtrls, Vcl.ComCtrls,
-  Script.Calc, TypInfo;
+  Script.Calc, TypInfo, Vcl.Imaging.jpeg, Vcl.ExtCtrls;
 
 type
   TMainForm = class(TForm)
@@ -17,6 +17,7 @@ type
     LabelError: TLabel;
     MemoAST: TMemo;
     MemoScript: TMemo;
+    Image1: TImage;
     procedure FormShow(Sender: TObject);
     procedure ButtonReturnClick(Sender: TObject);
   private

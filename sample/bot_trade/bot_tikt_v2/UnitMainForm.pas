@@ -23,7 +23,7 @@ uses
   System.Rtti,
   FMX.Grid.Style,
   FMX.Grid,
-  Lb.Line;
+  Lb.Trades;
 
 type
   TFormMain = class(TForm)
@@ -39,6 +39,11 @@ type
     TextTiket: TText;
     LayoutClient: TLayout;
     LayoutMenu: TLayout;
+    TextTrade: TText;
+    GridPanelLayout: TGridPanelLayout;
+    StringColumn7: TStringColumn;
+    StringColumn8: TStringColumn;
+    Splitter: TSplitter;
     procedure ButtonStartAnsStopClick(Sender: TObject);
     procedure TimerTimer(Sender: TObject);
   private
@@ -57,6 +62,9 @@ var
 implementation
 
 {$R *.fmx}
+
+uses
+  UnitLineFrame;
 
 
 const
@@ -102,32 +110,34 @@ end;
 
 procedure TFormMain.TimerTimer(Sender: TObject);
 
-//  procedure _SetUpGrid;
-//  var
-//    xSum: Double;
-//    xTrade: TTrade;
-//    i, iCount: Integer;
-//  begin
-//    xSum := 0;
-//    iCount := LineFrame.LineTikets.Trades.Items.Count;
-//    if iCount > 0 then
-//      for i := 0 to iCount - 1 do
-//      begin
-//        xTrade := LineFrame.LineTikets.Trades.Items[i];
-//        // ---------------------------------------------
-//        StrGrid.Cells[0,i] := xTrade.OpenPrice.ToString;
-//        StrGrid.Cells[1,i] := xTrade.Quantity.ToString;
-//        StrGrid.Cells[2,i] := xTrade.BuySell;
-//        StrGrid.Cells[3,i] := xTrade.ClosePrice.ToString;
-//        StrGrid.Cells[4,i] := xTrade.Profit.ToString;
-//        case xTrade.Status of
-//          stOpen: StrGrid.Cells[5,i] := 'open';
-//          stClose: StrGrid.Cells[5,i] := 'close';
-//        end;
-//        xSum := xSum + xTrade.Profit;
-//      end;
-//    //Text1.Text := xSum.ToString;
-//  end;
+  procedure _SetUpGrid;
+  var
+    xSum: Double;
+    xTrade: TTrade;
+    i, iCount: Integer;
+  begin
+    xSum := 0;
+    iCount := Blocks.Trades.Items.Count;
+    if iCount > 0 then
+      for i := 0 to iCount - 1 do
+      begin
+        xTrade := Blocks.Trades.Items[i];
+        // ---------------------------------------------
+        StrGrid.Cells[0,i] := xTrade.OpenPrice.ToString;
+        StrGrid.Cells[1,i] := xTrade.Quantity.ToString;
+        StrGrid.Cells[2,i] := xTrade.BuySell;
+        StrGrid.Cells[3,i] := xTrade.ClosePrice.ToString;
+        StrGrid.Cells[4,i] := xTrade.Profit.ToString;
+        case xTrade.Status of
+          stOpen: StrGrid.Cells[5,i] := 'open';
+          stClose: StrGrid.Cells[5,i] := 'close';
+        end;
+        StrGrid.Cells[6,i] := xTrade.MaxProfit.ToString;
+        StrGrid.Cells[7,i] := xTrade.MinProfit.ToString;
+        xSum := xSum + xTrade.Profit;
+      end;
+    TextTrade.Text := xSum.ToString;
+  end;
 
 var
   xTiket: TTiket;
@@ -153,8 +163,7 @@ begin
       SetTitleButtom;
     end;
   end;
-
-
+  _SetUpGrid;
 end;
 
 end.

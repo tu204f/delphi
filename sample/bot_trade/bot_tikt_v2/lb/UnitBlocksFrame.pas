@@ -50,6 +50,7 @@ type
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
     procedure SetTikit(const APrice, AVol: Double);
+    property Trades: TTrades read FTrades;
   end;
 
 implementation
@@ -116,7 +117,12 @@ begin
     FPriceMax := APrice + 500;
     FPriceMin := APrice - 500;
   end;
+  // Обновляем условие сделки
+  FTrades.SetUpData(APrice);
   FBlocks.UpData(APrice,Trunc(AVol));
+
+  // Выводим информацию по сделки на экран
+
 end;
 
 function TBlocksFrame.GetPriceMax: Double;

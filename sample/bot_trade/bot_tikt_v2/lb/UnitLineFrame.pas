@@ -17,6 +17,7 @@ uses
   FMX.StdCtrls,
   FMX.Layouts,
   FMX.Objects,
+  Lb.Trades,
   Lb.Line;
 
 type

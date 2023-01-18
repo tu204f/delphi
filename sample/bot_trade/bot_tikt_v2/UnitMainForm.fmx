@@ -3,7 +3,7 @@ object FormMain: TFormMain
   Top = 0
   Caption = 'Form4'
   ClientHeight = 669
-  ClientWidth = 739
+  ClientWidth = 1010
   FormFactor.Width = 320
   FormFactor.Height = 480
   FormFactor.Devices = [Desktop]
@@ -25,11 +25,11 @@ object FormMain: TFormMain
     Margins.Bottom = 5.000000000000000000
     Position.X = 5.000000000000000000
     Position.Y = 499.000000000000000000
-    Size.Width = 729.000000000000000000
+    Size.Width = 1000.000000000000000000
     Size.Height = 165.000000000000000000
     Size.PlatformDefault = False
     TabOrder = 6
-    Viewport.Width = 709.000000000000000000
+    Viewport.Width = 980.000000000000000000
     Viewport.Height = 140.000000000000000000
     object StringColumn1: TStringColumn
       Header = 'OpenPrice'
@@ -49,13 +49,19 @@ object FormMain: TFormMain
     object StringColumn6: TStringColumn
       Header = 'Status'
     end
+    object StringColumn7: TStringColumn
+      Header = 'MaxProfit'
+    end
+    object StringColumn8: TStringColumn
+      Header = 'MinProfit'
+    end
   end
   object LayoutClient: TLayout
     Align = Client
     Margins.Left = 5.000000000000000000
     Margins.Right = 5.000000000000000000
-    Size.Width = 729.000000000000000000
-    Size.Height = 439.000000000000000000
+    Size.Width = 1000.000000000000000000
+    Size.Height = 425.000000000000000000
     Size.PlatformDefault = False
     TabOrder = 8
   end
@@ -66,7 +72,7 @@ object FormMain: TFormMain
     Margins.Right = 5.000000000000000000
     Position.X = 5.000000000000000000
     Position.Y = 5.000000000000000000
-    Size.Width = 729.000000000000000000
+    Size.Width = 1000.000000000000000000
     Size.Height = 50.000000000000000000
     Size.PlatformDefault = False
     TabOrder = 10
@@ -82,15 +88,59 @@ object FormMain: TFormMain
       Text = #1057#1090#1072#1088#1090
       OnClick = ButtonStartAnsStopClick
     end
-    object TextTiket: TText
+    object GridPanelLayout: TGridPanelLayout
       Align = Client
       Margins.Left = 5.000000000000000000
       Margins.Top = 5.000000000000000000
       Margins.Bottom = 5.000000000000000000
-      Size.Width = 543.000000000000000000
+      Size.Width = 814.000000000000000000
       Size.Height = 40.000000000000000000
       Size.PlatformDefault = False
-      TextSettings.HorzAlign = Leading
+      TabOrder = 1
+      ColumnCollection = <
+        item
+          Value = 100.000000000000000000
+        end>
+      ControlCollection = <
+        item
+          Column = 0
+          Control = TextTiket
+          Row = 0
+        end
+        item
+          Column = 0
+          Control = TextTrade
+          Row = 1
+        end>
+      RowCollection = <
+        item
+          Value = 50.000000000000000000
+        end
+        item
+          Value = 50.000000000000000000
+        end>
+      object TextTiket: TText
+        Align = Client
+        Size.Width = 814.000000000000000000
+        Size.Height = 20.000000000000000000
+        Size.PlatformDefault = False
+        TextSettings.HorzAlign = Leading
+      end
+      object TextTrade: TText
+        Align = Client
+        Size.Width = 814.000000000000000000
+        Size.Height = 20.000000000000000000
+        Size.PlatformDefault = False
+      end
     end
+  end
+  object Splitter: TSplitter
+    Align = Bottom
+    Cursor = crVSplit
+    MinSize = 20.000000000000000000
+    Position.Y = 480.000000000000000000
+    Size.Width = 1010.000000000000000000
+    Size.Height = 14.000000000000000000
+    Size.PlatformDefault = False
   end
 end

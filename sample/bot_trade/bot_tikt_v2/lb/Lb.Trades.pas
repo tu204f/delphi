@@ -24,6 +24,8 @@ type
     FQuantity: Integer;
     FBuySell: Char;
     FProfit: Double;
+    FMinProfit: Double;
+    FMaxProfit: Double;
     FStatus: TStatusTrade;
   public
     constructor Create; virtual;
@@ -35,6 +37,8 @@ type
     property ClosePrice: Double read FClosePrice;
     property Profit: Double read FProfit;
     property Status: TStatusTrade read FStatus write FStatus;
+    property MinProfit: Double read FMinProfit;
+    property MaxProfit: Double read FMaxProfit;
   end;
   TTradeList = TObjectList<TTrade>;
 
@@ -60,6 +64,8 @@ begin
   FQuantity := 0;
   FBuySell := #0;
   FProfit := 0;
+  FMinProfit := 0;
+  FMaxProfit := 0;
 end;
 
 destructor TTrade.Destroy;
@@ -77,6 +83,20 @@ begin
   else
     raise Exception.Create('Error Message: Ќаправление сделки не определена');
   end;
+
+  if (FMinProfit = 0) or (FMaxProfit = 0) then
+  begin
+    FMinProfit := FProfit;
+    FMaxProfit := FProfit;
+  end
+  else
+  begin
+    if FMinProfit > FProfit then
+      FMinProfit := FProfit;
+    if FMaxProfit < FProfit then
+      FMaxProfit := FProfit;
+  end;
+
 end;
 
 { TTrades }
@@ -101,16 +121,17 @@ procedure TTrades.OpenTrade(APrice: Double; AQuantity: Integer; ABuySell: Char);
   end;
 
 var
-  xCount: Integer;
+//  xCount: Integer;
   xTrade: TTrade;
 begin
-  xCount := FTrades.Count;
-  if xCount > 0 then
-  begin
-    xTrade := FTrades[xCount - 1];
-    if xTrade.Profit < 0 then
-      _SetCloseTrade;
-  end;
+  // ѕроверить условие назакрытие позиции
+//  xCount := FTrades.Count;
+//  if xCount > 0 then
+//  begin
+//    xTrade := FTrades[xCount - 1];
+//    if xTrade.Profit < 0 then
+//      _SetCloseTrade;
+//  end;
 
   xTrade := TTrade.Create;
   xTrade.OpenPrice := APrice;
