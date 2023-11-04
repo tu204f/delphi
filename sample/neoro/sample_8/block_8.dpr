@@ -15,7 +15,8 @@ uses
   Lb.Sources in 'Lb\Lb.Sources.pas',
   UnitMainFrame in 'UnitMainFrame.pas' {MainFrame: TFrame},
   UnitLogFrame in 'UnitLogFrame.pas' {LogFrame: TFrame},
-  Lb.SysUtils in 'Lb.SysUtils.pas';
+  Lb.SysUtils in 'Lb.SysUtils.pas',
+  Lb.JournalTrades.V2 in 'Lb\Lb.JournalTrades.V2.pas';
 
 {$R *.res}
 

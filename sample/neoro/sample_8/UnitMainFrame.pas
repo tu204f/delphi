@@ -12,7 +12,7 @@ uses
   Lb.Block,               // Блок данных
   Lb.Sources,
   Lb.SysUtils.Candel,
-  Lb.JournalTrades,       // Журнал сделок
+  Lb.JournalTrades.V2,       // Журнал сделок
   UnitChartCandelsFrame,
   UnitCharTradeFrame;
 
@@ -214,35 +214,70 @@ begin
     DoBegin;
 end;
 
+// ----------------------------------------------------------------------------
+// ----------------------------------------------------------------------------
+// Выводить блок на график
+procedure _ChartCandels(AChart: TChartCandelsFrame; ABlock: TBlock);
+var
+  xCandel: TCandel;
+  i, iCount: Integer;
+begin
+  AChart.Candels.Clear;
+  iCount := ABlock.Candels.Count;
+  if iCount > 0 then
+    for i := 0 to iCount - 1 do
+    begin
+      xCandel := ABlock.Candels[i];
+      AChart.Candels.Add(xCandel);
+    end;
+  AChart.BuildChart;
+end;
+
+// Вероятное направление сделки
+function GetBlockTypeDecision(const ABlock: TBlock): TTypeDecision;
+var
+  iCount: Integer;
+  xCurrCandel, xPrCandel: TCandel;
+begin
+  Result := TTypeDecision.tdWait;
+
+  iCount := ABlock.Candels.Count;
+  xCurrCandel := ABlock.Candels[iCount - 1];
+  xPrCandel   := ABlock.Candels[iCount - 2];
+
+  // Напровление совпадает
+  if xCurrCandel.CandelStatus = xPrCandel.CandelStatus then
+  begin
+    case xCurrCandel.CandelStatus of
+      csGrren: Result := TTypeDecision.tdBuy;
+      csRed  : Result := TTypeDecision.tdSell;
+    end;
+  end;
+end;
+// ----------------------------------------------------------------------------
+// ----------------------------------------------------------------------------
+
 procedure TMainFrame.TimerTimer(Sender: TObject);
 
-  procedure _ChartCandels(AChart: TChartCandelsFrame; ABlock: TBlock);
+  // Контроль сделки
+  procedure _ControlTrade(const ABlock: TBlock);
   var
-    xCandel: TCandel;
-    i, iCount: Integer;
+    xDecision: TTypeDecision;
   begin
-    AChart.Candels.Clear;
-    iCount := ABlock.Candels.Count;
-    if iCount > 0 then
-      for i := 0 to iCount - 1 do
-      begin
-        xCandel := ABlock.Candels[i];
-        AChart.Candels.Add(xCandel);
-      end;
-    AChart.BuildChart;
+    // 1. Если открытие позиции
+    xDecision := GetBlockTypeDecision(ABlock);
+    SetDecisionTrade(xDecision);
   end;
 
-var
-  xDecision: TTypeDecision;
 begin
   try
     SetWriteBlock(IndexProgress);
     LogBlock(Block);
     if Block.Candels.Count > 0 then
     begin
-      {todo: Здесь реализуется механих принятие решение и уравленческие решения}
-      xDecision := GetBlockTypeDecision(Block);
-      SetDecisionTrade(xDecision);
+      // --------------------------
+      _ControlTrade(Block);
+      // --------------------------
       TradeGrid;
       Inc(IndexProgress);
       ProgressBar.Value := IndexProgress;
