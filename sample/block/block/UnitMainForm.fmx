@@ -1,0 +1,96 @@
+object MainForm: TMainForm
+  Left = 0
+  Top = 0
+  Caption = 'Form4'
+  ClientHeight = 497
+  ClientWidth = 762
+  FormFactor.Width = 320
+  FormFactor.Height = 480
+  FormFactor.Devices = [Desktop]
+  OnCreate = FormCreate
+  OnClose = FormClose
+  DesignerMasterStyle = 0
+  object TabControl: TTabControl
+    Align = Client
+    Size.Width = 762.000000000000000000
+    Size.Height = 460.000000000000000000
+    Size.PlatformDefault = False
+    TabIndex = 0
+    TabOrder = 0
+    TabPosition = PlatformDefault
+    Sizes = (
+      762s
+      434s)
+    object TabItemChart: TTabItem
+      CustomIcon = <
+        item
+        end>
+      IsSelected = True
+      Size.Width = 91.000000000000000000
+      Size.Height = 26.000000000000000000
+      Size.PlatformDefault = False
+      StyleLookup = ''
+      TabOrder = 0
+      Text = 'TabItemChart'
+      ExplicitSize.cx = 85.000000000000000000
+      ExplicitSize.cy = 26.000000000000000000
+      object Layout: TLayout
+        Align = Client
+        Margins.Left = 10.000000000000000000
+        Margins.Top = 10.000000000000000000
+        Margins.Right = 10.000000000000000000
+        Margins.Bottom = 10.000000000000000000
+        Size.Width = 742.000000000000000000
+        Size.Height = 414.000000000000000000
+        Size.PlatformDefault = False
+        TabOrder = 0
+      end
+    end
+  end
+  object LayoutBootom: TLayout
+    Align = Bottom
+    Position.Y = 460.000000000000000000
+    Size.Width = 762.000000000000000000
+    Size.Height = 37.000000000000000000
+    Size.PlatformDefault = False
+    TabOrder = 1
+    object ButtonNext: TButton
+      Position.X = 128.000000000000000000
+      Position.Y = 8.000000000000000000
+      TabOrder = 0
+      Text = #1044#1072#1083#1077#1077
+      OnClick = ButtonNextClick
+    end
+    object ButtonCreateBlock: TButton
+      Position.X = 4.000000000000000000
+      Position.Y = 8.000000000000000000
+      Size.Width = 117.000000000000000000
+      Size.Height = 22.000000000000000000
+      Size.PlatformDefault = False
+      TabOrder = 1
+      Text = #1057#1086#1079#1076#1072#1090#1100' '#1073#1083#1086#1082#1080
+      OnClick = ButtonCreateBlockClick
+    end
+    object Text1: TText
+      Position.X = 340.000000000000000000
+      Position.Y = 8.000000000000000000
+      Size.Width = 413.000000000000000000
+      Size.Height = 21.000000000000000000
+      Size.PlatformDefault = False
+    end
+    object ButtonStart: TButton
+      Position.X = 216.000000000000000000
+      Position.Y = 8.000000000000000000
+      TabOrder = 2
+      Text = 'ButtonStart'
+      OnClick = ButtonStartClick
+    end
+  end
+  object Timer: TTimer
+    Enabled = False
+    Interval = 200
+    OnTimer = TimerTimer
+    Left = 218
+    Top = 156
+  end
+end

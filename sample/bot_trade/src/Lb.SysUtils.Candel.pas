@@ -39,7 +39,7 @@ type
   public
     constructor Create(ADate, ATime: TDateTime; AOpen, AHigh, ALow, AClose, AVol: Double); overload;
     constructor CreateCandel(ACandel: TCandel); overload;
-    constructor Cretae(AValue: String); overload;
+    constructor Create(AValue: String); overload;
     function ToString: String;
     function ToStringShort: String;
     function ToStringCandel: String;
@@ -207,7 +207,6 @@ procedure CutDownCandels(const ASource: TCandelList; ACount: Integer);
 implementation
 
 uses
-  Lb.Logger,
   System.Math;
 
 (******************************************************************************)
@@ -395,7 +394,7 @@ begin
   Self.Create(ACandel.Date,ACandel.Time,ACandel.Open,ACandel.High,ACandel.Low,ACandel.Close,ACandel.Vol);
 end;
 
-constructor TCandel.Cretae(AValue: String);
+constructor TCandel.Create(AValue: String);
 var
   xCandel: TCandel;
 begin
@@ -599,25 +598,6 @@ var
   xLine: String;
   xPosition: Int64;
 begin
-  {$IFDEF DEBUG}
-  Inc(IndexNext);
-
-  if IndexNext = 4191 then
-  begin
-
-    with TStringList.Create do
-    begin
-      Clear;
-      Free;
-    end;
-
-  end;
-
-
-  TLogger.LogTree(0,'TMemoryCandels.CandelsNextOneStep: ' + IndexNext.ToString);
-  TLogger.LogTreeText(3,'>> ASelectCount = ' + ASelectCount.ToString);
-  {$ENDIF}
-
   if not Assigned(ACandels) then
     raise Exception.Create('Error Message: Массив не определен');
 
@@ -627,9 +607,6 @@ begin
     ACandels.Clear;
     // Читаем первую свечу
     xLine := GetLine(TIntegration.tiForward);
-    {$IFDEF DEBUG}
-    TLogger.LogTreeText(3,'>> ' + xLine);
-    {$ENDIF}
     xC := TCandel.Cretae(xLine);
     ACandels.Add(xC);
     xPosition := FStream.Position;
@@ -637,15 +614,9 @@ begin
     for var i := 1 to ASelectCount - 1 do
     begin
       xLine := GetLine(TIntegration.tiForward);
-      {$IFDEF DEBUG}
-      TLogger.LogTreeText(3,'>> ' + xLine);
-      {$ENDIF}
       xC := TCandel.Cretae(xLine);
       ACandels.Add(xC);
     end;
-    {$IFDEF DEBUG}
-    TLogger.LogTreeText(3,'>> ' + ACandels.Count.ToString);
-    {$ENDIF}
     FStream.Position := xPosition;
   end;
 end;
@@ -715,9 +686,6 @@ procedure TMemoryStructures.NextStructure;
 var
   xCandels: TCandelList;
 begin
-  {$IFDEF DEBUG}
-  TLogger.LogTree(0,'TMemoryStructures.NextStructure');
-  {$ENDIF}
   xCandels := TCandelList.Create;
   try
     FValueStructure.SourceRowID := FIndexCandel;

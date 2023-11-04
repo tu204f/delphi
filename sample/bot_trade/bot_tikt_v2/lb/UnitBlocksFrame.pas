@@ -88,6 +88,7 @@ begin
   xBlock := TBlockFrame.Create(nil);
   xBlock.Parent := LayoutCells;
   FBlockFrames.Add(xBlock);
+
   Memo.Lines.Add('Event_Begin_Block: Добавить блок');
 end;
 

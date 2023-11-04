@@ -1,0 +1,90 @@
+object MainForm: TMainForm
+  Left = 0
+  Top = 0
+  Caption = #1055#1088#1086#1092#1080#1090
+  ClientHeight = 538
+  ClientWidth = 861
+  FormFactor.Width = 320
+  FormFactor.Height = 480
+  FormFactor.Devices = [Desktop]
+  OnShow = FormShow
+  DesignerMasterStyle = 0
+  object ButtonStart: TButton
+    Position.X = 8.000000000000000000
+    Position.Y = 8.000000000000000000
+    TabOrder = 1
+    Text = #1057#1090#1072#1088#1090
+    OnClick = ButtonStartClick
+  end
+  object ButtonStop: TButton
+    Position.X = 92.000000000000000000
+    Position.Y = 8.000000000000000000
+    TabOrder = 2
+    Text = #1057#1090#1086#1087
+    OnClick = ButtonStopClick
+  end
+  object Timer: TTimer
+    Enabled = False
+    Interval = 60
+    OnTimer = TimerTimer
+    Left = 56
+    Top = 68
+  end
+  object StrGrid: TStringGrid
+    CanFocus = True
+    ClipChildren = True
+    Position.X = 8.000000000000000000
+    Position.Y = 40.000000000000000000
+    Size.Width = 309.000000000000000000
+    Size.Height = 489.000000000000000000
+    Size.PlatformDefault = False
+    TabOrder = 4
+    RowCount = 20
+    Viewport.Width = 305.000000000000000000
+    Viewport.Height = 464.000000000000000000
+    object StringColumnTime: TStringColumn
+      Header = #1042#1088#1077#1084#1103
+    end
+    object StringColumnPrice: TStringColumn
+      Header = #1062#1077#1085#1072
+    end
+    object StringColumnVol: TStringColumn
+      Header = #1054#1073#1098#1077#1084
+    end
+  end
+  object Text: TText
+    Position.X = 176.000000000000000000
+    Position.Y = 4.000000000000000000
+    Size.Width = 141.000000000000000000
+    Size.Height = 33.000000000000000000
+    Size.PlatformDefault = False
+    TextSettings.HorzAlign = Leading
+  end
+  object TradeGrid: TStringGrid
+    CanFocus = True
+    ClipChildren = True
+    Position.X = 320.000000000000000000
+    Position.Y = 40.000000000000000000
+    Size.Width = 533.000000000000000000
+    Size.Height = 489.000000000000000000
+    Size.PlatformDefault = False
+    TabOrder = 7
+    Viewport.Width = 513.000000000000000000
+    Viewport.Height = 464.000000000000000000
+    object StrColumnTime: TStringColumn
+      Header = #1042#1088#1077#1084#1103
+    end
+    object StrColumnPrice: TStringColumn
+      Header = #1062#1077#1085#1072
+    end
+    object StrColumnQuantity: TStringColumn
+      Header = #1050#1086#1083#1080#1095#1077#1089#1090#1074#1086
+    end
+    object StrColumnBuySell: TStringColumn
+      Header = #1053#1072#1087#1088#1086#1074#1083#1077#1085#1080#1077
+    end
+    object StrColumnProfit: TStringColumn
+      Header = #1055#1088#1086#1092#1080#1090
+    end
+  end
+end

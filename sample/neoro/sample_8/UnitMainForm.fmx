@@ -1,0 +1,75 @@
+object MainForm: TMainForm
+  Left = 0
+  Top = 0
+  Caption = 'Form5'
+  ClientHeight = 468
+  ClientWidth = 799
+  FormFactor.Width = 320
+  FormFactor.Height = 480
+  FormFactor.Devices = [Desktop]
+  OnShow = FormShow
+  DesignerMasterStyle = 0
+  object Layout2: TLayout
+    Align = Client
+    Margins.Left = 5.000000000000000000
+    Margins.Right = 5.000000000000000000
+    Margins.Bottom = 5.000000000000000000
+    Size.Width = 789.000000000000000000
+    Size.Height = 463.000000000000000000
+    Size.PlatformDefault = False
+    TabOrder = 14
+    object Layout1: TLayout
+      Align = Top
+      Size.Width = 789.000000000000000000
+      Size.Height = 37.000000000000000000
+      Size.PlatformDefault = False
+      TabOrder = 0
+      object ComboBox1: TComboBox
+        Position.Y = 8.000000000000000000
+        Size.Width = 261.000000000000000000
+        Size.Height = 22.000000000000000000
+        Size.PlatformDefault = False
+        TabOrder = 0
+        OnChange = ComboBox1Change
+      end
+    end
+    object TabControl: TTabControl
+      Align = Client
+      Size.Width = 789.000000000000000000
+      Size.Height = 426.000000000000000000
+      Size.PlatformDefault = False
+      TabIndex = 0
+      TabOrder = 1
+      TabPosition = PlatformDefault
+      Sizes = (
+        789s
+        400s
+        789s
+        400s)
+      object TabItemTrade: TTabItem
+        CustomIcon = <
+          item
+          end>
+        IsSelected = True
+        Size.Width = 195.000000000000000000
+        Size.Height = 26.000000000000000000
+        Size.PlatformDefault = False
+        StyleLookup = ''
+        TabOrder = 0
+        Text = #1056#1077#1072#1083#1080#1079#1072#1094#1080#1103' '#1090#1086#1088#1075#1086#1074#1086#1081' '#1089#1090#1088#1072#1090#1077#1075#1080#1080
+      end
+      object TabItemLog: TTabItem
+        CustomIcon = <
+          item
+          end>
+        IsSelected = False
+        Size.Width = 62.000000000000000000
+        Size.Height = 26.000000000000000000
+        Size.PlatformDefault = False
+        StyleLookup = ''
+        TabOrder = 0
+        Text = #1052#1099#1089#1083#1080' '
+      end
+    end
+  end
+end

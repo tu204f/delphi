@@ -1,6 +1,12 @@
-﻿unit Lb.SysUtils.Candel;
+﻿(******************************************************************************)
+(* Для работы со свечами *)
+(* Нужно будет навести порядок, убрать лишние                                 *)
+(******************************************************************************)
+unit Lb.SysUtils.Candel;
 
 interface
+
+//{$DEFINE STRUCTURE_CANDEL}
 
 uses
   System.SysUtils,
@@ -13,6 +19,7 @@ uses
 type
   /// Определям тип свячи
   TTypeCandel = (
+    tcNull,
     tcSource,     // источник данных
     tcCurrent,    // Текущая свеча
     toLookingFor, // Искомое
@@ -21,6 +28,13 @@ type
 
   ///<summary>Тип цены</summary>
   TTypePrice = (tpNon, tpOpen, tpHigh, tpLow, tpClose);
+
+const
+  SENS_PRICE = 100; /// Степень чувствительности - Цены
+  SENS_VOL = 100;   /// Степень чувствительности - Объема
+
+type
+  TCandelStatus = (csNull, csGrren, csRed);
 
   ///<summary>Свеча</summary>
   TCandel = record
@@ -41,17 +55,57 @@ type
   public
     constructor Create(ADate, ATime: TDateTime; AOpen, AHigh, ALow, AClose, AVol: Double; AStatus: TTypeCandel); overload;
     constructor CreateCandel(ACandel: TCandel); overload;
-    constructor Cretae(AValue: String); overload;
+    ///<summary>Парсинг строки</summary>
+    constructor Create(AValue: String); overload;
+    ///<summary>Приведение к еденичному значению, 100 относительно Максмума, и Мимнимам</summary>
+    constructor Create(ACandel: TCandel; AMaxPrice, AMinPrice: Double); overload;
+    ///<summary>Приведение к еденичному значению, 100 относительно Максмума, и Мимнимам цена и объема</summary>
+    constructor Create(ACandel: TCandel; AMaxPrice, AMinPrice, AMaxVol, AMinVol: Double); overload;
+
     function ToString: String;
     function ToStringShort: String;
     function ToStringCandel: String;
     property DateTime: TDateTime read GetDateTime;
     property Price[ATypePrice: TTypePrice]: Double read GetPrice write SetPrice;
+    function IsEmptyPrice: Boolean;
+    procedure NullValue;
+
+    ///<summary>Разница между максимальным заначением и минимальным значением</summary>
+    function DeltaHL: Double;
+    ///<summary>Разница между открытие и закрытием</summary>
+    function DeltaOC: Double;
+    function DeltaOL: Double;
+    function DeltaOH: Double;
+    function DeltaCL: Double;
+    function DeltaCH: Double;
+
+    ///<summary>Статус - свячи Рост или Падение</summary>
+    function CandelStatus: TCandelStatus;
   end;
 
   ///<summary>Список свечей</summary>
   TCandelList = TList<TCandel>;
 
+  TCandels = class(TCandelList)
+  private
+    FMaxPrice: Double;
+    FMinPrice: Double;
+    FMaxVol: Double;
+    FMinVol: Double;
+  public
+    constructor Create;
+    destructor Destroy; override;
+    ///<summary>Предельные значения</summary>
+    procedure LimitValues;
+    ///<summary>Копировать заначение свячей</summary>
+    procedure Copy(const ACandels: TCandels);
+    property MaxPrice: Double read FMaxPrice;
+    property MinPrice: Double read FMinPrice;
+    property MaxVol: Double read FMaxVol;
+    property MinVol: Double read FMinVol;
+  end;
+
+type
   TTiket = record
     Date: TDateTime;
     Time: TDateTime;
@@ -62,6 +116,10 @@ type
     constructor Create(ATiket: TTiket); overload;
     constructor Cretae(AValue: String); overload;
     function ToString: String;
+    function ToShortString: String;
+    function Value: Double;
+    procedure NullValue;
+    function IsEmpty: Boolean;
   public
     class function SameTiket(const ATiket1, ATiket2: TTiket): Boolean; static;
   end;
@@ -70,9 +128,11 @@ type
   TTiketList = TList<TTiket>;
 
 type
+{$IFDEF STRUCTURE_CANDEL}
   TStructure = class;
   TVectorStructure = class;
   TValueStructure = class;
+{$ENDIF}
 
   ///<summary>Тип данных</summary>
   TTypeValue = (
@@ -148,8 +208,10 @@ type
     procedure Prior;
     function EOF: Boolean;
     function BOF: Boolean;
+    function ProgressValue: Integer;
   end;
 
+{$IFDEF STRUCTURE_CANDEL}
   ///<summary>По блочно читаем данные из памяти (точнее по структурно)</summary>
   TMemoryStructures = class(TMemoryCandels)
   public const
@@ -174,7 +236,7 @@ type
     property FutureCount: Integer read FFutureCount write FFutureCount;
     property ProgressReading: Integer read GetProgressReading;
   end;
-
+{$ENDIF}
 
   ///<summary>Структура данных</summary>
   TStructure = class(TObject)
@@ -200,6 +262,7 @@ type
   ///<summary>Список структура</summary>
   TStructureList = TObjectList<TStructure>;
 
+{$IFDEF STRUCTURE_CANDEL}
   ///<summary>Векторная форма</summary>
   TVectorStructure = class(TStructure)
   public
@@ -207,7 +270,9 @@ type
     ///<summary>При образование данных из значений, в целое число от 0 до 100</summary>
     procedure Transform(const AValueStructure: TValueStructure);
   end;
+{$ENDIF}
 
+{$IFDEF STRUCTURE_CANDEL}
   ///<summary>Словарный вектор</summary>
   TVectorStructureWord = class(TStructure)
   public const
@@ -218,7 +283,9 @@ type
     ///<summary>В пределах ограниченных значение</summary>
     procedure Transform(const AValueStructure: TValueStructure);
   end;
+{$ENDIF}
 
+{$IFDEF STRUCTURE_CANDEL}
   ///<summary>Форма со значениями цен</summary>
   TValueStructure = class(TStructure)
   private
@@ -231,6 +298,7 @@ type
     procedure MaxAndMin(var AMaxPrice, AMinPrice, AMaxVol, AMinVol: Double);
     property SourceRowID: Integer read FSourceRowID write FSourceRowID;
   end;
+{$ENDIF}
 
   ///<summary>Математика с векторами</summary>
   TMathVector = record
@@ -243,6 +311,7 @@ type
 
   end;
 
+{$IFDEF STRUCTURE_CANDEL}
 type
   ///<summary>Патерн структуры</summary>
   TStructurePatern = class(TObject)
@@ -260,8 +329,9 @@ type
 
   ///<summary>Список патерн структур</summary>
   TStructurePaternList = TObjectList<TStructurePatern>;
+{$ENDIF}
 
-
+{$IFDEF STRUCTURE_CANDEL}
   ///<summary>Создаем массив близких структур по вектору</summary>
   TStructureSearch = class(TObject)
   public type
@@ -308,14 +378,15 @@ type
     property OnStopSearchThread: TNotifyEvent write FOnStopSearchThread;
     property ProgressReading: Integer read FProgressReading;
   end;
+{$ENDIF}
 
 type
   TVectorAPI = record
-    /// <summary>С равниваем два числа, с точностью</summary>
+    /// <summary>С равниваем два числа (AValue1, AValue2) , с точностью - AEpsilon</summary>
     class function GetSameValue(const AValue1, AValue2: Double; const AEpsilon: Integer): Boolean; static;
     /// <summary>Копирование свечай</summary>
     class procedure MoveCandels(const ASource, ADest: TCandelList); static;
-    /// <summary>Сократить значение работы</summary>
+    /// <summary>Сократить количество свячей на один/summary>
     class procedure CutDownCandels(const ASource: TCandelList; ACount: Integer); static;
     /// <summary>Польное сравнение векторов</summary>
     class function SameStructureSource(const AStructure1, AStructure2: TStructure): Boolean; static;
@@ -324,7 +395,6 @@ type
 implementation
 
 uses
-  Lb.Logger,
   System.DateUtils,
   System.Math;
 
@@ -575,17 +645,50 @@ begin
   end;
 end;
 
+
 constructor TCandel.CreateCandel(ACandel: TCandel);
 begin
   Self.Create(ACandel.Date,ACandel.Time,ACandel.Open,ACandel.High,ACandel.Low,ACandel.Close,ACandel.Vol,ACandel.Status);
 end;
 
-constructor TCandel.Cretae(AValue: String);
+constructor TCandel.Create(AValue: String);
 var
   xCandel: TCandel;
 begin
   xCandel := GetParserCandel(AValue);
   Self.CreateCandel(xCandel);
+end;
+
+constructor TCandel.Create(ACandel: TCandel; AMaxPrice, AMinPrice: Double);
+
+  function _ToPrice(const APrice, AMaxValue, AMinValue: Double): Integer;
+  begin
+    Result := Trunc(SENS_PRICE * (APrice - AMinPrice)/(AMaxPrice - AMinPrice));
+  end;
+
+begin
+  if (AMaxPrice = 0) or (AMinPrice = 0) or (AMaxPrice <= AMinPrice) then
+    raise Exception.Create('Error Message: Неверное значение MaxPrice и MinPrice');
+  Self.CreateCandel(ACandel);
+  Self.Open  := _ToPrice(ACandel.Open,AMaxPrice,AMinPrice);
+  Self.High  := _ToPrice(ACandel.High,AMaxPrice,AMinPrice);
+  Self.Low   := _ToPrice(ACandel.Low,AMaxPrice,AMinPrice);
+  Self.Close := _ToPrice(ACandel.Close,AMaxPrice,AMinPrice);
+end;
+
+constructor TCandel.Create(ACandel: TCandel; AMaxPrice, AMinPrice, AMaxVol, AMinVol: Double);
+
+  function _ToVol(const AVol, AMaxVol, AMinVol: Double): Integer;
+  begin
+    Result := Trunc(SENS_VOL * (AVol - AMinVol)/(AMaxVol - AMinVol));
+  end;
+
+begin
+  Self.Create(ACandel, AMaxPrice, AMinPrice);
+  if (AMaxVol = 0) or (AMinVol = 0) or (AMaxVol<= AMinVol) then
+    raise Exception.Create('Error Message: Неверное значение MaxVol и MinVol');
+  //Self.CreateCandel(ACandel);
+  Self.Vol  := _ToVol(ACandel.Vol,AMaxVol, AMinVol);
 end;
 
 function TCandel.GetDateTime: TDateTime;
@@ -603,6 +706,27 @@ begin
   else
     Result := 0;
   end;
+end;
+
+function TCandel.IsEmptyPrice: Boolean;
+begin
+  Result :=
+    (Self.Open  = 0) or
+    (Self.High  = 0) or
+    (Self.Close = 0) or
+    (Self.Low   = 0);
+end;
+
+procedure TCandel.NullValue;
+begin
+  Date := 0;
+  Time := 0;
+  Open := 0;
+  High := 0;
+  Low  := 0;
+  Close:= 0;
+  Vol  := 0;
+  Status := TTypeCandel.tcNull;
 end;
 
 procedure TCandel.SetPrice(ATypePrice: TTypePrice; const Value: Double);
@@ -647,6 +771,112 @@ begin
   Result := xS;
 end;
 
+function TCandel.DeltaHL: Double;
+begin
+  Result := High - Low;
+end;
+
+function TCandel.DeltaOC: Double;
+begin
+  Result := Close - Open;
+end;
+
+function TCandel.DeltaOH: Double;
+begin
+  Result := High - Open;
+end;
+
+function TCandel.DeltaOL: Double;
+begin
+  Result := Open - Low;
+end;
+
+function TCandel.DeltaCH: Double;
+begin
+  Result := Close - Low;
+end;
+
+function TCandel.DeltaCL: Double;
+begin
+  Result := High - Close;
+end;
+
+function TCandel.CandelStatus: TCandelStatus;
+var
+  xValue: Double;
+begin
+  xValue := DeltaOC;
+  if xValue > 0 then
+    Result := TCandelStatus.csGrren
+  else if xValue < 0 then
+    Result := TCandelStatus.csRed
+  else
+    Result := TCandelStatus.csNull;
+end;
+
+{ TCandels }
+
+constructor TCandels.Create;
+begin
+  inherited;
+  FMaxPrice := 0;
+  FMinPrice := 0;
+  FMaxVol := 0;
+  FMinVol := 0;
+end;
+
+destructor TCandels.Destroy;
+begin
+
+  inherited;
+end;
+
+procedure TCandels.LimitValues;
+var
+  xCandel: TCandel;
+begin
+  FMaxPrice := 0;
+  FMinPrice := 0;
+  FMaxVol := 0;
+  FMinVol := 0;
+  if Self.Count > 0 then
+  begin
+    xCandel := Self.Items[Self.Count - 1];
+    FMaxPrice := xCandel.High;
+    FMinPrice := xCandel.Low;
+    FMaxVol := xCandel.Vol;
+    FMinVol := xCandel.Vol;
+    for xCandel in Self do
+    begin
+      if xCandel.IsEmptyPrice then
+        Continue;
+
+      if xCandel.High > FMaxPrice then
+        FMaxPrice := xCandel.High;
+      if xCandel.Low < FMinPrice then
+        FMinPrice := xCandel.Low;
+      if xCandel.Vol > FMaxVol then
+        FMaxVol := xCandel.High;
+      if xCandel.Vol < FMinVol then
+        FMinVol := xCandel.Low;
+
+    end;
+
+    FMaxPrice := FMaxPrice + (FMaxPrice * 0.001);
+    FMinPrice := FMinPrice - (FMinPrice * 0.001);
+    FMaxVol   := FMaxVol   + (FMaxVol   * 0.001);
+    FMinVol   := FMinVol   - (FMinVol   * 0.001);
+  end;
+end;
+
+procedure TCandels.Copy(const ACandels: TCandels);
+begin
+  Self.Clear;
+  for var xCandel in ACandels do
+    Self.Add(xCandel);
+  LimitValues;
+end;
+
 { TTiket }
 
 constructor TTiket.Create(ADate, ATime: TDateTime; APrice, AVol: Double);
@@ -688,6 +918,32 @@ begin
   end;
 end;
 
+function TTiket.IsEmpty: Boolean;
+begin
+  Result :=
+    (Self.Date = 0) or
+    (Self.Time = 0) or
+    (Self.Price = 0) or
+    (Self.Vol = 0);
+end;
+
+procedure TTiket.NullValue;
+begin
+  Self.Date  := 0;
+  Self.Time  := 0;
+  Self.Price := 0;
+  Self.Vol   := 0;
+end;
+
+function TTiket.ToShortString: String;
+begin
+  var xS :=
+    ' T:'  + TimeToStr(Self.Time) + '; ' +
+    ' P:'  + FloatToStr(Self.Price) + '; ' +
+    ' V:'  + FloatToStr(Self.Vol) + ';';
+  Result := xS;
+end;
+
 function TTiket.ToString: String;
 begin
   var xS :=
@@ -702,6 +958,11 @@ class function TTiket.SameTiket(const ATiket1, ATiket2: TTiket): Boolean;
 begin
   Result := SameTime(ATiket1.Time,ATiket2.Time) and
             (ATiket1.Price = ATiket2.Price)
+end;
+
+function TTiket.Value: Double;
+begin
+  Result := Price * Vol;
 end;
 
 { TMemoryCandels }
@@ -746,29 +1007,41 @@ end;
 
 function TMemoryCandels.GetLine(AIntegration: TIntegration): String;
 
+
   function _ForwardLine: String;
+  const
+    SIZE_BUFFER = 256;
   var
     xS: String;
     xC1, xC2: AnsiChar;
+  var
+    xPos: Integer;
+    xBuffer: array [0..(SIZE_BUFFER - 1)] of AnsiChar;
+    xOldPosition: Int64;
   begin
     xS := '';
+    xOldPosition := FStream.Position;
+    FStream.Read(xBuffer,SIZE_BUFFER);
+    xPos := 0;
     while True do
     begin
-      FStream.Read(xC1,1);
-      FStream.Read(xC2,1);
-      FStream.Position := FStream.Position - 1;
-      if not((xC1 = #10) or (xC1 = #13)) then
+      xC1 := xBuffer[xPos];
+      xC2 := xBuffer[xPos + 1];
+
+      if not((xC1 = #13) or (xC1 = #10)) then
         xS := xS + Char(xC1);
-      if ((xC1 = #10) and (xC2 = #13) or (xC1 = #10)) then
+
+      Inc(xPos);
+      if (not xS.IsEmpty) and (xC1 = #13) and (xC2 = #10) then
       begin
-        FStream.Position := FStream.Position + 1;
+        FStream.Position := xOldPosition + xPos;
         Break;
       end;
     end;
-    Result := xS;
+    Result := Trim(xS);
   end;
 
-
+  {todo: Уже не помню зачем - я это сделал, чтение на оборот}
   function _BackLine: String;
   var
     xS: String;
@@ -801,7 +1074,7 @@ begin
     tiForward: xS := _ForwardLine;
     tiBack: xS := _BackLine;
   end;
-  FCandel.Cretae(xS);
+  FCandel.Create(xS);
   Result := xS;
 end;
 
@@ -831,34 +1104,12 @@ begin
   CandelsNextOneStep(ASelectCount,ACandels);
 end;
 
-//var
-//  IndexNext: Integer = 0;
-
 procedure TMemoryCandels.CandelsNextOneStep(const ASelectCount: Integer; const ACandels: TCandelList);
 var
   xC: TCandel;
   xLine: String;
   xPosition: Int64;
 begin
-//  {$IFDEF DEBUG}
-//  Inc(IndexNext);
-//
-//  if IndexNext = 4191 then
-//  begin
-//
-//    with TStringList.Create do
-//    begin
-//      Clear;
-//      Free;
-//    end;
-//
-//  end;
-//
-//
-//  TLogger.LogTree(0,'TMemoryCandels.CandelsNextOneStep: ' + IndexNext.ToString);
-//  TLogger.LogTreeText(3,'>> ASelectCount = ' + ASelectCount.ToString);
-//  {$ENDIF}
-
   if not Assigned(ACandels) then
     raise Exception.Create('Error Message: Массив не определен');
 
@@ -868,25 +1119,16 @@ begin
     ACandels.Clear;
     // Читаем первую свечу
     xLine := GetLine(TIntegration.tiForward);
-//    {$IFDEF DEBUG}
-//    TLogger.LogTreeText(3,'>> ' + xLine);
-//    {$ENDIF}
-    xC := TCandel.Cretae(xLine);
+    xC := TCandel.Create(xLine);
     ACandels.Add(xC);
     xPosition := FStream.Position;
     // Перебираем все остальные свечи
     for var i := 1 to ASelectCount - 1 do
     begin
       xLine := GetLine(TIntegration.tiForward);
-//      {$IFDEF DEBUG}
-//      TLogger.LogTreeText(3,'>> ' + xLine);
-//      {$ENDIF}
-      xC := TCandel.Cretae(xLine);
+      xC := TCandel.Create(xLine);
       ACandels.Add(xC);
     end;
-//    {$IFDEF DEBUG}
-//    TLogger.LogTreeText(3,'>> ' + ACandels.Count.ToString);
-//    {$ENDIF}
     FStream.Position := xPosition;
   end;
 end;
@@ -941,10 +1183,7 @@ procedure TMemoryTikets.Next;
 begin
   Inc(FIndex);
   FTiket := Tiket.Cretae(FStrings[FIndex]);
-
-
   {doto: добавить последний тикит}
-
 end;
 
 procedure TMemoryTikets.Prior;
@@ -976,6 +1215,17 @@ begin
   if FStrings.Count > 0 then
     FStrings.Delete(0);
 end;
+
+function TMemoryTikets.ProgressValue: Integer;
+var
+  xValue: Double;
+begin
+  xValue := FIndex/FStrings.Count;
+  xValue := xValue * 100;
+  Result := Trunc(xValue);
+end;
+
+{$IFDEF STRUCTURE_CANDEL}
 
 { TMemoryStructures }
 
@@ -1018,6 +1268,7 @@ begin
   Result := Trunc(xProgressReading * 100);
 end;
 
+
 procedure TMemoryStructures.NextStructure;
 
   procedure _NextStructureSource(const ASourceCandels, ACandels: TCandelList);
@@ -1044,9 +1295,6 @@ procedure TMemoryStructures.NextStructure;
 var
   xCandels: TCandelList;
 begin
-  {$IFDEF DEBUG}
-  TLogger.LogTree(0,'TMemoryStructures.NextStructure');
-  {$ENDIF}
   xCandels := TCandelList.Create;
   try
     FValueStructure.SourceRowID := FIndexCandel;
@@ -1059,6 +1307,8 @@ begin
     FreeAndNil(xCandels);
   end;
 end;
+
+{$ENDIF}
 
 { TStructure }
 
@@ -1127,6 +1377,8 @@ begin
     end;
 end;
 
+{$IFDEF STRUCTURE_CANDEL}
+
 { TVectorStructure }
 
 constructor TVectorStructure.Create;
@@ -1157,6 +1409,10 @@ begin
   SetStatusCandels;
 end;
 
+{$ENDIF}
+
+{$IFDEF STRUCTURE_CANDEL}
+
 { TVectorStructureWord }
 
 constructor TVectorStructureWord.Create;
@@ -1165,8 +1421,6 @@ begin
   FStatus := TTypeStructure.tsVector;
 end;
 
-
-
 procedure TVectorStructureWord.Transform(const AValueStructure: TValueStructure);
 var
   xMaxPrice, xMinPrice, xMaxVol, xMinVol: Double;
@@ -1174,6 +1428,10 @@ begin
   AValueStructure.MaxAndMin(xMaxPrice, xMinPrice, xMaxVol, xMinVol);
 
 end;
+
+{$ENDIF}
+
+{$IFDEF STRUCTURE_CANDEL}
 
 { TValueStructure }
 
@@ -1242,6 +1500,8 @@ begin
   _SetTransformCandels(AVectorStructure.FutureVectors,FFutureVectors,APrice, AVol);
   SetStatusCandels;
 end;
+
+{$ENDIF}
 
 { TMathVector }
 
@@ -1397,6 +1657,8 @@ begin
   end;
 end;
 
+{$IFDEF STRUCTURE_CANDEL}
+
 { TStructurePatern }
 
 constructor TStructurePatern.Create;
@@ -1411,6 +1673,10 @@ begin
   FreeAndNil(FStructure);
   inherited;
 end;
+
+{$ENDIF}
+
+{$IFDEF STRUCTURE_CANDEL}
 
 { TStructureSearch.TSearchThread }
 
@@ -1541,6 +1807,10 @@ begin
   end;
 end;
 
+{$ENDIF}
+
+{$IFDEF STRUCTURE_CANDEL}
+
 { TStructureSearch }
 
 constructor TStructureSearch.Create;
@@ -1644,5 +1914,9 @@ begin
     FSearchThread.Start;
   end;
 end;
+
+{$ENDIF}
+
+
 
 end.

@@ -1,0 +1,18 @@
+object DefaultFrame: TDefaultFrame
+  Align = Client
+  Size.Width = 456.000000000000000000
+  Size.Height = 179.000000000000000000
+  Size.PlatformDefault = False
+  object Memo: TMemo
+    Touch.InteractiveGestures = [Pan, LongTap, DoubleTap]
+    DataDetectorTypes = []
+    ReadOnly = True
+    Align = Client
+    Size.Width = 456.000000000000000000
+    Size.Height = 179.000000000000000000
+    Size.PlatformDefault = False
+    TabOrder = 0
+    Viewport.Width = 456.000000000000000000
+    Viewport.Height = 179.000000000000000000
+  end
+end

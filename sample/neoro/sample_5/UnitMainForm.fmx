@@ -1,0 +1,83 @@
+object MainForm: TMainForm
+  Left = 0
+  Top = 0
+  Caption = 'Form5'
+  ClientHeight = 465
+  ClientWidth = 1027
+  FormFactor.Width = 320
+  FormFactor.Height = 480
+  FormFactor.Devices = [Desktop]
+  DesignerMasterStyle = 0
+  object Timer1: TTimer
+    Enabled = False
+    Interval = 20
+    OnTimer = Timer1Timer
+    Left = 364
+    Top = 148
+  end
+  object ButtonStart: TButton
+    Position.X = 8.000000000000000000
+    Position.Y = 8.000000000000000000
+    Size.Width = 181.000000000000000000
+    Size.Height = 22.000000000000000000
+    Size.PlatformDefault = False
+    TabOrder = 7
+    Text = #1057#1090#1072#1088#1090
+    OnClick = ButtonStartClick
+  end
+  object Text7: TText
+    Position.X = 8.000000000000000000
+    Position.Y = 36.000000000000000000
+    Size.Width = 181.000000000000000000
+    Size.Height = 29.000000000000000000
+    Size.PlatformDefault = False
+    Text = #1042#1093#1086#1076#1085#1099#1077' '#1076#1072#1085#1085#1099#1077' '#1076#1083#1103' '#1086#1094#1077#1085#1082#1080' '#1088#1099#1085#1082#1072' '
+    TextSettings.HorzAlign = Leading
+  end
+  object Edit6: TEdit
+    Touch.InteractiveGestures = [LongTap, DoubleTap]
+    TabOrder = 12
+    Position.X = 8.000000000000000000
+    Position.Y = 256.000000000000000000
+    Size.Width = 181.000000000000000000
+    Size.Height = 22.000000000000000000
+    Size.PlatformDefault = False
+  end
+  object StrGrid: TStringGrid
+    Anchors = [akLeft, akTop, akRight, akBottom]
+    CanFocus = True
+    ClipChildren = True
+    Position.X = 196.000000000000000000
+    Position.Y = 4.000000000000000000
+    Size.Width = 497.000000000000000000
+    Size.Height = 457.000000000000000000
+    Size.PlatformDefault = False
+    TabOrder = 14
+    Options = [ColumnResize, ColumnMove, ColLines, RowLines, RowSelect, Tabs, Header, HeaderClick, AutoDisplacement]
+    Viewport.Width = 493.000000000000000000
+    Viewport.Height = 432.000000000000000000
+  end
+  object StrGridR: TStringGrid
+    Anchors = [akTop, akRight, akBottom]
+    CanFocus = True
+    ClipChildren = True
+    Position.X = 696.000000000000000000
+    Position.Y = 4.000000000000000000
+    Size.Width = 325.000000000000000000
+    Size.Height = 457.000000000000000000
+    Size.PlatformDefault = False
+    TabOrder = 13
+    Options = [ColumnResize, ColumnMove, ColLines, RowLines, RowSelect, Tabs, Header, HeaderClick, AutoDisplacement]
+    Viewport.Width = 321.000000000000000000
+    Viewport.Height = 432.000000000000000000
+  end
+  object Edit7: TEdit
+    Touch.InteractiveGestures = [LongTap, DoubleTap]
+    TabOrder = 11
+    Position.X = 8.000000000000000000
+    Position.Y = 280.000000000000000000
+    Size.Width = 181.000000000000000000
+    Size.Height = 22.000000000000000000
+    Size.PlatformDefault = False
+  end
+end

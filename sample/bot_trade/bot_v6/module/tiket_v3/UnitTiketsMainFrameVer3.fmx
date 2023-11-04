@@ -1,0 +1,50 @@
+object TiketsMainFrameVer3: TTiketsMainFrameVer3
+  Size.Width = 969.000000000000000000
+  Size.Height = 859.000000000000000000
+  Size.PlatformDefault = False
+  object Text: TText
+    Position.X = 8.000000000000000000
+    Position.Y = 8.000000000000000000
+    Size.Width = 417.000000000000000000
+    Size.Height = 25.000000000000000000
+    Size.PlatformDefault = False
+    TextSettings.HorzAlign = Leading
+  end
+  object TabControl: TTabControl
+    Anchors = [akLeft, akTop, akRight, akBottom]
+    Position.X = 8.000000000000000000
+    Position.Y = 40.000000000000000000
+    Size.Width = 953.000000000000000000
+    Size.Height = 813.000000000000000000
+    Size.PlatformDefault = False
+    TabIndex = 0
+    TabOrder = 1
+    TabPosition = PlatformDefault
+    Sizes = (
+      953s
+      787s)
+    object TabItemPrice: TTabItem
+      CustomIcon = <
+        item
+        end>
+      IsSelected = True
+      Size.Width = 88.000000000000000000
+      Size.Height = 26.000000000000000000
+      Size.PlatformDefault = False
+      StyleLookup = ''
+      TabOrder = 0
+      Text = 'TabItemPrice'
+      object StringGrid: TStringGrid
+        Align = Client
+        CanFocus = True
+        ClipChildren = True
+        Size.Width = 953.000000000000000000
+        Size.Height = 787.000000000000000000
+        Size.PlatformDefault = False
+        TabOrder = 0
+        Viewport.Width = 949.000000000000000000
+        Viewport.Height = 762.000000000000000000
+      end
+    end
+  end
+end

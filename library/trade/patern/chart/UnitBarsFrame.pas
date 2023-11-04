@@ -64,19 +64,6 @@ begin
   inherited;
 end;
 
-(*
-function TBarsFrame.GetCountBars: Integer;
-begin
-  if Assigned(FStructure) then
-  begin
-    Result := FStructure.SourceVectors.Count +
-              FStructure.FutureVectors.Count;
-  end
-  else
-    Result := COUNT_SOURCE + COUNT_FUTURE;
-end;
-*)
-
 procedure TBarsFrame.SetCreateBarFrames;
 var
   i: Integer;

@@ -6,7 +6,9 @@ uses
   Vcl.Forms,
   UnitMainForm in 'UnitMainForm.pas' {ScriptForm},
   Lb.Script.QPile in '..\..\..\library\trade\script\Lb.Script.QPile.pas',
-  Lb.Setting in '..\..\..\library\Lb.Setting.pas';
+  Lb.Setting in '..\..\..\library\Lb.Setting.pas',
+  QPILE.Script in '..\..\..\library\trade\script\QPILE.Script.pas',
+  QPILE.AST in '..\..\..\library\trade\script\QPILE.AST.pas';
 
 {$R *.res}
 

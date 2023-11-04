@@ -55,6 +55,9 @@ object FormMain: TFormMain
     object StringColumn8: TStringColumn
       Header = 'MinProfit'
     end
+    object StringColumn9: TStringColumn
+      Header = 'StopProfit'
+    end
   end
   object LayoutClient: TLayout
     Align = Client

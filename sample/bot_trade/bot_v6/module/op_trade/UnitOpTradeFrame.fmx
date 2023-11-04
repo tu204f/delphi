@@ -1,0 +1,53 @@
+object OpTradeFrame: TOpTradeFrame
+  Size.Width = 825.000000000000000000
+  Size.Height = 364.000000000000000000
+  Size.PlatformDefault = False
+  object ButtonBuy: TButton
+    Position.X = 8.000000000000000000
+    Position.Y = 8.000000000000000000
+    TabOrder = 0
+    Text = #1055#1086#1082#1091#1087#1082#1072
+    OnClick = ButtonBuyClick
+  end
+  object ButtonSell: TButton
+    Position.X = 96.000000000000000000
+    Position.Y = 8.000000000000000000
+    TabOrder = 1
+    Text = #1055#1088#1086#1076#1072#1078#1072
+    OnClick = ButtonSellClick
+  end
+  object TiketTradeText: TText
+    Position.X = 180.000000000000000000
+    Position.Y = 9.000000000000000000
+    Size.Width = 417.000000000000000000
+    Size.Height = 21.000000000000000000
+    Size.PlatformDefault = False
+    TextSettings.HorzAlign = Leading
+  end
+  object StrGrid: TStringGrid
+    Anchors = [akLeft, akTop, akBottom]
+    CanFocus = True
+    ClipChildren = True
+    Position.X = 8.000000000000000000
+    Position.Y = 36.000000000000000000
+    Size.Width = 413.000000000000000000
+    Size.Height = 317.000000000000000000
+    Size.PlatformDefault = False
+    TabOrder = 2
+    Viewport.Width = 413.000000000000000000
+    Viewport.Height = 317.000000000000000000
+  end
+  object MemoLog: TMemo
+    Touch.InteractiveGestures = [Pan, LongTap, DoubleTap]
+    DataDetectorTypes = []
+    Anchors = [akLeft, akTop, akRight, akBottom]
+    Position.X = 432.000000000000000000
+    Position.Y = 37.000000000000000000
+    Size.Width = 381.000000000000000000
+    Size.Height = 317.000000000000000000
+    Size.PlatformDefault = False
+    TabOrder = 4
+    Viewport.Width = 381.000000000000000000
+    Viewport.Height = 317.000000000000000000
+  end
+end

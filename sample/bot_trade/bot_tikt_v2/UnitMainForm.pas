@@ -44,6 +44,7 @@ type
     StringColumn7: TStringColumn;
     StringColumn8: TStringColumn;
     Splitter: TSplitter;
+    StringColumn9: TStringColumn;
     procedure ButtonStartAnsStopClick(Sender: TObject);
     procedure TimerTimer(Sender: TObject);
   private
@@ -134,6 +135,7 @@ procedure TFormMain.TimerTimer(Sender: TObject);
         end;
         StrGrid.Cells[6,i] := xTrade.MaxProfit.ToString;
         StrGrid.Cells[7,i] := xTrade.MinProfit.ToString;
+        StrGrid.Cells[8,i] := xTrade.StopProfit.ToString;
         xSum := xSum + xTrade.Profit;
       end;
     TextTrade.Text := xSum.ToString;

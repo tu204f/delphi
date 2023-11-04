@@ -111,6 +111,8 @@
         </DCCReference>
         <DCCReference Include="..\..\..\library\trade\script\Lb.Script.QPile.pas"/>
         <DCCReference Include="..\..\..\library\Lb.Setting.pas"/>
+        <DCCReference Include="..\..\..\library\trade\script\QPILE.Script.pas"/>
+        <DCCReference Include="..\..\..\library\trade\script\QPILE.AST.pas"/>
         <None Include="..\..\..\library\trade\script\candles.qpl"/>
         <BuildConfiguration Include="Release">
             <Key>Cfg_2</Key>

@@ -1,0 +1,100 @@
+object MainForm: TMainForm
+  Left = 0
+  Top = 0
+  Caption = 'Form4'
+  ClientHeight = 585
+  ClientWidth = 962
+  FormFactor.Width = 320
+  FormFactor.Height = 480
+  FormFactor.Devices = [Desktop]
+  OnShow = FormShow
+  DesignerMasterStyle = 0
+  object StatusBar: TStatusBar
+    Position.Y = 563.000000000000000000
+    ShowSizeGrip = True
+    Size.Width = 962.000000000000000000
+    Size.Height = 22.000000000000000000
+    Size.PlatformDefault = False
+    TabOrder = 1
+    object StatusText: TText
+      Align = Client
+      Size.Width = 962.000000000000000000
+      Size.Height = 22.000000000000000000
+      Size.PlatformDefault = False
+      TextSettings.HorzAlign = Leading
+    end
+  end
+  object LayoutMenu: TLayout
+    Align = Top
+    Size.Width = 962.000000000000000000
+    Size.Height = 65.000000000000000000
+    Size.PlatformDefault = False
+    TabOrder = 3
+    object ButtonOpen: TButton
+      Align = Left
+      Margins.Top = 3.000000000000000000
+      Margins.Bottom = 3.000000000000000000
+      Position.Y = 3.000000000000000000
+      Size.Width = 105.000000000000000000
+      Size.Height = 59.000000000000000000
+      Size.PlatformDefault = False
+      TabOrder = 0
+      Text = #1054#1090#1082#1088#1099#1090#1100
+      OnClick = ButtonOpenClick
+    end
+    object ButtonSS: TButton
+      Align = Left
+      Margins.Left = 3.000000000000000000
+      Margins.Top = 3.000000000000000000
+      Margins.Bottom = 3.000000000000000000
+      Position.X = 108.000000000000000000
+      Position.Y = 3.000000000000000000
+      Size.Width = 105.000000000000000000
+      Size.Height = 59.000000000000000000
+      Size.PlatformDefault = False
+      TabOrder = 2
+      Text = #1057#1090#1072#1088#1090
+      OnClick = ButtonSSClick
+    end
+    object TrackBar: TTrackBar
+      CanParentFocus = True
+      Min = 1.000000000000000000
+      Orientation = Horizontal
+      Position.X = 220.000000000000000000
+      Position.Y = 36.000000000000000000
+      Size.Width = 345.000000000000000000
+      Size.Height = 19.000000000000000000
+      Size.PlatformDefault = False
+      TabOrder = 3
+      Value = 1.000000000000000000
+      OnChange = TrackBarChange
+    end
+    object TextSpeed: TText
+      Position.X = 220.000000000000000000
+      Position.Y = 12.000000000000000000
+      Size.Width = 345.000000000000000000
+      Size.Height = 17.000000000000000000
+      Size.PlatformDefault = False
+      Text = #1057#1082#1086#1088#1086#1089#1090#1100' '#1086#1073#1085#1086#1074#1083#1077#1085#1080#1077':'
+      TextSettings.HorzAlign = Leading
+    end
+  end
+  object LayoutModule: TLayout
+    Align = Client
+    Size.Width = 962.000000000000000000
+    Size.Height = 498.000000000000000000
+    Size.PlatformDefault = False
+    TabOrder = 4
+  end
+  object OpenDialog: TOpenDialog
+    Left = 116
+    Top = 72
+  end
+  object TimerUpData: TTimer
+    Enabled = False
+    Interval = 100
+    OnTimer = TimerUpDataTimer
+    Left = 192
+    Top = 72
+  end
+end

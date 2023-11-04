@@ -11,7 +11,10 @@ uses
   System.Generics.Collections;
 
 
+{todo: требуетс€ передача минимального шагы цены}
+
 type
+  TTuples = TList<Variant>;
 (******************************************************************************)
 (*  аждое начало блока расматривать как отрытие позиции                       *)
 (******************************************************************************)
@@ -27,6 +30,7 @@ type
     FMinProfit: Double;
     FMaxProfit: Double;
     FStatus: TStatusTrade;
+    FStopProfit: Double; // ƒопустимый размер убытка
   public
     constructor Create; virtual;
     destructor Destroy; override;
@@ -39,6 +43,7 @@ type
     property Status: TStatusTrade read FStatus write FStatus;
     property MinProfit: Double read FMinProfit;
     property MaxProfit: Double read FMaxProfit;
+    property StopProfit: Double read FStopProfit;
   end;
   TTradeList = TObjectList<TTrade>;
 
@@ -66,6 +71,7 @@ begin
   FProfit := 0;
   FMinProfit := 0;
   FMaxProfit := 0;
+  FStopProfit := -20;
 end;
 
 destructor TTrade.Destroy;
@@ -76,6 +82,7 @@ end;
 
 procedure TTrade.SetUpData(const APrice: Double);
 begin
+
   FClosePrice := APrice;
   case FBuySell of
     'B': FProfit := APrice - FOpenPrice;
@@ -96,6 +103,14 @@ begin
     if FMaxProfit < FProfit then
       FMaxProfit := FProfit;
   end;
+
+  var xSP := FProfit - 100;
+  if xSP > FStopProfit then
+    FStopProfit := xSP;
+
+  if FProfit <= FStopProfit then
+    FStatus := TStatusTrade.stClose;
+
 
 end;
 
@@ -146,5 +161,7 @@ begin
     if xTrade.Status = TStatusTrade.stOpen then
       xTrade.SetUpData(APrice);
 end;
+
+
 
 end.

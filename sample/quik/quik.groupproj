@@ -3,9 +3,6 @@
         <ProjectGuid>{0AB20F5B-7723-46DE-AA60-799AB8BEB2DB}</ProjectGuid>
     </PropertyGroup>
     <ItemGroup>
-        <Projects Include="..\quik_connect\quik_connect.dproj">
-            <Dependencies/>
-        </Projects>
         <Projects Include="script\script.dproj">
             <Dependencies/>
         </Projects>
@@ -17,15 +14,6 @@
             <Default.Personality/>
         </BorlandProject>
     </ProjectExtensions>
-    <Target Name="quik_connect">
-        <MSBuild Projects="..\quik_connect\quik_connect.dproj"/>
-    </Target>
-    <Target Name="quik_connect:Clean">
-        <MSBuild Projects="..\quik_connect\quik_connect.dproj" Targets="Clean"/>
-    </Target>
-    <Target Name="quik_connect:Make">
-        <MSBuild Projects="..\quik_connect\quik_connect.dproj" Targets="Make"/>
-    </Target>
     <Target Name="script">
         <MSBuild Projects="script\script.dproj"/>
     </Target>
@@ -36,13 +24,13 @@
         <MSBuild Projects="script\script.dproj" Targets="Make"/>
     </Target>
     <Target Name="Build">
-        <CallTarget Targets="quik_connect;script"/>
+        <CallTarget Targets="script"/>
     </Target>
     <Target Name="Clean">
-        <CallTarget Targets="quik_connect:Clean;script:Clean"/>
+        <CallTarget Targets="script:Clean"/>
     </Target>
     <Target Name="Make">
-        <CallTarget Targets="quik_connect:Make;script:Make"/>
+        <CallTarget Targets="script:Make"/>
     </Target>
     <Import Project="$(BDS)\Bin\CodeGear.Group.Targets" Condition="Exists('$(BDS)\Bin\CodeGear.Group.Targets')"/>
 </Project>

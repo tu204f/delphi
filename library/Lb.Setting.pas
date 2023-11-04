@@ -215,7 +215,6 @@ begin
       FMemIniFile.UpdateFile;
     except
       on E : Exception do
-
         //TLogger.LogForm('win_xp','global_ini_files.set_post ' + E.ClassName + ' ' + E.Message);
     end;
   finally
