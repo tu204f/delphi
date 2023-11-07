@@ -67,6 +67,7 @@ type
     function ToStringCandel: String;
     property DateTime: TDateTime read GetDateTime;
     property Price[ATypePrice: TTypePrice]: Double read GetPrice write SetPrice;
+    ///<summary>Проверяем наличие цены</summary>
     function IsEmptyPrice: Boolean;
     procedure NullValue;
 

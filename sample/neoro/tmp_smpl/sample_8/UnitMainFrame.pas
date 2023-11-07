@@ -19,7 +19,7 @@ uses
 type
   ///<summary>Описание работа стратеги</summary>
   TMainFrame = class(TFrame)
-    ButtonLearn: TButton;
+    BottonLearn: TButton;
     Timer: TTimer;
     ProgressBar: TProgressBar;
     LayoutS: TLayout;
@@ -31,7 +31,7 @@ type
     Chart1: TChart;
     Series1: TLineSeries;
     procedure TimerTimer(Sender: TObject);
-    procedure ButtonLearnClick(Sender: TObject);
+    procedure BottonLearnClick(Sender: TObject);
   private
     FCandelSource: TSource;
   protected
@@ -47,6 +47,10 @@ type
     procedure TradeGrid;         // Вывод информации по следкам
     procedure SetWriteBlock(const AIndex: Integer);
     procedure SetDecisionTrade(ADecision: TTypeDecision);
+    procedure CharTradeOnLimitPrice(Sender: TObject);
+  protected
+    ControlTrade: TControlTrade;
+    ControlTrades: TControlTradeList;
   protected
     FLogger: ILogger;
     procedure Log(S: String);
@@ -64,6 +68,7 @@ implementation
 {$R *.fmx}
 
 { TMainFrame }
+
 
 
 constructor TMainFrame.Create(AOwner: TComponent);
@@ -91,6 +96,9 @@ begin
   FLogger := nil;
   FCandelSource := nil;
 
+  ControlTrade  := nil;
+  ControlTrades := TControlTradeList.Create;
+
   Chart := TChartCandelsFrame.Create(nil);
   Chart.Parent := LayoutS;
   Chart.Align := TAlignLayout.Client;
@@ -98,12 +106,14 @@ begin
   CharTrade := TCharTradeFrame.Create(nil);
   CharTrade.Parent := Layout1;
   CharTrade.Align := TAlignLayout.Client;
+  CharTrade.OnLimitPrice := CharTradeOnLimitPrice;
 
   Block := TBlock.Create;
 end;
 
 destructor TMainFrame.Destroy;
 begin
+  FreeAndNil(ControlTrades);
   FreeAndNil(Block);
   FreeAndNil(CharTrade);
   FreeAndNil(Chart);
@@ -115,7 +125,7 @@ begin
   if not Assigned(FCandelSource) then
     raise Exception.Create('Error Message: Источник данных не определен');
   Timer.Enabled := True;
-  ButtonLearn.Text := 'Стоп';
+  BottonLearn.Text := 'Стоп';
 
   IndexBlock := 0;
   IndexProgress := 0;
@@ -130,7 +140,7 @@ end;
 procedure TMainFrame.DoEnd;
 begin
   Timer.Enabled := False;
-  ButtonLearn.Text := 'Старт';
+  BottonLearn.Text := 'Старт';
 end;
 
 procedure TMainFrame.SetWriteBlock(const AIndex: Integer);
@@ -157,35 +167,45 @@ begin
 end;
 
 procedure TMainFrame.TradeGrid;
-//var
-//  xTrade: TTrade;
-//  i, iCount, xInd: Integer;
+var
+  xTrade: TControlTrade;
+  i, iCount, xInd: Integer;
 begin
-//  // Вывод скика сделок
-//  if Trades.Count = 0 then
-//    Exit;
-//
-//  iCount := Trades.Count;
-//  xInd := iCount - 10;
-//  if xInd < 0 then
-//    xInd := 0;
-//
-//  if iCount > 10 then
-//    iCount := 10;
-//
-//  StrGrid.RowCount := 10;
-//  for i := 0 to iCount - 1 do
-//  begin
-//    xTrade := Trades[xInd + i];
-//    StrGrid.Cells[0,i] := xTrade.PriceOpen.ToString;
-//    StrGrid.Cells[1,i] := xTrade.PriceClose.ToString;
-//    StrGrid.Cells[2,i] := xTrade.GetTakeProfitPrice.ToString;
-//    StrGrid.Cells[3,i] := xTrade.GetStopLossPrice.ToString;
-//    StrGrid.Cells[4,i] := xTrade.BuySell;
-//    StrGrid.Cells[5,i] := xTrade.Quantity.ToString;
-//    if not xTrade.IsActive then
-//      StrGrid.Cells[6,i] := xTrade.GetProfit.ToString;
-//  end;
+  (*
+  _AddColumn(StrGrid,'PriceOpen');
+  _AddColumn(StrGrid,'PriceClose');
+  _AddColumn(StrGrid,'TakeProfit');
+  _AddColumn(StrGrid,'StopLoss');
+  _AddColumn(StrGrid,'BuySell');
+  _AddColumn(StrGrid,'Quantity');
+  _AddColumn(StrGrid,'Profit');
+  *)
+
+
+  // Вывод скика сделок
+  if ControlTrades.Count = 0 then
+    Exit;
+
+  iCount := ControlTrades.Count;
+  xInd := iCount - 10;
+  if xInd < 0 then
+    xInd := 0;
+
+  if iCount > 10 then
+    iCount := 10;
+
+  StrGrid.RowCount := 10;
+  for i := 0 to iCount - 1 do
+  begin
+    xTrade := ControlTrades[xInd + i];
+    StrGrid.Cells[0,i] := xTrade.Price.ToString;
+    StrGrid.Cells[1,i] := '';
+    StrGrid.Cells[2,i] := '';
+    StrGrid.Cells[3,i] := '';
+    StrGrid.Cells[4,i] := xTrade.BuySell;
+    StrGrid.Cells[5,i] := xTrade.Quantity.ToString;
+    StrGrid.Cells[6,i] := '';
+  end;
 end;
 
 procedure TMainFrame.Log(S: String);
@@ -206,7 +226,7 @@ begin
   Log(xS);
 end;
 
-procedure TMainFrame.ButtonLearnClick(Sender: TObject);
+procedure TMainFrame.BottonLearnClick(Sender: TObject);
 begin
   if Timer.Enabled then
     DoEnd
@@ -264,6 +284,8 @@ procedure TMainFrame.TimerTimer(Sender: TObject);
   var
     xDecision: TTypeDecision;
   begin
+    Log('TMainFrame.TimerTimer._ControlTrade');
+
     // 1. Если открытие позиции
     xDecision := GetBlockTypeDecision(ABlock);
     SetDecisionTrade(xDecision);
@@ -277,6 +299,9 @@ begin
     begin
       // --------------------------
       _ControlTrade(Block);
+      if Assigned(ControlTrade) then
+        if ControlTrade.IsActive then
+          CharTrade.UpDate(Block.CandelLast.Close);
       // --------------------------
       TradeGrid;
       Inc(IndexProgress);
@@ -296,13 +321,57 @@ begin
 end;
 
 procedure TMainFrame.SetDecisionTrade(ADecision: TTypeDecision);
+
+  procedure _OpenTrade(APrice: Double; AQuantity: Integer; ABuySell: Char);
+  begin
+    ControlTrade := TControlTrade.Create;
+    ControlTrades.Add(ControlTrade);
+    ControlTrade.OpenTrade(APrice,AQuantity,ABuySell);
+
+    CharTrade.Open(
+      ControlTrade.Price,
+      ControlTrade.BuySell,
+      0.1
+    );
+
+  end;
+
 var
   xCandel: TCandel;
 begin
-  xCandel := Block.CandelLast;
-  case ADecision of
-    tdBuy : Log('Купили');
-    tdSell: Log('Продажа');
+  if not Assigned(ControlTrade) then
+  begin
+    xCandel := Block.CandelLast;
+    case ADecision of
+      tdBuy : _OpenTrade(xCandel.Close,1,'B');
+      tdSell: _OpenTrade(xCandel.Close,1,'S');
+    end;
+  end;
+end;
+
+procedure TMainFrame.CharTradeOnLimitPrice(Sender: TObject);
+var
+  xBS: Char;
+  xQ: Integer;
+  xCandel: TCandel;
+begin
+  if Assigned(ControlTrade) then
+  begin
+    xBS := ControlTrade.BuySell;
+    xQ  := 2 * ControlTrade.Quantity;
+    xCandel := Block.CandelLast;
+    ControlTrade.OpenTrade(
+      xCandel.Close,
+      xQ,
+      xBS
+    );
+
+    CharTrade.Open(
+      ControlTrade.Price,
+      ControlTrade.BuySell,
+      0.1
+    );
+
   end;
 end;
 

@@ -1,8 +1,8 @@
 object MainFrame: TMainFrame
-  Size.Width = 831.000000000000000000
-  Size.Height = 304.000000000000000000
+  Size.Width = 1088.000000000000000000
+  Size.Height = 445.000000000000000000
   Size.PlatformDefault = False
-  object ButtonLearn: TButton
+  object BottonLearn: TButton
     Position.X = 8.000000000000000000
     Position.Y = 8.000000000000000000
     Size.Width = 105.000000000000000000
@@ -10,10 +10,11 @@ object MainFrame: TMainFrame
     Size.PlatformDefault = False
     TabOrder = 0
     Text = #1057#1090#1072#1088#1090' '#1054#1073#1091#1095#1077#1085#1080#1077
-    OnClick = ButtonLearnClick
+    OnClick = BottonLearnClick
   end
   object Timer: TTimer
     Enabled = False
+    Interval = 50
     OnTimer = TimerTimer
     Left = 588
     Top = 168
@@ -23,7 +24,7 @@ object MainFrame: TMainFrame
     Orientation = Horizontal
     Position.X = 116.000000000000000000
     Position.Y = 8.000000000000000000
-    Size.Width = 707.000000000000000000
+    Size.Width = 964.000000000000000000
     Size.Height = 20.000000000000000000
     Size.PlatformDefault = False
   end
@@ -32,7 +33,7 @@ object MainFrame: TMainFrame
     Position.X = 8.000000000000000000
     Position.Y = 36.000000000000000000
     Size.Width = 141.000000000000000000
-    Size.Height = 259.000000000000000000
+    Size.Height = 400.000000000000000000
     Size.PlatformDefault = False
     TabOrder = 9
   end
@@ -41,7 +42,7 @@ object MainFrame: TMainFrame
     Position.X = 152.000000000000000000
     Position.Y = 36.000000000000000000
     Size.Width = 85.000000000000000000
-    Size.Height = 259.000000000000000000
+    Size.Height = 400.000000000000000000
     Size.PlatformDefault = False
     TabOrder = 14
   end
@@ -49,17 +50,17 @@ object MainFrame: TMainFrame
     Anchors = [akLeft, akTop, akRight, akBottom]
     Position.X = 244.000000000000000000
     Position.Y = 36.000000000000000000
-    Size.Width = 579.000000000000000000
-    Size.Height = 259.000000000000000000
+    Size.Width = 836.000000000000000000
+    Size.Height = 400.000000000000000000
     Size.PlatformDefault = False
     TabIndex = 0
     TabOrder = 17
     TabPosition = PlatformDefault
     Sizes = (
-      579s
-      233s
-      579s
-      233s)
+      836s
+      374s
+      836s
+      374s)
     object TabItemTrade: TTabItem
       CustomIcon = <
         item
@@ -77,12 +78,12 @@ object MainFrame: TMainFrame
         Align = Client
         CanFocus = True
         ClipChildren = True
-        Size.Width = 579.000000000000000000
-        Size.Height = 233.000000000000000000
+        Size.Width = 836.000000000000000000
+        Size.Height = 374.000000000000000000
         Size.PlatformDefault = False
         TabOrder = 16
-        Viewport.Width = 575.000000000000000000
-        Viewport.Height = 208.000000000000000000
+        Viewport.Width = 836.000000000000000000
+        Viewport.Height = 374.000000000000000000
       end
     end
     object TabItemChart: TTabItem
@@ -110,8 +111,8 @@ object MainFrame: TMainFrame
         Zoom.Pen.Fill.Color = claSilver
         Align = Client
         TabOrder = 0
-        Size.Width = 579.000000000000000000
-        Size.Height = 233.000000000000000000
+        Size.Width = 836.000000000000000000
+        Size.Height = 374.000000000000000000
         Size.PlatformDefault = False
         ColorPaletteIndex = 13
         object Series1: TLineSeries

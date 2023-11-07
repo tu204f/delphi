@@ -38,7 +38,7 @@ object MainForm: TMainForm
       Size.Width = 789.000000000000000000
       Size.Height = 426.000000000000000000
       Size.PlatformDefault = False
-      TabIndex = 0
+      TabIndex = 1
       TabOrder = 1
       TabPosition = PlatformDefault
       Sizes = (
@@ -50,25 +50,29 @@ object MainForm: TMainForm
         CustomIcon = <
           item
           end>
-        IsSelected = True
+        IsSelected = False
         Size.Width = 195.000000000000000000
         Size.Height = 26.000000000000000000
         Size.PlatformDefault = False
         StyleLookup = ''
         TabOrder = 0
         Text = #1056#1077#1072#1083#1080#1079#1072#1094#1080#1103' '#1090#1086#1088#1075#1086#1074#1086#1081' '#1089#1090#1088#1072#1090#1077#1075#1080#1080
+        ExplicitSize.cx = 195.000000000000000000
+        ExplicitSize.cy = 26.000000000000000000
       end
       object TabItemLog: TTabItem
         CustomIcon = <
           item
           end>
-        IsSelected = False
+        IsSelected = True
         Size.Width = 62.000000000000000000
         Size.Height = 26.000000000000000000
         Size.PlatformDefault = False
         StyleLookup = ''
         TabOrder = 0
         Text = #1052#1099#1089#1083#1080' '
+        ExplicitSize.cx = 62.000000000000000000
+        ExplicitSize.cy = 26.000000000000000000
       end
     end
   end

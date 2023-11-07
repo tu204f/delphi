@@ -10,26 +10,31 @@ uses
   Lb.SysUtils,
   Lb.Sources,
   UnitMainFrame,
-  UnitLogFrame, FMX.Layouts, FMX.ListBox;
+  UnitLogFrame,
+  FMX.Layouts,
+  FMX.ListBox;
 
 type
-  TMainForm = class(TForm, ILogger)
+  TMainForm = class(TForm, ILogger, IStockMarket)
     TabControl: TTabControl;
     TabItemTrade: TTabItem;
     TabItemLog: TTabItem;
-    ComboBox1: TComboBox;
-    Layout1: TLayout;
     Layout2: TLayout;
+    Layout1: TLayout;
+    ButtonStart: TButton;
+    ButtonStop: TButton;
     procedure FormShow(Sender: TObject);
-    procedure ComboBox1Change(Sender: TObject);
+    procedure ButtonStartClick(Sender: TObject);
+    procedure ButtonStopClick(Sender: TObject);
   protected
     MainFrame: TMainFrame;
     LogFrame: TLogFrame;
-    procedure Log(S: String);
-    procedure LaodSources;
+    procedure DoBegin;
+    procedure DoEnd;
   public
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
+    procedure Log(S: String);
   end;
 
 var
@@ -41,8 +46,6 @@ implementation
 
 { TMainForm }
 
-
-
 constructor TMainForm.Create(AOwner: TComponent);
 begin
   inherited Create(AOwner);
@@ -52,6 +55,7 @@ begin
   MainFrame.Parent := TabItemTrade;
   MainFrame.Align  := TAlignLayout.Client;
   MainFrame.Logger := Self;
+  MainFrame.StockMarket := Self;
   // -------------------------------------------
   LogFrame := TLogFrame.Create(nil);
   LogFrame.Parent := TabItemLog;
@@ -65,10 +69,25 @@ begin
   inherited;
 end;
 
+procedure TMainForm.DoBegin;
+begin
+  MainFrame.DoBegin;
+  ButtonStart.Enabled := False;
+  ButtonStop.Enabled := True;
+end;
+
+procedure TMainForm.DoEnd;
+begin
+  MainFrame.DoEnd;
+  ButtonStart.Enabled := True;
+  ButtonStop.Enabled := False;
+end;
+
 procedure TMainForm.FormShow(Sender: TObject);
 begin
+  ButtonStart.Enabled := True;
+  ButtonStop.Enabled := False;
   TabControl.ActiveTab := TabItemTrade;
-  LaodSources;
 end;
 
 procedure TMainForm.Log(S: String);
@@ -76,44 +95,14 @@ begin
   LogFrame.Log(S);
 end;
 
-procedure TMainForm.LaodSources;
-
-  function _Load(const AFileName: String): TSource;
-  var
-    xSource: TSource;
-    xFN: String;
-  begin
-    xSource := TSource.Create;
-
-    xFN := 'source\' + AFileName;
-    xSource.LoadFromFile(xFN);
-    xSource.Delete(0);
-
-    Result := xSource;
-  end;
-
-var
-  xS: String;
+procedure TMainForm.ButtonStartClick(Sender: TObject);
 begin
-  for var i := 1 to 10 do
-  begin
-    xS := 'SPFB.CNY_' + i.ToString + '.csv';
-    ComboBox1.Items.AddObject(xS,_Load(xS));
-  end;
-  ComboBox1.ItemIndex := 0;
+  //
 end;
 
-procedure TMainForm.ComboBox1Change(Sender: TObject);
-var
-  xIndex: Integer;
-  xSource: TSource;
+procedure TMainForm.ButtonStopClick(Sender: TObject);
 begin
-  xIndex := ComboBox1.ItemIndex;
-  if xIndex >= 0 then
-  begin
-    xSource := TSource(ComboBox1.Items.Objects[xIndex]);
-    MainFrame.CandelSource := xSource;
-  end;
+  //
 end;
 
 end.

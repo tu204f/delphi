@@ -46,7 +46,7 @@ begin
   xS := FormatDateTime('hh:nn:ss.zzz',Time) + '|| ' + S;
   FBuffer.Insert(0,xS);
   // Удаляем лишении строки
-  while FBuffer.Count > 200 do
+  while FBuffer.Count > 50 do
   begin
     iCount := FBuffer.Count;
     FBuffer.Delete(iCount - 1);

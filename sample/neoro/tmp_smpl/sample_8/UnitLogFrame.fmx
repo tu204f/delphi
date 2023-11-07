@@ -1,21 +1,21 @@
 object LogFrame: TLogFrame
-  Size.Width = 754.000000000000000000
-  Size.Height = 507.000000000000000000
+  Size.Width = 912.000000000000000000
+  Size.Height = 404.000000000000000000
   Size.PlatformDefault = False
   object MemoLog: TMemo
     Touch.InteractiveGestures = [Pan, LongTap, DoubleTap]
     DataDetectorTypes = []
     Align = Client
-    Size.Width = 754.000000000000000000
-    Size.Height = 474.000000000000000000
+    Size.Width = 912.000000000000000000
+    Size.Height = 371.000000000000000000
     Size.PlatformDefault = False
     TabOrder = 0
-    Viewport.Width = 754.000000000000000000
-    Viewport.Height = 474.000000000000000000
+    Viewport.Width = 908.000000000000000000
+    Viewport.Height = 367.000000000000000000
   end
   object TextTitle: TText
     Align = Top
-    Size.Width = 754.000000000000000000
+    Size.Width = 912.000000000000000000
     Size.Height = 33.000000000000000000
     Size.PlatformDefault = False
     Text = #1056#1077#1072#1083#1080#1079#1072#1094#1080#1103' '#1083#1086#1075#1080#1082#1080' '#1089#1090#1088#1072#1090#1077#1075#1080#1080'. ('#1095#1090#1086' '#1076#1091#1084#1072#1077#1090' '#1087#1088#1086#1075#1088#1072#1084#1084#1072')'

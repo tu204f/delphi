@@ -1,0 +1,20 @@
+object CustomChartFrame: TCustomChartFrame
+  Size.Width = 563.000000000000000000
+  Size.Height = 320.000000000000000000
+  Size.PlatformDefault = False
+  object Image: TImage
+    MultiResBitmap = <
+      item
+      end>
+    Align = Client
+    Size.Width = 563.000000000000000000
+    Size.Height = 320.000000000000000000
+    Size.PlatformDefault = False
+  end
+  object Timer: TTimer
+    Interval = 60
+    OnTimer = TimerTimer
+    Left = 268
+    Top = 100
+  end
+end

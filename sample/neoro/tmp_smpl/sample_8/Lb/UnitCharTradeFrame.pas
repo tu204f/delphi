@@ -34,7 +34,7 @@ type
     LineOpen: TLine;
   public const
     {todo: открытие позии}
-    LMT_PRICE = 1.5;
+    LMT_PRICE = 2;
     MAX_PRICE = LMT_PRICE;
     MIN_PRICE = LMT_PRICE;
   public type
@@ -65,6 +65,9 @@ type
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
     ///<summary>Цена открытие сделки</summary>
+    ///<param name="APrice">Цена сделки</param>
+    ///<param name="ABuySell">Напровление сделки</param>
+    ///<param name="AStepDelta">Шаг напровления</param>
     procedure Open(const APrice: Double; const ABuySell: Char; const AStepDelta: Double);
     ///<summary>Обновление состояние сделки</summary>
     procedure UpDate(const APrice: Double);
@@ -133,12 +136,12 @@ end;
 
 function TCharTradeFrame.GetMaxPrice(const APrice: Double): Double;
 begin
-  Result := 3000;// APrice * (1 + MAX_PRICE);
+  Result := APrice + MAX_PRICE * FStepDelta;
 end;
 
 function TCharTradeFrame.GetMinPrice(const APrice: Double): Double;
 begin
-  Result := 3000;// APrice * (1 - MAX_PRICE);
+  Result := APrice - MAX_PRICE * FStepDelta;
 end;
 
 procedure TCharTradeFrame.Open(const APrice: Double; const ABuySell: Char; const AStepDelta: Double);
@@ -149,8 +152,8 @@ begin
   FBuySell := ABuySell;
 
   {todo: Цена открытие позиции}
-  FMaxPrice := FOpenPrice + GetMaxPrice(FOpenPrice);
-  FMinPrice := FOpenPrice - GetMinPrice(FOpenPrice);
+  FMaxPrice := GetMaxPrice(FOpenPrice);
+  FMinPrice := GetMinPrice(FOpenPrice);
 
   PriceLinePosition(FOpenPrice,TTypeLinePosition.lpOpen);
   PriceLinePosition(FOpenPrice + AStepDelta,TTypeLinePosition.lpTop);
@@ -276,7 +279,7 @@ begin
   end;
 
   DoLimitPrice;
-  DoLimitProfit;
+//  DoLimitProfit;
 end;
 
 procedure TCharTradeFrame.DoLimitPrice;
@@ -292,8 +295,8 @@ begin
     // Пересечение верхнего предела
     // Сигнал на усреднение
     FOpenPrice := xMaxP;
-    FMaxPrice := FOpenPrice + GetMaxPrice(FOpenPrice);
-    FMinPrice := FOpenPrice - GetMinPrice(FOpenPrice);
+    FMaxPrice := GetMaxPrice(FOpenPrice);
+    FMinPrice := GetMinPrice(FOpenPrice);
     if Assigned(FOnLimitPrice) then
       FOnLimitPrice(Self);
   end else if (FCurrentPrice < xMinP) and (FBuySell = 'B') then
@@ -302,8 +305,8 @@ begin
     // Пересечение нижнего предела
     // Сигнал на усреднение
     FOpenPrice := xMinP;
-    FMaxPrice := FOpenPrice + GetMaxPrice(FOpenPrice);
-    FMinPrice := FOpenPrice - GetMinPrice(FOpenPrice);
+    FMaxPrice := GetMaxPrice(FOpenPrice);
+    FMinPrice := GetMinPrice(FOpenPrice);
     if Assigned(FOnLimitPrice) then
       FOnLimitPrice(Self);
   end;

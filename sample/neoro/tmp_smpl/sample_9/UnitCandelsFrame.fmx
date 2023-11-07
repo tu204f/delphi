@@ -1,0 +1,18 @@
+object GridFrame: TGridFrame
+  Size.Width = 743.000000000000000000
+  Size.Height = 364.000000000000000000
+  Size.PlatformDefault = False
+  object StrGrid: TStringGrid
+    Align = Client
+    CanFocus = True
+    ClipChildren = True
+    Margins.Top = 5.000000000000000000
+    Margins.Bottom = 5.000000000000000000
+    Size.Width = 743.000000000000000000
+    Size.Height = 354.000000000000000000
+    Size.PlatformDefault = False
+    TabOrder = 0
+    Viewport.Width = 743.000000000000000000
+    Viewport.Height = 354.000000000000000000
+  end
+end
