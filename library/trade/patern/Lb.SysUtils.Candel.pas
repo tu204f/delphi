@@ -177,6 +177,7 @@ type
     procedure CandelPrior;
     function CandelEOF: Boolean;
     function CandelBOF: Boolean;
+    function Progress: Double;
     property Line: String read FLine;
     property Candel: TCandel read FCandel;
     property FileName: String read FFileName write SetFileName;
@@ -1140,6 +1141,16 @@ begin
   FLine := GetLine(TIntegration.tiBack);
 end;
 
+function TMemoryCandels.Progress: Double;
+begin
+  if FStream.Size > 0 then
+  begin
+    var xValue := FStream.Position/FStream.Size;
+    Result := 100 * xValue;
+  end
+  else
+    Result := 0;
+end;
 
 { TMemoryTikets }
 

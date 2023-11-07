@@ -69,8 +69,6 @@ type
   ///<summary>Список сделка</summary>
   TControlTradeList = TObjectList<TControlTrade>;
 
-
-
   ///<summary>Объект управления сделками</summary>
   ///<remarks>Здесь определяется  расчет пограничных значений</remarks>
   TManagerTrade = class(TObject)

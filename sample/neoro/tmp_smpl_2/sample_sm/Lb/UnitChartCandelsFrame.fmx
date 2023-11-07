@@ -16,7 +16,7 @@ object ChartCandelsFrame: TChartCandelsFrame
       Margins.Top = 1.000000000000000000
       Margins.Right = 1.000000000000000000
       Margins.Bottom = 1.000000000000000000
-      Size.Width = 496.000000000000000000
+      Size.Width = 478.000000000000000000
       Size.Height = 312.000000000000000000
       Size.PlatformDefault = False
       TabOrder = 1
@@ -30,15 +30,15 @@ object ChartCandelsFrame: TChartCandelsFrame
     end
     object LayoutPriceClose: TLayout
       Align = Right
-      Position.X = 498.000000000000000000
-      Size.Width = 41.000000000000000000
+      Position.X = 480.000000000000000000
+      Size.Width = 59.000000000000000000
       Size.Height = 314.000000000000000000
       Size.PlatformDefault = False
       TabOrder = 2
       object TextPriceClose: TText
         Position.X = 4.000000000000000000
         Position.Y = 136.000000000000000000
-        Size.Width = 33.000000000000000000
+        Size.Width = 49.000000000000000000
         Size.Height = 25.000000000000000000
         Size.PlatformDefault = False
         Text = '12543'

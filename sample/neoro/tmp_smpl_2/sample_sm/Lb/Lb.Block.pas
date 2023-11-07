@@ -25,7 +25,7 @@ type
   ///<summary>Базовый объект</summary>
   TBlock = class(TObject)
   public const
-    BLOCK_SIZE = 55;
+    BLOCK_SIZE = 150;
   private
     FCandels: TCandels;
     function GetCandelLast: TCandel;
@@ -40,8 +40,12 @@ type
   end;
 
   TBlockAPI = record
+    ///<summary>Придельная значение блока</summary>
     class procedure MaxAndMinValueBlock(ABlock: TBlock; var AMaxValue, AMinValue: Double); static;
+    ///<summary>Rate of Change - значение блока индикатора</summary>
     class function RcC(ABlock: TBlock): Double; static;
+    ///<summary>Предельное значение за период</summary>
+    class procedure LimitValueMaxAndMinBlock(ABlock: TBlock; const APeriod: Integer; var AMaxValue, AMinValue: Double); static;
   end;
 
 
@@ -143,6 +147,31 @@ begin
     xC1 := ABlock.Candels[0];
     xC2 := ABlock.Candels[iCount - 1];
     Result := (xC2.Close/xC1.Close) - 0.5;
+  end;
+end;
+
+class procedure TBlockAPI.LimitValueMaxAndMinBlock(ABlock: TBlock;
+  const APeriod: Integer; var AMaxValue, AMinValue: Double);
+var
+  xCandel: TCandel;
+  i, iCount, xInd: Integer;
+begin
+  AMaxValue := 0;
+  AMinValue := 0;
+  iCount := ABlock.Candels.Count;
+  if iCount > 0 then
+  begin
+    xInd := iCount - APeriod;
+    xCandel := ABlock.Candels[xInd];
+    AMaxValue := xCandel.High;
+    AMinValue := xCandel.Low;
+    for i := xInd to iCount - 1 do
+    begin
+      if AMaxValue < xCandel.High then
+        AMaxValue := xCandel.High;
+      if AMinValue > xCandel.Low then
+        AMinValue := xCandel.Low;
+    end;
   end;
 end;
 

@@ -71,14 +71,12 @@ end;
 
 procedure TMainForm.DoBegin;
 begin
-  MainFrame.DoBegin;
   ButtonStart.Enabled := False;
   ButtonStop.Enabled := True;
 end;
 
 procedure TMainForm.DoEnd;
 begin
-  MainFrame.DoEnd;
   ButtonStart.Enabled := True;
   ButtonStop.Enabled := False;
 end;
@@ -97,12 +95,12 @@ end;
 
 procedure TMainForm.ButtonStartClick(Sender: TObject);
 begin
-  //
+  MainFrame.DoBegin;
 end;
 
 procedure TMainForm.ButtonStopClick(Sender: TObject);
 begin
-  //
+  MainFrame.DoEnd;
 end;
 
 end.

@@ -18,7 +18,8 @@ uses
   Lb.SysUtils.Candel in '..\..\..\..\library\trade\patern\Lb.SysUtils.Candel.pas',
   UnitCandelsFrame in 'UnitCandelsFrame.pas' {GridFrame: TFrame},
   Lb.Logger in '..\..\..\..\library\Lb.Logger.pas',
-  UnitCustomChartFrame in 'Lb\frame\chart\UnitCustomChartFrame.pas' {CustomChartFrame: TFrame};
+  UnitCustomChartFrame in 'Lb\frame\chart\UnitCustomChartFrame.pas' {CustomChartFrame: TFrame},
+  Lb.TradeMan in 'Lb\Lb.TradeMan.pas';
 
 {$R *.res}
 
