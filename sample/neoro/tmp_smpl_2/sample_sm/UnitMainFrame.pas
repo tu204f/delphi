@@ -58,6 +58,7 @@ type
   protected
     TradeMan: TTradeMan;
     MemoryCandels: TMemoryCandels; // Источник данных
+    procedure TradeManOnClosePosition(Sender: TObject);
   public
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
@@ -110,6 +111,8 @@ begin
   BufferLogs := TStringList.Create;
 
   TradeMan := TTradeMan.Create;
+  TradeMan.OnClosePosition := TradeManOnClosePosition;
+
   MemoryCandels := TMemoryCandels.Create;
 end;
 
@@ -133,6 +136,7 @@ begin
   TradeMan.Period := 10;
   TradeMan.TypeTrade := TTradeMan.TTypeTrade.ttTrend;
   TradeMan.TrailingStop := 10;
+  TradeMan.Leverage := 10;
 
 
   if Assigned(FStockMarket) then
@@ -286,6 +290,18 @@ procedure TMainFrame.TimerTimer(Sender: TObject);
       Add('Capital ' + ATradeMan.Capital.ToString);
       Add('Period ' + ATradeMan.Period.ToString);
       Add('TrailingStop ' + ATradeMan.TrailingStop.ToString);
+      Add('Leverage ' + ATradeMan.Leverage.ToString);
+      Add('PlusCount ' + ATradeMan.PlusCount.ToString + ' ' + Round( 100 * ATradeMan.PlusCount / (ATradeMan.PlusCount + ATradeMan.MinusCount)).ToString);
+      Add('MinusCount ' + ATradeMan.MinusCount.ToString + ' ' + Round( 100 * ATradeMan.MinusCount / (ATradeMan.PlusCount + ATradeMan.MinusCount)).ToString);
+      Add('MinusProfit ' + ATradeMan.MinusProfit.ToString);
+
+{
+    property PlusCount: Integer read FPlusCount;
+    property MinusCount: Integer read FMinusCount;
+    property MinusProfit: Double read FMinusProfit;
+}
+
+
       if TradeMan.IsPosition then
       begin
         Add('OpenPrice ' + ATradeMan.Position.OpenPrice.ToString);
@@ -321,5 +337,10 @@ begin
   end;
 end;
 
+
+procedure TMainFrame.TradeManOnClosePosition(Sender: TObject);
+begin
+  Series1.Add(TradeMan.Capital);
+end;
 
 end.

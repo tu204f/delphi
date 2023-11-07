@@ -2,6 +2,11 @@ unit Lb.TradeMan;
 
 interface
 
+{$IFDEF DEBUG}
+//  {$DEFINE DBG_OPEN_POS}
+//  {$DEFINE DBG_CLOSE_POS}
+{$ENDIF}
+
 uses
   System.SysUtils,
   System.Types,
@@ -36,6 +41,7 @@ type
     TTypeСrossing = (tcUp,tcDonw);
     TTypeTrade = (ttTrend, ttContrTrend);
   private
+    FLeverage: Integer; // Размер кредитного плеча
     FCapital: Double;
     FDeposit: Double;
     FLimitDeposit: Double;
@@ -43,10 +49,15 @@ type
     FPeriod: Integer;
     FTypeTrade: TTypeTrade;
     FMaxPrice, FMinPrice: Double;
+  private {Статистика}
+    FPlusCount: Integer;
+    FMinusCount: Integer;
+    FMinusProfit: Double;
   private
     FPosition: TPosition;
     procedure SetDeposit(const Value: Double);
   protected
+    FOnClosePosition: TNotifyEvent;
     procedure DoOpenPosition(const ATypeСrossing: TTypeСrossing; const APrice: Double);
     procedure DoClosePosition(const APrice: Double);
   public
@@ -66,6 +77,8 @@ type
     property TypeTrade: TTypeTrade read FTypeTrade write FTypeTrade;
     ///<summary>Задается в сумме, скользящий стоп</summary>
     property TrailingStop: Double read FTrailingStop write FTrailingStop;
+    ///<summary>Размер кредитного плеча</summary>
+    property Leverage: Integer read FLeverage write FLeverage;
     ///<summary>Есть отрытая позиция</summary>
     function IsPosition: Boolean;
   public
@@ -77,6 +90,13 @@ type
     property MinPrice: Double read FMinPrice;
     ///<summary>Размер позиции</summary>
     property Position: TPosition read FPosition;
+
+  public
+    property PlusCount: Integer read FPlusCount;
+    property MinusCount: Integer read FMinusCount;
+    property MinusProfit: Double read FMinusProfit;
+  public
+    property OnClosePosition: TNotifyEvent write FOnClosePosition;
   end;
 
 implementation
@@ -93,8 +113,10 @@ begin
   FQuantity := AQuantity;
   FTrailingStop := ATrailingStop;
   case FBuySell of
-    'B': FStopPrice := (FOpenPrice * FQuantity - FTrailingStop)/FQuantity;
-    'S': FStopPrice := (FOpenPrice * FQuantity + FTrailingStop)/FQuantity;
+//    'B': FStopPrice := (FOpenPrice * FQuantity - FTrailingStop)/FQuantity;
+//    'S': FStopPrice := (FOpenPrice * FQuantity + FTrailingStop)/FQuantity;
+    'B': FStopPrice := FOpenPrice - FTrailingStop;
+    'S': FStopPrice := FOpenPrice + FTrailingStop;
   end;
 end;
 
@@ -128,6 +150,7 @@ end;
 
 constructor TTradeMan.Create;
 begin
+  FLeverage := 1;
   FLimitDeposit := 0;
   FDeposit := 0;
   FCapital   := 0;
@@ -136,6 +159,12 @@ begin
   FMaxPrice  := 0;
   FMinPrice  := 0;
   FPosition  := nil;
+
+  // Статистика
+  FPlusCount := 0;
+  FMinusCount := 0;
+  FMinusProfit := 0;
+
 end;
 
 destructor TTradeMan.Destroy;
@@ -187,14 +216,26 @@ procedure TTradeMan.SetPriceLast(const ACandel: TCandel);
     xOpenPrice := _UpPrice(FMaxPrice,ACandel);
     if xOpenPrice > 0 then
     begin
+      {$IFDEF DBG_OPEN_POS}
+      TLogger.LogText('#',80);
+      TLogger.LogTree(0,'Открытие длиной позиции: Покупка: ' + xOpenPrice.ToString);
+      TLogger.LogTreeText(3,'>> MaxPrice: ' + FMaxPrice.ToString);
+      TLogger.LogTreeText(3,'>> Candel: ' + ACandel.ToString);
+      {$ENDIF}
       // Открываем позцию
       DoOpenPosition(tcUp,xOpenPrice);
-    end;
+    end
     else
     begin
       xOpenPrice := _DownPrice(FMinPrice,ACandel);
       if xOpenPrice > 0 then
       begin
+        {$IFDEF DBG_OPEN_POS}
+        TLogger.LogText('#',80);
+        TLogger.LogTree(0,'Открытие короткой позиции: Продажа: ' + xOpenPrice.ToString);
+        TLogger.LogTreeText(3,'>> MinPrice: ' + FMinPrice.ToString);
+        TLogger.LogTreeText(3,'>> Candel: ' + ACandel.ToString);
+        {$ENDIF}
         // Открываем позцию
         DoOpenPosition(tcDonw,xOpenPrice);
       end;
@@ -210,13 +251,29 @@ procedure TTradeMan.SetPriceLast(const ACandel: TCandel);
         // Пересечение сверху вниз
         xClosePrice := _DownPrice(FPosition.StopPrice,ACandel);
         if xClosePrice > 0 then
+        begin
+          {$IFDEF DBG_CLOSE_POS}
+          TLogger.Log('');
+          TLogger.LogTree(0,'Закрытие длиной позиции: Продажа: ' + xClosePrice.ToString);
+          TLogger.LogTreeText(3,'>> StopPrice: ' + FPosition.StopPrice.ToString);
+          TLogger.LogTreeText(3,'>> Candel: ' + ACandel.ToString);
+          {$ENDIF}
           DoClosePosition(xClosePrice);
+        end;
       end;
       'S': begin
         // Пересечение снизу вверх
         xClosePrice := _UpPrice(FPosition.StopPrice,ACandel);
         if xClosePrice > 0 then
-          DoClosePosition(xClosePrice)
+        begin
+          {$IFDEF DBG_CLOSE_POS}
+          TLogger.Log('');
+          TLogger.LogTree(0,'Закрытие короикой позиции: Покупка: ' + xClosePrice.ToString);
+          TLogger.LogTreeText(3,'>> StopPrice: ' + FPosition.StopPrice.ToString);
+          TLogger.LogTreeText(3,'>> Candel: ' + ACandel.ToString);
+          {$ENDIF}
+          DoClosePosition(xClosePrice);
+        end;
       end;
     end;
   end;
@@ -248,7 +305,10 @@ begin
   if IsPosition then
     raise Exception.Create('Error Message: Не может быть такого');
 
-  xQuantity := FDeposit/APrice;
+  if FLeverage <= 0 then
+    raise Exception.Create('Error Message: Не может быть такого');
+
+  xQuantity := (FLeverage * FDeposit)/APrice;
   xQuantity := _Quantity(xQuantity);
 
   // Больше не может отрывать позицию
@@ -284,6 +344,14 @@ begin
     'S': xCapital := FPosition.Quantity * (FPosition.OpenPrice - APrice);
   end;
 
+  if xCapital > 0 then
+    Inc(FPlusCount)
+  else
+    Inc(FMinusCount);
+  if FMinusProfit > xCapital then
+    FMinusProfit := xCapital;
+
+
   // Тупа рости больше определеного значение не может
   FDeposit := FDeposit + xCapital;
   if FDeposit > FLimitDeposit then
@@ -292,6 +360,9 @@ begin
   FCapital := FCapital + xCapital;
   FreeAndNil(FPosition);
   FPosition := nil;
+
+  if Assigned(FOnClosePosition) then
+    FOnClosePosition(Self);
 end;
 
 function TTradeMan.IsPosition: Boolean;
