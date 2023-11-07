@@ -37,6 +37,8 @@ type
     LayoutTitleMan: TLayout;
     TextDiscript: TText;
     ListBox1: TListBox;
+    Chart1: TChart;
+    Series1: TLineSeries;
     procedure TimerTimer(Sender: TObject);
     procedure BottonLearnClick(Sender: TObject);
   protected
@@ -124,12 +126,13 @@ end;
 
 procedure TMainFrame.DoBegin;
 begin
+  Series1.Clear;
 
   // ќпередел€ем началоное положение трейдора
   TradeMan.Deposit := 100;
   TradeMan.Period := 10;
   TradeMan.TypeTrade := TTradeMan.TTypeTrade.ttTrend;
-  TradeMan.TrailingStop := 20;
+  TradeMan.TrailingStop := 10;
 
 
   if Assigned(FStockMarket) then
@@ -302,6 +305,7 @@ begin
     else
     begin
       TextBar.Text := IndexBar.ToString + ' ' + Block.CandelLast.ToString;
+
 
       TradeMan.SetPriceLast(Block.CandelLast);
       _InfoTradeMan(TradeMan);

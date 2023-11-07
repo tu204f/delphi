@@ -48,7 +48,7 @@ type
     procedure SetDeposit(const Value: Double);
   protected
     procedure DoOpenPosition(const AType—rossing: TType—rossing; const APrice: Double);
-    procedure DoClosePosition(const AType—rossing: TType—rossing; const APrice: Double);
+    procedure DoClosePosition(const APrice: Double);
   public
     constructor Create;
     destructor Destroy; override;
@@ -81,6 +81,9 @@ type
 
 implementation
 
+uses
+  Lb.Logger;
+
 { TPosition }
 
 constructor TPosition.Create(AOpenPrice: Double; AQuantity: Double; ABuySell: Char; ATrailingStop: Double);
@@ -90,8 +93,8 @@ begin
   FQuantity := AQuantity;
   FTrailingStop := ATrailingStop;
   case FBuySell of
-    'B': FStopPrice := (FOpenPrice * FQuantity + FTrailingStop)/FQuantity;
-    'S': FStopPrice := (FOpenPrice * FQuantity - FTrailingStop)/FQuantity;
+    'B': FStopPrice := (FOpenPrice * FQuantity - FTrailingStop)/FQuantity;
+    'S': FStopPrice := (FOpenPrice * FQuantity + FTrailingStop)/FQuantity;
   end;
 end;
 
@@ -101,12 +104,20 @@ var
 begin
   case FBuySell of
     'B': begin
-      xStopPrice := (FOpenPrice * FQuantity + FTrailingStop)/FQuantity;
+      //xStopPrice := (APrice * FQuantity - FTrailingStop)/FQuantity;
+      xStopPrice := APrice - FTrailingStop;
+      if xStopPrice < 0 then
+         raise Exception.Create('Error Message: œÓÎ¸Ì‡ˇ ÊÓÔ‡');
+
       if xStopPrice > FStopPrice then
         FStopPrice := xStopPrice;
     end;
     'S': begin
-      xStopPrice := (FOpenPrice * FQuantity - FTrailingStop)/FQuantity;
+      //xStopPrice := (APrice * FQuantity + FTrailingStop)/FQuantity;
+      xStopPrice := APrice + FTrailingStop;
+      if xStopPrice < 0 then
+         raise Exception.Create('Error Message: œÓÎ¸Ì‡ˇ ÊÓÔ‡');
+
       if xStopPrice < FStopPrice then
         FStopPrice := xStopPrice;
     end;
@@ -148,23 +159,23 @@ end;
 
 procedure TTradeMan.SetPriceLast(const ACandel: TCandel);
 
-  function _UpPrice(AMaxPrice: Double; ACandel: TCandel): Double;
+  function _UpPrice(APrice: Double; ACandel: TCandel): Double;
   begin
     // —ÌËÁÛ ‚ ‚Âı
     Result := 0;
-    if (ACandel.Open < AMaxPrice) and (ACandel.High >= AMaxPrice) then
-      Result := AMaxPrice
-    else if (ACandel.Open >= AMaxPrice) then
+    if (ACandel.Open < APrice) and (ACandel.High >= APrice) then
+      Result := APrice
+    else if (ACandel.Open >= APrice) then
       Result := ACandel.Open;
   end;
 
-  function _DownPrice(AMinPrice: Double; ACandel: TCandel): Double;
+  function _DownPrice(APrice: Double; ACandel: TCandel): Double;
   begin
     // — ‚ÂıÛ ‚ÌËÁ
     Result := 0;
-    if (ACandel.Open > AMinPrice) and (ACandel.Low <= AMinPrice) then
-      Result := AMinPrice
-    else if (ACandel.Open <= AMinPrice) then
+    if (ACandel.Open > APrice) and (ACandel.Low <= APrice) then
+      Result := APrice
+    else if (ACandel.Open <= APrice) then
       Result := ACandel.Open;
   end;
 
@@ -178,7 +189,7 @@ procedure TTradeMan.SetPriceLast(const ACandel: TCandel);
     begin
       // ŒÚÍ˚‚‡ÂÏ ÔÓÁˆË˛
       DoOpenPosition(tcUp,xOpenPrice);
-    end
+    end;
     else
     begin
       xOpenPrice := _DownPrice(FMinPrice,ACandel);
@@ -194,18 +205,18 @@ procedure TTradeMan.SetPriceLast(const ACandel: TCandel);
   var
     xClosePrice: Double;
   begin
-    // ÃÂÒÚÓ ÔËÌˇÚËÂ Â¯ÂÌËÂ Ì‡ ÓÚÍ˚ÚËÂ ÔÓÁËˆËË
-    xClosePrice := _UpPrice(FPosition.StopPrice,ACandel);
-    if xClosePrice > 0 then
-    begin
-      DoClosePosition(tcUp,xClosePrice);
-    end
-    else
-    begin
-      xClosePrice := _DownPrice(FPosition.StopPrice,ACandel);
-      if xClosePrice > 0 then
-      begin
-        DoClosePosition(tcDonw,xClosePrice);
+    case FPosition.BuySell of
+      'B': begin
+        // œÂÂÒÂ˜ÂÌËÂ Ò‚ÂıÛ ‚ÌËÁ
+        xClosePrice := _DownPrice(FPosition.StopPrice,ACandel);
+        if xClosePrice > 0 then
+          DoClosePosition(xClosePrice);
+      end;
+      'S': begin
+        // œÂÂÒÂ˜ÂÌËÂ ÒÌËÁÛ ‚‚Âı
+        xClosePrice := _UpPrice(FPosition.StopPrice,ACandel);
+        if xClosePrice > 0 then
+          DoClosePosition(xClosePrice)
       end;
     end;
   end;
@@ -215,7 +226,10 @@ begin
     Exit;
 
   if IsPosition then
-    _ClosePosition(ACandel)
+  begin
+    FPosition.UpData(ACandel.Open);
+    _ClosePosition(ACandel);
+  end
   else
     _OpenPosition(ACandel);
 end;
@@ -256,7 +270,7 @@ begin
   end;
 end;
 
-procedure TTradeMan.DoClosePosition(const AType—rossing: TType—rossing; const APrice: Double);
+procedure TTradeMan.DoClosePosition(const APrice: Double);
 var
   xCapital: Double;
 begin
