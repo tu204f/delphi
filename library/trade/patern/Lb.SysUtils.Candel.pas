@@ -53,7 +53,7 @@ type
     function GetPrice(ATypePrice: TTypePrice): Double;
     procedure SetPrice(ATypePrice: TTypePrice; const Value: Double);
   public
-    constructor Create(ADate, ATime: TDateTime; AOpen, AHigh, ALow, AClose, AVol: Double; AStatus: TTypeCandel); overload;
+    constructor Create(ADate, ATime: TDateTime; AOpen, AHigh, ALow, AClose, AVol: Double; AStatus: TTypeCandel = tcNull); overload;
     constructor CreateCandel(ACandel: TCandel); overload;
     ///<summary>Парсинг строки</summary>
     constructor Create(AValue: String); overload;

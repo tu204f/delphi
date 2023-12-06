@@ -20,6 +20,17 @@ type
     procedure DoEnd;
   end;
 
+function PriceToY(const AHeight, APrice, AMaxPrice, AMinPrice: Double): Double; inline;
+
 implementation
+
+
+function PriceToY(const AHeight, APrice, AMaxPrice, AMinPrice: Double): Double;
+var
+  xDelta: Double;
+begin
+  xDelta := (APrice - AMinPrice)/(AMaxPrice - AMinPrice);
+  Result := AHeight - xDelta * AHeight;
+end;
 
 end.

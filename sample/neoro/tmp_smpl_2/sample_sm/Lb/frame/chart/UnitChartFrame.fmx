@@ -1,0 +1,85 @@
+object ChartFrame: TChartFrame
+  Size.Width = 716.000000000000000000
+  Size.Height = 496.000000000000000000
+  Size.PlatformDefault = False
+  OnResize = FrameResize
+  object Timer: TTimer
+    Interval = 60
+    OnTimer = TimerTimer
+    Left = 268
+    Top = 100
+  end
+  object LayoutChart: TLayout
+    Align = Client
+    Size.Width = 666.000000000000000000
+    Size.Height = 496.000000000000000000
+    Size.PlatformDefault = False
+    TabOrder = 1
+    object LineResistance: TLine
+      LineType = Top
+      Position.X = 204.000000000000000000
+      Position.Y = 220.000000000000000000
+      Size.Width = 373.000000000000000000
+      Size.Height = 9.000000000000000000
+      Size.PlatformDefault = False
+      Stroke.Color = claGreen
+    end
+    object LineSupport: TLine
+      LineType = Top
+      Position.X = 204.000000000000000000
+      Position.Y = 300.000000000000000000
+      Size.Width = 373.000000000000000000
+      Size.Height = 9.000000000000000000
+      Size.PlatformDefault = False
+      Stroke.Color = claRed
+    end
+    object LineOpen: TLine
+      LineType = Top
+      Position.X = 120.000000000000000000
+      Position.Y = 68.000000000000000000
+      Size.Width = 430.000000000000000000
+      Size.Height = 13.000000000000000000
+      Size.PlatformDefault = False
+      Stroke.Color = claLimegreen
+      Stroke.Thickness = 2.000000000000000000
+      Stroke.Dash = DashDotDot
+    end
+    object LineClose: TLine
+      LineType = Bottom
+      Position.X = 116.000000000000000000
+      Position.Y = 108.000000000000000000
+      Size.Width = 445.000000000000000000
+      Size.Height = 25.000000000000000000
+      Size.PlatformDefault = False
+      Stroke.Color = claPurple
+      Stroke.Thickness = 2.000000000000000000
+      Stroke.Dash = DashDotDot
+    end
+    object LineStop: TLine
+      LineType = Bottom
+      Position.X = 120.000000000000000000
+      Position.Y = 160.000000000000000000
+      Size.Width = 445.000000000000000000
+      Size.Height = 25.000000000000000000
+      Size.PlatformDefault = False
+      Stroke.Color = claBlue
+      Stroke.Thickness = 2.000000000000000000
+      Stroke.Dash = DashDotDot
+    end
+  end
+  object LayoutPositionTrade: TLayout
+    Align = Right
+    Position.X = 666.000000000000000000
+    Size.Width = 50.000000000000000000
+    Size.Height = 496.000000000000000000
+    Size.PlatformDefault = False
+    TabOrder = 2
+    object RectangleBody: TRectangle
+      Position.X = 8.000000000000000000
+      Position.Y = 140.000000000000000000
+      Size.Width = 34.000000000000000000
+      Size.Height = 145.000000000000000000
+      Size.PlatformDefault = False
+    end
+  end
+end

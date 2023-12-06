@@ -229,12 +229,17 @@
             <DesignClass>TFrame</DesignClass>
         </DCCReference>
         <DCCReference Include="..\..\..\..\library\Lb.Logger.pas"/>
-        <DCCReference Include="Lb\frame\chart\UnitCustomChartFrame.pas">
-            <Form>CustomChartFrame</Form>
+        <DCCReference Include="Lb\frame\chart\UnitChartFrame.pas">
+            <Form>ChartFrame</Form>
             <FormType>fmx</FormType>
             <DesignClass>TFrame</DesignClass>
         </DCCReference>
         <DCCReference Include="Lb\Lb.TradeMan.pas"/>
+        <DCCReference Include="Lb\frame\chart\UnitCandelFrame.pas">
+            <Form>CandelFrame</Form>
+            <FormType>fmx</FormType>
+            <DesignClass>TFrame</DesignClass>
+        </DCCReference>
         <BuildConfiguration Include="Release">
             <Key>Cfg_2</Key>
             <CfgParent>Base</CfgParent>

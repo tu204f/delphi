@@ -1,0 +1,49 @@
+object ChartCandelsFrame: TChartCandelsFrame
+  Size.Width = 539.000000000000000000
+  Size.Height = 316.000000000000000000
+  Size.PlatformDefault = False
+  object RectangleCandelBar: TRectangle
+    Align = Client
+    Anchors = []
+    Fill.Color = claNull
+    Margins.Bottom = 2.000000000000000000
+    Size.Width = 539.000000000000000000
+    Size.Height = 314.000000000000000000
+    Size.PlatformDefault = False
+    object LayoutCandels: TLayout
+      Align = Client
+      Margins.Left = 1.000000000000000000
+      Margins.Top = 1.000000000000000000
+      Margins.Right = 1.000000000000000000
+      Margins.Bottom = 1.000000000000000000
+      Size.Width = 478.000000000000000000
+      Size.Height = 312.000000000000000000
+      Size.PlatformDefault = False
+      TabOrder = 1
+      object PathLine: TPath
+        Position.X = 96.000000000000000000
+        Position.Y = 80.000000000000000000
+        Size.Width = 313.000000000000000000
+        Size.Height = 165.000000000000000000
+        Size.PlatformDefault = False
+      end
+    end
+    object LayoutPriceClose: TLayout
+      Align = Right
+      Position.X = 480.000000000000000000
+      Size.Width = 59.000000000000000000
+      Size.Height = 314.000000000000000000
+      Size.PlatformDefault = False
+      TabOrder = 2
+      object TextPriceClose: TText
+        Position.X = 4.000000000000000000
+        Position.Y = 136.000000000000000000
+        Size.Width = 49.000000000000000000
+        Size.Height = 25.000000000000000000
+        Size.PlatformDefault = False
+        Text = '12543'
+        TextSettings.HorzAlign = Leading
+      end
+    end
+  end
+end

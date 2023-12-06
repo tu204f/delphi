@@ -4,7 +4,7 @@ object MainFrame: TMainFrame
   Size.PlatformDefault = False
   object Timer: TTimer
     Enabled = False
-    Interval = 20
+    Interval = 50
     OnTimer = TimerTimer
     Left = 588
     Top = 168
@@ -20,7 +20,7 @@ object MainFrame: TMainFrame
   end
   object LayoutSource: TLayout
     Anchors = [akLeft, akTop, akRight, akBottom]
-    Position.X = 8.000000000000000000
+    Position.X = 12.000000000000000000
     Position.Y = 68.000000000000000000
     Size.Width = 761.000000000000000000
     Size.Height = 546.000000000000000000
@@ -89,34 +89,15 @@ object MainFrame: TMainFrame
       DefaultItemStyles.ItemStyle = ''
       DefaultItemStyles.GroupHeaderStyle = ''
       DefaultItemStyles.GroupFooterStyle = ''
-      Viewport.Width = 309.000000000000000000
-      Viewport.Height = 263.000000000000000000
+      Viewport.Width = 305.000000000000000000
+      Viewport.Height = 259.000000000000000000
     end
-    object Chart1: TChart
-      Foot.Font.StyleExt = {00040000000200000004000000}
-      Legend.Title.Font.StyleExt = {00070000000000000004000000}
-      Legend.Visible = False
-      SubFoot.Font.StyleExt = {00040000000200000004000000}
-      Title.Text.Strings = (
-        'TChart')
-      View3D = False
-      Zoom.Brush.Kind = None
-      Zoom.Pen.Fill.Color = claSilver
+    object Layout1: TLayout
       Align = Client
-      TabOrder = 2
       Size.Width = 452.000000000000000000
       Size.Height = 263.000000000000000000
       Size.PlatformDefault = False
-      ColorPaletteIndex = 13
-      object Series1: TLineSeries
-        Brush.BackColor = x00FFFFFF
-        Pointer.InflateMargins = True
-        Pointer.Style = psRectangle
-        XValues.Name = 'X'
-        XValues.Order = loAscending
-        YValues.Name = 'Y'
-        YValues.Order = loNone
-      end
+      TabOrder = 2
     end
   end
 end

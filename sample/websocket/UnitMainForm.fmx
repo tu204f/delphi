@@ -1,0 +1,51 @@
+object FormMainForm: TFormMainForm
+  Left = 0
+  Top = 0
+  Caption = 'Form4'
+  ClientHeight = 480
+  ClientWidth = 849
+  FormFactor.Width = 320
+  FormFactor.Height = 480
+  FormFactor.Devices = [Desktop]
+  DesignerMasterStyle = 0
+  object MemoLog: TMemo
+    Touch.InteractiveGestures = [Pan, LongTap, DoubleTap]
+    DataDetectorTypes = []
+    Anchors = [akLeft, akTop, akRight, akBottom]
+    Position.X = 8.000000000000000000
+    Position.Y = 44.000000000000000000
+    Size.Width = 830.000000000000000000
+    Size.Height = 429.000000000000000000
+    Size.PlatformDefault = False
+    TabOrder = 0
+    Viewport.Width = 826.000000000000000000
+    Viewport.Height = 425.000000000000000000
+  end
+  object ButtonConnect: TButton
+    Position.X = 8.000000000000000000
+    Position.Y = 8.000000000000000000
+    Size.Width = 189.000000000000000000
+    Size.Height = 29.000000000000000000
+    Size.PlatformDefault = False
+    TabOrder = 1
+    Text = #1059#1089#1090#1072#1085#1086#1074#1080#1090#1100' '#1089#1086#1077#1076#1080#1085#1077#1085#1080#1077
+    OnClick = ButtonConnectClick
+  end
+  object Button1: TButton
+    Position.X = 200.000000000000000000
+    Position.Y = 8.000000000000000000
+    Size.Width = 105.000000000000000000
+    Size.Height = 29.000000000000000000
+    Size.PlatformDefault = False
+    TabOrder = 3
+    Text = 'Send'
+    OnClick = Button1Click
+  end
+  object Button2: TButton
+    Position.X = 312.000000000000000000
+    Position.Y = 8.000000000000000000
+    TabOrder = 5
+    Text = 'Button2'
+    OnClick = Button2Click
+  end
+end

@@ -1,0 +1,39 @@
+object CandelFrame: TCandelFrame
+  Size.Width = 123.000000000000000000
+  Size.Height = 391.000000000000000000
+  Size.PlatformDefault = False
+  object Layout: TLayout
+    Align = Client
+    Margins.Left = 0.500000000000000000
+    Margins.Right = 0.500000000000000000
+    Size.Width = 122.000000000000000000
+    Size.Height = 391.000000000000000000
+    Size.PlatformDefault = False
+    TabOrder = 0
+    object Line: TLine
+      LineType = Left
+      Position.X = 40.000000000000000000
+      Position.Y = 52.000000000000000000
+      Size.Width = 17.000000000000000000
+      Size.Height = 233.000000000000000000
+      Size.PlatformDefault = False
+      Stroke.Thickness = 2.000000000000000000
+    end
+    object LineOC: TLine
+      LineType = Top
+      Position.X = 20.000000000000000000
+      Position.Y = 176.000000000000000000
+      Size.Width = 69.000000000000000000
+      Size.Height = 17.000000000000000000
+      Size.PlatformDefault = False
+      Stroke.Thickness = 2.000000000000000000
+    end
+    object Body: TRectangle
+      Position.X = 28.000000000000000000
+      Position.Y = 104.000000000000000000
+      Size.Width = 45.000000000000000000
+      Size.Height = 117.000000000000000000
+      Size.PlatformDefault = False
+    end
+  end
+end

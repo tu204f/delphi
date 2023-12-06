@@ -3,7 +3,8 @@ unit UnitMainFrame;
 interface
 
 uses
-  System.SysUtils, System.Types, System.UITypes, System.Classes, System.Variants, 
+  System.SysUtils, System.Types, System.UITypes, System.Classes,
+  System.Variants,
   FMX.Types, FMX.Graphics, FMX.Controls, FMX.Forms, FMX.Dialogs, FMX.StdCtrls,
   System.Rtti, FMX.Grid.Style, FMXTee.Engine, FMXTee.Series, FMXTee.Procs,
   FMXTee.Chart, FMX.ScrollBox, FMX.Grid, FMX.TabControl, FMX.Layouts,
@@ -11,13 +12,15 @@ uses
 
   Lb.TradeMan,
   Lb.SysUtils,
-  Lb.Block,               // Блок данных
+  Lb.Block, // Блок данных
   Lb.Sources,
   Lb.SysUtils.Candel,
-  Lb.JournalTrades.V2,       // Журнал сделок
+  Lb.JournalTrades.V2, // Журнал сделок
 
   UnitChartCandelsFrame,
   UnitCharTradeFrame,
+  UnitCandelFrame,
+  UnitChartFrame,
 
   FMX.Memo.Types,
   FMX.Memo,
@@ -25,7 +28,7 @@ uses
   FMX.ListBox;
 
 type
-  ///<summary>Описание работа стратеги</summary>
+  /// <summary>Описание работа стратеги</summary>
   TMainFrame = class(TFrame)
     Timer: TTimer;
     ProgressBar: TProgressBar;
@@ -37,16 +40,16 @@ type
     LayoutTitleMan: TLayout;
     TextDiscript: TText;
     ListBox1: TListBox;
-    Chart1: TChart;
-    Series1: TLineSeries;
+    Layout1: TLayout;
     procedure TimerTimer(Sender: TObject);
     procedure BottonLearnClick(Sender: TObject);
   protected
-    IndexBar: Integer;           // Норме блока
+    IndexBar: Integer; // Норме блока
   protected
-    Block: TBlock;               // Блок для принятие решение, здесь хранить информаци
-    Chart: TChartCandelsFrame;   // Вывод блока, на основание которого принимается решение
-    procedure TradeGrid;         // Вывод информации по следкам
+    Block: TBlock; // Блок для принятие решение, здесь хранить информаци
+    ChartFrame: TChartFrame;
+
+    procedure TradeGrid; // Вывод информации по следкам
     procedure SetWriteBlock(const AIndex: Integer);
   protected
     FStockMarket: IStockMarket;
@@ -57,6 +60,7 @@ type
     procedure LogBlock(ABlock: TBlock);
   protected
     TradeMan: TTradeMan;
+    Candels: TCandels;
     MemoryCandels: TMemoryCandels; // Источник данных
     procedure TradeManOnClosePosition(Sender: TObject);
   public
@@ -66,15 +70,14 @@ type
     property Logger: ILogger write FLogger;
     property StockMarket: IStockMarket write FStockMarket;
 
-    procedure DoBegin;  // Начало испытаний
-    procedure DoEnd;    // Конец испытание
+    procedure DoBegin; // Начало испытаний
+    procedure DoEnd; // Конец испытание
 
   end;
 
 implementation
 
 {$R *.fmx}
-
 { TMainFrame }
 
 constructor TMainFrame.Create(AOwner: TComponent);
@@ -91,22 +94,23 @@ constructor TMainFrame.Create(AOwner: TComponent);
 begin
   inherited;
 
-//  _AddColumn(StrGrid,'PriceOpen');
-//  _AddColumn(StrGrid,'PriceClose');
-//  _AddColumn(StrGrid,'TakeProfit');
-//  _AddColumn(StrGrid,'StopLoss');
-//  _AddColumn(StrGrid,'BuySell');
-//  _AddColumn(StrGrid,'Quantity');
-//  _AddColumn(StrGrid,'Profit');
+  // _AddColumn(StrGrid,'PriceOpen');
+  // _AddColumn(StrGrid,'PriceClose');
+  // _AddColumn(StrGrid,'TakeProfit');
+  // _AddColumn(StrGrid,'StopLoss');
+  // _AddColumn(StrGrid,'BuySell');
+  // _AddColumn(StrGrid,'Quantity');
+  // _AddColumn(StrGrid,'Profit');
 
   FLogger := nil;
 
 
-  Chart := TChartCandelsFrame.Create(nil);
-  Chart.Parent := LayoutSource;
-  Chart.Align := TAlignLayout.Client;
+  // Chart := TChartCandelsFrame.Create(nil);
+  // Chart.Parent := LayoutSource;
+  // Chart.Align := TAlignLayout.Client;
 
   Block := TBlock.Create;
+  Candels := TCandels.Create;
 
   BufferLogs := TStringList.Create;
 
@@ -114,38 +118,48 @@ begin
   TradeMan.OnClosePosition := TradeManOnClosePosition;
 
   MemoryCandels := TMemoryCandels.Create;
+
+  ChartFrame := TChartFrame.Create(nil);
+  ChartFrame.Parent := LayoutSource;
+  ChartFrame.Align := TAlignLayout.Client;
+  ChartFrame.Capacity := TBlock.BLOCK_SIZE;
+
 end;
 
 destructor TMainFrame.Destroy;
 begin
+  FreeAndNil(Candels);
+
   FreeAndNil(MemoryCandels);
   FreeAndNil(TradeMan);
 
   FreeAndNil(BufferLogs);
   FreeAndNil(Block);
-  FreeAndNil(Chart);
+  // FreeAndNil(Chart);
+
+  FreeAndNil(ChartFrame);
+
   inherited;
 end;
 
 procedure TMainFrame.DoBegin;
 begin
-  Series1.Clear;
 
   // Опеределяем началоное положение трейдора
-  TradeMan.Deposit := 100;
+  TradeMan.Deposit := 100000;
   TradeMan.Period := 10;
   TradeMan.TypeTrade := TTradeMan.TTypeTrade.ttTrend;
-  TradeMan.TrailingStop := 10;
+  TradeMan.TrailingStop := 500;
   TradeMan.Leverage := 10;
-
 
   if Assigned(FStockMarket) then
     FStockMarket.DoBegin;
 
-  MemoryCandels.FileName := 'd:\work\git\delphi\sample\neoro\tmp_smpl_2\data\KRME.XXBTZUSD_220101_221231.csv';
+  MemoryCandels.FileName :=
+    'd:\work\git\delphi\sample\neoro\tmp_smpl_2\data\KRME.XXBTZUSD_220101_221231.csv';
 
   IndexBar := 1;
-  MemoryCandels.CandelsFirstOneStep(TBlock.BLOCK_SIZE,Block.Candels);
+  MemoryCandels.CandelsFirstOneStep(TBlock.BLOCK_SIZE, Block.Candels);
   Timer.Enabled := True;
 end;
 
@@ -159,60 +173,60 @@ end;
 
 procedure TMainFrame.SetWriteBlock(const AIndex: Integer);
 
-  // Загрузить данными блок
+// Загрузить данными блок
   procedure _SetWriteBlock(const AIndex: Integer; const ABlock: TBlock);
   var
     iCount: Integer;
   begin
     iCount := TBlock.BLOCK_SIZE;
-    MemoryCandels.CandelsFirstOneStep(iCount,ABlock.Candels);
+    MemoryCandels.CandelsFirstOneStep(iCount, ABlock.Candels);
   end;
 
 begin
-//
+  //
 end;
 
 procedure TMainFrame.TradeGrid;
-//var
-//  xTrade: TControlTrade;
-//  i, iCount, xInd: Integer;
+// var
+// xTrade: TControlTrade;
+// i, iCount, xInd: Integer;
 begin
-//  (*
-//  _AddColumn(StrGrid,'PriceOpen');
-//  _AddColumn(StrGrid,'PriceClose');
-//  _AddColumn(StrGrid,'TakeProfit');
-//  _AddColumn(StrGrid,'StopLoss');
-//  _AddColumn(StrGrid,'BuySell');
-//  _AddColumn(StrGrid,'Quantity');
-//  _AddColumn(StrGrid,'Profit');
-//  *)
-//
-//
-//  iCount := ManagerTrade.ControlTrades.Count;
-//  xInd := iCount - 10;
-//  if xInd < 0 then
-//    xInd := 0;
-//
-//  if iCount > 10 then
-//    iCount := 10;
-//
-//  StrGrid.RowCount := iCount;
-//  for i := 0 to iCount - 1 do
-//  begin
-//    xTrade := ManagerTrade.ControlTrades[xInd + i];
-//    StrGrid.Cells[0,i] := xTrade.PriceOpen.ToString;
-//    StrGrid.Cells[1,i] := xTrade.PriceClose.ToString;
-//    StrGrid.Cells[2,i] := '';
-//    StrGrid.Cells[3,i] := '';
-//    StrGrid.Cells[4,i] := xTrade.BuySell;
-//    StrGrid.Cells[5,i] := xTrade.Quantity.ToString;
-//    StrGrid.Cells[6,i] := xTrade.Profit.ToString;
-//  end;
+  // (*
+  // _AddColumn(StrGrid,'PriceOpen');
+  // _AddColumn(StrGrid,'PriceClose');
+  // _AddColumn(StrGrid,'TakeProfit');
+  // _AddColumn(StrGrid,'StopLoss');
+  // _AddColumn(StrGrid,'BuySell');
+  // _AddColumn(StrGrid,'Quantity');
+  // _AddColumn(StrGrid,'Profit');
+  // *)
+  //
+  //
+  // iCount := ManagerTrade.ControlTrades.Count;
+  // xInd := iCount - 10;
+  // if xInd < 0 then
+  // xInd := 0;
+  //
+  // if iCount > 10 then
+  // iCount := 10;
+  //
+  // StrGrid.RowCount := iCount;
+  // for i := 0 to iCount - 1 do
+  // begin
+  // xTrade := ManagerTrade.ControlTrades[xInd + i];
+  // StrGrid.Cells[0,i] := xTrade.PriceOpen.ToString;
+  // StrGrid.Cells[1,i] := xTrade.PriceClose.ToString;
+  // StrGrid.Cells[2,i] := '';
+  // StrGrid.Cells[3,i] := '';
+  // StrGrid.Cells[4,i] := xTrade.BuySell;
+  // StrGrid.Cells[5,i] := xTrade.Quantity.ToString;
+  // StrGrid.Cells[6,i] := xTrade.Profit.ToString;
+  // end;
 end;
 
 procedure TMainFrame.Log(S: String);
 begin
-  {торговая стратгия}
+  { торговая стратгия }
   if Assigned(FLogger) then
     FLogger.Log(S);
 end;
@@ -220,26 +234,33 @@ end;
 procedure TMainFrame.LogBlock(ABlock: TBlock);
 var
   xS: String;
+  xCandel: TCandel;
+  i, iCount: Integer;
 begin
-  xS := Format(
-            'Получен блок: %d',
-            [ABlock.Candels.Count]
-          );
+  xS := Format('Получен блок: %d', [ABlock.Candels.Count]);
   Log(xS);
+
+  iCount := ABlock.Candels.Count;
+  if iCount > 0 then
+    for i := 0 to iCount - 1 do
+    begin
+      xCandel := ABlock.Candels[i];
+      Log(xCandel.ToStringCandel);
+    end;
 end;
 
 procedure TMainFrame.LogBuffer(S: String);
-//var
-//  iCount: Integer;
+// var
+// iCount: Integer;
 begin
-//  BufferLogs.Insert(0,S);
-//  iCount := BufferLogs.Count;
-//  while iCount > 10 do
-//  begin
-//    iCount := iCount - 1;
-//    BufferLogs.Delete(iCount);
-//  end;
-//  MemoLog.Lines.Assign(BufferLogs);
+  // BufferLogs.Insert(0,S);
+  // iCount := BufferLogs.Count;
+  // while iCount > 10 do
+  // begin
+  // iCount := iCount - 1;
+  // BufferLogs.Delete(iCount);
+  // end;
+  // MemoLog.Lines.Assign(BufferLogs);
 end;
 
 procedure TMainFrame.BottonLearnClick(Sender: TObject);
@@ -266,16 +287,34 @@ begin
   AChart.BuildChart;
 end;
 
+procedure ChartCandels_2(AChartFrame: TChartFrame; ACandels: TCandels);
+var
+  xCandel: TCandel;
+  i, iCount: Integer;
+begin
+  AChartFrame.Candels.Clear;
+  iCount := ACandels.Count;
+  if iCount > 0 then
+    for i := 0 to iCount - 1 do
+    begin
+      xCandel := ACandels[i];
+      AChartFrame.Candels.Add(xCandel);
+    end;
+  AChartFrame.Build;
+end;
+
 {
+  ChartFrame: TChartFrame;
+
   TradeMan.Deposit := 100;
   TradeMan.Period := 10;
   TradeMan.TypeTrade := TTradeMan.TTypeTrade.ttTrend;
   TradeMan.TrailingStop := 20;
 
-    property OpenPrice: Double read FOpenPrice;
-    property Quantity: Double read FQuantity;
-    property BuySell: Char read FBuySell;
-    property StopPrice: Double read FStopPrice;
+  property OpenPrice: Double read FOpenPrice;
+  property Quantity: Double read FQuantity;
+  property BuySell: Char read FBuySell;
+  property StopPrice: Double read FStopPrice;
 
 }
 
@@ -291,17 +330,19 @@ procedure TMainFrame.TimerTimer(Sender: TObject);
       Add('Period ' + ATradeMan.Period.ToString);
       Add('TrailingStop ' + ATradeMan.TrailingStop.ToString);
       Add('Leverage ' + ATradeMan.Leverage.ToString);
-      Add('PlusCount ' + ATradeMan.PlusCount.ToString + ' ' + Round( 100 * ATradeMan.PlusCount / (ATradeMan.PlusCount + ATradeMan.MinusCount)).ToString);
-      Add('MinusCount ' + ATradeMan.MinusCount.ToString + ' ' + Round( 100 * ATradeMan.MinusCount / (ATradeMan.PlusCount + ATradeMan.MinusCount)).ToString);
+      Add('PlusCount ' + ATradeMan.PlusCount.ToString + ' ' +
+        Round(100 * ATradeMan.PlusCount / (ATradeMan.PlusCount +
+        ATradeMan.MinusCount)).ToString);
+      Add('MinusCount ' + ATradeMan.MinusCount.ToString + ' ' +
+        Round(100 * ATradeMan.MinusCount / (ATradeMan.PlusCount +
+        ATradeMan.MinusCount)).ToString);
       Add('MinusProfit ' + ATradeMan.MinusProfit.ToString);
 
-{
-    property PlusCount: Integer read FPlusCount;
-    property MinusCount: Integer read FMinusCount;
-    property MinusProfit: Double read FMinusProfit;
-}
-
-
+      {
+        property PlusCount: Integer read FPlusCount;
+        property MinusCount: Integer read FMinusCount;
+        property MinusProfit: Double read FMinusProfit;
+      }
       if TradeMan.IsPosition then
       begin
         Add('OpenPrice ' + ATradeMan.Position.OpenPrice.ToString);
@@ -312,7 +353,26 @@ procedure TMainFrame.TimerTimer(Sender: TObject);
     end;
   end;
 
+  procedure _ReversData;
+  var
+    xCandel: TCandel;
+    i, iCount: Integer;
+  begin
+    Candels.Clear;
+    iCount := Block.Candels.Count;
+    if iCount > 0 then
+      for i := iCount - 1 downto 0 do
+      begin
+        xCandel := Block.Candels[i];
+        Candels.Add(xCandel);
+      end;
+  end;
+
 begin
+  _ReversData;
+  if Candels.Count = 0 then
+    Exit;
+
   try
     if MemoryCandels.CandelEOF then
     begin
@@ -322,25 +382,41 @@ begin
     begin
       TextBar.Text := IndexBar.ToString + ' ' + Block.CandelLast.ToString;
 
-
-      TradeMan.SetPriceLast(Block.CandelLast);
+      TradeMan.SetPriceLast(Candels[0]);
       _InfoTradeMan(TradeMan);
-      TradeMan.SetInputBlock(Block);
+      TradeMan.SetInputBlock(Candels);
+      // ChartCandels(Chart,Block);
+      ChartCandels_2(ChartFrame, Candels);
 
-      ChartCandels(Chart,Block);
+      if TradeMan.IsPosition then
+      begin
+        ChartFrame.OpenAndClosePrice(
+          TradeMan.Position.OpenPrice,
+          Candels[0].Close,
+          TradeMan.Position.StopPrice,
+          TradeMan.Position.BuySell
+        );
+      end
+      else
+      begin
+        ChartFrame.SupportAndResistance(TradeMan.MinPrice, TradeMan.MaxPrice);
+      end;
+
+      LogBlock(Block);
+
       Inc(IndexBar);
-      MemoryCandels.CandelsNextOneStep(TBlock.BLOCK_SIZE,Block.Candels);
+      MemoryCandels.CandelsNextOneStep(TBlock.BLOCK_SIZE, Block.Candels);
       ProgressBar.Value := MemoryCandels.Progress;
+
     end;
   except
     DoEnd;
   end;
 end;
 
-
 procedure TMainFrame.TradeManOnClosePosition(Sender: TObject);
 begin
-  Series1.Add(TradeMan.Capital);
+
 end;
 
 end.

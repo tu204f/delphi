@@ -1,0 +1,20 @@
+object CharTradeManFrame: TCharTradeManFrame
+  Size.Width = 573.000000000000000000
+  Size.Height = 464.000000000000000000
+  Size.PlatformDefault = False
+  object LayoutPosition: TLayout
+    Align = Right
+    Position.X = 539.000000000000000000
+    Size.Width = 34.000000000000000000
+    Size.Height = 464.000000000000000000
+    Size.PlatformDefault = False
+    TabOrder = 0
+  end
+  object LayoutTrade: TLayout
+    Align = Client
+    Size.Width = 539.000000000000000000
+    Size.Height = 464.000000000000000000
+    Size.PlatformDefault = False
+    TabOrder = 1
+  end
+end

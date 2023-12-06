@@ -1,0 +1,18 @@
+object OrderLineFrame: TOrderLineFrame
+  Size.Width = 552.000000000000000000
+  Size.Height = 30.000000000000000000
+  Size.PlatformDefault = False
+  object Line: TLine
+    Align = Client
+    LineType = Bottom
+    Size.Width = 552.000000000000000000
+    Size.Height = 30.000000000000000000
+    Size.PlatformDefault = False
+    object Text: TText
+      Align = Client
+      Size.Width = 552.000000000000000000
+      Size.Height = 30.000000000000000000
+      Size.PlatformDefault = False
+    end
+  end
+end

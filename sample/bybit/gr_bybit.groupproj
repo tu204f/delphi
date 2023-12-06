@@ -1,0 +1,60 @@
+﻿<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+    <PropertyGroup>
+        <ProjectGuid>{AF042243-0E34-4E7B-94C9-DBEE532763E1}</ProjectGuid>
+    </PropertyGroup>
+    <ItemGroup>
+        <Projects Include="sysutil\bybit.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="sample\Instrument\instrument.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="sample\candels\candels.dproj">
+            <Dependencies/>
+        </Projects>
+    </ItemGroup>
+    <ProjectExtensions>
+        <Borland.Personality>Default.Personality.12</Borland.Personality>
+        <Borland.ProjectType/>
+        <BorlandProject>
+            <Default.Personality/>
+        </BorlandProject>
+    </ProjectExtensions>
+    <Target Name="bybit">
+        <MSBuild Projects="sysutil\bybit.dproj"/>
+    </Target>
+    <Target Name="bybit:Clean">
+        <MSBuild Projects="sysutil\bybit.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="bybit:Make">
+        <MSBuild Projects="sysutil\bybit.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="instrument">
+        <MSBuild Projects="sample\Instrument\instrument.dproj"/>
+    </Target>
+    <Target Name="instrument:Clean">
+        <MSBuild Projects="sample\Instrument\instrument.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="instrument:Make">
+        <MSBuild Projects="sample\Instrument\instrument.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="candels">
+        <MSBuild Projects="sample\candels\candels.dproj"/>
+    </Target>
+    <Target Name="candels:Clean">
+        <MSBuild Projects="sample\candels\candels.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="candels:Make">
+        <MSBuild Projects="sample\candels\candels.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="Build">
+        <CallTarget Targets="bybit;instrument;candels"/>
+    </Target>
+    <Target Name="Clean">
+        <CallTarget Targets="bybit:Clean;instrument:Clean;candels:Clean"/>
+    </Target>
+    <Target Name="Make">
+        <CallTarget Targets="bybit:Make;instrument:Make;candels:Make"/>
+    </Target>
+    <Import Project="$(BDS)\Bin\CodeGear.Group.Targets" Condition="Exists('$(BDS)\Bin\CodeGear.Group.Targets')"/>
+</Project>

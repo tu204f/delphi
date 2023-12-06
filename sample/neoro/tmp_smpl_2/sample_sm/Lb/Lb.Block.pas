@@ -25,7 +25,7 @@ type
   ///<summary>Базовый объект</summary>
   TBlock = class(TObject)
   public const
-    BLOCK_SIZE = 150;
+    BLOCK_SIZE = 100;
   private
     FCandels: TCandels;
     function GetCandelLast: TCandel;
@@ -161,12 +161,13 @@ begin
   iCount := ABlock.Candels.Count;
   if iCount > 0 then
   begin
-    xInd := iCount - APeriod;
+    xInd := iCount - APeriod - 1;
     xCandel := ABlock.Candels[xInd];
     AMaxValue := xCandel.High;
     AMinValue := xCandel.Low;
-    for i := xInd to iCount - 1 do
+    for i := xInd to iCount - 2 do
     begin
+      xCandel := ABlock.Candels[i];
       if AMaxValue < xCandel.High then
         AMaxValue := xCandel.High;
       if AMinValue > xCandel.Low then
