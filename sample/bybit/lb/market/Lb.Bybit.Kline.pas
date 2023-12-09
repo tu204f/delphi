@@ -20,7 +20,7 @@ uses
 
 type
   ///<summary>Get Kline - Получение исторических данных</summary>
-  TBybitKline = class(TGetBybitObject)
+  TBybitKline = class(TBybitHttpClient)
   private
     FSymbol: String;
     FCategory: TTypeCategory;
@@ -36,7 +36,7 @@ type
     procedure SetStartTime(const Value: Double);
   protected
     FListJson: TJSONArray;
-    procedure SetResultObject(const AObjectJson: TJSONObject); override;
+    procedure DoEventMessage(const AMessage: String); override;
   public
     constructor Create; override;
     destructor Destroy; override;
@@ -104,7 +104,8 @@ end;
 constructor TBybitKline.Create;
 begin
   inherited;
-  Self.Module := '/v5/market/kline';
+  ModuleParam.TypeHttp := TTypeHttp.thGet;
+  ModuleParam.Module := '/v5/market/kline';
 end;
 
 destructor TBybitKline.Destroy;
@@ -113,57 +114,54 @@ begin
   inherited;
 end;
 
+
 procedure TBybitKline.SetCategory(const Value: TTypeCategory);
 begin
   FCategory := Value;
-  Params.SetParam('category',GetStrToTypeCategory(FCategory))
+  ModuleParam.Params.SetParam('category',GetStrToTypeCategory(FCategory))
 end;
 
 procedure TBybitKline.SetSymbol(const Value: String);
 begin
   FSymbol := Value;
-  Params.SetParam('symbol',FSymbol);
+  ModuleParam.Params.SetParam('symbol',FSymbol);
 end;
 
 
 procedure TBybitKline.SetInterval(const Value: TTypeInterval);
 begin
   FInterval := Value;
-  Params.SetParam('interval',GetStrToTypeInterval(FInterval));
+  ModuleParam.Params.SetParam('interval',GetStrToTypeInterval(FInterval));
 end;
 
 procedure TBybitKline.SetStartTime(const Value: Double);
 begin
   FStartTime := Value;
-  Params.SetParam('start',FloatToStr(FStartTime));
+  ModuleParam.Params.SetParam('start',FloatToStr(FStartTime));
 end;
 
 procedure TBybitKline.SetEndTime(const Value: Double);
 begin
   FEndTime := Value;
-  Params.SetParam('end',FloatToStr(FEndTime));
+  ModuleParam.Params.SetParam('end',FloatToStr(FEndTime));
 end;
 
 procedure TBybitKline.SetLimit(const Value: Integer);
 begin
   FLimit := Value;
-  Params.SetParam('limit',FLimit.ToString);
+  ModuleParam.Params.SetParam('limit',FLimit.ToString);
 end;
 
-procedure TBybitKline.SetResultObject(const AObjectJson: TJSONObject);
+procedure TBybitKline.DoEventMessage(const AMessage: String);
 var
   xValueJson: TJSONValue;
 begin
-  inherited SetResultObject(AObjectJson);
-  (*
-    "category": "",
-    "list": [],
-    "nextPageCursor": ""
-  *)
-  xValueJson := AObjectJson.Values['list'];
+  inherited DoEventMessage(AMessage);
+  xValueJson := Response.ResultObject.Values['list'];
   if xValueJson is TJSONArray then
     FListJson := TJSONArray(xValueJson);
 end;
+
 
 { TCandelObject }
 

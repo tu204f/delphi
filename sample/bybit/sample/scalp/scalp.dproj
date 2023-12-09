@@ -1,6 +1,6 @@
 ﻿<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
     <PropertyGroup>
-        <ProjectGuid>{E02DC356-693F-4C78-B0AE-0C899E46A1F0}</ProjectGuid>
+        <ProjectGuid>{B91D8393-DB17-48ED-8C8B-7EF683B4D05B}</ProjectGuid>
         <ProjectVersion>19.1</ProjectVersion>
         <FrameworkType>FMX</FrameworkType>
         <Base>True</Base>
@@ -8,7 +8,7 @@
         <Platform Condition="'$(Platform)'==''">Win32</Platform>
         <TargetedPlatforms>3</TargetedPlatforms>
         <AppType>Application</AppType>
-        <MainSource>bybit.dpr</MainSource>
+        <MainSource>scalp.dpr</MainSource>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Config)'=='Base' or '$(Base)'!=''">
         <Base>true</Base>
@@ -86,7 +86,7 @@
         <AUP_READ_PHONE_STATE>true</AUP_READ_PHONE_STATE>
         <Icon_MainIcon>$(BDS)\bin\delphi_PROJECTICON.ico</Icon_MainIcon>
         <Icns_MainIcns>$(BDS)\bin\delphi_PROJECTICNS.icns</Icns_MainIcns>
-        <SanitizedProjectName>bybit</SanitizedProjectName>
+        <SanitizedProjectName>scalp</SanitizedProjectName>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Base_Android)'!=''">
         <DCC_UsePackage>DBXSqliteDriver;RESTComponents;DBXInterBaseDriver;emsclientfiredac;tethering;DataSnapFireDAC;bindcompfmx;FmxTeeUI;fmx;FireDACIBDriver;FireDACDBXDriver;dbexpress;IndyCore;dsnap;emsclient;DataSnapCommon;FireDACCommon;RESTBackendComponents;soapserver;bindengine;CloudService;FireDACCommonDriver;DataSnapClient;inet;IndyIPCommon;bindcompdbx;IndyIPServer;sgcWebSocketsD10_4;IndySystem;fmxFireDAC;FireDAC;FireDACSqliteDriver;ibmonitor;FMXTee;soaprtl;DbxCommonDriver;ibxpress;xmlrtl;soapmidas;DataSnapNativeClient;FireDACDSDriver;rtl;DbxClientDriver;ibxbindings;CustomIPTransport;bindcomp;IndyIPClient;dbxcds;dsnapxml;DataSnapProviderClient;dbrtl;IndyProtocols;$(DCC_UsePackage)</DCC_UsePackage>
@@ -194,17 +194,27 @@
             <Form>MainForm</Form>
             <FormType>fmx</FormType>
         </DCCReference>
-        <DCCReference Include="..\lb\Lb.Bybit.SysUtils.pas"/>
-        <DCCReference Include="..\lb\Lb.Bybit.Candels.pas"/>
-        <DCCReference Include="..\..\..\library\trade\patern\Lb.SysUtils.Candel.pas"/>
-        <DCCReference Include="..\lb\Lb.Bybit.Announcement.pas"/>
-        <DCCReference Include="..\lb\market\Lb.Bybit.InstrumentsInfo.pas"/>
-        <DCCReference Include="..\lb\market\Lb.Bybit.ServerTime.pas"/>
-        <DCCReference Include="..\lb\market\Lb.Bybit.Kline.pas"/>
-        <DCCReference Include="..\lb\Lb.Bybit.Encryption.pas"/>
-        <DCCReference Include="..\lb\position\Lb.Bybit.Position.pas"/>
-        <DCCReference Include="..\lb\trade\Lb.Bybit.PlaceOrder.pas"/>
-        <DCCReference Include="..\lb\Lb.Bybit.pas"/>
+        <DCCReference Include="..\..\lb\Lb.Bybit.InstrumentsInfo.pas"/>
+        <DCCReference Include="..\..\lb\Lb.Bybit.Kline.pas"/>
+        <DCCReference Include="..\..\lb\Lb.Bybit.ServerTime.pas"/>
+        <DCCReference Include="..\..\lb\Lb.Bybit.SysUtils.pas"/>
+        <DCCReference Include="..\..\lb\Lb.Bybit.Candels.pas"/>
+        <DCCReference Include="..\..\..\..\library\trade\patern\Lb.SysUtils.Candel.pas"/>
+        <DCCReference Include="..\..\lb\chart\UnitCandelFrame.pas">
+            <Form>CandelFrame</Form>
+            <FormType>fmx</FormType>
+            <DesignClass>TFrame</DesignClass>
+        </DCCReference>
+        <DCCReference Include="..\..\lb\chart\UnitChartFrame.pas">
+            <Form>ChartFrame</Form>
+            <FormType>fmx</FormType>
+            <DesignClass>TFrame</DesignClass>
+        </DCCReference>
+        <DCCReference Include="..\..\lb\Lb.SysUtils.pas"/>
+        <DCCReference Include="..\..\lb\Lb.TradeMan.pas"/>
+        <DCCReference Include="..\..\..\..\library\Lb.Logger.pas"/>
+        <DCCReference Include="..\..\..\..\library\setting\Lb.Setting.pas"/>
+        <DCCReference Include="..\..\..\..\library\setting\Lb.ConfigIniFile.pas"/>
         <BuildConfiguration Include="Release">
             <Key>Cfg_2</Key>
             <CfgParent>Base</CfgParent>
@@ -223,7 +233,7 @@
         <BorlandProject>
             <Delphi.Personality>
                 <Source>
-                    <Source Name="MainSource">bybit.dpr</Source>
+                    <Source Name="MainSource">scalp.dpr</Source>
                 </Source>
                 <Excluded_Packages>
                     <Excluded_Packages Name="C:\Users\Public\Documents\Embarcadero\Studio\21.0\Bpl\IcsVclD104Design.bpl">Overbyte ICS VCL Design-Time Package for Delphi 10.4</Excluded_Packages>
@@ -248,9 +258,9 @@
                         <Overwrite>true</Overwrite>
                     </Platform>
                 </DeployFile>
-                <DeployFile LocalName="..\bin\bybit.exe" Configuration="Debug" Class="ProjectOutput">
+                <DeployFile LocalName="..\..\bin\scalp.exe" Configuration="Debug" Class="ProjectOutput">
                     <Platform Name="Win32">
-                        <RemoteName>bybit.exe</RemoteName>
+                        <RemoteName>scalp.exe</RemoteName>
                         <Overwrite>true</Overwrite>
                     </Platform>
                 </DeployFile>

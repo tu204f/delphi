@@ -17,11 +17,11 @@ uses
 
 const
 //{$DEFINE TEST}
-
+  BYBIT_HOST =
 {$IFDEF TEST}
-  BYBIT_HOST = 'https://api-testnet.bybit.com';
+  'https://api-testnet.bybit.com';
 {$ELSE}
-  BYBIT_HOST = 'https://api.bybit.com';
+  'https://api.bybit.com';
 {$ENDIF}
 
 type
@@ -71,8 +71,97 @@ type
     procedure SetParam(const AKey, AValue: String);
   end;
 
-  ///<summary>Bybit – объект</summary>
-  TBybitObject = class(TObject)
+(******************************************************************************)
+(* Базовый класс, для всех запросов
+(******************************************************************************)
+  TBytiyResponse = class;
+  TBytiyModule = class;
+  TTypeHttp = (thNull, thGet, thPost);
+  ///<summary>Отвечает за отправление запроса на сервер Bybit</summary>
+  ///<remarks>
+  ///Запросы все отправляются в потоке и с получением ответа от сервера
+  ///Также можно задавать интервал запроса
+  ///</remarks>
+  TBybitHttpClient = class(TObject)
+  private
+    FSource: TStrings;
+    FValueMessage: String;
+    FStatusCode: Integer;
+    FIntervalSleep: Integer;
+    FTask: ITask;
+    FModuleParam: TBytiyModule;
+    FResponse: TBytiyResponse;
+  protected
+    FOnEventMessage: TNotifyEvent;
+    FOnEventException: TNotifyEvent;
+    procedure DoEventMessage(const AMessage: String); virtual;
+    procedure DoEventException(const AStatusCode: Integer; const AMessage: String);
+    // Запрос выполняются в отделом потоке с ожидание ответа
+    procedure SetTaskRun(const AURL: String);
+  public
+    constructor Create; virtual;
+    destructor Destroy; override;
+    procedure Selected(const AInterval: Integer = 0);
+    procedure Stop;
+    property ModuleParam: TBytiyModule read FModuleParam;
+    property IntervalSleep: Integer read FIntervalSleep write FIntervalSleep;
+    property ValueMessage: String read FValueMessage;
+    property StatusCode: Integer read FStatusCode;
+    property Source: TStrings read FSource;
+    property Response: TBytiyResponse read FResponse;
+  public
+    ///<summary>Событие ответа от сервера</summary>
+    property OnEventMessage: TNotifyEvent write FOnEventMessage;
+    property OnEventException: TNotifyEvent write FOnEventException;
+  end;
+
+  ///<summary>Ответ сервер</summary>
+  TBytiyResponse = class(TObject)
+  private
+    FretCode: Integer;
+    FretMsg: String;
+    FretTime: Double;
+    FResultObject: TJSONObject;
+    FExtInfoObject: TJSONObject;
+    procedure SetValueMessage(const Value: String);
+  public
+    constructor Create; virtual;
+    destructor Destroy; override;
+    property ValueMessage: String write SetValueMessage;
+    property ResultObject: TJSONObject read FResultObject;
+    property ExtInfoObject: TJSONObject read FExtInfoObject;
+    property RetCode: Integer read FretCode;
+    property RetMsg: String read FretMsg;
+    property RetTime: Double read FretTime;
+  end;
+
+  ///<summary>Структура запрашиваемого модуля</summary>
+  TBytiyModule = class(TObject)
+  private
+    FTypeHttp: TTypeHttp;
+    FHost: String;
+    FModule: String;
+    FParams: TParamList;
+    FHeaders: THeaderList;
+    function GetQuery: String;
+  public
+    constructor Create; virtual;
+    destructor Destroy; override;
+    function GetURL: String;
+    property TypeHttp: TTypeHttp read FTypeHttp write FTypeHttp;
+    property Host: String read FHost write FHost;
+    property Module: String read FModule write FModule;
+    property Params: TParamList read FParams;
+    property Headers: THeaderList read FHeaders;
+    property Query: String read GetQuery;
+  end;
+
+(******************************************************************************)
+(* Базовый класс, для всех запросов                                           *)
+(******************************************************************************)
+
+  ///<summary>Bybit – объект, Для периодический запросов</summary>
+  TGetBybitObject = class(TObject)
   private
     FActive: Boolean;
     FActiveUpData: Boolean;
@@ -123,6 +212,13 @@ type
     property RetTime: Double read FretTime;
   end;
 
+  ///<summary></summary>
+  TPostBybitObject = class(TObject)
+  public
+    constructor Create; virtual;
+    destructor Destroy; override;
+  end;
+
 function GetStrToTypeCategory(ACategory: TTypeCategory): String;
 function GetStrToTypeStatus(AStatus: TTypeStatus): String;
 function GetStrToTypeInterval(AInterval: TTypeInterval): String;
@@ -141,6 +237,7 @@ type
 implementation
 
 uses
+  System.IniFiles,
   System.RTTI;
 
 function GetStrToTypeCategory(ACategory: TTypeCategory): String;
@@ -275,9 +372,279 @@ begin
   end;
 end;
 
-{ TBybitObject }
+{ TBybitHttpClient }
 
-constructor TBybitObject.Create;
+constructor TBybitHttpClient.Create;
+begin
+  FModuleParam := TBytiyModule.Create;
+  FResponse    := TBytiyResponse.Create;
+  FTask := nil;
+  FValueMessage := '';
+  FIntervalSleep := 0;
+  FSource  := TStringList.Create;
+end;
+
+destructor TBybitHttpClient.Destroy;
+begin
+  if Assigned(FTask) then
+  begin
+    FTask.Cancel;
+    FTask := nil;
+  end;
+  FreeAndNil(FSource);
+  FreeAndNil(FResponse);
+  FreeAndNil(FModuleParam);
+  inherited;
+end;
+
+procedure TBybitHttpClient.DoEventMessage(const AMessage: String);
+begin
+  if FIntervalSleep = 0 then
+    FTask := nil;
+  FValueMessage := AMessage;
+  if not FValueMessage.IsEmpty then
+    FResponse.ValueMessage := FValueMessage;
+  if Assigned(FOnEventMessage) then
+    FOnEventMessage(Self);
+end;
+
+procedure TBybitHttpClient.DoEventException(const AStatusCode: Integer; const AMessage: String);
+begin
+  FTask := nil;
+  FStatusCode := AStatusCode;
+  FValueMessage := AMessage;
+  if Assigned(FOnEventException) then
+    FOnEventException(Self);
+end;
+
+procedure TBybitHttpClient.Selected(const AInterval: Integer);
+begin
+  FIntervalSleep := AInterval;
+  SetTaskRun(
+    FModuleParam.GetURL
+  );
+end;
+
+procedure TBybitHttpClient.SetTaskRun(const AURL: String);
+begin
+  if Assigned(FTask) then
+    raise Exception.Create('Error Message: Задание уже запущенно');
+
+  FTask := TTask.Create(
+    procedure()
+
+      function _Headers: TNetHeaders;
+      var
+        i, iCount: Integer;
+        xHeader: THeader;
+        xHeaders: TNetHeaders;
+      begin
+        SetLength(xHeaders,FModuleParam.Headers.Count);
+        iCount := FModuleParam.Headers.Count;
+        if iCount > 0 then
+          for i := 0 to iCount - 1 do
+          begin
+            xHeader :=  FModuleParam.Headers.Items[i];
+            xHeaders[i] := xHeader;
+          end;
+        Result := xHeaders;
+      end;
+
+    var
+      xValue: String;
+      xHeaders : TNetHeaders;
+      xClient  : TNetHTTPClient;
+      xResponse: IHTTPResponse;
+      xStatusCode: Integer;
+    begin
+      while True do
+      begin
+        if FTask.Status = TTaskStatus.Canceled then
+          Exit;
+
+        xClient := TNetHTTPClient.Create(nil);
+        try
+          xClient.UserAgent := 'Client Bybit';
+          xHeaders  := _Headers;
+
+          //xClient.CustHeaders.Value[]
+
+//          with xClient.CustHeaders do
+//          begin
+//            Value['X-BAPI-API-KEY']     := 'IYokQRNi1KjdlQ34vT';
+//            Value['X-BAPI-TIMESTAMP']   := '17019855110000';
+//            Value['X-BAPI-RECV-WINDOW'] := xEncryption.RecvWindow;
+//            Value['X-BAPI-SIGN-TYPE']   := '2';
+//            Value['X-BAPI-SIGN']        := xEncryption.Signature;
+//          end;
+
+          case FModuleParam.TypeHttp of
+            thGet : xResponse := xClient.Get(
+              AURL,
+              nil,
+              xHeaders
+            );
+            thPost: begin
+              // Пост запрос, который выполняется только один раз
+              FIntervalSleep := 0;
+              xResponse := xClient.Post(
+                AURL,
+                FSource,
+                nil,
+                TEncoding.UTF8,
+                xHeaders
+              );
+            end;
+          end;
+
+          xStatusCode := xResponse.StatusCode;
+          if xStatusCode = 200 then
+          begin
+            xValue := xResponse.ContentAsString(TEncoding.UTF8);
+            TThread.Synchronize(nil,
+              procedure()
+              begin
+                DoEventMessage(xValue);
+              end
+            );
+          end;
+        finally
+          FreeAndNil(xClient);
+        end;
+
+        if xStatusCode <> 200 then
+        begin
+          // Нужно прикратить делать запросы
+          TThread.Synchronize(nil,
+            procedure()
+            begin
+              DoEventException(
+                xStatusCode,
+                'Проблемма за проссе');
+            end
+          );
+          Break;
+        end;
+
+        // Перезапускам запрос, на сервер
+        // Периодичность получение данных
+        if FIntervalSleep > 0 then
+          Sleep(FIntervalSleep)
+        else
+          Break;
+      end;
+    end
+  );
+  FTask.Start;
+end;
+
+procedure TBybitHttpClient.Stop;
+begin
+  if Assigned(FTask) then
+  begin
+    FTask.Cancel;
+    FTask := nil;
+  end;
+end;
+
+{ TBytiyResponse }
+
+constructor TBytiyResponse.Create;
+begin
+  FResultObject  := nil;
+  FExtInfoObject := nil;
+end;
+
+destructor TBytiyResponse.Destroy;
+begin
+
+  inherited;
+end;
+
+procedure TBytiyResponse.SetValueMessage(const Value: String);
+var
+  xJson, xResultOb, xExtInfoOb: TJSONObject;
+begin
+(*******************************************************************************
+  Response Example
+  {
+    "retCode": 0,
+    "retMsg": "OK",
+    "result": {
+        "orderId": "1321003749386327552",
+        "orderLinkId": "spot-test-postonly"
+    },
+    "retExtInfo": {},
+    "time": 1672211918471
+  }
+*******************************************************************************)
+  try
+    xJson          := TJSONObject.ParseJSONValue(Value) as TJSONObject;
+    FretCode       := xJson.Values['retCode'].Value.ToInteger;
+    FretMsg        := xJson.Values['retMsg'].Value;
+    FResultObject  := TJSONObject(xJson.Values['result']);
+    FExtInfoObject := TJSONObject(xJson.Values['retExtInfo']);
+    FretTime       := xJson.Values['time'].Value.ToDouble;
+  except
+    raise Exception.Create('Error Message: Парсинг Json – объекта');
+  end;
+end;
+
+{ TBytiyModule }
+
+constructor TBytiyModule.Create;
+begin
+  FTypeHttp := TTypeHttp.thNull;
+  FHost     := BYBIT_HOST;
+  FModule   := '';
+  FParams   := TParamList.Create;
+  FHeaders  := THeaderList.Create;
+end;
+
+destructor TBytiyModule.Destroy;
+begin
+  FreeAndNil(FHeaders);
+  FreeAndNil(FParams);
+  inherited;
+end;
+
+function TBytiyModule.GetQuery: String;
+var
+  xS: String;
+  i, iCount: Integer;
+  xParam: TParam;
+begin
+  xS := '';
+  iCount := FParams.Count;
+  if iCount > 0 then
+  begin
+    for i := 0 to iCount - 2 do
+    begin
+      xParam := FParams[i];
+      xS := xS + xParam.Key + '=' + xParam.Value + '&';
+    end;
+    xParam := FParams[iCount - 1];
+    xS := xS + xParam.Key + '=' + xParam.Value;
+  end;
+  Result := xS;
+end;
+
+function TBytiyModule.GetURL: String;
+var
+  xS: String;
+  i, iCount: Integer;
+  xParam: TParam;
+begin
+  xS := FHost + FModule;
+  iCount := FParams.Count;
+  if iCount > 0 then
+    xS := xS + '?' + GetQuery;
+  Result := xS;
+end;
+
+{ TGetBybitObject }
+
+constructor TGetBybitObject.Create;
 begin
   FIntervalSleep := 1000;
   FParams := TParamList.Create;
@@ -286,14 +653,14 @@ begin
   FHeaders := THeaderList.Create;
 end;
 
-destructor TBybitObject.Destroy;
+destructor TGetBybitObject.Destroy;
 begin
   FreeAndNil(FHeaders);
   FreeAndNil(FParams);
   inherited;
 end;
 
-procedure TBybitObject.Get(AURL: String);
+procedure TGetBybitObject.Get(AURL: String);
 var
   xTask: ITask;
 begin
@@ -371,7 +738,7 @@ begin
   xTask.Start;
 end;
 
-function TBybitObject.GetURL: String;
+function TGetBybitObject.GetURL: String;
 var
   xS: String;
   i, iCount: Integer;
@@ -394,7 +761,7 @@ begin
 end;
 
 
-procedure TBybitObject.Start(const ActiveUpData: Boolean);
+procedure TGetBybitObject.Start(const ActiveUpData: Boolean);
 begin
   FActiveUpData := ActiveUpData;
   if not FActive then
@@ -408,20 +775,20 @@ begin
   end;
 end;
 
-procedure TBybitObject.Stop;
+procedure TGetBybitObject.Stop;
 begin
   if Self.Active then
     FActive := False;
 end;
 
-procedure TBybitObject.DoActive(const Active: Boolean);
+procedure TGetBybitObject.DoActive(const Active: Boolean);
 begin
   FActive := Active;
   if Assigned(FOnStatus) then
     FOnStatus(Self,FActive);
 end;
 
-procedure TBybitObject.DoEventMessage(const AMessage: String);
+procedure TGetBybitObject.DoEventMessage(const AMessage: String);
 var
   xJson: TJSONObject;
 begin
@@ -433,17 +800,17 @@ begin
   end;
 end;
 
-procedure TBybitObject.SetResultObject(const AObjectJson: TJSONObject);
+procedure TGetBybitObject.SetResultObject(const AObjectJson: TJSONObject);
 begin
   FResultObject := AObjectJson;
 end;
 
-procedure TBybitObject.SetExtInfoObject(const AObjectJson: TJSONObject);
+procedure TGetBybitObject.SetExtInfoObject(const AObjectJson: TJSONObject);
 begin
   FExtInfoObject := AObjectJson;
 end;
 
-procedure TBybitObject.SetParserResult(const AObjectJson: TJSONObject);
+procedure TGetBybitObject.SetParserResult(const AObjectJson: TJSONObject);
 var
   xResultOb, xExtInfoOb: TJSONObject;
 begin
@@ -462,6 +829,18 @@ begin
   end;
 end;
 
+{ TPostBybitObject }
+
+constructor TPostBybitObject.Create;
+begin
+
+end;
+
+destructor TPostBybitObject.Destroy;
+begin
+
+  inherited;
+end;
 
 { TCustonObjectJson }
 
@@ -481,5 +860,7 @@ begin
   {todo: автоматическиое присвоение свойство}
   FObjectJson := AObjectJson;
 end;
+
+
 
 end.

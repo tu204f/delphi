@@ -17,25 +17,6 @@ uses
   Lb.SysUtils.Candel;
 
 type
-  ///<summary>Управление позиций</summary>
-  TPosition = class(TObject)
-  private
-    FBuySell: Char;
-    FOpenPrice: Double;
-    FQuantity: Double;
-    FTrailingStop: Double;
-    FStopPrice: Double;
-  public
-    constructor Create(AOpenPrice: Double; AQuantity: Double; ABuySell: Char; ATrailingStop: Double);
-    procedure UpData(const APrice: Double);
-    property OpenPrice: Double read FOpenPrice;
-    property Quantity: Double read FQuantity;
-    property BuySell: Char read FBuySell;
-    property TrailingStop: Double read FTrailingStop;
-    property StopPrice: Double read FStopPrice;
-  end;
-
-type
 (******************************************************************************)
 (* Объект «трейдер» реализует алгоритм торговли,                              *)
 (* и введение статистики операций                                             *)
@@ -55,6 +36,28 @@ type
       procedure UpDataPrice(const APrice: Double); virtual; abstract;
     end;
 
+    ///<summary>Управление позиций</summary>
+    TPosition = class(TCustomTrade)
+    private
+      FActive      : Boolean; // Значение работы
+      FBuySell     : Char;    // Направление объекта
+      FOpenPrice   : Double;  // Цена позиции
+      FQuantity    : Double;  // Количество покупаемых бумаг
+      FTrailingStop: Double;  // Шаг размера фиксации убытка с изменение
+      FStopPrice   : Double;  // Цена закрытия позиции
+    public
+      constructor Create(const ATradeMan: TTradeMan); override;
+      procedure Start(AOpenPrice: Double; AQuantity: Double; ABuySell: Char; ATrailingStop: Double);
+      procedure Stop;
+      procedure UpDataPrice(const APrice: Double); override;
+      property OpenPrice: Double read FOpenPrice;
+      property Quantity: Double read FQuantity;
+      property BuySell: Char read FBuySell;
+      property TrailingStop: Double read FTrailingStop;
+      property StopPrice: Double read FStopPrice;
+      property Active: Boolean read FActive;
+    end;
+
     ///<summary>Объект для открытие позиции</summary>
     ///<remarks>Генерация событий, открытия</remarks>
     TOpen = class(TCustomTrade)
@@ -71,8 +74,8 @@ type
       constructor Create(const ATradeMan: TTradeMan); override;
       destructor Destroy; override;
       procedure UpDataPrice(const APrice: Double); override;
-      property MaxPrice: Double write FMaxPrice;
-      property MinPrice: Double write FMinPrice;
+      property MaxPrice: Double read FMaxPrice write FMaxPrice;
+      property MinPrice: Double read FMinPrice write FMinPrice;
     public
       property BuySell: Char read FBuySell;
       property Price: Double read FPrice;
@@ -81,61 +84,67 @@ type
     ///<summary>Закрытие позиции</summary>
     TClose = class(TCustomTrade)
     private
+      FPrice: Double;
       FOpen: TOpen;
-      FStop: Double;
-      FCountCandel: Integer;
+      FPosition: TPosition;
       function GetProfitPrice(const APrice: Double): Double;
     protected
       procedure DoClosePosition(const APrice: Double);
     public
       constructor Create(const ATradeMan: TTradeMan); override;
       destructor Destroy; override;
-      procedure Clear;
       procedure UpDataPrice(const APrice: Double); override;
-      procedure CandelNew;
+      procedure CandelNew(const APrice: Double);
       ///<summary>Объекта - «Открытие»</summary>
       property Open: TOpen read FOpen write FOpen;
-      ///<summary>Размер фиксации убытка</summary>
-      property Stop: Double read FStop write FStop;
+      ///<summary>Позиция</summary>
+      property Position: TPosition read FPosition write FPosition;
+      property Price: Double read FPrice;
     end;
 
   public type
     TTypeСrossing    = (tcUp, tcDonw);
     TTypeTrade       = (ttTrend, ttContrTrend);
-    TTypeTradeStatus = (tsOpen,tsWait,tsClose);
+    TTypeTradeStatus = (tsOpen,  tsWait, tsClose);
   private
-    FLeverage: Integer;             // Размер кредитного плеча
-    FCapital: Double;
-    FDeposit: Double;
-    FLimitDeposit: Double;
-    FTrailingStop: Double;
-    FPeriod: Integer;
-    FTypeTrade: TTypeTrade;
-    FMaxPrice, FMinPrice: Double;
+    FLeverage      : Integer; // Размер кредитного плеча
+    FCapital       : Double;
+    FDeposit       : Double;
+    FLimitDeposit  : Double;
+    FTrailingStop  : Double;
+    FPeriod        : Integer;
+    FMinStepQuntity: Double;
+    FTypeTrade     : TTypeTrade;
+    function GetMaxPrice: Double;
+    function GetMinPrice: Double;
   private {Статистика}
     FPlusCount: Integer;
     FMinusCount: Integer;
     FMinusProfit: Double;
   private
-    FLogger: ILogger;
-    procedure Log(S: String);
-  private
+    FOpen    : TOpen;
+    FClose   : TClose;
     FPosition: TPosition;
     procedure SetDeposit(const Value: Double);
   protected
+    FOnOpenPosition: TNotifyEvent;
     FOnClosePosition: TNotifyEvent;
-    procedure DoOpenPosition(const ATypeСrossing: TTypeСrossing; const APrice: Double);
-    procedure DoClosePosition(const APrice: Double);
-  private
-    FOpen: TOpen;
-    FClose: TClose;
+    procedure DoOpenPosition;
+    procedure DoClosePosition;
   public
     constructor Create;
     destructor Destroy; override;
-    ///<summary>Трейдору передается блок для принятие решения</summary>
+    ///<summary>Для вычисление предельных значений</summary>
     procedure SetInputBlock(const ACandels: TCandels);
+
     ///<summary>Проверяем условие открытие или закрытие позиции</summary>
-    procedure SetPriceLast(const ACandel: TCandel); overload;
+    procedure SetPriceLast(const APrice: Double); overload;
+
+    ///<summary>Получена новая свеча</summary>
+    procedure CandelNew(const APrice: Double);
+
+    ///<summary>Минимальный шаг количество</summary>
+    property MinStepQuntity: Double read FMinStepQuntity write FMinStepQuntity;
   public {Управляемые параметры}
     ///<summary>Размер депозита</summary>
     ///<remarks>Открываем размер позиции на весь размер депозита</remarks>
@@ -154,9 +163,9 @@ type
     ///<summary>Капитал</summary>
     property Capital: Double read FCapital;
     ///<summary>Максимальная цена, за период Period</summary>
-    property MaxPrice: Double read FMaxPrice;
+    property MaxPrice: Double read GetMaxPrice;
     ///<summary>Минимальная цена, за период Period</summary>
-    property MinPrice: Double read FMinPrice;
+    property MinPrice: Double read GetMinPrice;
     ///<summary>Размер позиции</summary>
     property Position: TPosition read FPosition;
   public
@@ -164,53 +173,11 @@ type
     property MinusCount: Integer read FMinusCount;
     property MinusProfit: Double read FMinusProfit;
   public
+    property OnOpenPosition: TNotifyEvent write FOnOpenPosition;
     property OnClosePosition: TNotifyEvent write FOnClosePosition;
-    property Logger: ILogger write FLogger;
   end;
 
 implementation
-
-{ TPosition }
-
-constructor TPosition.Create(AOpenPrice: Double; AQuantity: Double; ABuySell: Char; ATrailingStop: Double);
-begin
-  FBuySell := ABuySell;
-  FOpenPrice := AOpenPrice;
-  FQuantity := AQuantity;
-  FTrailingStop := ATrailingStop;
-  case FBuySell of
-//    'B': FStopPrice := (FOpenPrice * FQuantity - FTrailingStop)/FQuantity;
-//    'S': FStopPrice := (FOpenPrice * FQuantity + FTrailingStop)/FQuantity;
-    'B': FStopPrice := FOpenPrice - FTrailingStop;
-    'S': FStopPrice := FOpenPrice + FTrailingStop;
-  end;
-end;
-
-procedure TPosition.UpData(const APrice: Double);
-var
-  xStopPrice: Double;
-begin
-  case FBuySell of
-    'B': begin
-      //xStopPrice := (APrice * FQuantity - FTrailingStop)/FQuantity;
-      xStopPrice := APrice - FTrailingStop;
-      if xStopPrice < 0 then
-         raise Exception.Create('Error Message: Польная жопа');
-
-      if xStopPrice > FStopPrice then
-        FStopPrice := xStopPrice;
-    end;
-    'S': begin
-      //xStopPrice := (APrice * FQuantity + FTrailingStop)/FQuantity;
-      xStopPrice := APrice + FTrailingStop;
-      if xStopPrice < 0 then
-         raise Exception.Create('Error Message: Польная жопа');
-
-      if xStopPrice < FStopPrice then
-        FStopPrice := xStopPrice;
-    end;
-  end;
-end;
 
 { TTradeMan.TCustomTrade }
 
@@ -224,6 +191,58 @@ begin
 
   inherited;
 end;
+
+{ TTradeMan.TPosition }
+
+constructor TTradeMan.TPosition.Create(const ATradeMan: TTradeMan);
+begin
+  inherited Create(ATradeMan);
+  FActive := False;
+end;
+
+procedure TTradeMan.TPosition.Start(AOpenPrice, AQuantity: Double; ABuySell: Char; ATrailingStop: Double);
+begin
+  FActive       := True;
+  FBuySell      := ABuySell;
+  FOpenPrice    := AOpenPrice;
+  FQuantity     := AQuantity;
+  FTrailingStop := ATrailingStop;
+end;
+
+procedure TTradeMan.TPosition.Stop;
+begin
+  FActive := False;
+end;
+
+procedure TTradeMan.TPosition.UpDataPrice(const APrice: Double);
+
+  procedure _StopPriceNull(AStopPrice: Double);
+  begin
+    if FStopPrice = 0 then
+      FStopPrice := AStopPrice;
+  end;
+
+var
+  xStopPrice: Double;
+begin
+
+
+  case FBuySell of
+    'B': begin
+      xStopPrice := APrice - FTrailingStop;
+      _StopPriceNull(xStopPrice);
+      if xStopPrice > FStopPrice then
+        FStopPrice := xStopPrice;
+    end;
+    'S': begin
+      xStopPrice := APrice + FTrailingStop;
+      _StopPriceNull(xStopPrice);
+      if xStopPrice < FStopPrice then
+        FStopPrice := xStopPrice;
+    end;
+  end;
+end;
+
 
 { TTradeMan.TOpen }
 
@@ -254,12 +273,17 @@ end;
 
 procedure TTradeMan.TOpen.DoOpenPosition(const APrice: Double; const AStatus: Integer);
 begin
+  FPrice := 0;
   case AStatus of
     PRICE_UP  : FBuySell := 'B';
     PRICE_DOWN: FBuySell := 'S';
   end;
+
   if CharInSet(FBuySell,['B','S']) then
     FPrice := APrice;
+
+  if Assigned(FTradeMan) then
+    FTradeMan.DoOpenPosition;
 end;
 
 { TTradeMan.TClose }
@@ -268,7 +292,6 @@ constructor TTradeMan.TClose.Create(const ATradeMan: TTradeMan);
 begin
   inherited Create(ATradeMan);
   FOpen := nil;
-  FCountCandel := 0;
 end;
 
 destructor TTradeMan.TClose.Destroy;
@@ -279,39 +302,45 @@ end;
 
 function TTradeMan.TClose.GetProfitPrice(const APrice: Double): Double;
 begin
+  Result := 0;
   case FOpen.BuySell of
     'B': Result := APrice - FOpen.Price;
     'S': Result := FOpen.Price - APrice;
   end;
 end;
 
-procedure TTradeMan.TClose.Clear;
-begin
-  FCountCandel := 0;
-  FStop := 0;
-end;
-
-procedure TTradeMan.TClose.CandelNew;
-begin
-  Inc(FCountCandel);
-end;
-
 procedure TTradeMan.TClose.UpDataPrice(const APrice: Double);
+begin
+  if not Assigned(FOpen) then
+    Exit;
+
+  if not Assigned(FPosition) then
+    Exit;
+
+  if FPosition.StopPrice <= 0 then
+    Exit;
+
+  case FOpen.BuySell of
+    'B': if (FPosition.StopPrice > APrice) then
+    begin
+      DoClosePosition(APrice);
+    end;
+    'S': if (FPosition.StopPrice < APrice) then
+    begin
+      DoClosePosition(APrice);
+    end;
+  end;
+end;
+
+procedure TTradeMan.TClose.CandelNew(const APrice: Double);
 var
   xProfit: Double;
 begin
   if Assigned(FOpen) then
   begin
     xProfit := GetProfitPrice(APrice);
-    if (xProfit > 0) and (FCountCandel = 1) then
-    begin
-      // Забираем весь рост свячи, от Open до Close
+    if (xProfit > 0) then
       DoClosePosition(APrice);
-    end else if (xProfit < FStop) then
-    begin
-      // Фиксируем убыток
-      DoClosePosition(APrice);
-    end;
   end
   else
     raise Exception.Create('Error Message. Позиция должна быть отрыта');
@@ -319,32 +348,35 @@ end;
 
 procedure TTradeMan.TClose.DoClosePosition(const APrice: Double);
 begin
-
+  FPrice := APrice;
+  FTradeMan.DoClosePosition;
 end;
 
 { TTradeMan }
 
 constructor TTradeMan.Create;
 begin
-  FLeverage := 1;
-  FLimitDeposit := 0;
-  FDeposit := 0;
-  FCapital   := 0;
-  FTypeTrade := TTypeTrade.ttTrend;
-  FPeriod    := 10;
-  FMaxPrice  := 0;
-  FMinPrice  := 0;
-  FPosition  := nil;
+  FLeverage       := 1;
+  FLimitDeposit   := 0;
+  FDeposit        := 0;
+  FCapital        := 0;
+  FTypeTrade      := TTypeTrade.ttTrend;
+  FPeriod         := 10;
+  FPosition       := nil;
+  FMinStepQuntity := 0.001;
 
   // Статистика
   FPlusCount := 0;
   FMinusCount := 0;
   FMinusProfit := 0;
 
-  FLogger := nil;
+  FPosition := TPosition.Create(Self);
 
   FOpen  := TOpen.Create(Self);
+
   FClose := TClose.Create(Self);
+  FClose.Open := FOpen;
+  FClose.Position := FPosition;
 end;
 
 destructor TTradeMan.Destroy;
@@ -353,8 +385,6 @@ begin
     FreeAndNil(FClose);
   if Assigned(FOpen) then
     FreeAndNil(FOpen);
-
-
   if Assigned(FPosition) then
     FreeAndNil(FPosition);
   inherited;
@@ -368,11 +398,9 @@ begin
 end;
 
 procedure TTradeMan.SetInputBlock(const ACandels: TCandels);
-
-
-  (****************************************************************************)
-  (* При расчете предельных значений, последний бар не учитывать              *)
-  (****************************************************************************)
+(******************************************************************************)
+(* При расчете предельных значений, последний бар не учитывать                *)
+(******************************************************************************)
   procedure _LimitValueMaxAndMinBlock(
     ACandels: TCandels;
     APeriod: Integer;
@@ -392,10 +420,10 @@ procedure TTradeMan.SetInputBlock(const ACandels: TCandels);
 
     if xPeriod > 0 then
     begin
-      xCandel := ACandels[1];
+      xCandel := ACandels[0];
       AMaxValue := xCandel.High;
       AMinValue := xCandel.Low;
-      for i := 1 to xPeriod do
+      for i := 1 to xPeriod - 1 do
       begin
         xCandel := ACandels[i];
         if AMaxValue < xCandel.High then
@@ -406,117 +434,110 @@ procedure TTradeMan.SetInputBlock(const ACandels: TCandels);
     end;
   end;
 
-
-
+var
+  xMaxPrice, xMinPrice: Double;
 begin
-  _LimitValueMaxAndMinBlock(ACandels,FPeriod,FMaxPrice,FMinPrice);
+  _LimitValueMaxAndMinBlock(
+    ACandels,
+    FPeriod,
+    xMaxPrice,
+    xMinPrice
+  );
+  FOpen.MaxPrice := xMaxPrice;
+  FOpen.MinPrice := xMinPrice;
 end;
 
-procedure TTradeMan.SetPriceLast(const ACandel: TCandel);
-
-  procedure _OpenPosition(const ACandel: TCandel);
-  begin
-    if ACandel.High >= FMaxPrice then
-    begin
-      DoOpenPosition(tcUp,FMaxPrice);
-    end
-    else if ACandel.Low <= FMinPrice then
-    begin
-      DoOpenPosition(tcDonw,FMinPrice);
-    end;
-  end;
-
-  procedure _ClosePosition(const ACandel: TCandel);
-  begin
-    case FPosition.BuySell of
-      'B': begin
-        if ACandel.Low <= FPosition.StopPrice then
-        begin
-          DoClosePosition(FPosition.StopPrice);
-        end else
-        if (ACandel.Close - FPosition.OpenPrice) > 0 then
-        begin
-          DoClosePosition(ACandel.Close);
-        end;
-      end;
-      'S': begin
-        if ACandel.High >= FPosition.StopPrice then
-        begin
-          DoClosePosition(FPosition.StopPrice);
-        end else
-        if (FPosition.OpenPrice - ACandel.Close) > 0 then
-        begin
-          DoClosePosition(ACandel.Close);
-        end;
-      end;
-    end;
-  end;
-
+procedure TTradeMan.SetPriceLast(const APrice: Double);
 begin
-  if (FMaxPrice = 0) or (FMinPrice = 0) then
+  if (FOpen.MaxPrice = 0) or (FOpen.MinPrice = 0) then
     Exit;
   if IsPosition then
   begin
-    FPosition.UpData(ACandel.Close);
-    _ClosePosition(ACandel);
+    FPosition.UpDataPrice(APrice);
+    FClose.UpDataPrice(APrice);
   end
   else
-    _OpenPosition(ACandel);
+  begin
+    FOpen.UpDataPrice(APrice);
+  end;
 end;
 
+procedure TTradeMan.CandelNew(const APrice: Double);
+begin
+  if IsPosition then
+    FClose.CandelNew(APrice);
+end;
 
-procedure TTradeMan.DoOpenPosition(const ATypeСrossing: TTypeСrossing; const APrice: Double);
+procedure TTradeMan.DoOpenPosition;
 
-  function _Quantity(const AQuantity: Double): Double;
+  function _FormatQuantity(const AQuantity: Double): Double;
+  var
+    xCountTiket: Integer;
   begin
-    Result := Trunc(AQuantity/0.001)*0.001;
+    xCountTiket := Trunc(AQuantity/FMinStepQuntity);
+    Result := xCountTiket * FMinStepQuntity;
   end;
 
 var
   xQuantity: Double;
 begin
+
   if IsPosition then
     raise Exception.Create('Error Message: Не может быть такого');
 
   if FLeverage <= 0 then
     raise Exception.Create('Error Message: Не может быть такого');
 
-  xQuantity := (FLeverage * FDeposit)/APrice;
-  xQuantity := _Quantity(xQuantity);
+  // Количество, объем открытия позиции
+  // В зависимости от фиксирование депозита
+  xQuantity := (FLeverage * FDeposit)/FOpen.Price;
+  xQuantity := _FormatQuantity(xQuantity);
 
   // Больше не может отрывать позицию
   if xQuantity = 0 then
     Exit;
 
-  // Событие открытие позции
-  case ATypeСrossing of
-    tcUp:
-      case FTypeTrade of
-        ttTrend: FPosition := TPosition.Create(APrice,xQuantity,'B',FTrailingStop);
-        ttContrTrend: FPosition := TPosition.Create(APrice,xQuantity,'S',FTrailingStop);
-      end;
-    tcDonw:
-      case FTypeTrade of
-        ttTrend: FPosition := TPosition.Create(APrice,xQuantity,'S',FTrailingStop) ;
-        ttContrTrend: FPosition := TPosition.Create(APrice,xQuantity,'B',FTrailingStop);
-      end;
+  if not FPosition.Active then
+  begin
+    FPosition.Start(
+      FOpen.Price,
+      xQuantity,
+      FOpen.BuySell,
+      FTrailingStop
+    );
+    FPosition.UpDataPrice(FOpen.Price);
   end;
+
+  if Assigned(FOnOpenPosition) then
+    FOnOpenPosition(Self);
 end;
 
-procedure TTradeMan.DoClosePosition(const APrice: Double);
+function TTradeMan.GetMaxPrice: Double;
+begin
+  Result := FOpen.MaxPrice;
+end;
+
+function TTradeMan.GetMinPrice: Double;
+begin
+  Result := FOpen.MinPrice;
+end;
+
+procedure TTradeMan.DoClosePosition;
 var
   xCapital: Double;
 begin
+
   if not IsPosition then
     raise Exception.Create('Error Message: Не может быть такого');
 
   // Закрываем позицию
   xCapital := 0;
   case FPosition.BuySell of
-    'B': xCapital := FPosition.Quantity * (APrice  - FPosition.OpenPrice);
-    'S': xCapital := FPosition.Quantity * (FPosition.OpenPrice - APrice);
+    'B': xCapital := FPosition.Quantity * (FClose.Price  - FPosition.OpenPrice);
+    'S': xCapital := FPosition.Quantity * (FPosition.OpenPrice - FClose.Price);
   end;
 
+  // Статистика
   if xCapital > 0 then
     Inc(FPlusCount)
   else
@@ -524,15 +545,14 @@ begin
   if FMinusProfit > xCapital then
     FMinusProfit := xCapital;
 
-
   // Тупа рости больше определеного значение не может
   FDeposit := FDeposit + xCapital;
   if FDeposit > FLimitDeposit then
     FDeposit := FLimitDeposit;
 
   FCapital := FCapital + xCapital;
-  FreeAndNil(FPosition);
-  FPosition := nil;
+
+  FPosition.Stop;
 
   if Assigned(FOnClosePosition) then
     FOnClosePosition(Self);
@@ -540,13 +560,7 @@ end;
 
 function TTradeMan.IsPosition: Boolean;
 begin
-  Result := Assigned(FPosition);
-end;
-
-procedure TTradeMan.Log(S: String);
-begin
-  if Assigned(FLogger) then
-    FLogger.Log(S);
+  Result := FPosition.Active;
 end;
 
 end.

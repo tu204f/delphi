@@ -146,7 +146,7 @@ procedure TMainFrame.DoBegin;
 begin
 
   // ќпередел€ем началоное положение трейдора
-  TradeMan.Deposit := 100000;
+  TradeMan.Deposit := 100;
   TradeMan.Period := 10;
   TradeMan.TypeTrade := TTradeMan.TTypeTrade.ttTrend;
   TradeMan.TrailingStop := 500;
@@ -382,9 +382,12 @@ begin
     begin
       TextBar.Text := IndexBar.ToString + ' ' + Block.CandelLast.ToString;
 
-      TradeMan.SetPriceLast(Candels[0]);
+
+      TradeMan.SetPriceLast(Candels[0].Close);
+      TradeMan.CandelNew(Candels[0].Close);
       _InfoTradeMan(TradeMan);
       TradeMan.SetInputBlock(Candels);
+
       // ChartCandels(Chart,Block);
       ChartCandels_2(ChartFrame, Candels);
 

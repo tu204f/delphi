@@ -28,8 +28,8 @@ type
     FOldStartTime: String;
     FSources: TCandels;
   protected
-    procedure BybitKlineOneEventMessage(ASender: TObject; AMessage: String);
-    procedure BybitKlineAllEventMessage(ASender: TObject; AMessage: String);
+    procedure BybitKlineOneEventMessage(ASender: TObject);
+    procedure BybitKlineAllEventMessage(ASender: TObject);
   public
     constructor Create; virtual;
     destructor Destroy; override;
@@ -46,9 +46,6 @@ type
   end;
 
 implementation
-
-uses
-  Lb.Logger;
 
 { TBybitCandels }
 
@@ -81,13 +78,13 @@ begin
   FBybitKlineAll.Symbol := ASymbol;
   FBybitKlineAll.Interval := AInterval;
   FBybitKlineAll.Limit := ALimit;
-  FBybitKlineAll.Start(True);
+  FBybitKlineAll.Selected(5000);
 
   FBybitKlineOne.Category := ACategory;
   FBybitKlineOne.Symbol := ASymbol;
   FBybitKlineOne.Interval := AInterval;
   FBybitKlineOne.Limit := 1;
-  FBybitKlineOne.Start(True);
+  FBybitKlineOne.Selected(50);
 end;
 
 procedure TBybitCandels.Stop;
@@ -96,7 +93,7 @@ begin
   FBybitKlineOne.Stop;
 end;
 
-procedure TBybitCandels.BybitKlineOneEventMessage(ASender: TObject; AMessage: String);
+procedure TBybitCandels.BybitKlineOneEventMessage(ASender: TObject);
 var
   iCount: Integer;
   xBybitCandel: TCandelObject;
@@ -149,7 +146,7 @@ begin
     FOnChange(Self);
 end;
 
-procedure TBybitCandels.BybitKlineAllEventMessage(ASender: TObject; AMessage: String);
+procedure TBybitCandels.BybitKlineAllEventMessage(ASender: TObject);
 var
   i, iCount: Integer;
   xBybitCandel: TCandelObject;

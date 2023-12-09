@@ -193,24 +193,29 @@ begin
 end;
 
 procedure TChartFrame.SupportAndResistance(const ASupport, AResistance: Double);
-const
-  LINE_WIDTH = 370;
+
+  function _WidthLine: Double;
+  begin
+    Result := LayoutChart.Width/3;
+  end;
 
   procedure _Line(const ALine: TLine; const APrice: Double);
   var
-    xX, xY: Double;
+    xX, xY, xWidth: Double;
   begin
     if not ALine.Visible then
       ALine.Visible := True;
 
+    xWidth := _WidthLine;
+
     ALine.BringToFront;
-    ALine.Width := LINE_WIDTH;
+    ALine.Width := xWidth;
     xY := PriceToY(LayoutChart.Height,APrice,FMaxPrice,FMinPrice);
     xX := LayoutChart.Width - ALine.Width;
     ALine.SetBounds(
       xX,
       xY,
-      LINE_WIDTH,
+      xWidth,
       2
     );
   end;
@@ -227,24 +232,29 @@ end;
 
 
 procedure TChartFrame.OpenAndClosePrice(const AOpen, AClose, AStop: Double; const ABuySell: Char);
-const
-  LINE_WIDTH = 370;
+
+  function _WidthLine: Double;
+  begin
+    Result := LayoutChart.Width/3;
+  end;
 
   procedure _Line(const ALine: TLine; const APrice: Double);
   var
-    xX, xY: Double;
+    xX, xY, xWidth: Double;
   begin
     if not ALine.Visible then
       ALine.Visible := True;
 
+    xWidth := _WidthLine;
+
     ALine.BringToFront;
-    ALine.Width := LINE_WIDTH;
+    ALine.Width := xWidth;
     xY := PriceToY(LayoutChart.Height,APrice,FMaxPrice,FMinPrice);
     xX := LayoutChart.Width - ALine.Width;
     ALine.SetBounds(
       xX,
       xY,
-      LINE_WIDTH,
+      xWidth,
       2
     );
   end;

@@ -181,6 +181,7 @@ begin
     xCandel := BybitCandels.Sources[0];
 
     TradeMan.SetPriceLast(xCandel.Close);
+    TradeMan.SetInputBlock(BybitCandels.Sources);
 
     _InfoTradeMan(TradeMan);
     if TradeMan.IsPosition then
@@ -200,7 +201,7 @@ begin
       );
     end;
 
-    TradeMan.SetInputBlock(BybitCandels.Sources);
+
   end;
   ChartFrame.Build;
 end;

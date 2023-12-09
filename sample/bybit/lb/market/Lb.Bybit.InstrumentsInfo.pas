@@ -26,7 +26,7 @@ uses
 
 type
   ///<summary>Get Instruments Info</summary>
-  TBybitInstrumentsInfo = class(TBybitObject)
+  TBybitInstrumentsInfo = class(TBybitHttpClient)
   private
     FCategory: TTypeCategory;
     FSymbol: String;
@@ -42,7 +42,7 @@ type
     procedure SetCursor(const Value: String);
   protected
     FListJson: TJSONArray;
-    procedure SetResultObject(const AObjectJson: TJSONObject); override;
+    procedure DoEventMessage(const AMessage: String); override;
   public
     constructor Create; override;
     destructor Destroy; override;
@@ -60,9 +60,6 @@ type
     ///<summary>Limit for data size per page. [1, 1000]. Default: 500</summary>
     property Limit: Integer read FLimit write SetLimit;
     property Cursor: String read FCursor write SetCursor;
-  public
-    ///<summary>Получен список инструментов</summary>
-    property ListJson: TJSONArray read FListJson;
   end;
 
 type
@@ -145,16 +142,6 @@ type
   ///<summary>Список объект</summary>
   TLinearObjectList = TObjectList<TLinearObject>;
 
-//  TOptionObject = class(TCustonObjectJson)
-//  public
-//    procedure SetObjectJson(const AObjectJson: TJSONObject); override;
-//  end;
-//
-//  TSpotObject = class(TCustonObjectJson)
-//  public
-//    procedure SetObjectJson(const AObjectJson: TJSONObject); override;
-//  end; \
-
 procedure SetLinearObjects(AListJson: TJSONArray; ALinearObjects: TLinearObjectList);
 
 implementation
@@ -186,7 +173,19 @@ end;
 constructor TBybitInstrumentsInfo.Create;
 begin
   inherited;
-  Self.Module := '/v5/market/instruments-info';
+  ModuleParam.TypeHttp := TTypeHttp.thGet;
+  ModuleParam.Module := '/v5/market/instruments-info';
+  with ModuleParam.Params do
+  begin
+    // https://bybit-exchange.github.io/docs/v5/enum#locale
+    SetParam('locale','ru-RU');
+    // https://bybit-exchange.github.io/docs/v5/enum#announcementtype
+    //SetParam('type','new_crypto');
+    // https://bybit-exchange.github.io/docs/v5/enum#announcementtag
+    //SetParam('tag','Spot');
+    // page
+    // limit
+  end;
 end;
 
 destructor TBybitInstrumentsInfo.Destroy;
@@ -197,51 +196,51 @@ end;
 procedure TBybitInstrumentsInfo.SetCategory(const Value: TTypeCategory);
 begin
   FCategory := Value;
-  Params.SetParam('category',GetStrToTypeCategory(FCategory))
+  ModuleParam.Params.SetParam('category',GetStrToTypeCategory(FCategory))
 end;
 
 
 procedure TBybitInstrumentsInfo.SetSymbol(const Value: String);
 begin
   FSymbol := Value;
-  Params.SetParam('symbol',FSymbol);
+  ModuleParam.Params.SetParam('symbol',FSymbol);
 end;
 
 procedure TBybitInstrumentsInfo.SetStatus(const Value: TTypeStatus);
 begin
   FStatus := Value;
-  Params.SetParam('status',GetStrToTypeStatus(Value));
+  ModuleParam.Params.SetParam('status',GetStrToTypeStatus(Value));
 end;
 
 procedure TBybitInstrumentsInfo.SetBaseCoin(const Value: String);
 begin
   FBaseCoin := Value;
-  Params.SetParam('baseCoin',FBaseCoin);
+  ModuleParam.Params.SetParam('baseCoin',FBaseCoin);
 end;
 
 procedure TBybitInstrumentsInfo.SetLimit(const Value: Integer);
 begin
   FLimit := Value;
-  Params.SetParam('limit',FLimit.ToString);
+  ModuleParam.Params.SetParam('limit',FLimit.ToString);
 end;
 
 procedure TBybitInstrumentsInfo.SetCursor(const Value: String);
 begin
   FCursor := Value;
-  Params.SetParam('cursor',FCursor);
+  ModuleParam.Params.SetParam('cursor',FCursor);
 end;
 
-procedure TBybitInstrumentsInfo.SetResultObject(const AObjectJson: TJSONObject);
+procedure TBybitInstrumentsInfo.DoEventMessage(const AMessage: String);
 var
   xValueJson: TJSONValue;
 begin
-  inherited SetResultObject(AObjectJson);
+  inherited DoEventMessage(AMessage);
   (*
     "category": "",
     "list": [],
     "nextPageCursor": ""
   *)
-  xValueJson := AObjectJson.Values['list'];
+  xValueJson := Response.ResultObject.Values['list'];
   if xValueJson is TJSONArray then
     FListJson := TJSONArray(xValueJson);
 end;
