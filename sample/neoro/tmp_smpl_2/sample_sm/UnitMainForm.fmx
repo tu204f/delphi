@@ -2,8 +2,8 @@ object MainForm: TMainForm
   Left = 0
   Top = 0
   Caption = 'Form5'
-  ClientHeight = 868
-  ClientWidth = 724
+  ClientHeight = 752
+  ClientWidth = 1217
   FormFactor.Width = 320
   FormFactor.Height = 480
   FormFactor.Devices = [Desktop]
@@ -14,23 +14,23 @@ object MainForm: TMainForm
     Margins.Left = 5.000000000000000000
     Margins.Right = 5.000000000000000000
     Margins.Bottom = 5.000000000000000000
-    Size.Width = 714.000000000000000000
-    Size.Height = 863.000000000000000000
+    Size.Width = 1207.000000000000000000
+    Size.Height = 747.000000000000000000
     Size.PlatformDefault = False
     TabOrder = 14
     object TabControl: TTabControl
       Align = Client
-      Size.Width = 714.000000000000000000
-      Size.Height = 826.000000000000000000
+      Size.Width = 1207.000000000000000000
+      Size.Height = 710.000000000000000000
       Size.PlatformDefault = False
       TabIndex = 0
       TabOrder = 1
       TabPosition = PlatformDefault
       Sizes = (
-        714s
-        800s
-        714s
-        800s)
+        1207s
+        684s
+        1207s
+        684s)
       object TabItemTrade: TTabItem
         CustomIcon = <
           item
@@ -62,7 +62,7 @@ object MainForm: TMainForm
     end
     object Layout1: TLayout
       Align = Top
-      Size.Width = 714.000000000000000000
+      Size.Width = 1207.000000000000000000
       Size.Height = 37.000000000000000000
       Size.PlatformDefault = False
       TabOrder = 0

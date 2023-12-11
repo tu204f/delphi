@@ -2,7 +2,7 @@ object Form4: TForm4
   Left = 0
   Top = 0
   Caption = 'Form4'
-  ClientHeight = 357
+  ClientHeight = 502
   ClientWidth = 562
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
@@ -15,7 +15,7 @@ object Form4: TForm4
   OnCreate = FormCreate
   DesignSize = (
     562
-    357)
+    502)
   PixelsPerInch = 96
   TextHeight = 13
   object Button1: TButton
@@ -40,7 +40,7 @@ object Form4: TForm4
     Left = 8
     Top = 39
     Width = 546
-    Height = 310
+    Height = 455
     Anchors = [akLeft, akTop, akRight, akBottom]
     ScrollBars = ssVertical
     TabOrder = 2

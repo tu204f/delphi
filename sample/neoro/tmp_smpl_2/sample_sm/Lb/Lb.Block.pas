@@ -25,7 +25,7 @@ type
   ///<summary>Базовый объект</summary>
   TBlock = class(TObject)
   public const
-    BLOCK_SIZE = 100;
+    BLOCK_SIZE = 50;
   private
     FCandels: TCandels;
     function GetCandelLast: TCandel;
@@ -46,6 +46,8 @@ type
     class function RcC(ABlock: TBlock): Double; static;
     ///<summary>Предельное значение за период</summary>
     class procedure LimitValueMaxAndMinBlock(ABlock: TBlock; const APeriod: Integer; var AMaxValue, AMinValue: Double); static;
+    ///<summary>Математическое ожидание</summary>
+    class function MathExpectation(ABlock: TBlock): Double; static;
   end;
 
 
@@ -174,6 +176,68 @@ begin
         AMinValue := xCandel.Low;
     end;
   end;
+end;
+
+
+class function TBlockAPI.MathExpectation(ABlock: TBlock): Double;
+
+  procedure _Probability(var ABuyP, ASellP: Double);
+  var
+    xCandel: TCandel;
+    i, iCount: Integer;
+    xBuyQ, xSellQ, xNullQ: Integer;
+  begin
+    ABuyP  := 0;
+    ASellP := 0;
+    iCount := ABlock.Candels.Count;
+    if iCount > 0 then
+    begin
+      xBuyQ  := 0;
+      xSellQ := 0;
+      for i := 0 to iCount - 1 do
+      begin
+        xCandel := ABlock.Candels[i];
+        if xCandel.DeltaOC > 0 then
+          Inc(xBuyQ)
+        else if xCandel.DeltaOC < 0 then
+          Inc(xSellQ)
+        else
+          Inc(xNullQ);
+      end;
+      ABuyP  := xBuyQ /iCount;
+      ASellP := xSellQ/iCount;
+    end;
+  end;
+
+  procedure _Values(var ABuyV, ASellV: Double);
+  var
+    xCandel: TCandel;
+    i, iCount: Integer;
+  begin
+    ABuyV  := 0;
+    ASellV := 0;
+    iCount := ABlock.Candels.Count;
+    if iCount > 0 then
+    begin
+      for i := 0 to iCount - 1 do
+      begin
+        xCandel := ABlock.Candels[i];
+        if xCandel.DeltaOC > 0 then
+          ABuyV := ABuyV + xCandel.DeltaOC
+        else if xCandel.DeltaOC < 0 then
+          ASellV := ASellV + xCandel.DeltaOC;
+      end;
+    end;
+  end;
+
+var
+  xBuyP, xSellP: Double;
+  xBuyV, xSellV: Double;
+begin
+  Result := 0;
+  _Probability(xBuyP, xSellP);
+  _Values(xBuyV, xSellV);
+  Result := xBuyP * xBuyV + xSellP * xSellV;
 end;
 
 end.

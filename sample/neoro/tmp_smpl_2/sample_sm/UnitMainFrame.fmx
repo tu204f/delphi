@@ -1,10 +1,10 @@
 object MainFrame: TMainFrame
-  Size.Width = 777.000000000000000000
-  Size.Height = 916.000000000000000000
+  Size.Width = 1240.000000000000000000
+  Size.Height = 811.000000000000000000
   Size.PlatformDefault = False
   object Timer: TTimer
     Enabled = False
-    Interval = 50
+    Interval = 2000
     OnTimer = TimerTimer
     Left = 588
     Top = 168
@@ -14,7 +14,7 @@ object MainFrame: TMainFrame
     Orientation = Horizontal
     Position.X = 8.000000000000000000
     Position.Y = 40.000000000000000000
-    Size.Width = 761.000000000000000000
+    Size.Width = 1224.000000000000000000
     Size.Height = 20.000000000000000000
     Size.PlatformDefault = False
   end
@@ -22,8 +22,8 @@ object MainFrame: TMainFrame
     Anchors = [akLeft, akTop, akRight, akBottom]
     Position.X = 12.000000000000000000
     Position.Y = 68.000000000000000000
-    Size.Width = 761.000000000000000000
-    Size.Height = 546.000000000000000000
+    Size.Width = 1224.000000000000000000
+    Size.Height = 441.000000000000000000
     Size.PlatformDefault = False
     TabOrder = 8
   end
@@ -31,7 +31,7 @@ object MainFrame: TMainFrame
     Anchors = [akLeft, akTop, akRight]
     Position.X = 8.000000000000000000
     Position.Y = 4.000000000000000000
-    Size.Width = 761.000000000000000000
+    Size.Width = 1224.000000000000000000
     Size.Height = 29.000000000000000000
     Size.PlatformDefault = False
     object TextBar: TText
@@ -40,7 +40,7 @@ object MainFrame: TMainFrame
       Margins.Top = 3.000000000000000000
       Margins.Right = 3.000000000000000000
       Margins.Bottom = 3.000000000000000000
-      Size.Width = 753.000000000000000000
+      Size.Width = 1216.000000000000000000
       Size.Height = 23.000000000000000000
       Size.PlatformDefault = False
       Text = 'sdsaf'
@@ -50,14 +50,14 @@ object MainFrame: TMainFrame
   object LayoutBottom: TLayout
     Anchors = [akLeft, akRight, akBottom]
     Position.X = 8.000000000000000000
-    Position.Y = 621.000000000000000000
-    Size.Width = 761.000000000000000000
+    Position.Y = 516.000000000000000000
+    Size.Width = 1224.000000000000000000
     Size.Height = 288.000000000000000000
     Size.PlatformDefault = False
     TabOrder = 18
     object LayoutTitleMan: TLayout
       Align = Top
-      Size.Width = 761.000000000000000000
+      Size.Width = 1224.000000000000000000
       Size.Height = 25.000000000000000000
       Size.PlatformDefault = False
       TabOrder = 0
@@ -73,7 +73,7 @@ object MainFrame: TMainFrame
       end
       object TextDiscript: TText
         Align = Client
-        Size.Width = 639.000000000000000000
+        Size.Width = 1102.000000000000000000
         Size.Height = 25.000000000000000000
         Size.PlatformDefault = False
       end
@@ -94,7 +94,7 @@ object MainFrame: TMainFrame
     end
     object Layout1: TLayout
       Align = Client
-      Size.Width = 452.000000000000000000
+      Size.Width = 915.000000000000000000
       Size.Height = 263.000000000000000000
       Size.PlatformDefault = False
       TabOrder = 2

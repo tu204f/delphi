@@ -14,7 +14,13 @@ uses
 type
   TDoubleList = TList<Double>;
 
-  TTypeNeuron = (tnNull, tnNeuron, tnBayes, tnInput, tnOutput);
+  TTypeNeuron = (
+    tnNull,
+    tnNeuron,
+    tnBayes,  // Как входящий нейрон харнит навходе заначение "1"
+    tnInput,  // Входящий нейрон
+    tnOutput  // Выходящий
+  );
   TTypeDirection = (tdDirect, tdReverse);
 
   TCustomNeuron = class(TObject)
@@ -24,7 +30,9 @@ type
   public
     constructor Create; virtual;
     destructor Destroy; override;
+    ///<summary>Занчение которое храниться в нейроне</summary>
     property Value: Double read FValue write FValue;
+    ///<summary>Тип нейрона</summary>
     property TypeNeuron: TTypeNeuron read FTypeNeuron;
   end;
 

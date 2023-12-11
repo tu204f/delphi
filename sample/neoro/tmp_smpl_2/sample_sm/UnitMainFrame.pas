@@ -147,7 +147,7 @@ begin
 
   // Опеределяем началоное положение трейдора
   TradeMan.Deposit := 100;
-  TradeMan.Period := 10;
+  TradeMan.Period := 3;
   TradeMan.TypeTrade := TTradeMan.TTypeTrade.ttTrend;
   TradeMan.TrailingStop := 500;
   TradeMan.Leverage := 10;
@@ -380,30 +380,31 @@ begin
     end
     else
     begin
-      TextBar.Text := IndexBar.ToString + ' ' + Block.CandelLast.ToString;
+      TextBar.Text := 'Ожидание: ' +  TBlockAPI.MathExpectation(Block).ToString;
+      // IndexBar.ToString + ' ' + Block.CandelLast.ToString;
 
 
-      TradeMan.SetPriceLast(Candels[0].Close);
-      TradeMan.CandelNew(Candels[0].Close);
-      _InfoTradeMan(TradeMan);
-      TradeMan.SetInputBlock(Candels);
+//      TradeMan.SetPriceLast(Candels[0].Close);
+//      TradeMan.CandelNew(Candels[0].Close);
+//      _InfoTradeMan(TradeMan);
+//      TradeMan.SetInputBlock(Candels);
 
       // ChartCandels(Chart,Block);
       ChartCandels_2(ChartFrame, Candels);
-
-      if TradeMan.IsPosition then
-      begin
-        ChartFrame.OpenAndClosePrice(
-          TradeMan.Position.OpenPrice,
-          Candels[0].Close,
-          TradeMan.Position.StopPrice,
-          TradeMan.Position.BuySell
-        );
-      end
-      else
-      begin
-        ChartFrame.SupportAndResistance(TradeMan.MinPrice, TradeMan.MaxPrice);
-      end;
+//
+//      if TradeMan.IsPosition then
+//      begin
+//        ChartFrame.OpenAndClosePrice(
+//          TradeMan.Position.OpenPrice,
+//          Candels[0].Close,
+//          TradeMan.Position.StopPrice,
+//          TradeMan.Position.BuySell
+//        );
+//      end
+//      else
+//      begin
+//        ChartFrame.SupportAndResistance(TradeMan.MinPrice, TradeMan.MaxPrice);
+//      end;
 
       LogBlock(Block);
 

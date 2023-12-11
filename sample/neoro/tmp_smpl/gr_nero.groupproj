@@ -15,9 +15,6 @@
         <Projects Include="sample_3\nr_3.dproj">
             <Dependencies/>
         </Projects>
-        <Projects Include="..\traders\app\trades.dproj">
-            <Dependencies/>
-        </Projects>
         <Projects Include="sample_4\nr_4.dproj">
             <Dependencies/>
         </Projects>
@@ -74,15 +71,6 @@
     <Target Name="nr_3:Make">
         <MSBuild Projects="sample_3\nr_3.dproj" Targets="Make"/>
     </Target>
-    <Target Name="trades">
-        <MSBuild Projects="..\traders\app\trades.dproj"/>
-    </Target>
-    <Target Name="trades:Clean">
-        <MSBuild Projects="..\traders\app\trades.dproj" Targets="Clean"/>
-    </Target>
-    <Target Name="trades:Make">
-        <MSBuild Projects="..\traders\app\trades.dproj" Targets="Make"/>
-    </Target>
     <Target Name="nr_4">
         <MSBuild Projects="sample_4\nr_4.dproj"/>
     </Target>
@@ -120,13 +108,13 @@
         <MSBuild Projects="sample_6\block_6.dproj" Targets="Make"/>
     </Target>
     <Target Name="Build">
-        <CallTarget Targets="Project1;nr_1;nr_2;nr_3;trades;nr_4;matrix;nr_5;block_6"/>
+        <CallTarget Targets="Project1;nr_1;nr_2;nr_3;nr_4;matrix;nr_5;block_6"/>
     </Target>
     <Target Name="Clean">
-        <CallTarget Targets="Project1:Clean;nr_1:Clean;nr_2:Clean;nr_3:Clean;trades:Clean;nr_4:Clean;matrix:Clean;nr_5:Clean;block_6:Clean"/>
+        <CallTarget Targets="Project1:Clean;nr_1:Clean;nr_2:Clean;nr_3:Clean;nr_4:Clean;matrix:Clean;nr_5:Clean;block_6:Clean"/>
     </Target>
     <Target Name="Make">
-        <CallTarget Targets="Project1:Make;nr_1:Make;nr_2:Make;nr_3:Make;trades:Make;nr_4:Make;matrix:Make;nr_5:Make;block_6:Make"/>
+        <CallTarget Targets="Project1:Make;nr_1:Make;nr_2:Make;nr_3:Make;nr_4:Make;matrix:Make;nr_5:Make;block_6:Make"/>
     </Target>
     <Import Project="$(BDS)\Bin\CodeGear.Group.Targets" Condition="Exists('$(BDS)\Bin\CodeGear.Group.Targets')"/>
 </Project>

@@ -79,7 +79,7 @@ procedure TForm4.FormCreate(Sender: TObject);
 begin
   NeuronNet := TNeuronNet.Create;
   NeuronNet.TypeFuction := TTypeFuction.tfSigma;
-  NeuronNet.CompileNetWork([3,11,21,3,1]);
+  NeuronNet.CompileNetWork([3,3,1]);
 end;
 
 procedure TForm4.Log(S: String);
@@ -110,7 +110,6 @@ begin
     neuroLearnXOR(1,0,1);
     neuroLearnXOR(1,1,0);
   end;
-
   neuroXOR(0,0);
   neuroXOR(0,1);
   neuroXOR(1,0);
@@ -136,8 +135,6 @@ begin
   ANeuronNet.InputNeurons.Values[2] := 1;
   ANeuronNet.Calculate;
   xV := ANeuronNet.OutputNeurons.Values[0];
-
-
   Form4.Log('A = ' + A.ToString + '; B = ' + B.ToString + '; Result = ' + xV.ToString);
 end;
 
