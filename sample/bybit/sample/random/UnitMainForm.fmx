@@ -1,0 +1,161 @@
+object MainForm: TMainForm
+  Left = 0
+  Top = 0
+  Caption = 'Form4'
+  ClientHeight = 541
+  ClientWidth = 904
+  FormFactor.Width = 320
+  FormFactor.Height = 480
+  FormFactor.Devices = [Desktop]
+  DesignerMasterStyle = 0
+  object ButtonStart: TButton
+    Position.X = 8.000000000000000000
+    Position.Y = 8.000000000000000000
+    TabOrder = 0
+    Text = #1057#1090#1072#1088#1090
+    OnClick = ButtonStartClick
+  end
+  object StringGrid1: TStringGrid
+    Anchors = [akLeft, akTop, akRight, akBottom]
+    CanFocus = True
+    ClipChildren = True
+    Position.X = 8.000000000000000000
+    Position.Y = 36.000000000000000000
+    Size.Width = 449.000000000000000000
+    Size.Height = 372.000000000000000000
+    Size.PlatformDefault = False
+    TabOrder = 2
+    Viewport.Width = 445.000000000000000000
+    Viewport.Height = 347.000000000000000000
+  end
+  object sgTrade: TStringGrid
+    Anchors = [akTop, akRight, akBottom]
+    CanFocus = True
+    ClipChildren = True
+    Position.X = 460.000000000000000000
+    Position.Y = 36.000000000000000000
+    Size.Width = 435.000000000000000000
+    Size.Height = 372.000000000000000000
+    Size.PlatformDefault = False
+    TabOrder = 1
+    Viewport.Width = 431.000000000000000000
+    Viewport.Height = 347.000000000000000000
+  end
+  object TextOpenPrice: TText
+    Anchors = [akLeft, akBottom]
+    Position.X = 172.000000000000000000
+    Position.Y = 439.000000000000000000
+    Size.Width = 161.000000000000000000
+    Size.Height = 21.000000000000000000
+    Size.PlatformDefault = False
+    TextSettings.Font.StyleExt = {00070000000000000004000000}
+    TextSettings.HorzAlign = Leading
+  end
+  object TextClosePrice: TText
+    Anchors = [akLeft, akBottom]
+    Position.X = 172.000000000000000000
+    Position.Y = 463.000000000000000000
+    Size.Width = 161.000000000000000000
+    Size.Height = 21.000000000000000000
+    Size.PlatformDefault = False
+    TextSettings.Font.StyleExt = {00070000000000000004000000}
+    TextSettings.HorzAlign = Leading
+  end
+  object TextBuySell: TText
+    Anchors = [akLeft, akBottom]
+    Position.X = 172.000000000000000000
+    Position.Y = 487.000000000000000000
+    Size.Width = 161.000000000000000000
+    Size.Height = 21.000000000000000000
+    Size.PlatformDefault = False
+    TextSettings.Font.StyleExt = {00070000000000000004000000}
+    TextSettings.HorzAlign = Leading
+  end
+  object TextChange: TText
+    Anchors = [akLeft, akBottom]
+    Position.X = 172.000000000000000000
+    Position.Y = 511.000000000000000000
+    Size.Width = 161.000000000000000000
+    Size.Height = 21.000000000000000000
+    Size.PlatformDefault = False
+    TextSettings.Font.StyleExt = {00070000000000000004000000}
+    TextSettings.HorzAlign = Leading
+  end
+  object TextCurrentPrice: TText
+    Anchors = [akLeft, akBottom]
+    Position.X = 172.000000000000000000
+    Position.Y = 415.000000000000000000
+    Size.Width = 161.000000000000000000
+    Size.Height = 21.000000000000000000
+    Size.PlatformDefault = False
+    TextSettings.Font.StyleExt = {00070000000000000004000000}
+    TextSettings.HorzAlign = Leading
+  end
+  object Text1: TText
+    Anchors = [akLeft, akBottom]
+    Position.X = 8.000000000000000000
+    Position.Y = 415.000000000000000000
+    Size.Width = 161.000000000000000000
+    Size.Height = 21.000000000000000000
+    Size.PlatformDefault = False
+    Text = #1058#1077#1082#1091#1097#1072#1103' '#1094#1077#1085#1072':'
+    TextSettings.HorzAlign = Trailing
+  end
+  object Text2: TText
+    Anchors = [akLeft, akBottom]
+    Position.X = 8.000000000000000000
+    Position.Y = 511.000000000000000000
+    Size.Width = 161.000000000000000000
+    Size.Height = 21.000000000000000000
+    Size.PlatformDefault = False
+    Text = #1048#1079#1084#1077#1085#1077#1085#1080#1077':'
+    TextSettings.HorzAlign = Trailing
+  end
+  object Text3: TText
+    Anchors = [akLeft, akBottom]
+    Position.X = 8.000000000000000000
+    Position.Y = 487.000000000000000000
+    Size.Width = 161.000000000000000000
+    Size.Height = 21.000000000000000000
+    Size.PlatformDefault = False
+    Text = #1053#1072#1087#1088#1072#1074#1083#1077#1085#1080#1077':'
+    TextSettings.HorzAlign = Trailing
+  end
+  object Text4: TText
+    Anchors = [akLeft, akBottom]
+    Position.X = 8.000000000000000000
+    Position.Y = 463.000000000000000000
+    Size.Width = 161.000000000000000000
+    Size.Height = 21.000000000000000000
+    Size.PlatformDefault = False
+    Text = #1062#1077#1085#1072' '#1079#1072#1082#1088#1099#1090#1080#1103':'
+    TextSettings.HorzAlign = Trailing
+  end
+  object Text5: TText
+    Anchors = [akLeft, akBottom]
+    Position.X = 8.000000000000000000
+    Position.Y = 439.000000000000000000
+    Size.Width = 161.000000000000000000
+    Size.Height = 21.000000000000000000
+    Size.PlatformDefault = False
+    Text = #1062#1077#1085#1072' '#1086#1090#1082#1088#1099#1090#1080#1103':'
+    TextSettings.HorzAlign = Trailing
+  end
+  object TextHP: TText
+    Anchors = [akLeft, akBottom]
+    Position.X = 336.000000000000000000
+    Position.Y = 415.000000000000000000
+    Size.Width = 161.000000000000000000
+    Size.Height = 21.000000000000000000
+    Size.PlatformDefault = False
+    TextSettings.Font.StyleExt = {00070000000000000004000000}
+    TextSettings.HorzAlign = Leading
+  end
+  object Text6: TText
+    Position.X = 712.000000000000000000
+    Position.Y = 416.000000000000000000
+    Size.Width = 182.000000000000000000
+    Size.Height = 25.000000000000000000
+    Size.PlatformDefault = False
+  end
+end

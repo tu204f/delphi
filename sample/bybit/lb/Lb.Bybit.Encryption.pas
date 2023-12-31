@@ -12,10 +12,10 @@ uses
   System.Net.URLClient,
   System.Net.HttpClient,
   System.Net.HttpClientComponent,
-  System.JSON,
-  Lb.Bybit.SysUtils;
+  System.JSON;
 
 type
+  ///<summary>Шифрование объекта</summary>
   TEncryption = class(TObject)
   private
     FApiKey: String;

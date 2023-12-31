@@ -4,9 +4,6 @@ uses
   System.StartUpCopy,
   FMX.Forms,
   UnitMainForm in 'UnitMainForm.pas' {MainForm},
-  Lb.Bybit.InstrumentsInfo in '..\..\lb\Lb.Bybit.InstrumentsInfo.pas',
-  Lb.Bybit.Kline in '..\..\lb\Lb.Bybit.Kline.pas',
-  Lb.Bybit.ServerTime in '..\..\lb\Lb.Bybit.ServerTime.pas',
   Lb.Bybit.SysUtils in '..\..\lb\Lb.Bybit.SysUtils.pas',
   Lb.Bybit.Candels in '..\..\lb\Lb.Bybit.Candels.pas',
   Lb.SysUtils.Candel in '..\..\..\..\library\trade\patern\Lb.SysUtils.Candel.pas',
@@ -16,7 +13,10 @@ uses
   Lb.TradeMan in '..\..\lb\Lb.TradeMan.pas',
   Lb.Logger in '..\..\..\..\library\Lb.Logger.pas',
   Lb.Setting in '..\..\..\..\library\setting\Lb.Setting.pas',
-  Lb.ConfigIniFile in '..\..\..\..\library\setting\Lb.ConfigIniFile.pas';
+  Lb.ConfigIniFile in '..\..\..\..\library\setting\Lb.ConfigIniFile.pas',
+  Lb.Bybit.InstrumentsInfo in '..\..\lb\market\Lb.Bybit.InstrumentsInfo.pas',
+  Lb.Bybit.Kline in '..\..\lb\market\Lb.Bybit.Kline.pas',
+  Lb.Bybit.ServerTime in '..\..\lb\market\Lb.Bybit.ServerTime.pas';
 
 {$R *.res}
 

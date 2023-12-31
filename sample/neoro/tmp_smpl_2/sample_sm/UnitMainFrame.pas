@@ -36,11 +36,9 @@ type
     RectangleBar: TRectangle;
     TextBar: TText;
     LayoutBottom: TLayout;
-    TextTitleTradeMan: TText;
-    LayoutTitleMan: TLayout;
-    TextDiscript: TText;
-    ListBox1: TListBox;
     Layout1: TLayout;
+    Chart1: TChart;
+    Series1: TLineSeries;
     procedure TimerTimer(Sender: TObject);
     procedure BottonLearnClick(Sender: TObject);
   protected
@@ -78,6 +76,7 @@ type
 implementation
 
 {$R *.fmx}
+
 { TMainFrame }
 
 constructor TMainFrame.Create(AOwner: TComponent);
@@ -320,39 +319,6 @@ end;
 
 procedure TMainFrame.TimerTimer(Sender: TObject);
 
-  procedure _InfoTradeMan(ATradeMan: TTradeMan);
-  begin
-    ListBox1.Items.Clear;
-    with ListBox1.Items do
-    begin
-      Add('Deposit ' + ATradeMan.Deposit.ToString);
-      Add('Capital ' + ATradeMan.Capital.ToString);
-      Add('Period ' + ATradeMan.Period.ToString);
-      Add('TrailingStop ' + ATradeMan.TrailingStop.ToString);
-      Add('Leverage ' + ATradeMan.Leverage.ToString);
-      Add('PlusCount ' + ATradeMan.PlusCount.ToString + ' ' +
-        Round(100 * ATradeMan.PlusCount / (ATradeMan.PlusCount +
-        ATradeMan.MinusCount)).ToString);
-      Add('MinusCount ' + ATradeMan.MinusCount.ToString + ' ' +
-        Round(100 * ATradeMan.MinusCount / (ATradeMan.PlusCount +
-        ATradeMan.MinusCount)).ToString);
-      Add('MinusProfit ' + ATradeMan.MinusProfit.ToString);
-
-      {
-        property PlusCount: Integer read FPlusCount;
-        property MinusCount: Integer read FMinusCount;
-        property MinusProfit: Double read FMinusProfit;
-      }
-      if TradeMan.IsPosition then
-      begin
-        Add('OpenPrice ' + ATradeMan.Position.OpenPrice.ToString);
-        Add('Quantity ' + ATradeMan.Position.Quantity.ToString);
-        Add('BuySell ' + ATradeMan.Position.BuySell);
-        Add('StopPrice ' + ATradeMan.Position.StopPrice.ToString);
-      end;
-    end;
-  end;
-
   procedure _ReversData;
   var
     xCandel: TCandel;
@@ -368,6 +334,8 @@ procedure TMainFrame.TimerTimer(Sender: TObject);
       end;
   end;
 
+var
+  xValue: Double;
 begin
   _ReversData;
   if Candels.Count = 0 then
@@ -380,7 +348,10 @@ begin
     end
     else
     begin
-      TextBar.Text := 'ќжидание: ' +  TBlockAPI.MathExpectation(Block).ToString;
+      xValue := TBlockAPI.MathExpectation(Block);
+      TextBar.Text := 'ќжидание: ' +  xValue.ToString;
+
+      Series1.AddY(xValue);
       // IndexBar.ToString + ' ' + Block.CandelLast.ToString;
 
 

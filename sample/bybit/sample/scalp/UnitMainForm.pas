@@ -33,13 +33,14 @@ uses
   UnitCandelFrame,
   UnitChartFrame,
 
-  Lb.TradeMan,
   FMX.Edit,
 
   Lb.SysUtils,
   FMX.ListBox,
   FMX.TreeView,
-  FMX.Objects;
+  FMX.Objects,
+
+  Lb.Bot.Tiket, FMXTee.Engine, FMXTee.Series, FMXTee.Procs, FMXTee.Chart;
 
 type
   TMainForm = class(TForm)
@@ -48,21 +49,20 @@ type
     GridPanelLayoutBottom: TGridPanelLayout;
     ButtonStart: TButton;
     ButtonStop: TButton;
-    LayoutChart5: TLayout;
+    LayoutChart: TLayout;
     ListBoxTradeMan: TListBox;
-    RectangleChart5: TRectangle;
-    LayoutChart1: TLayout;
-    RectangleChart1: TRectangle;
+    RectangleChart: TRectangle;
+    MemoLog: TMemo;
     procedure ButtonStartClick(Sender: TObject);
     procedure ButtonStopClick(Sender: TObject);
   private
-    ChartFrame5: TChartFrame;
-    ChartFrame1: TChartFrame;
-    BybitCandels5: TBybitCandels;
-    BybitCandels1: TBybitCandels;
-    procedure CandelsOnChange5(Sender: TObject);
-    procedure CandelsOnChange1(Sender: TObject);
+    ChartFrame: TChartFrame;
+    BybitCandels: TBybitCandels;
+    procedure CandelsOnChange(Sender: TObject);
+    procedure CandelsOnNewCandel(Sender: TObject);
+    procedure BotOnClosePosition(Sender: TObject);
   public
+    Bot: TTakeProfitTiketBot;
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
   end;
@@ -87,55 +87,48 @@ constructor TMainForm.Create(AOwner: TComponent);
 begin
   inherited;
 
-  BybitCandels5 := TBybitCandels.Create;
-  BybitCandels5.OnChange := CandelsOnChange5;
+  Bot := TTakeProfitTiketBot.Create;
+  Bot.Quantity := 0.02;
+  Bot.StopLoss := -100;
+  Bot.CountStop := 3;
+  Bot.TakeProfit := 300;
 
-  BybitCandels1 := TBybitCandels.Create;
-  BybitCandels1.OnChange := CandelsOnChange1;
+  Bot.OnClosePosition := BotOnClosePosition;
 
-  ChartFrame1 := TChartFrame.Create(nil);
-  ChartFrame1.Align := TAlignLayout.Client;
-  ChartFrame1.Parent := RectangleChart1;
-  ChartFrame1.Capacity := TRADE_CAPACITY;
+  BybitCandels := TBybitCandels.Create;
+  BybitCandels.OnChange := CandelsOnChange;
+  BybitCandels.OnNewCandel := CandelsOnNewCandel;
 
-  ChartFrame5 := TChartFrame.Create(nil);
-  ChartFrame5.Align := TAlignLayout.Client;
-  ChartFrame5.Parent := RectangleChart5;
-  ChartFrame5.Capacity := TRADE_CAPACITY;
+  ChartFrame := TChartFrame.Create(nil);
+  ChartFrame.Align := TAlignLayout.Client;
+  ChartFrame.Parent := RectangleChart;
+  ChartFrame.Capacity := TRADE_CAPACITY;
 end;
 
 destructor TMainForm.Destroy;
 begin
-  FreeAndNil(ChartFrame1);
-  FreeAndNil(ChartFrame5);
-  FreeAndNil(BybitCandels1);
-  FreeAndNil(BybitCandels5);
+  FreeAndNil(Bot);
+  FreeAndNil(ChartFrame);
+  FreeAndNil(BybitCandels);
   inherited;
 end;
 
 procedure TMainForm.ButtonStartClick(Sender: TObject);
 begin
 
-  BybitCandels5.Start(
-    'BTCUSDT',
-    TRADE_CAPACITY,
-    TTypeCategory.tcLinear,
-    TTypeInterval.ti_5
-  );
-
-  BybitCandels1.Start(
+  BybitCandels.Start(
     'BTCUSDT',
     TRADE_CAPACITY,
     TTypeCategory.tcLinear,
     TTypeInterval.ti_1
   );
 
+  Bot.Clear;
 end;
 
 procedure TMainForm.ButtonStopClick(Sender: TObject);
 begin
-  BybitCandels1.Stop;
-  BybitCandels5.Stop;
+  BybitCandels.Stop;
 end;
 
 procedure _ChartFrame(AChartFrame: TChartFrame; ABybitCandels: TBybitCandels);
@@ -154,14 +147,43 @@ begin
   AChartFrame.Build;
 end;
 
-procedure TMainForm.CandelsOnChange5(Sender: TObject);
+
+procedure TMainForm.CandelsOnChange(Sender: TObject);
+var
+  xCandel: TCandel;
+  xOpenPrice, xStopPrice, xTakePrice: Double;
 begin
-  _ChartFrame(ChartFrame5,BybitCandels5);
+  _ChartFrame(ChartFrame,BybitCandels);
+  xCandel := BybitCandels.Sources.Items[0];
+
+  if Bot.IsPosition then
+    Bot.SetUpPosition(xCandel.Close)
+  else
+    Bot.SetOpenPosition(xCandel.Close);
+
+  ListBoxTradeMan.Items[0] := 'Price: ' + xCandel.Close.ToString;
+  ListBoxTradeMan.Items[1] := 'OpenPrice: ' + Bot.OpenPrice.ToString;
+  ListBoxTradeMan.Items[2] := 'HealthPoints: ' + Bot.HealthPoints.ToString;
 end;
 
-procedure TMainForm.CandelsOnChange1(Sender: TObject);
+procedure TMainForm.CandelsOnNewCandel(Sender: TObject);
+var
+  xCandel: TCandel;
 begin
-  _ChartFrame(ChartFrame1,BybitCandels1);
+  if Bot.IsPosition then
+  begin
+    xCandel := BybitCandels.Sources[0];
+    Bot.SetClosePosition(xCandel.Close);
+  end;
+
+  // Определяем напровление
+  xCandel := BybitCandels.Sources.Items[1];
+  Bot.SetMode(xCandel);
+end;
+
+procedure TMainForm.BotOnClosePosition(Sender: TObject);
+begin
+  MemoLog.Lines.Add('HealthPoints: ' + Bot.HealthPoints.ToString);
 end;
 
 end.

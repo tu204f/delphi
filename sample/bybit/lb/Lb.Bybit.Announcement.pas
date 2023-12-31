@@ -14,6 +14,7 @@ uses
 
 type
   ///<summary>Получить объявление</summary>
+  ///<remarks>Сообщение от бирже</remarks>
   TBybitAnnouncement = class(TBybitHttpClient)
   private
   public
