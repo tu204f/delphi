@@ -65,9 +65,12 @@ type
     closePrice: String;
     volume: String;
     turnover: String;
+  private
+    function GetDateTime: TDateTime;
   public
     procedure SetObjectJson(const AValueJsons: TJSONArray);
     function ToString: String; override;
+    property DateTime: TDateTime read GetDateTime;
   end;
 
   ///<summary>Массив свечей</summary>
@@ -83,8 +86,16 @@ var
   xObjectJson: TJSONArray;
   xCandelObject: TCandelObject;
 begin
-  if not Assigned(ACandelObjects) then
+  if not Assigned(AListJson) then
+  begin
+    raise Exception.Create('Error Message: Объект JSON – не определен');
     Exit;
+  end;
+
+  if not Assigned(ACandelObjects) then
+  begin
+    Exit;
+  end;
 
   ACandelObjects.Clear;
   iCount := AListJson.Count;
@@ -164,6 +175,16 @@ end;
 
 
 { TCandelObject }
+
+function TCandelObject.GetDateTime: TDateTime;
+var
+  xValue: TDateTime;
+begin
+  xValue := UnixToDateTime(
+    Round(StrToUInt64Def(Self.StartTime,0)/1000)
+  );
+  Result := xValue;
+end;
 
 procedure TCandelObject.SetObjectJson(const AValueJsons: TJSONArray);
 begin

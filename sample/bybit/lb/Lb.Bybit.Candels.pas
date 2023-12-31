@@ -18,6 +18,7 @@ uses
   Lb.Bybit.Kline;
 
 type
+  ///<summary>Получения списка свечей</summary>
   TBybitCandels = class(TObject)
   private
     FOnChange: TNotifyEvent;
@@ -28,8 +29,8 @@ type
     FOldStartTime: String;
     FSources: TCandels;
   protected
-    procedure BybitKlineOneEventMessage(ASender: TObject);
-    procedure BybitKlineAllEventMessage(ASender: TObject);
+    procedure BybitKlineOneEventMessage(Sender: TObject);
+    procedure BybitKlineAllEventMessage(Sender: TObject);
   public
     constructor Create; virtual;
     destructor Destroy; override;
@@ -53,11 +54,11 @@ constructor TBybitCandels.Create;
 begin
   FOldStartTime := '';
   FBybitKlineOne := TBybitKline.Create;
-  FBybitKlineOne.OnEventMessage := BybitKlineOneEventMessage;
+  FBybitKlineOne.OnEventEndLoading := BybitKlineOneEventMessage;
   FBybitKlineOne.IntervalSleep := 1;
 
   FBybitKlineAll := TBybitKline.Create;
-  FBybitKlineAll.OnEventMessage := BybitKlineAllEventMessage;
+  FBybitKlineAll.OnEventEndLoading := BybitKlineAllEventMessage;
   FBybitKlineOne.IntervalSleep := 100;
 
   FSources := TCandels.Create;
@@ -93,7 +94,7 @@ begin
   FBybitKlineOne.Stop;
 end;
 
-procedure TBybitCandels.BybitKlineOneEventMessage(ASender: TObject);
+procedure TBybitCandels.BybitKlineOneEventMessage(Sender: TObject);
 var
   iCount: Integer;
   xBybitCandel: TCandelObject;
@@ -146,7 +147,7 @@ begin
     FOnChange(Self);
 end;
 
-procedure TBybitCandels.BybitKlineAllEventMessage(ASender: TObject);
+procedure TBybitCandels.BybitKlineAllEventMessage(Sender: TObject);
 var
   i, iCount: Integer;
   xBybitCandel: TCandelObject;

@@ -15,6 +15,7 @@ uses
 
 type
   TPositionObject = class;
+
   ///<summary>Список объект</summary>
   TPositionObjectList = TObjectList<TPositionObject>;
 
@@ -174,7 +175,6 @@ begin
   inherited Create;
   ModuleParam.TypeHttp := TTypeHttp.thGet;
   ModuleParam.Module := '/v5/position/list';
-
   FPositionObjects := TPositionObjectList.Create;
 end;
 

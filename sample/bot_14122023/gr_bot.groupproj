@@ -1,0 +1,60 @@
+﻿<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+    <PropertyGroup>
+        <ProjectGuid>{66EC2D84-FB3D-4DBC-80A3-F1397B8443CF}</ProjectGuid>
+    </PropertyGroup>
+    <ItemGroup>
+        <Projects Include="read\read.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="mono\mono.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="tiket\tiket.dproj">
+            <Dependencies/>
+        </Projects>
+    </ItemGroup>
+    <ProjectExtensions>
+        <Borland.Personality>Default.Personality.12</Borland.Personality>
+        <Borland.ProjectType/>
+        <BorlandProject>
+            <Default.Personality/>
+        </BorlandProject>
+    </ProjectExtensions>
+    <Target Name="read">
+        <MSBuild Projects="read\read.dproj"/>
+    </Target>
+    <Target Name="read:Clean">
+        <MSBuild Projects="read\read.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="read:Make">
+        <MSBuild Projects="read\read.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="mono">
+        <MSBuild Projects="mono\mono.dproj"/>
+    </Target>
+    <Target Name="mono:Clean">
+        <MSBuild Projects="mono\mono.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="mono:Make">
+        <MSBuild Projects="mono\mono.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="tiket">
+        <MSBuild Projects="tiket\tiket.dproj"/>
+    </Target>
+    <Target Name="tiket:Clean">
+        <MSBuild Projects="tiket\tiket.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="tiket:Make">
+        <MSBuild Projects="tiket\tiket.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="Build">
+        <CallTarget Targets="read;mono;tiket"/>
+    </Target>
+    <Target Name="Clean">
+        <CallTarget Targets="read:Clean;mono:Clean;tiket:Clean"/>
+    </Target>
+    <Target Name="Make">
+        <CallTarget Targets="read:Make;mono:Make;tiket:Make"/>
+    </Target>
+    <Import Project="$(BDS)\Bin\CodeGear.Group.Targets" Condition="Exists('$(BDS)\Bin\CodeGear.Group.Targets')"/>
+</Project>

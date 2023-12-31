@@ -13,6 +13,9 @@ object MainForm: TMainForm
   object ButtonSelected: TButton
     Position.X = 8.000000000000000000
     Position.Y = 8.000000000000000000
+    Size.Width = 165.000000000000000000
+    Size.Height = 22.000000000000000000
+    Size.PlatformDefault = False
     TabOrder = 1
     Text = #1047#1072#1087#1088#1086#1089
     OnClick = ButtonSelectedClick
@@ -22,13 +25,73 @@ object MainForm: TMainForm
     DataDetectorTypes = []
     TextSettings.WordWrap = True
     Anchors = [akLeft, akTop, akRight, akBottom]
-    Position.X = 8.000000000000000000
-    Position.Y = 36.000000000000000000
-    Size.Width = 621.000000000000000000
-    Size.Height = 437.000000000000000000
+    Position.X = 180.000000000000000000
+    Position.Y = 8.000000000000000000
+    Size.Width = 453.000000000000000000
+    Size.Height = 465.000000000000000000
     Size.PlatformDefault = False
     TabOrder = 3
-    Viewport.Width = 617.000000000000000000
-    Viewport.Height = 433.000000000000000000
+    Viewport.Width = 449.000000000000000000
+    Viewport.Height = 461.000000000000000000
+  end
+  object ButtonSelectedOffCrypt: TButton
+    Position.X = 8.000000000000000000
+    Position.Y = 32.000000000000000000
+    Size.Width = 165.000000000000000000
+    Size.Height = 22.000000000000000000
+    Size.PlatformDefault = False
+    TabOrder = 4
+    Text = #1047#1072#1087#1088#1086#1089' '#1073#1077#1079' '#1096#1080#1092#1088#1086#1074#1072#1085#1080#1103
+    OnClick = ButtonSelectedOffCryptClick
+  end
+  object ButtonSelectedOnCrypt: TButton
+    Position.X = 8.000000000000000000
+    Position.Y = 56.000000000000000000
+    Size.Width = 165.000000000000000000
+    Size.Height = 22.000000000000000000
+    Size.PlatformDefault = False
+    TabOrder = 5
+    Text = #1047#1072#1087#1088#1086#1089' '#1089' '#1096#1080#1092#1088#1086#1074#1072#1085#1080#1077#1084
+    OnClick = ButtonSelectedOnCryptClick
+  end
+  object ButtonOrder: TButton
+    Position.X = 8.000000000000000000
+    Position.Y = 80.000000000000000000
+    Size.Width = 165.000000000000000000
+    Size.Height = 22.000000000000000000
+    Size.PlatformDefault = False
+    TabOrder = 9
+    Text = #1047#1072#1103#1074#1082#1072
+    OnClick = ButtonOrderSpotClick
+  end
+  object Button1: TButton
+    Position.X = 8.000000000000000000
+    Position.Y = 104.000000000000000000
+    Size.Width = 165.000000000000000000
+    Size.Height = 22.000000000000000000
+    Size.PlatformDefault = False
+    TabOrder = 8
+    Text = #1047#1072#1103#1074#1082#1072
+    OnClick = Button1Click
+  end
+  object Button2: TButton
+    Position.X = 8.000000000000000000
+    Position.Y = 128.000000000000000000
+    Size.Width = 165.000000000000000000
+    Size.Height = 22.000000000000000000
+    Size.PlatformDefault = False
+    TabOrder = 7
+    Text = #1047#1072#1103#1074#1082#1072
+    OnClick = Button2Click
+  end
+  object Button3: TButton
+    Position.X = 8.000000000000000000
+    Position.Y = 152.000000000000000000
+    Size.Width = 165.000000000000000000
+    Size.Height = 22.000000000000000000
+    Size.PlatformDefault = False
+    TabOrder = 6
+    Text = #1047#1072#1103#1074#1082#1072
+    OnClick = Button3Click
   end
 end

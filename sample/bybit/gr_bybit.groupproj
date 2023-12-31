@@ -15,6 +15,12 @@
         <Projects Include="sample\scalp\scalp.dproj">
             <Dependencies/>
         </Projects>
+        <Projects Include="sample\kline\kline.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="sample\random\rand.dproj">
+            <Dependencies/>
+        </Projects>
     </ItemGroup>
     <ProjectExtensions>
         <Borland.Personality>Default.Personality.12</Borland.Personality>
@@ -59,14 +65,32 @@
     <Target Name="scalp:Make">
         <MSBuild Projects="sample\scalp\scalp.dproj" Targets="Make"/>
     </Target>
+    <Target Name="kline">
+        <MSBuild Projects="sample\kline\kline.dproj"/>
+    </Target>
+    <Target Name="kline:Clean">
+        <MSBuild Projects="sample\kline\kline.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="kline:Make">
+        <MSBuild Projects="sample\kline\kline.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="rand">
+        <MSBuild Projects="sample\random\rand.dproj"/>
+    </Target>
+    <Target Name="rand:Clean">
+        <MSBuild Projects="sample\random\rand.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="rand:Make">
+        <MSBuild Projects="sample\random\rand.dproj" Targets="Make"/>
+    </Target>
     <Target Name="Build">
-        <CallTarget Targets="bybit;instrument;candels;scalp"/>
+        <CallTarget Targets="bybit;instrument;candels;scalp;kline;rand"/>
     </Target>
     <Target Name="Clean">
-        <CallTarget Targets="bybit:Clean;instrument:Clean;candels:Clean;scalp:Clean"/>
+        <CallTarget Targets="bybit:Clean;instrument:Clean;candels:Clean;scalp:Clean;kline:Clean;rand:Clean"/>
     </Target>
     <Target Name="Make">
-        <CallTarget Targets="bybit:Make;instrument:Make;candels:Make;scalp:Make"/>
+        <CallTarget Targets="bybit:Make;instrument:Make;candels:Make;scalp:Make;kline:Make;rand:Make"/>
     </Target>
     <Import Project="$(BDS)\Bin\CodeGear.Group.Targets" Condition="Exists('$(BDS)\Bin\CodeGear.Group.Targets')"/>
 </Project>
