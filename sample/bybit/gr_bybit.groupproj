@@ -12,13 +12,7 @@
         <Projects Include="sample\candels\candels.dproj">
             <Dependencies/>
         </Projects>
-        <Projects Include="sample\scalp\scalp.dproj">
-            <Dependencies/>
-        </Projects>
-        <Projects Include="sample\kline\kline.dproj">
-            <Dependencies/>
-        </Projects>
-        <Projects Include="sample\random\rand.dproj">
+        <Projects Include="sample\place\place.dproj">
             <Dependencies/>
         </Projects>
     </ItemGroup>
@@ -56,41 +50,23 @@
     <Target Name="candels:Make">
         <MSBuild Projects="sample\candels\candels.dproj" Targets="Make"/>
     </Target>
-    <Target Name="scalp">
-        <MSBuild Projects="sample\scalp\scalp.dproj"/>
+    <Target Name="place">
+        <MSBuild Projects="sample\place\place.dproj"/>
     </Target>
-    <Target Name="scalp:Clean">
-        <MSBuild Projects="sample\scalp\scalp.dproj" Targets="Clean"/>
+    <Target Name="place:Clean">
+        <MSBuild Projects="sample\place\place.dproj" Targets="Clean"/>
     </Target>
-    <Target Name="scalp:Make">
-        <MSBuild Projects="sample\scalp\scalp.dproj" Targets="Make"/>
-    </Target>
-    <Target Name="kline">
-        <MSBuild Projects="sample\kline\kline.dproj"/>
-    </Target>
-    <Target Name="kline:Clean">
-        <MSBuild Projects="sample\kline\kline.dproj" Targets="Clean"/>
-    </Target>
-    <Target Name="kline:Make">
-        <MSBuild Projects="sample\kline\kline.dproj" Targets="Make"/>
-    </Target>
-    <Target Name="rand">
-        <MSBuild Projects="sample\random\rand.dproj"/>
-    </Target>
-    <Target Name="rand:Clean">
-        <MSBuild Projects="sample\random\rand.dproj" Targets="Clean"/>
-    </Target>
-    <Target Name="rand:Make">
-        <MSBuild Projects="sample\random\rand.dproj" Targets="Make"/>
+    <Target Name="place:Make">
+        <MSBuild Projects="sample\place\place.dproj" Targets="Make"/>
     </Target>
     <Target Name="Build">
-        <CallTarget Targets="bybit;instrument;candels;scalp;kline;rand"/>
+        <CallTarget Targets="bybit;instrument;candels;place"/>
     </Target>
     <Target Name="Clean">
-        <CallTarget Targets="bybit:Clean;instrument:Clean;candels:Clean;scalp:Clean;kline:Clean;rand:Clean"/>
+        <CallTarget Targets="bybit:Clean;instrument:Clean;candels:Clean;place:Clean"/>
     </Target>
     <Target Name="Make">
-        <CallTarget Targets="bybit:Make;instrument:Make;candels:Make;scalp:Make;kline:Make;rand:Make"/>
+        <CallTarget Targets="bybit:Make;instrument:Make;candels:Make;place:Make"/>
     </Target>
     <Import Project="$(BDS)\Bin\CodeGear.Group.Targets" Condition="Exists('$(BDS)\Bin\CodeGear.Group.Targets')"/>
 </Project>

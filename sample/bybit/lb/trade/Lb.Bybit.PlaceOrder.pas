@@ -99,7 +99,8 @@ uses
   System.Generics.Collections,
   System.JSON,
   Lb.Bybit.SysUtils,
-  Lb.Bybit.Encryption;
+  Lb.Bybit.Encryption,
+  Lb.Bybit.ServerTime;
 
 type
   ///<summary>Генерирует заявку на биржу</summary>
@@ -181,6 +182,7 @@ type
 
   TBybitPlaceOrder = class(TBybitHttpClient)
   private
+    FServerTime: TBybitServerTime;
     FPlaceOrders: TObjectPlaceOrderList;
   public
     constructor Create; override;
@@ -543,12 +545,14 @@ end;
 constructor TBybitPlaceOrder.Create;
 begin
   inherited;
+  FServerTime  := TBybitServerTime.Create;
   FPlaceOrders := TObjectPlaceOrderList.Create;
 end;
 
 destructor TBybitPlaceOrder.Destroy;
 begin
   FreeAndNil(FPlaceOrders);
+  FreeAndNil(FServerTime);
   inherited;
 end;
 

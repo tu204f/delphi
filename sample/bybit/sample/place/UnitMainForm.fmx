@@ -1,0 +1,65 @@
+object MainForm: TMainForm
+  Left = 0
+  Top = 0
+  Caption = 'Form4'
+  ClientHeight = 480
+  ClientWidth = 640
+  FormFactor.Width = 320
+  FormFactor.Height = 480
+  FormFactor.Devices = [Desktop]
+  DesignerMasterStyle = 0
+  object MemoResult: TMemo
+    Touch.InteractiveGestures = [Pan, LongTap, DoubleTap]
+    DataDetectorTypes = []
+    TextSettings.WordWrap = True
+    Anchors = [akLeft, akTop, akRight, akBottom]
+    Position.X = 180.000000000000000000
+    Position.Y = 8.000000000000000000
+    Size.Width = 453.000000000000000000
+    Size.Height = 465.000000000000000000
+    Size.PlatformDefault = False
+    TabOrder = 2
+    Viewport.Width = 453.000000000000000000
+    Viewport.Height = 465.000000000000000000
+  end
+  object ButtonOrder1: TButton
+    Position.X = 8.000000000000000000
+    Position.Y = 8.000000000000000000
+    Size.Width = 165.000000000000000000
+    Size.Height = 22.000000000000000000
+    Size.PlatformDefault = False
+    TabOrder = 8
+    Text = #1047#1072#1103#1074#1082#1072' #1'
+    OnClick = ButtonOrder1Click
+  end
+  object ButtonOrder2: TButton
+    Position.X = 8.000000000000000000
+    Position.Y = 32.000000000000000000
+    Size.Width = 165.000000000000000000
+    Size.Height = 22.000000000000000000
+    Size.PlatformDefault = False
+    TabOrder = 7
+    Text = #1047#1072#1103#1074#1082#1072' #2'
+    OnClick = ButtonOrder2Click
+  end
+  object ButtonOrder3: TButton
+    Position.X = 8.000000000000000000
+    Position.Y = 56.000000000000000000
+    Size.Width = 165.000000000000000000
+    Size.Height = 22.000000000000000000
+    Size.PlatformDefault = False
+    TabOrder = 6
+    Text = #1047#1072#1103#1074#1082#1072' #3'
+    OnClick = ButtonOrder3Click
+  end
+  object ButtonOrder4: TButton
+    Position.X = 8.000000000000000000
+    Position.Y = 80.000000000000000000
+    Size.Width = 165.000000000000000000
+    Size.Height = 22.000000000000000000
+    Size.PlatformDefault = False
+    TabOrder = 5
+    Text = #1047#1072#1103#1074#1082#1072' #4'
+    OnClick = ButtonOrder4Click
+  end
+end
