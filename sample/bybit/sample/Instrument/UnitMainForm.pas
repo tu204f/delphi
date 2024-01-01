@@ -40,7 +40,7 @@ type
     procedure ButtonStopClick(Sender: TObject);
   private
     InstrumentsInfo: TBybitInstrumentsInfo;
-    procedure InstrumentsInfoEventMessage(ASender: TObject; AMessage: String);
+    procedure InstrumentsInfoOnEventEndLoading(Sender: TObject);
   public
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
@@ -93,8 +93,7 @@ begin
   _AddColumn('SettleCoin');
 
   InstrumentsInfo := TBybitInstrumentsInfo.Create;
-  InstrumentsInfo.Host := 'https://api-testnet.bybit.com';
-  InstrumentsInfo.OnEventMessage := InstrumentsInfoEventMessage;
+  InstrumentsInfo.OnEventEndLoading := InstrumentsInfoOnEventEndLoading;
 end;
 
 destructor TMainForm.Destroy;
@@ -107,7 +106,7 @@ procedure TMainForm.ButtonStartClick(Sender: TObject);
 begin
   {todo: передать параметры для запроса}
   InstrumentsInfo.Category := TTypeCategory.tcLinear;
-  InstrumentsInfo.Start;
+  InstrumentsInfo.Selected;
 end;
 
 procedure TMainForm.ButtonStopClick(Sender: TObject);
@@ -116,7 +115,7 @@ begin
     InstrumentsInfo.Stop;
 end;
 
-procedure TMainForm.InstrumentsInfoEventMessage(ASender: TObject; AMessage: String);
+procedure TMainForm.InstrumentsInfoOnEventEndLoading(Sender: TObject);
 var
   i, iCount: Integer;
   xLinearObjects: TLinearObjectList;

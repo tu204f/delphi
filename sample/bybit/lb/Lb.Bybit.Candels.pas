@@ -23,14 +23,14 @@ type
   private
     FOnChange: TNotifyEvent;
     FOnNewCandel: TNotifyEvent;
-    FBybitKlineOne: TBybitKline;
-    FBybitKlineAll: TBybitKline;
+    FBybitKlineOne: TBybitKline; // Получаем одну свячу
+    FBybitKlineAll: TBybitKline; // Получаем количество свячей
   private
     FOldStartTime: String;
     FSources: TCandels;
   protected
-    procedure BybitKlineOneEventMessage(Sender: TObject);
-    procedure BybitKlineAllEventMessage(Sender: TObject);
+    procedure BybitKlineOneEndLoading(Sender: TObject);
+    procedure BybitKlineAllEndLoading(Sender: TObject);
   public
     constructor Create; virtual;
     destructor Destroy; override;
@@ -54,12 +54,12 @@ constructor TBybitCandels.Create;
 begin
   FOldStartTime := '';
   FBybitKlineOne := TBybitKline.Create;
-  FBybitKlineOne.OnEventEndLoading := BybitKlineOneEventMessage;
-  //FBybitKlineOne.Interval := 1;
+  FBybitKlineOne.OnEventEndLoading := BybitKlineOneEndLoading;
+
 
   FBybitKlineAll := TBybitKline.Create;
-  FBybitKlineAll.OnEventEndLoading := BybitKlineAllEventMessage;
-  //FBybitKlineOne.Interval := 100;
+  FBybitKlineAll.OnEventEndLoading := BybitKlineAllEndLoading;
+
 
   FSources := TCandels.Create;
 end;
@@ -94,7 +94,7 @@ begin
   FBybitKlineOne.Stop;
 end;
 
-procedure TBybitCandels.BybitKlineOneEventMessage(Sender: TObject);
+procedure TBybitCandels.BybitKlineOneEndLoading(Sender: TObject);
 var
   iCount: Integer;
   xBybitCandel: TCandelObject;
@@ -147,7 +147,7 @@ begin
     FOnChange(Self);
 end;
 
-procedure TBybitCandels.BybitKlineAllEventMessage(Sender: TObject);
+procedure TBybitCandels.BybitKlineAllEndLoading(Sender: TObject);
 var
   i, iCount: Integer;
   xBybitCandel: TCandelObject;

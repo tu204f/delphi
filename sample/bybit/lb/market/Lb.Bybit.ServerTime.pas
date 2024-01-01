@@ -20,7 +20,7 @@ type
     FTimeNano: String;
     function GetDateTimeServer: TDateTime;
   protected
-    procedure DoEventEndLoading; override;
+    procedure DoEventParser; override;
   public
     constructor Create; override;
     destructor Destroy; override;
@@ -46,11 +46,14 @@ begin
   inherited;
 end;
 
-procedure TBybitServerTime.DoEventEndLoading;
+procedure TBybitServerTime.DoEventParser;
 begin
-  FTimeSecond := Response.ResultObject.Values['timeSecond'].Value;
-  FTimeNano := Response.ResultObject.Values['timeNano'].Value;
-  inherited DoEventEndLoading;
+  try
+    FTimeSecond := Response.ResultObject.Values['timeSecond_'].Value;
+    FTimeNano   := Response.ResultObject.Values['timeNano'].Value;
+  except
+    raise EAbort.Create('Error Message: Ошибка парсинга');
+  end;
 end;
 
 function TBybitServerTime.GetDateTimeServer: TDateTime;

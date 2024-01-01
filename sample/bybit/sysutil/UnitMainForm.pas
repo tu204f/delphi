@@ -53,10 +53,11 @@ type
   private
     BybitServerTime: TBybitServerTime;
     BybitObject: TBybitHttpClient;
-    procedure BybitObjectEventMessage(ASender: TObject);
   protected
     procedure BybitServerTimeOnEventBeginLoading(Sender: TObject);
     procedure BybitServerTimeOnEventEndLoading(Sender: TObject);
+    procedure BybitServerTimeOnEventMessage(Sender: TObject);
+    procedure BybitServerTimeOnEventException(Sender: TObject);
   public
     procedure SetLog(S: String = '');
   end;
@@ -85,10 +86,11 @@ procedure TMainForm.FormCreate(Sender: TObject);
 begin
   BybitObject  := nil;
   Self.Caption := 'Запрос на сервер Bybit';
-
   BybitServerTime := TBybitServerTime.Create;
   BybitServerTime.OnEventBeginLoading := BybitServerTimeOnEventBeginLoading;
   BybitServerTime.OnEventEndLoading   := BybitServerTimeOnEventEndLoading;
+  BybitServerTime.OnEventMessage   := BybitServerTimeOnEventMessage;
+  BybitServerTime.OnEventException := BybitServerTimeOnEventException;
 end;
 
 procedure TMainForm.FormClose(Sender: TObject; var Action: TCloseAction);
@@ -100,19 +102,36 @@ end;
 
 procedure TMainForm.ButtonServerTimeClick(Sender: TObject);
 begin
-  BybitServerTime.Start(100);
+  BybitServerTime.Start(1000);
 end;
 
 procedure TMainForm.BybitServerTimeOnEventBeginLoading(Sender: TObject);
 begin
   // Начало загрузки
+  SetLog('*******************************************************************');
   SetLog('BybitServerTimeOnEventBeginLoading:');
 end;
 
 procedure TMainForm.BybitServerTimeOnEventEndLoading(Sender: TObject);
 begin
   // Конец парсинга сообщений
-  SetLog('BybitServerTimeOnEventBeginLoading:');
+  SetLog('BybitServerTimeOnEventEndLoading:');
+end;
+
+procedure TMainForm.BybitServerTimeOnEventMessage(Sender: TObject);
+begin
+  // Получение сообщение
+  SetLog('BybitServerTimeOnEventMessage:');
+  SetLog(BybitServerTime.StatusCode.ToString);
+  SetLog(BybitServerTime.ValueMessage);
+end;
+
+procedure TMainForm.BybitServerTimeOnEventException(Sender: TObject);
+begin
+  // Сообщение обошибки
+  SetLog('BybitServerTimeOnEventException:');
+  SetLog(BybitServerTime.StatusCode.ToString);
+  SetLog(BybitServerTime.ValueMessage);
 end;
 
 procedure TMainForm.ButtonSelectedOffCryptClick(Sender: TObject);
@@ -138,8 +157,6 @@ begin
     FreeAndNil(HttpClientAPI);
   end;
 end;
-
-
 
 
 procedure TMainForm.ButtonSelectedOnCryptClick(Sender: TObject);
@@ -396,17 +413,5 @@ begin
 
   FreeAndNil(xEncryption);
 end;
-
-procedure TMainForm.BybitObjectEventMessage(ASender: TObject);
-begin
-  MemoResult.Lines.Add(BybitObject.StatusCode.ToString);
-  MemoResult.Lines.Add(BybitObject.ValueMessage);
-//    TBybitServerTime(BybitObject).TimeSecond + ' ' +
-//    TBybitServerTime(BybitObject).TimeNano + ' ' +
-//    DateTimeToStr(
-//      TBybitServerTime(BybitObject).DateTimeServer
-//    );
-end;
-
 
 end.

@@ -16,7 +16,8 @@ uses
   Lb.ConfigIniFile in '..\..\..\..\library\setting\Lb.ConfigIniFile.pas',
   Lb.Bybit.InstrumentsInfo in '..\..\lb\market\Lb.Bybit.InstrumentsInfo.pas',
   Lb.Bybit.Kline in '..\..\lb\market\Lb.Bybit.Kline.pas',
-  Lb.Bybit.ServerTime in '..\..\lb\market\Lb.Bybit.ServerTime.pas';
+  Lb.Bybit.ServerTime in '..\..\lb\market\Lb.Bybit.ServerTime.pas',
+  Lb.Bybit.Encryption in '..\..\lb\Lb.Bybit.Encryption.pas';
 
 {$R *.res}
 

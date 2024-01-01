@@ -26,6 +26,12 @@ const
   'https://api.bybit.com';
 {$ENDIF}
 
+const
+  ERROR_CODE        = 10000;
+  ERROR_CODE_HTTP   = ERROR_CODE + 1;
+  // Код ошибка парсинга
+  ERROR_CODE_PARSER = ERROR_CODE + 2;
+
 type
   TTypeCategory = (
     tcSpot,
@@ -177,6 +183,7 @@ type
     FOnEventException: TNotifyEvent;
     FOnEventBeginLoading: TNotifyEvent;
     FOnEventEndLoading: TNotifyEvent;
+    procedure DoEventParser; virtual;
     procedure DoEventBeginLoading; virtual;
     procedure DoEventEndLoading; virtual;
     procedure DoEventMessage(const AMessage: String); virtual;
@@ -217,12 +224,12 @@ type
     FretTime: Double;
     FResultObject: TJSONObject;
     FExtInfoObject: TJSONObject;
-    procedure SetValueMessage(const Value: String);
   public
     constructor Create; virtual;
     destructor Destroy; override;
-    property ValueMessage: String write SetValueMessage;
-    property ResultObject: TJSONObject read FResultObject;
+    procedure SetParserValue(const AValue: String);
+  public
+    property ResultObject : TJSONObject read FResultObject;
     property ExtInfoObject: TJSONObject read FExtInfoObject;
     property RetCode: Integer read FretCode;
     property RetMsg: String read FretMsg;
@@ -533,11 +540,27 @@ procedure TBybitHttpClient.DoEventMessage(const AMessage: String);
 begin
   if FInterval = 0 then
     FTask := nil;
+
   FValueMessage := AMessage;
   if not FValueMessage.IsEmpty then
-    FResponse.ValueMessage := FValueMessage;
+    FResponse.SetParserValue(FValueMessage);
+
   if Assigned(FOnEventMessage) then
     FOnEventMessage(Self);
+end;
+
+procedure TBybitHttpClient.DoEventException(const AStatusCode: Integer; const AMessage: String);
+begin
+  // Генерируем перехватываем исключение
+  FTask := nil;
+  FStatusCode := AStatusCode;
+  FValueMessage := AMessage;
+  if Assigned(FOnEventException) then
+    FOnEventException(Self);
+end;
+
+procedure TBybitHttpClient.DoEventParser;
+begin
 end;
 
 procedure TBybitHttpClient.DoEventBeginLoading;
@@ -548,25 +571,22 @@ end;
 
 procedure TBybitHttpClient.DoEventEndLoading;
 begin
+  try
+    DoEventParser;
+  except
+    FStatusCode := ERROR_CODE_PARSER;
+  end;
   if FActive then
     FActive := False;
   if Assigned(FOnEventEndLoading) then
     FOnEventEndLoading(Self);
 end;
 
-procedure TBybitHttpClient.DoEventException(const AStatusCode: Integer; const AMessage: String);
-begin
-  FTask := nil;
-  FStatusCode := AStatusCode;
-  FValueMessage := AMessage;
-  if Assigned(FOnEventException) then
-    FOnEventException(Self);
-end;
-
 procedure TBybitHttpClient.SetThreading;
 begin
   if Assigned(FTask) then
     raise Exception.Create('Error Message: Задание уже запущенно');
+
   FTask := TTask.Create(
     procedure()
     var
@@ -574,15 +594,34 @@ begin
     begin
       while True do
       begin
+        TThread.Synchronize(nil,DoEventBeginLoading);
         xHttpClientAPI := TBybitHttpClientAPI.Create;
         try
           xHttpClientAPI.BybitModule := FBybitModule;
-
-
+          xHttpClientAPI.Selected;
+          FStatusCode := xHttpClientAPI.StatusCode;
+          if FStatusCode = 200 then
+          begin
+            FValueMessage := xHttpClientAPI.ResponseValue;
+            DoEventMessage(FValueMessage);
+          end
+          else
+          begin
+            FValueMessage := '';
+            DoEventException(
+              xHttpClientAPI.StatusCode,
+              xHttpClientAPI.ResponseValue
+            );
+          end;
         finally
           FreeAndNil(xHttpClientAPI);
         end;
+        TThread.Synchronize(nil,DoEventEndLoading);
         if FInterval = 0 then
+          Break
+        else
+          Sleep(FInterval);
+        if FTask.Status = TTaskStatus.Canceled then
           Break;
       end;
     end
@@ -635,9 +674,9 @@ begin
   inherited;
 end;
 
-procedure TBytiyResponse.SetValueMessage(const Value: String);
+procedure TBytiyResponse.SetParserValue(const AValue: String);
 var
-  xJson, xResultOb, xExtInfoOb: TJSONObject;
+  xJson: TJSONObject;
 begin
 (*******************************************************************************
   Response Example
@@ -653,14 +692,14 @@ begin
   }
 *******************************************************************************)
   try
-    xJson          := TJSONObject.ParseJSONValue(Value) as TJSONObject;
+    xJson          := TJSONObject.ParseJSONValue(AValue) as TJSONObject;
     FretCode       := xJson.Values['retCode'].Value.ToInteger;
     FretMsg        := xJson.Values['retMsg'].Value;
     FResultObject  := TJSONObject(xJson.Values['result']);
     FExtInfoObject := TJSONObject(xJson.Values['retExtInfo']);
     FretTime       := xJson.Values['time'].Value.ToDouble;
   except
-    raise Exception.Create('Error Message: Парсинг Json – объекта');
+    raise EAbort.Create('Error Message: Парсинг Json – объекта');
   end;
 end;
 
@@ -706,8 +745,7 @@ end;
 function TBybitModule.GetURL: String;
 var
   xS: String;
-  i, iCount: Integer;
-  xParam: TParam;
+  iCount: Integer;
 begin
   xS := FHost + FModule;
   iCount := FParams.Count;
@@ -758,7 +796,6 @@ var
 begin
   if not Assigned(FBybitModule) then
     raise Exception.Create('Error Message: Параметры модуля не определены');
-
   FClient.UserAgent := 'Client Bybit';
   xHeaders  := _Headers;
   xURL := FBybitModule.GetURL;
@@ -785,7 +822,7 @@ begin
     else
       FResponseValue := 'Ошибка запроса';
   except
-    FStatusCode := 10000;
+    FStatusCode := ERROR_CODE_HTTP;
     FResponseValue := 'Error Connection. Ошибка соединение';
   end;
 end;

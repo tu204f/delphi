@@ -194,10 +194,9 @@
             <Form>MainForm</Form>
             <FormType>fmx</FormType>
         </DCCReference>
-        <DCCReference Include="..\..\lb\Lb.Bybit.InstrumentsInfo.pas"/>
-        <DCCReference Include="..\..\lb\Lb.Bybit.Kline.pas"/>
-        <DCCReference Include="..\..\lb\Lb.Bybit.ServerTime.pas"/>
+        <DCCReference Include="..\..\lb\Lb.Bybit.Encryption.pas"/>
         <DCCReference Include="..\..\lb\Lb.Bybit.SysUtils.pas"/>
+        <DCCReference Include="..\..\lb\market\Lb.Bybit.InstrumentsInfo.pas"/>
         <BuildConfiguration Include="Release">
             <Key>Cfg_2</Key>
             <CfgParent>Base</CfgParent>
@@ -241,7 +240,7 @@
                         <Overwrite>true</Overwrite>
                     </Platform>
                 </DeployFile>
-                <DeployFile LocalName="Win32\Debug\instrument.exe" Configuration="Debug" Class="ProjectOutput">
+                <DeployFile LocalName="..\..\bin\instrument.exe" Configuration="Debug" Class="ProjectOutput">
                     <Platform Name="Win32">
                         <RemoteName>instrument.exe</RemoteName>
                         <Overwrite>true</Overwrite>
@@ -1011,11 +1010,6 @@
             <Platforms>
                 <Platform value="Android">False</Platform>
                 <Platform value="Android64">False</Platform>
-                <Platform value="iOSDevice32">False</Platform>
-                <Platform value="iOSDevice64">False</Platform>
-                <Platform value="iOSSimulator">False</Platform>
-                <Platform value="OSX32">False</Platform>
-                <Platform value="OSX64">False</Platform>
                 <Platform value="Win32">True</Platform>
                 <Platform value="Win64">True</Platform>
             </Platforms>

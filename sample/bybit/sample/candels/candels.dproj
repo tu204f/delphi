@@ -215,6 +215,7 @@
         <DCCReference Include="..\..\lb\market\Lb.Bybit.InstrumentsInfo.pas"/>
         <DCCReference Include="..\..\lb\market\Lb.Bybit.Kline.pas"/>
         <DCCReference Include="..\..\lb\market\Lb.Bybit.ServerTime.pas"/>
+        <DCCReference Include="..\..\lb\Lb.Bybit.Encryption.pas"/>
         <BuildConfiguration Include="Release">
             <Key>Cfg_2</Key>
             <CfgParent>Base</CfgParent>

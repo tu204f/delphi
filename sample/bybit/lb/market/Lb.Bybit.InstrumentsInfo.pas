@@ -42,7 +42,7 @@ type
     procedure SetCursor(const Value: String);
   protected
     FListJson: TJSONArray;
-    procedure DoEventMessage(const AMessage: String); override;
+    procedure DoEventParser; override;
   public
     constructor Create; override;
     destructor Destroy; override;
@@ -60,6 +60,9 @@ type
     ///<summary>Limit for data size per page. [1, 1000]. Default: 500</summary>
     property Limit: Integer read FLimit write SetLimit;
     property Cursor: String read FCursor write SetCursor;
+
+  public
+    property ListJson: TJSONArray read FListJson;
   end;
 
 type
@@ -230,11 +233,10 @@ begin
   BybitModule.Params.SetParam('cursor',FCursor);
 end;
 
-procedure TBybitInstrumentsInfo.DoEventMessage(const AMessage: String);
+procedure TBybitInstrumentsInfo.DoEventParser;
 var
   xValueJson: TJSONValue;
 begin
-  inherited DoEventMessage(AMessage);
   (*
     "category": "",
     "list": [],
@@ -244,7 +246,6 @@ begin
   if xValueJson is TJSONArray then
     FListJson := TJSONArray(xValueJson);
 end;
-
 
 { TLinearObject.TLeverageFilter }
 
