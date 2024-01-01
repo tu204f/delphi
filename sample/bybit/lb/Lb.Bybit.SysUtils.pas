@@ -152,21 +152,25 @@ type
 (******************************************************************************)
   TBybitHttpClientAPI = class;
   TBytiyResponse = class;
-  TBytiyModule = class;
+  TBybitModule = class;
   TTypeHttp = (thNull, thGet, thPost);
-  ///<summary>Отвечает за отправление запроса на сервер Bybit</summary>
+
+  ///<summary>
+  /// Отвечает за отправление запроса на сервер Bybit
+  ///</summary>
   ///<remarks>
-  ///Запросы все отправляются в потоке и с получением ответа от сервера
-  ///Также можно задавать интервал запроса
+  /// Запросы все отправляются в потоке и с получением ответа от сервера
+  /// Также можно задавать интервал запроса
   ///</remarks>
   TBybitHttpClient = class(TObject)
   private
+    FActive: Boolean;
     FSource: TStrings;
     FValueMessage: String;
     FStatusCode: Integer;
-    FIntervalSleep: Integer;
-    FTask: ITask;
-    FModuleParam: TBytiyModule;
+    FInterval: Integer;        // Интервал обновления
+    FTask: ITask;              // Задача - указатель на поток
+    FBybitModule: TBybitModule;
     FResponse: TBytiyResponse;
   protected
     FOnEventMessage: TNotifyEvent;
@@ -179,18 +183,24 @@ type
     procedure DoEventException(const AStatusCode: Integer; const AMessage: String);
   protected
     // Запрос выполняются в отделом потоке с ожидание ответа
-    procedure SetTaskRun(const AURL: String);
+    procedure SetThreading;
   public
     constructor Create; virtual;
     destructor Destroy; override;
-    procedure Selected(const AInterval: Integer = 0);
+    ///<summary>Отправляем один запрос</summary>
+    procedure Selected;
+    ///<summary>Зациклить запрос</summary>
+    procedure Start(const AInterval: Integer = 0);
+    ///<summary>Остановить цикл</summary>
     procedure Stop;
-    property ModuleParam: TBytiyModule read FModuleParam;
-    property IntervalSleep: Integer read FIntervalSleep write FIntervalSleep;
+    ///<summary>Параметры запроса</summary>
+    property BybitModule: TBybitModule read FBybitModule;
+    property Interval: Integer read FInterval;
     property ValueMessage: String read FValueMessage;
     property StatusCode: Integer read FStatusCode;
     property Source: TStrings read FSource;
     property Response: TBytiyResponse read FResponse;
+    property Active: Boolean read FActive;
   public
     ///<summary>Событие ответа от сервера</summary>
     property OnEventMessage: TNotifyEvent write FOnEventMessage;
@@ -220,7 +230,7 @@ type
   end;
 
   ///<summary>Структура запрашиваемого модуля</summary>
-  TBytiyModule = class(TObject)
+  TBybitModule = class(TObject)
   private
     FTypeHttp: TTypeHttp;
     FHost: String;
@@ -247,7 +257,7 @@ type
   private
     FResponseValue: String;
     FSource: TStrings;
-    FBytiyModule: TBytiyModule;
+    FBybitModule: TBybitModule;
     FClient: TNetHTTPClient;
   private
     FStatusCode: Integer;
@@ -255,7 +265,7 @@ type
     constructor Create; virtual;
     destructor Destroy; override;
     procedure Selected;
-    property BytiyModule: TBytiyModule read FBytiyModule;
+    property BybitModule: TBybitModule write FBybitModule;
     property Source: TStrings read FSource;
     property ResponseValue: String read FResponseValue;
     property StatusCode: Integer read FStatusCode;
@@ -498,11 +508,11 @@ end;
 
 constructor TBybitHttpClient.Create;
 begin
-  FModuleParam := TBytiyModule.Create;
+  FBybitModule := TBybitModule.Create;
   FResponse    := TBytiyResponse.Create;
   FTask := nil;
   FValueMessage := '';
-  FIntervalSleep := 0;
+  FInterval := 0;
   FSource  := TStringList.Create;
 end;
 
@@ -515,13 +525,13 @@ begin
   end;
   FreeAndNil(FSource);
   FreeAndNil(FResponse);
-  FreeAndNil(FModuleParam);
+  FreeAndNil(FBybitModule);
   inherited;
 end;
 
 procedure TBybitHttpClient.DoEventMessage(const AMessage: String);
 begin
-  if FIntervalSleep = 0 then
+  if FInterval = 0 then
     FTask := nil;
   FValueMessage := AMessage;
   if not FValueMessage.IsEmpty then
@@ -538,6 +548,8 @@ end;
 
 procedure TBybitHttpClient.DoEventEndLoading;
 begin
+  if FActive then
+    FActive := False;
   if Assigned(FOnEventEndLoading) then
     FOnEventEndLoading(Self);
 end;
@@ -551,115 +563,26 @@ begin
     FOnEventException(Self);
 end;
 
-procedure TBybitHttpClient.Selected(const AInterval: Integer);
-begin
-  FIntervalSleep := AInterval;
-  SetTaskRun(
-    FModuleParam.GetURL
-  );
-end;
-
-procedure TBybitHttpClient.SetTaskRun(const AURL: String);
+procedure TBybitHttpClient.SetThreading;
 begin
   if Assigned(FTask) then
     raise Exception.Create('Error Message: Задание уже запущенно');
-
   FTask := TTask.Create(
     procedure()
-
-      function _Headers: TNetHeaders;
-      var
-        i, iCount: Integer;
-        xHeader: THeader;
-        xHeaders: TNetHeaders;
-      begin
-        SetLength(xHeaders,FModuleParam.Headers.Count);
-        iCount := FModuleParam.Headers.Count;
-        if iCount > 0 then
-          for i := 0 to iCount - 1 do
-          begin
-            xHeader :=  FModuleParam.Headers.Items[i];
-            xHeaders[i] := xHeader;
-          end;
-        Result := xHeaders;
-      end;
-
     var
-      xValue: String;
-      xHeaders : TNetHeaders;
-      xClient  : TNetHTTPClient;
-      xResponse: IHTTPResponse;
-      xStatusCode: Integer;
+      xHttpClientAPI: TBybitHttpClientAPI;
     begin
       while True do
       begin
-        if FTask.Status = TTaskStatus.Canceled then
-          Exit;
-
-        xClient := TNetHTTPClient.Create(nil);
+        xHttpClientAPI := TBybitHttpClientAPI.Create;
         try
-          xClient.UserAgent := 'Client Bybit';
-          xHeaders  := _Headers;
-
-          case FModuleParam.TypeHttp of
-            thGet : xResponse := xClient.Get(
-              AURL,
-              nil,
-              xHeaders
-            );
-            thPost: begin
-              // Пост запрос, который выполняется только один раз
-              FIntervalSleep := 0;
-              xResponse := xClient.Post(
-                AURL,
-                FSource,
-                nil,
-                TEncoding.UTF8,
-                xHeaders
-              );
-            end;
-          end;
+          xHttpClientAPI.BybitModule := FBybitModule;
 
 
-          xStatusCode := xResponse.StatusCode;
-          if xStatusCode = 200 then
-          begin
-            xValue := xResponse.ContentAsString(TEncoding.UTF8);
-            TThread.Synchronize(nil,
-              procedure()
-              begin
-                DoEventBeginLoading;
-                try
-                  DoEventMessage(xValue);
-                finally
-                  DoEventEndLoading;
-                end;
-              end
-            );
-          end;
         finally
-          FreeAndNil(xClient);
+          FreeAndNil(xHttpClientAPI);
         end;
-
-        if xStatusCode <> 200 then
-        begin
-          // Нужно прикратить делать запросы
-          TThread.Synchronize(nil,
-            procedure()
-            begin
-              DoEventException(
-                xStatusCode,
-                'Проблемма за проссе');
-            end
-          );
-          Break;
-        end;
-
-        // Перезапускам запрос, на сервер
-        // Периодичность получение данных
-        if FIntervalSleep > 0 then
-          Sleep(FIntervalSleep)
-        else
+        if FInterval = 0 then
           Break;
       end;
     end
@@ -667,13 +590,35 @@ begin
   FTask.Start;
 end;
 
+procedure TBybitHttpClient.Selected;
+begin
+  if not FActive then
+  begin
+    // Отправляем запрос на обновление данных
+    FInterval := 0;
+    SetThreading;
+    FActive := True;
+  end;
+end;
+
+procedure TBybitHttpClient.Start(const AInterval: Integer);
+begin
+  if not FActive then
+  begin
+    FInterval := AInterval;
+    SetThreading;
+  end;
+end;
+
 procedure TBybitHttpClient.Stop;
 begin
-  if Assigned(FTask) then
-  begin
-    FTask.Cancel;
-    FTask := nil;
-  end;
+  if FActive then
+    if Assigned(FTask) then
+    begin
+      FInterval := 0;
+      FTask.Cancel;
+      FTask := nil;
+    end;
 end;
 
 { TBytiyResponse }
@@ -719,9 +664,9 @@ begin
   end;
 end;
 
-{ TBytiyModule }
+{ TBybitModule }
 
-constructor TBytiyModule.Create;
+constructor TBybitModule.Create;
 begin
   FTypeHttp := TTypeHttp.thNull;
   FHost     := BYBIT_HOST;
@@ -730,14 +675,14 @@ begin
   FHeaders  := THeaderList.Create;
 end;
 
-destructor TBytiyModule.Destroy;
+destructor TBybitModule.Destroy;
 begin
   FreeAndNil(FHeaders);
   FreeAndNil(FParams);
   inherited;
 end;
 
-function TBytiyModule.GetQuery: String;
+function TBybitModule.GetQuery: String;
 var
   xS: String;
   i, iCount: Integer;
@@ -758,7 +703,7 @@ begin
   Result := xS;
 end;
 
-function TBytiyModule.GetURL: String;
+function TBybitModule.GetURL: String;
 var
   xS: String;
   i, iCount: Integer;
@@ -775,15 +720,14 @@ end;
 
 constructor TBybitHttpClientAPI.Create;
 begin
+  FBybitModule := nil;
   FClient := TNetHTTPClient.Create(nil);
-  FBytiyModule := TBytiyModule.Create;
   FSource := TStringList.Create;
 end;
 
 destructor TBybitHttpClientAPI.Destroy;
 begin
   FreeAndNil(FSource);
-  FreeAndNil(FBytiyModule);
   FreeAndNil(FClient);
   inherited;
 end;
@@ -796,12 +740,12 @@ procedure TBybitHttpClientAPI.Selected;
     xHeader: THeader;
     xHeaders: TNetHeaders;
   begin
-    SetLength(xHeaders,FBytiyModule.Headers.Count);
-    iCount := FBytiyModule.Headers.Count;
+    SetLength(xHeaders,FBybitModule.Headers.Count);
+    iCount := FBybitModule.Headers.Count;
     if iCount > 0 then
       for i := 0 to iCount - 1 do
       begin
-        xHeader :=  FBytiyModule.Headers.Items[i];
+        xHeader :=  FBybitModule.Headers.Items[i];
         xHeaders[i] := xHeader;
       end;
     Result := xHeaders;
@@ -812,11 +756,14 @@ var
   xHeaders: TNetHeaders;
   xResponse: IHTTPResponse;
 begin
+  if not Assigned(FBybitModule) then
+    raise Exception.Create('Error Message: Параметры модуля не определены');
+
   FClient.UserAgent := 'Client Bybit';
   xHeaders  := _Headers;
-  xURL := FBytiyModule.GetURL;
+  xURL := FBybitModule.GetURL;
   try
-    case FBytiyModule.TypeHttp of
+    case FBybitModule.TypeHttp of
       thGet: xResponse := FClient.Get(
         xURL,
         nil,

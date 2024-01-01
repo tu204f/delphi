@@ -39,6 +39,7 @@ type
     Button1: TButton;
     Button2: TButton;
     Button3: TButton;
+    ButtonServerTime: TButton;
     procedure FormCreate(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure ButtonSelectedClick(Sender: TObject);
@@ -48,10 +49,10 @@ type
     procedure Button1Click(Sender: TObject);
     procedure Button2Click(Sender: TObject);
     procedure Button3Click(Sender: TObject);
+    procedure ButtonServerTimeClick(Sender: TObject);
   private
     BybitServerTime: TBybitServerTime;
     BybitObject: TBybitHttpClient;
-    function GetCreateBybitObject: TBybitHttpClient;
     procedure BybitObjectEventMessage(ASender: TObject);
   protected
     procedure BybitServerTimeOnEventBeginLoading(Sender: TObject);
@@ -80,29 +81,14 @@ begin
   MemoResult.Lines.Add(S);
 end;
 
-function TMainForm.GetCreateBybitObject: TBybitHttpClient;
-var
-  xBybitObject: TBybitHttpClient;
-begin
-  xBybitObject := TBybitHttpClient.Create;
-  //xBybitObject := TBybitPosition.Create;
-  Result := xBybitObject;
-end;
-
 procedure TMainForm.FormCreate(Sender: TObject);
 begin
+  BybitObject  := nil;
   Self.Caption := 'Запрос на сервер Bybit';
-  BybitObject := GetCreateBybitObject;
-  if Assigned(BybitObject) then
-  begin
-    BybitObject.OnEventMessage := BybitObjectEventMessage;
-    BybitObject.OnEventException := BybitObjectEventMessage;
-  end;
 
   BybitServerTime := TBybitServerTime.Create;
-  BybitServerTime.Selected(100);
   BybitServerTime.OnEventBeginLoading := BybitServerTimeOnEventBeginLoading;
-  BybitServerTime.OnEventEndLoading := BybitServerTimeOnEventEndLoading;
+  BybitServerTime.OnEventEndLoading   := BybitServerTimeOnEventEndLoading;
 end;
 
 procedure TMainForm.FormClose(Sender: TObject; var Action: TCloseAction);
@@ -112,40 +98,66 @@ begin
     FreeAndNil(BybitObject);
 end;
 
+procedure TMainForm.ButtonServerTimeClick(Sender: TObject);
+begin
+  BybitServerTime.Start(100);
+end;
+
+procedure TMainForm.BybitServerTimeOnEventBeginLoading(Sender: TObject);
+begin
+  // Начало загрузки
+  SetLog('BybitServerTimeOnEventBeginLoading:');
+end;
+
+procedure TMainForm.BybitServerTimeOnEventEndLoading(Sender: TObject);
+begin
+  // Конец парсинга сообщений
+  SetLog('BybitServerTimeOnEventBeginLoading:');
+end;
+
 procedure TMainForm.ButtonSelectedOffCryptClick(Sender: TObject);
 var
   xS: String;
+  BybitModule: TBybitModule;
   HttpClientAPI: TBybitHttpClientAPI;
 begin
+  BybitModule := TBybitModule.Create;
   HttpClientAPI := TBybitHttpClientAPI.Create;
   try
-    HttpClientAPI.BytiyModule.TypeHttp := TTypeHttp.thGet;
-    HttpClientAPI.BytiyModule.Module := '/v5/market/time';
+    BybitModule.TypeHttp := TTypeHttp.thGet;
+    BybitModule.Module := '/v5/market/time';
+    HttpClientAPI.BybitModule := BybitModule;
     HttpClientAPI.Selected;
     xS :=
       HttpClientAPI.StatusCode.ToString + ' ' +
-      Copy(HttpClientAPI.ResponseValue,1,100);
+      HttpClientAPI.ResponseValue;
     SetLog(xS);
+
   finally
+    FreeAndNil(BybitModule);
     FreeAndNil(HttpClientAPI);
   end;
 end;
 
+
+
+
 procedure TMainForm.ButtonSelectedOnCryptClick(Sender: TObject);
 var
   xS: String;
+  BybitModule: TBybitModule;
   xHttpClientAPI: TBybitHttpClientAPI;
   xEncryption: TEncryption;
 begin
   xEncryption := TEncryption.Create;
-
+  BybitModule := TBybitModule.Create;
   xHttpClientAPI := TBybitHttpClientAPI.Create;
   try
     xEncryption.ApiKey    := 'IYokQRNi1KjdlQ34vT';
     xEncryption.ApiSecret := 'cRQVjujmbZOAc4yIeoPTR2izhTbQPlkPgsGN';
     xEncryption.Timestamp := BybitServerTime.TimeSecond + '000';
 
-    with xHttpClientAPI.BytiyModule do
+    with BybitModule do
     begin
       TypeHttp := TTypeHttp.thGet;
       Host := BYBIT_HOST;
@@ -177,10 +189,12 @@ begin
     SetLog(xS);
 
   finally
+    FreeAndNil(BybitModule);
     FreeAndNil(xHttpClientAPI);
     FreeAndNil(xEncryption);
   end;
 end;
+
 
 
 procedure TMainForm.ButtonOrderSpotClick(Sender: TObject);
@@ -335,6 +349,7 @@ begin
   end;
 end;
 
+
 procedure TMainForm.ButtonSelectedClick(Sender: TObject);
 var
   xEncryption: TEncryption;
@@ -351,10 +366,10 @@ begin
   begin
     with BybitObject do
     begin
-      ModuleParam.TypeHttp := TTypeHttp.thGet;
-      ModuleParam.Module := '/v5/position/list';
+      BybitModule.TypeHttp := TTypeHttp.thGet;
+      BybitModule.Module := '/v5/position/list';
 
-      with ModuleParam.Params do
+      with BybitModule.Params do
       begin
         SetParam('category',GetStrToTypeCategory(TTypeCategory.tcLinear));
         SetParam('symbol','BTCUSDT');
@@ -365,9 +380,9 @@ begin
         // limit
         // cursor
       end;
-      xEncryption.QueryBody := ModuleParam.Query;
+      xEncryption.QueryBody := BybitModule.Query;
 
-      with ModuleParam.Headers do
+      with BybitModule.Headers do
       begin
         Values['X-BAPI-API-KEY']     := xEncryption.ApiKey;
         Values['X-BAPI-TIMESTAMP']   := xEncryption.Timestamp;
@@ -376,7 +391,7 @@ begin
         Values['X-BAPI-SIGN']        := xEncryption.Signature;
       end;
     end;
-    BybitObject.Selected(0);
+    BybitObject.Selected;
   end;
 
   FreeAndNil(xEncryption);
@@ -393,14 +408,5 @@ begin
 //    );
 end;
 
-procedure TMainForm.BybitServerTimeOnEventBeginLoading(Sender: TObject);
-begin
-
-end;
-
-procedure TMainForm.BybitServerTimeOnEventEndLoading(Sender: TObject);
-begin
-
-end;
 
 end.

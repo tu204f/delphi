@@ -12,7 +12,7 @@ object MainForm: TMainForm
   DesignerMasterStyle = 0
   object ButtonSelected: TButton
     Position.X = 8.000000000000000000
-    Position.Y = 8.000000000000000000
+    Position.Y = 184.000000000000000000
     Size.Width = 165.000000000000000000
     Size.Height = 22.000000000000000000
     Size.PlatformDefault = False
@@ -36,7 +36,7 @@ object MainForm: TMainForm
   end
   object ButtonSelectedOffCrypt: TButton
     Position.X = 8.000000000000000000
-    Position.Y = 32.000000000000000000
+    Position.Y = 208.000000000000000000
     Size.Width = 165.000000000000000000
     Size.Height = 22.000000000000000000
     Size.PlatformDefault = False
@@ -46,7 +46,7 @@ object MainForm: TMainForm
   end
   object ButtonSelectedOnCrypt: TButton
     Position.X = 8.000000000000000000
-    Position.Y = 56.000000000000000000
+    Position.Y = 232.000000000000000000
     Size.Width = 165.000000000000000000
     Size.Height = 22.000000000000000000
     Size.PlatformDefault = False
@@ -56,7 +56,7 @@ object MainForm: TMainForm
   end
   object ButtonOrder: TButton
     Position.X = 8.000000000000000000
-    Position.Y = 80.000000000000000000
+    Position.Y = 256.000000000000000000
     Size.Width = 165.000000000000000000
     Size.Height = 22.000000000000000000
     Size.PlatformDefault = False
@@ -66,7 +66,7 @@ object MainForm: TMainForm
   end
   object Button1: TButton
     Position.X = 8.000000000000000000
-    Position.Y = 104.000000000000000000
+    Position.Y = 280.000000000000000000
     Size.Width = 165.000000000000000000
     Size.Height = 22.000000000000000000
     Size.PlatformDefault = False
@@ -76,7 +76,7 @@ object MainForm: TMainForm
   end
   object Button2: TButton
     Position.X = 8.000000000000000000
-    Position.Y = 128.000000000000000000
+    Position.Y = 304.000000000000000000
     Size.Width = 165.000000000000000000
     Size.Height = 22.000000000000000000
     Size.PlatformDefault = False
@@ -86,12 +86,22 @@ object MainForm: TMainForm
   end
   object Button3: TButton
     Position.X = 8.000000000000000000
-    Position.Y = 152.000000000000000000
+    Position.Y = 328.000000000000000000
     Size.Width = 165.000000000000000000
     Size.Height = 22.000000000000000000
     Size.PlatformDefault = False
     TabOrder = 6
     Text = #1047#1072#1103#1074#1082#1072
     OnClick = Button3Click
+  end
+  object ButtonServerTime: TButton
+    Position.X = 4.000000000000000000
+    Position.Y = 8.000000000000000000
+    Size.Width = 172.000000000000000000
+    Size.Height = 22.000000000000000000
+    Size.PlatformDefault = False
+    TabOrder = 10
+    Text = #1042#1088#1077#1084#1103' '#1089#1077#1088#1074#1077#1088#1072
+    OnClick = ButtonServerTimeClick
   end
 end

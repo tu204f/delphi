@@ -18,8 +18,9 @@ type
   private
     FTimeSecond: String;
     FTimeNano: String;
-    procedure DoEventMessage(const AMessage: String); override;
     function GetDateTimeServer: TDateTime;
+  protected
+    procedure DoEventEndLoading; override;
   public
     constructor Create; override;
     destructor Destroy; override;
@@ -35,8 +36,8 @@ implementation
 constructor TBybitServerTime.Create;
 begin
   inherited Create;
-  ModuleParam.TypeHttp := TTypeHttp.thGet;
-  ModuleParam.Module := '/v5/market/time';
+  BybitModule.TypeHttp := TTypeHttp.thGet;
+  BybitModule.Module := '/v5/market/time';
 end;
 
 destructor TBybitServerTime.Destroy;
@@ -45,11 +46,11 @@ begin
   inherited;
 end;
 
-procedure TBybitServerTime.DoEventMessage(const AMessage: String);
+procedure TBybitServerTime.DoEventEndLoading;
 begin
-  inherited DoEventMessage(AMessage);
   FTimeSecond := Response.ResultObject.Values['timeSecond'].Value;
   FTimeNano := Response.ResultObject.Values['timeNano'].Value;
+  inherited DoEventEndLoading;
 end;
 
 function TBybitServerTime.GetDateTimeServer: TDateTime;

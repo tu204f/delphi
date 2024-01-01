@@ -55,11 +55,11 @@ begin
   FOldStartTime := '';
   FBybitKlineOne := TBybitKline.Create;
   FBybitKlineOne.OnEventEndLoading := BybitKlineOneEventMessage;
-  FBybitKlineOne.IntervalSleep := 1;
+  //FBybitKlineOne.Interval := 1;
 
   FBybitKlineAll := TBybitKline.Create;
   FBybitKlineAll.OnEventEndLoading := BybitKlineAllEventMessage;
-  FBybitKlineOne.IntervalSleep := 100;
+  //FBybitKlineOne.Interval := 100;
 
   FSources := TCandels.Create;
 end;
@@ -79,13 +79,13 @@ begin
   FBybitKlineAll.Symbol := ASymbol;
   FBybitKlineAll.Interval := AInterval;
   FBybitKlineAll.Limit := ALimit;
-  FBybitKlineAll.Selected(5000);
+  FBybitKlineAll.Start(5000);
 
   FBybitKlineOne.Category := ACategory;
   FBybitKlineOne.Symbol := ASymbol;
   FBybitKlineOne.Interval := AInterval;
   FBybitKlineOne.Limit := 1;
-  FBybitKlineOne.Selected(50);
+  FBybitKlineOne.Start(50);
 end;
 
 procedure TBybitCandels.Stop;

@@ -173,9 +173,9 @@ end;
 constructor TBybitInstrumentsInfo.Create;
 begin
   inherited;
-  ModuleParam.TypeHttp := TTypeHttp.thGet;
-  ModuleParam.Module := '/v5/market/instruments-info';
-  with ModuleParam.Params do
+  BybitModule.TypeHttp := TTypeHttp.thGet;
+  BybitModule.Module := '/v5/market/instruments-info';
+  with BybitModule.Params do
   begin
     // https://bybit-exchange.github.io/docs/v5/enum#locale
     SetParam('locale','ru-RU');
@@ -196,38 +196,38 @@ end;
 procedure TBybitInstrumentsInfo.SetCategory(const Value: TTypeCategory);
 begin
   FCategory := Value;
-  ModuleParam.Params.SetParam('category',GetStrToTypeCategory(FCategory))
+  BybitModule.Params.SetParam('category',GetStrToTypeCategory(FCategory))
 end;
 
 
 procedure TBybitInstrumentsInfo.SetSymbol(const Value: String);
 begin
   FSymbol := Value;
-  ModuleParam.Params.SetParam('symbol',FSymbol);
+  BybitModule.Params.SetParam('symbol',FSymbol);
 end;
 
 procedure TBybitInstrumentsInfo.SetStatus(const Value: TTypeStatus);
 begin
   FStatus := Value;
-  ModuleParam.Params.SetParam('status',GetStrToTypeStatus(Value));
+  BybitModule.Params.SetParam('status',GetStrToTypeStatus(Value));
 end;
 
 procedure TBybitInstrumentsInfo.SetBaseCoin(const Value: String);
 begin
   FBaseCoin := Value;
-  ModuleParam.Params.SetParam('baseCoin',FBaseCoin);
+  BybitModule.Params.SetParam('baseCoin',FBaseCoin);
 end;
 
 procedure TBybitInstrumentsInfo.SetLimit(const Value: Integer);
 begin
   FLimit := Value;
-  ModuleParam.Params.SetParam('limit',FLimit.ToString);
+  BybitModule.Params.SetParam('limit',FLimit.ToString);
 end;
 
 procedure TBybitInstrumentsInfo.SetCursor(const Value: String);
 begin
   FCursor := Value;
-  ModuleParam.Params.SetParam('cursor',FCursor);
+  BybitModule.Params.SetParam('cursor',FCursor);
 end;
 
 procedure TBybitInstrumentsInfo.DoEventMessage(const AMessage: String);

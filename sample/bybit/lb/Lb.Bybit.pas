@@ -27,7 +27,9 @@ type
   public
     constructor Create; virtual;
     destructor Destroy; override;
+    ///<summary>Установить соединение</summary>
     procedure Connected;
+    ///<summary>Разорвать соединение</summary>
     procedure Disconnected;
     property Active: Boolean read FActive write SetActive;
     property Host: String read FHost write FHost;
@@ -56,7 +58,7 @@ begin
   if not FActive then
   begin
     FActive := True;
-    FServerTime.Selected(1000);
+    FServerTime.Start(1000);
   end;
 end;
 

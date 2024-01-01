@@ -29,9 +29,9 @@ implementation
 constructor TBybitAnnouncement.Create;
 begin
   inherited Create;
-  ModuleParam.TypeHttp := TTypeHttp.thGet;
-  ModuleParam.Module := '/v5/announcements/index';
-  with ModuleParam.Params do
+  BybitModule.TypeHttp := TTypeHttp.thGet;
+  BybitModule.Module := '/v5/announcements/index';
+  with BybitModule.Params do
   begin
     // https://bybit-exchange.github.io/docs/v5/enum#locale
     SetParam('locale','ru-RU');

@@ -173,8 +173,8 @@ end;
 constructor TBybitPosition.Create;
 begin
   inherited Create;
-  ModuleParam.TypeHttp := TTypeHttp.thGet;
-  ModuleParam.Module := '/v5/position/list';
+  BybitModule.TypeHttp := TTypeHttp.thGet;
+  BybitModule.Module := '/v5/position/list';
   FPositionObjects := TPositionObjectList.Create;
 end;
 
@@ -187,37 +187,37 @@ end;
 procedure TBybitPosition.SetCategory(const Value: TTypeCategory);
 begin
   FCategory := Value;
-  ModuleParam.Params.SetParam('category',GetStrToTypeCategory(FCategory));
+  BybitModule.Params.SetParam('category',GetStrToTypeCategory(FCategory));
 end;
 
 procedure TBybitPosition.SetSymbol(const Value: String);
 begin
   FSymbol := Value;
-  ModuleParam.Params.SetParam('symbol',FSymbol);
+  BybitModule.Params.SetParam('symbol',FSymbol);
 end;
 
 procedure TBybitPosition.SetBaseCoin(const Value: String);
 begin
   FBaseCoin := Value;
-  ModuleParam.Params.SetParam('baseCoin',FBaseCoin);
+  BybitModule.Params.SetParam('baseCoin',FBaseCoin);
 end;
 
 procedure TBybitPosition.SetSettleCoin(const Value: String);
 begin
   FSettleCoin := Value;
-  ModuleParam.Params.SetParam('settleCoin',FSettleCoin);
+  BybitModule.Params.SetParam('settleCoin',FSettleCoin);
 end;
 
 procedure TBybitPosition.SetLimit(const Value: Integer);
 begin
   FLimit := Value;
-  ModuleParam.Params.SetParam('limit',FLimit.ToString);
+  BybitModule.Params.SetParam('limit',FLimit.ToString);
 end;
 
 procedure TBybitPosition.SetCursor(const Value: String);
 begin
   FCursor := Value;
-  ModuleParam.Params.SetParam('cursor',FCursor);
+  BybitModule.Params.SetParam('cursor',FCursor);
 end;
 
 procedure TBybitPosition.DoEventMessage(const AMessage: String);

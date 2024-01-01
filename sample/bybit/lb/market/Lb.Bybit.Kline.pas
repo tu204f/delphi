@@ -115,8 +115,8 @@ end;
 constructor TBybitKline.Create;
 begin
   inherited;
-  ModuleParam.TypeHttp := TTypeHttp.thGet;
-  ModuleParam.Module := '/v5/market/kline';
+  BybitModule.TypeHttp := TTypeHttp.thGet;
+  BybitModule.Module := '/v5/market/kline';
 end;
 
 destructor TBybitKline.Destroy;
@@ -129,38 +129,38 @@ end;
 procedure TBybitKline.SetCategory(const Value: TTypeCategory);
 begin
   FCategory := Value;
-  ModuleParam.Params.SetParam('category',GetStrToTypeCategory(FCategory))
+  BybitModule.Params.SetParam('category',GetStrToTypeCategory(FCategory))
 end;
 
 procedure TBybitKline.SetSymbol(const Value: String);
 begin
   FSymbol := Value;
-  ModuleParam.Params.SetParam('symbol',FSymbol);
+  BybitModule.Params.SetParam('symbol',FSymbol);
 end;
 
 
 procedure TBybitKline.SetInterval(const Value: TTypeInterval);
 begin
   FInterval := Value;
-  ModuleParam.Params.SetParam('interval',GetStrToTypeInterval(FInterval));
+  BybitModule.Params.SetParam('interval',GetStrToTypeInterval(FInterval));
 end;
 
 procedure TBybitKline.SetStartTime(const Value: Double);
 begin
   FStartTime := Value;
-  ModuleParam.Params.SetParam('start',FloatToStr(FStartTime));
+  BybitModule.Params.SetParam('start',FloatToStr(FStartTime));
 end;
 
 procedure TBybitKline.SetEndTime(const Value: Double);
 begin
   FEndTime := Value;
-  ModuleParam.Params.SetParam('end',FloatToStr(FEndTime));
+  BybitModule.Params.SetParam('end',FloatToStr(FEndTime));
 end;
 
 procedure TBybitKline.SetLimit(const Value: Integer);
 begin
   FLimit := Value;
-  ModuleParam.Params.SetParam('limit',FLimit.ToString);
+  BybitModule.Params.SetParam('limit',FLimit.ToString);
 end;
 
 procedure TBybitKline.DoEventMessage(const AMessage: String);
