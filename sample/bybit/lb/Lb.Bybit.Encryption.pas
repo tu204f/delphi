@@ -48,7 +48,7 @@ begin
   FApiKey    := '';
   FApiSecret := '';
   FTimestamp := (1000 * DateTimeToUnix(Now,True)).ToString;
-  FRecvWindow:= '20000';
+  FRecvWindow:= '5000';
   FQueryBody := '';
 end;
 

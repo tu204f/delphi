@@ -19,8 +19,8 @@ object MainForm: TMainForm
     Size.Height = 465.000000000000000000
     Size.PlatformDefault = False
     TabOrder = 2
-    Viewport.Width = 453.000000000000000000
-    Viewport.Height = 465.000000000000000000
+    Viewport.Width = 449.000000000000000000
+    Viewport.Height = 461.000000000000000000
   end
   object ButtonOrder1: TButton
     Position.X = 8.000000000000000000
@@ -61,5 +61,32 @@ object MainForm: TMainForm
     TabOrder = 5
     Text = #1047#1072#1103#1074#1082#1072' #4'
     OnClick = ButtonOrder4Click
+  end
+  object ButtonOrder: TButton
+    Position.X = 8.000000000000000000
+    Position.Y = 104.000000000000000000
+    Size.Width = 165.000000000000000000
+    Size.Height = 22.000000000000000000
+    Size.PlatformDefault = False
+    TabOrder = 9
+    Text = #1047#1072#1103#1074#1082#1072
+    OnClick = ButtonOrderClick
+  end
+  object ButtonOnThread: TButton
+    Position.X = 8.000000000000000000
+    Position.Y = 164.000000000000000000
+    Size.Width = 165.000000000000000000
+    Size.Height = 22.000000000000000000
+    Size.PlatformDefault = False
+    TabOrder = 10
+    Text = 'ButtonOnThread'
+    OnClick = ButtonOnThreadClick
+  end
+  object Button1: TButton
+    Position.X = 68.000000000000000000
+    Position.Y = 392.000000000000000000
+    TabOrder = 11
+    Text = 'Button1'
+    OnClick = Button1Click
   end
 end

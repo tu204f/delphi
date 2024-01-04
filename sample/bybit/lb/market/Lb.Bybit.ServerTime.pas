@@ -49,7 +49,7 @@ end;
 procedure TBybitServerTime.DoEventParser;
 begin
   try
-    FTimeSecond := Response.ResultObject.Values['timeSecond_'].Value;
+    FTimeSecond := Response.ResultObject.Values['timeSecond'].Value;
     FTimeNano   := Response.ResultObject.Values['timeNano'].Value;
   except
     raise EAbort.Create('Error Message: Ошибка парсинга');

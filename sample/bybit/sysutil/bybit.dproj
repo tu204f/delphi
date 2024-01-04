@@ -203,7 +203,7 @@
         <DCCReference Include="..\lb\market\Lb.Bybit.Kline.pas"/>
         <DCCReference Include="..\lb\Lb.Bybit.Encryption.pas"/>
         <DCCReference Include="..\lb\position\Lb.Bybit.Position.pas"/>
-        <DCCReference Include="..\lb\trade\Lb.Bybit.PlaceOrder.pas"/>
+        <DCCReference Include="..\lb\trade\Lb.Bybit.Trade.pas"/>
         <DCCReference Include="..\lb\Lb.Bybit.pas"/>
         <BuildConfiguration Include="Release">
             <Key>Cfg_2</Key>

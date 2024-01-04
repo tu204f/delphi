@@ -192,7 +192,7 @@
             <FormType>fmx</FormType>
         </DCCReference>
         <DCCReference Include="..\..\lb\Lb.Bybit.SysUtils.pas"/>
-        <DCCReference Include="..\..\lb\trade\Lb.Bybit.PlaceOrder.pas"/>
+        <DCCReference Include="..\..\lb\trade\Lb.Bybit.Trade.pas"/>
         <DCCReference Include="..\..\lb\Lb.Bybit.Encryption.pas"/>
         <DCCReference Include="..\..\lb\market\Lb.Bybit.ServerTime.pas"/>
         <BuildConfiguration Include="Release">

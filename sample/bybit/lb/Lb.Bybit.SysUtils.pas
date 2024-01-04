@@ -263,7 +263,7 @@ type
   TBybitHttpClientAPI = class(TObject)
   private
     FResponseValue: String;
-    FSource: TStrings;
+    FSource: String;
     FBybitModule: TBybitModule;
     FClient: TNetHTTPClient;
   private
@@ -273,7 +273,7 @@ type
     destructor Destroy; override;
     procedure Selected;
     property BybitModule: TBybitModule write FBybitModule;
-    property Source: TStrings read FSource;
+    property Source: String write FSource;
     property ResponseValue: String read FResponseValue;
     property StatusCode: Integer read FStatusCode;
   end;
@@ -760,12 +760,10 @@ constructor TBybitHttpClientAPI.Create;
 begin
   FBybitModule := nil;
   FClient := TNetHTTPClient.Create(nil);
-  FSource := TStringList.Create;
 end;
 
 destructor TBybitHttpClientAPI.Destroy;
 begin
-  FreeAndNil(FSource);
   FreeAndNil(FClient);
   inherited;
 end;
@@ -793,13 +791,18 @@ var
   xURL: String;
   xHeaders: TNetHeaders;
   xResponse: IHTTPResponse;
+  xStream: TStringStream;
 begin
   if not Assigned(FBybitModule) then
     raise Exception.Create('Error Message: Параметры модуля не определены');
-  FClient.UserAgent := 'Client Bybit';
+
+  FClient.UserAgent := 'python-requests/2.27.1';
+  FClient.AcceptEncoding := 'gzip, deflate';
+  FClient.Accept := '*/*';
   xHeaders  := _Headers;
   xURL := FBybitModule.GetURL;
   try
+
     case FBybitModule.TypeHttp of
       thGet: xResponse := FClient.Get(
         xURL,
@@ -807,15 +810,21 @@ begin
         xHeaders
       );
       thPost: begin
-        xResponse := FClient.Post(
-          xURL,
-          FSource,
-          nil,
-          TEncoding.UTF8,
-          xHeaders
-        );
+        xStream := TStringStream.Create(Trim(FSource),TEncoding.UTF8);;
+        xStream.Position := 0;
+        try
+          xResponse := FClient.Post(
+            xURL,
+            xStream,
+            nil,
+            xHeaders
+          );
+        finally
+          FreeAndNil(xStream);
+        end;
       end;
     end;
+
     FStatusCode := xResponse.StatusCode;
     if FStatusCode = 200 then
       FResponseValue := xResponse.ContentAsString(TEncoding.UTF8)
