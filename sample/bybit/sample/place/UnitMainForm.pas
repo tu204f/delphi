@@ -21,28 +21,34 @@ uses
   Lb.Bybit.SysUtils,
   Lb.Bybit.ServerTime,
   Lb.Bybit.Encryption,
-  Lb.Bybit.PlaceOrder;
+  Lb.Bybit.Trade,
+  Lb.Bybit.RealTime;
 
 type
   TMainForm = class(TForm)
     MemoResult: TMemo;
-    ButtonOrder1: TButton;
-    ButtonOrder2: TButton;
-    ButtonOrder3: TButton;
-    ButtonOrder4: TButton;
-    ButtonOrder: TButton;
+    ButtonPlaceOrder: TButton;
+    ButtonCancelOrder1: TButton;
+    ButtonCancelOrder2: TButton;
+    ButtonAmendOrder1: TButton;
+    ButtonOrders: TButton;
     ButtonOnThread: TButton;
-    Button1: TButton;
-    procedure ButtonOrder1Click(Sender: TObject);
-    procedure ButtonOrder2Click(Sender: TObject);
-    procedure ButtonOrder3Click(Sender: TObject);
-    procedure ButtonOrder4Click(Sender: TObject);
-    procedure ButtonOrderClick(Sender: TObject);
-    procedure ButtonOnThreadClick(Sender: TObject);
-    procedure Button1Click(Sender: TObject);
+    ButtonAmendOrder2: TButton;
+    procedure ButtonPlaceOrderClick(Sender: TObject);
+    procedure ButtonCancelOrder1Click(Sender: TObject);
+    procedure ButtonCancelOrder2Click(Sender: TObject);
+    procedure ButtonAmendOrder1Click(Sender: TObject);
+    procedure ButtonAmendOrder2Click(Sender: TObject);
+    procedure ButtonOrdersClick(Sender: TObject);
   private
-    BybitPlaceOrder: TBybitPlaceOrder;
-    procedure BybitPlaceOrderOnEventEndLoading(Sender: TObject);
+    BybitRealTime: TBybitRealTime;
+    OrderResponse: TOrderResponse;
+
+    procedure RealTimeEventMessage(Sender: TObject);
+    procedure RealTimeEventException(Sender: TObject);
+    procedure RealTimeEventBeginLoading(Sender: TObject);
+    procedure RealTimeEventEndLoading(Sender: TObject);
+
   public
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
@@ -60,27 +66,25 @@ uses
   System.Hash,
   System.DateUtils;
 
-function GetNow: Int64;
-var
-  lDate: TDateTime;
-begin
-  lDate := TTimeZone.Local.ToUniversalTime(Now);
-  Result := Abs(DateTimeToMilliseconds(UnixDateDelta) - DateTimeToMilliseconds(lDate));
-end;
-
 { TMainForm }
 
 constructor TMainForm.Create(AOwner: TComponent);
 begin
   inherited Create(AOwner);
 
-  BybitPlaceOrder := TBybitPlaceOrder.Create;
-  BybitPlaceOrder.OnEventEndLoading := BybitPlaceOrderOnEventEndLoading;
+  BybitRealTime := TBybitRealTime.Create;
+  BybitRealTime.OnEventMessage := RealTimeEventMessage;
+  BybitRealTime.OnEventException := RealTimeEventException;
+  BybitRealTime.OnEventBeginLoading := RealTimeEventBeginLoading;
+  BybitRealTime.OnEventEndLoading := RealTimeEventEndLoading;
+
+  OrderResponse := TOrderResponse.Create;
 end;
 
 destructor TMainForm.Destroy;
 begin
-  FreeAndNil(BybitPlaceOrder);
+  FreeAndNil(OrderResponse);
+  FreeAndNil(BybitRealTime);
   inherited;
 end;
 
@@ -89,287 +93,168 @@ begin
   MemoResult.Lines.Add(S);
 end;
 
-
-procedure TMainForm.ButtonOrder1Click(Sender: TObject);
+procedure TMainForm.ButtonPlaceOrderClick(Sender: TObject);
 var
-  xPlaceOrder: TObjectPlaceOrder;
+  xS: String;
+  xPlaceOrder: TParamOrder;
 begin
-(*
-  // Spot PostOnly normal order
-  {
-    "category":"spot",
-    "symbol":"BTCUSDT",
-    "side":"Buy",
-    "orderType":"Limit",
-    "qty":"0.1",
-    "price":"15600",
-    "timeInForce":"PostOnly",
-    "orderLinkId":"spot-test-01",
-    "isLeverage":0,
-    "orderFilter":"Order"
-  }
-*)
-  xPlaceOrder := TObjectPlaceOrder.Create;
+  xPlaceOrder := TParamOrder.Create;
   try
-    xPlaceOrder.Category := TTypeCategory.tcSpot;
-    xPlaceOrder.Symbol := 'BTCUSDT';
-    xPlaceOrder.Side := TTypeSide.tsBuy;
-    xPlaceOrder.OrderType := TTypeOrder.Limit;
-    xPlaceOrder.Qty := 0.1;
-    xPlaceOrder.Price := 15600;
-    xPlaceOrder.TimeInForce := TTypeTimeInForce.PostOnly;
-    xPlaceOrder.OrderLinkId := 'spot-test-01';
-    xPlaceOrder.IsLeverage := 0;
-    xPlaceOrder.OrderFilter := TTypeOrderFilter.Order;
-    SetLog(xPlaceOrder.Value);
-    SetLog('****');
+    xPlaceOrder.TypeProc    := TParamOrder.TTypeProc.Place;
+    xPlaceOrder.Category    := TTypeCategory.tcLinear;
+    xPlaceOrder.Symbol      := 'BTCUSDT';
+    xPlaceOrder.Side        := TTypeSide.tsBuy;
+    xPlaceOrder.PositionIdx := 0;
+    xPlaceOrder.OrderType   := TTypeOrder.Limit;
+    xPlaceOrder.Qty         := 0.001;
+    xPlaceOrder.Price       := 43596;
+    xPlaceOrder.timeInForce := TTypeTimeInForce.GTC;
+    xPlaceOrder.OrderLinkId := 'test' + Random(65000).ToString;
+    xS := SelectedOrder(
+      'xN7ITgfUFq8XoPSuiE',
+      'MXcY548mw6hfp8YVoP6KO4XL8xFOYcMA1w7Z',
+       xPlaceOrder,
+       OrderResponse
+    );
+    SetLog(xS);
   finally
     FreeAndNil(xPlaceOrder);
   end;
 end;
 
-procedure TMainForm.ButtonOrder2Click(Sender: TObject);
+procedure TMainForm.ButtonCancelOrder1Click(Sender: TObject);
 var
-  xPlaceOrder: TObjectPlaceOrder;
+  xS: String;
+  xPlaceOrder: TParamOrder;
 begin
-(*
-  // Spot TP/SL order
-  {
-    "category":"spot",
-    "symbol":"BTCUSDT",
-    "side":"Buy",
-    "orderType":"Limit",
-    "qty":"0.1",
-    "price":"15600",
-    "triggerPrice": "15000",
-    "timeInForce":"Limit",
-    "orderLinkId":"spot-test-02",
-    "isLeverage":0,
-    "orderFilter":"tpslOrder"
-  }
-*)
-  xPlaceOrder := TObjectPlaceOrder.Create;
+  xPlaceOrder := TParamOrder.Create;
   try
-    xPlaceOrder.Category := TTypeCategory.tcSpot;
-    xPlaceOrder.Symbol := 'BTCUSDT';
-    xPlaceOrder.Side := TTypeSide.tsBuy;
-    xPlaceOrder.OrderType := TTypeOrder.Limit;
-    xPlaceOrder.Qty := 0.1;
-    xPlaceOrder.Price := 15600;
-    xPlaceOrder.TriggerPrice := 15600;
-    xPlaceOrder.TimeInForce := TTypeTimeInForce.PostOnly;
-    xPlaceOrder.OrderLinkId := 'spot-test-02';
-    xPlaceOrder.IsLeverage := 0;
-    xPlaceOrder.OrderFilter := TTypeOrderFilter.tpslOrder;
-    SetLog(xPlaceOrder.Value);
-    SetLog('****');
+    xPlaceOrder.TypeProc    := TParamOrder.TTypeProc.Cancel;
+    xPlaceOrder.Category    := TTypeCategory.tcLinear;
+    xPlaceOrder.Symbol      := 'BTCUSDT';
+    xPlaceOrder.OrderID     := OrderResponse.OrderID;
+    xS := SelectedOrder(
+      'xN7ITgfUFq8XoPSuiE',
+      'MXcY548mw6hfp8YVoP6KO4XL8xFOYcMA1w7Z',
+       xPlaceOrder,
+       OrderResponse
+    );
+    SetLog(xS);
   finally
     FreeAndNil(xPlaceOrder);
   end;
 end;
 
-procedure TMainForm.ButtonOrder3Click(Sender: TObject);
+procedure TMainForm.ButtonCancelOrder2Click(Sender: TObject);
 var
-  xPlaceOrder: TObjectPlaceOrder;
+  xS: String;
+  xPlaceOrder: TParamOrder;
 begin
-(*
-  // Spot margin normal order (UTA)
-  {
-    "category":"spot",
-    "symbol":"BTCUSDT",
-    "side":"Buy",
-    "orderType":"Limit",
-    "qty":"0.1",
-    "price":"15600",
-    "timeInForce":"Limit",
-    "orderLinkId":"spot-test-limit",
-    "isLeverage":1,
-    "orderFilter":"Order"
-  }
-*)
-  xPlaceOrder := TObjectPlaceOrder.Create;
+  xPlaceOrder := TParamOrder.Create;
   try
-    xPlaceOrder.Category := TTypeCategory.tcSpot;
-    xPlaceOrder.Symbol := 'BTCUSDT';
-    xPlaceOrder.Side := TTypeSide.tsBuy;
-    xPlaceOrder.OrderType := TTypeOrder.Limit;
-    xPlaceOrder.Qty := 0.1;
-    xPlaceOrder.Price := 15600;
-    xPlaceOrder.TimeInForce := TTypeTimeInForce.PostOnly;
-    xPlaceOrder.OrderLinkId := 'spot-test-limit';
-    xPlaceOrder.IsLeverage := 1;
-    xPlaceOrder.OrderFilter := TTypeOrderFilter.Order;
-    SetLog(xPlaceOrder.Value);
-    SetLog('****');
+    xPlaceOrder.TypeProc    := TParamOrder.TTypeProc.Cancel;
+    xPlaceOrder.Category    := TTypeCategory.tcLinear;
+    xPlaceOrder.Symbol      := 'BTCUSDT';
+    xPlaceOrder.OrderLinkID := OrderResponse.OrderLinkID;
+    xS := SelectedOrder(
+      'xN7ITgfUFq8XoPSuiE',
+      'MXcY548mw6hfp8YVoP6KO4XL8xFOYcMA1w7Z',
+       xPlaceOrder,
+       OrderResponse
+    );
+    SetLog(xS);
   finally
     FreeAndNil(xPlaceOrder);
   end;
 end;
 
-procedure TMainForm.ButtonOrder4Click(Sender: TObject);
+
+procedure TMainForm.ButtonAmendOrder1Click(Sender: TObject);
 var
-  xPlaceOrder: TObjectPlaceOrder;
+  xS: String;
+  xPlaceOrder: TParamOrder;
 begin
-(*
-  // Spot Market Buy order, qty is quote currency
-  {
-    "category":"spot",
-    "symbol":"BTCUSDT",
-    "side":"Buy",
-    "orderType":"Market",
-    "qty":"200",
-    "timeInForce":"IOC",
-    "orderLinkId":"spot-test-04",
-    "isLeverage":0,
-    "orderFilter":"Order"
-  }
-*)
-  xPlaceOrder := TObjectPlaceOrder.Create;
+  xPlaceOrder := TParamOrder.Create;
   try
-    xPlaceOrder.Category := TTypeCategory.tcSpot;
-    xPlaceOrder.Symbol := 'BTCUSDT';
-    xPlaceOrder.Side := TTypeSide.tsBuy;
-    xPlaceOrder.OrderType := TTypeOrder.Market;
-    xPlaceOrder.Qty := 200;
-    xPlaceOrder.TimeInForce := TTypeTimeInForce.IOC;
-    xPlaceOrder.OrderLinkId := 'spot-test-04';
-    xPlaceOrder.IsLeverage := 0;
-    xPlaceOrder.OrderFilter := TTypeOrderFilter.Order;
-    SetLog(xPlaceOrder.Value);
-    SetLog('****');
+    xPlaceOrder.TypeProc    := TParamOrder.TTypeProc.Amend;
+    xPlaceOrder.OrderID     := OrderResponse.OrderID;
+    xPlaceOrder.Category    := TTypeCategory.tcLinear;
+    xPlaceOrder.Symbol      := 'BTCUSDT';
+    xPlaceOrder.Price       := 43455;
+    xPlaceOrder.Qty         := 0.002;
+    xS := SelectedOrder(
+      'xN7ITgfUFq8XoPSuiE',
+      'MXcY548mw6hfp8YVoP6KO4XL8xFOYcMA1w7Z',
+       xPlaceOrder,
+       OrderResponse
+    );
+    SetLog(xS);
   finally
     FreeAndNil(xPlaceOrder);
   end;
 end;
 
-procedure AddOrder(APlaceOrder: TObjectPlaceOrder);
-begin
-(*
-  // Spot PostOnly normal order
-  {
-    "category":"linear",
-    "symbol": "BTCUSDT",
-    "side": "Buy",
-    "positionIdx": 0,
-    "orderType": "Limit",
-    "qty": "0.001",
-    "price": "45100",
-    "timeInForce": "GTC",
-    "orderLinkId": "test-01"
-  }
-*)
-  APlaceOrder.Category := TTypeCategory.tcLinear;
-  APlaceOrder.Symbol := 'BTCUSDT';
-  APlaceOrder.Side := TTypeSide.tsBuy;
-  APlaceOrder.PositionIdx := 0;
-  APlaceOrder.OrderType := TTypeOrder.Limit;
-  APlaceOrder.Qty := 0.001;
-  APlaceOrder.Price := 44800;
-  APlaceOrder.TimeInForce := TTypeTimeInForce.GTC;
-  APlaceOrder.OrderLinkId := 'test-' + Random(60000).ToString;
-end;
 
-procedure TMainForm.ButtonOrderClick(Sender: TObject);
-begin
-  AddOrder(BybitPlaceOrder.AddPlaceOrder);
-  BybitPlaceOrder.Selected;
-end;
-
-procedure TMainForm.BybitPlaceOrderOnEventEndLoading(Sender: TObject);
-begin
-
-end;
-
-procedure TMainForm.Button1Click(Sender: TObject);
+procedure TMainForm.ButtonAmendOrder2Click(Sender: TObject);
 var
-  xValue: Int64;
-  lDate: TDateTime;
+  xS: String;
+  xPlaceOrder: TParamOrder;
 begin
-//  xValue := DateTimeToUnix(Now,True);
-//  SetLog(IntToStr(xValue));
-
-(*
-  function SecondsBetween(const ANow, AThen: TDateTime): Int64;
-  begin
-    Result := Abs(DateTimeToMilliseconds(ANow) - DateTimeToMilliseconds(AThen))
-      div (MSecsPerSec);
-  end;
-
-  function DateTimeToUnix(const AValue: TDateTime; AInputIsUTC: Boolean): Int64;
-  var
-    LDate: TDateTime;
-   begin
-    if AInputIsUTC then
-      LDate := AValue
-    else
-      LDate := TTimeZone.Local.ToUniversalTime(AValue);
-    Result := SecondsBetween(UnixDateDelta, LDate);
-    if LDate < UnixDateDelta then
-       Result := -Result;
-   end;
-*)
-
-  lDate := Now;
-  xValue := Abs(DateTimeToMilliseconds(UnixDateDelta) - DateTimeToMilliseconds(lDate));
-  SetLog(IntToStr(xValue));
-end;
-
-procedure TMainForm.ButtonOnThreadClick(Sender: TObject);
-var
-  xValue: String;
-  xModule: TBybitModule;
-  xEncryption: TEncryption;
-  xClientAPI: TBybitHttpClientAPI;
-  xPlaceOrder: TObjectPlaceOrder;
-  xSignature: String;
-begin
-  xModule := TBybitModule.Create;
-  xEncryption:= TEncryption.Create;
-  xClientAPI := TBybitHttpClientAPI.Create;
-  xPlaceOrder := TObjectPlaceOrder.Create;
+  xPlaceOrder := TParamOrder.Create;
   try
-    xEncryption.ApiKey    := 'xN7ITgfUFq8XoPSuiE';
-    xEncryption.ApiSecret := 'MXcY548mw6hfp8YVoP6KO4XL8xFOYcMA1w7Z';
-    xEncryption.Timestamp := GetNow.ToString;
-
-    // Заполняем заявку
-    AddOrder(xPlaceOrder);
-
-    xValue := xPlaceOrder.Value;
-    SetLog(xValue);
-
-    xEncryption.QueryBody := xValue;
-    xSignature := xEncryption.Signature;
-    SetLog(xSignature);
-
-    with xModule do
-    begin
-      TypeHttp := TTypeHttp.thPost;
-      Host := BYBIT_HOST;
-      Module := '/v5/order/create';
-
-      // Значение работы
-      with Headers do
-      begin
-        Values['X-BAPI-API-KEY']     := xEncryption.ApiKey;
-        Values['X-BAPI-SIGN']        := xSignature;
-        Values['X-BAPI-SIGN-TYPE']   := '2';
-        Values['X-BAPI-TIMESTAMP']   := xEncryption.Timestamp;
-        Values['X-BAPI-RECV-WINDOW'] := xEncryption.RecvWindow;
-      end;
-    end;
-
-    xClientAPI.BybitModule := xModule;
-    xClientAPI.Source := xValue;
-    xClientAPI.Selected;
-    MemoResult.Lines.Add(xClientAPI.ResponseValue);
+    xPlaceOrder.TypeProc    := TParamOrder.TTypeProc.Amend;
+    xPlaceOrder.OrderLinkID := OrderResponse.OrderLinkID;
+    xPlaceOrder.Category    := TTypeCategory.tcLinear;
+    xPlaceOrder.Symbol      := 'BTCUSDT';
+    xPlaceOrder.Price       := 43455;
+    xPlaceOrder.Qty         := 0.002;
+    xS := SelectedOrder(
+      'xN7ITgfUFq8XoPSuiE',
+      'MXcY548mw6hfp8YVoP6KO4XL8xFOYcMA1w7Z',
+       xPlaceOrder,
+       OrderResponse
+    );
+    SetLog(xS);
   finally
     FreeAndNil(xPlaceOrder);
-    FreeAndNil(xClientAPI);
-    FreeAndNil(xEncryption);
-    FreeAndNil(xModule);
   end;
 end;
+
+procedure TMainForm.RealTimeEventBeginLoading(Sender: TObject);
+begin
+  SetLog('RealTimeEventBeginLoading:');
+end;
+
+procedure TMainForm.RealTimeEventException(Sender: TObject);
+begin
+  SetLog('RealTimeEventException:');
+  SetLog('>> ' + BybitRealTime.Response.RetCode.ToString);
+  SetLog('>> ' + BybitRealTime.Response.RetMsg);
+end;
+
+procedure TMainForm.RealTimeEventMessage(Sender: TObject);
+begin
+  //SetLog(BybitRealTime.ValueMessage);
+end;
+
+procedure TMainForm.ButtonOrdersClick(Sender: TObject);
+begin
+  BybitRealTime.OnEventEndLoading := RealTimeEventEndLoading;
+  BybitRealTime.SetEncryption(
+    'xN7ITgfUFq8XoPSuiE',
+    'MXcY548mw6hfp8YVoP6KO4XL8xFOYcMA1w7Z'
+  );
+  BybitRealTime.Category := TTypeCategory.tcLinear;
+  BybitRealTime.Symbol := 'BTCUSDT';
+  BybitRealTime.Selected;
+end;
+
+procedure TMainForm.RealTimeEventEndLoading(Sender: TObject);
+begin
+  SetLog('RealTimeEventEndLoading:');
+  SetLog('>> ' + BybitRealTime.RealTimeObjects.Count.ToString);
+end;
+
 
 
 end.

@@ -19,6 +19,9 @@ uses
   Lb.Bybit.SysUtils;
 
 type
+  TCandelObject = class;
+  TCandelObjectList = TObjectList<TCandelObject>;
+
   ///<summary>Get Kline - Получение исторических данных</summary>
   TBybitKline = class(TBybitHttpClient)
   private
@@ -36,7 +39,8 @@ type
     procedure SetStartTime(const Value: Double);
   protected
     FListJson: TJSONArray;
-    procedure DoEventMessage(const AMessage: String); override;
+    FCandelObjects: TCandelObjectList;
+    procedure DoEventParser; override;
   public
     constructor Create; override;
     destructor Destroy; override;
@@ -53,9 +57,9 @@ type
     property Limit: Integer read FLimit write SetLimit;
   public
     property ListJson: TJSONArray read FListJson;
+    property CandelObjects: TCandelObjectList read FCandelObjects;
   end;
 
-type
   ///<summary>Linear/Inverse</summary>
   TCandelObject = class(TObject)
     startTime: String;
@@ -72,9 +76,6 @@ type
     function ToString: String; override;
     property DateTime: TDateTime read GetDateTime;
   end;
-
-  ///<summary>Массив свечей</summary>
-  TCandelObjectList = TObjectList<TCandelObject>;
 
 procedure SetLinearObjects(AListJson: TJSONArray; ACandelObjects: TCandelObjectList);
 
@@ -117,11 +118,12 @@ begin
   inherited;
   BybitModule.TypeHttp := TTypeHttp.thGet;
   BybitModule.Module := '/v5/market/kline';
+  FCandelObjects := TCandelObjectList.Create;
 end;
 
 destructor TBybitKline.Destroy;
 begin
-
+  FreeAndNil(FCandelObjects);
   inherited;
 end;
 
@@ -163,16 +165,17 @@ begin
   BybitModule.Params.SetParam('limit',FLimit.ToString);
 end;
 
-procedure TBybitKline.DoEventMessage(const AMessage: String);
+procedure TBybitKline.DoEventParser;
 var
   xValueJson: TJSONValue;
 begin
-  inherited DoEventMessage(AMessage);
   xValueJson := Response.ResultObject.Values['list'];
   if xValueJson is TJSONArray then
+  begin
     FListJson := TJSONArray(xValueJson);
+    SetLinearObjects(FListJson,FCandelObjects);
+  end;
 end;
-
 
 { TCandelObject }
 
@@ -188,27 +191,15 @@ end;
 
 procedure TCandelObject.SetObjectJson(const AValueJsons: TJSONArray);
 begin
-(*
-            [
-                "1670608800000",
-                "17071",
-                "17073",
-                "17027",
-                "17055.5",
-                "268611",
-                "15.74462667"
-            ],
-*)
   if (AValueJsons.Count < 7) then
     raise Exception.Create('Error Message: Объект работы');
-
-  startTime  := AValueJsons.Items[0].Value;
-  openPrice  := AValueJsons.Items[1].Value;
-  highPrice  := AValueJsons.Items[2].Value;
-  lowPrice   := AValueJsons.Items[3].Value;
-  closePrice := AValueJsons.Items[4].Value;
-  volume     := AValueJsons.Items[5].Value;
-  turnover   := AValueJsons.Items[6].Value;
+  startTime  := GetStrToJson(AValueJsons.Items[0]);
+  openPrice  := GetStrToJson(AValueJsons.Items[1]);
+  highPrice  := GetStrToJson(AValueJsons.Items[2]);
+  lowPrice   := GetStrToJson(AValueJsons.Items[3]);
+  closePrice := GetStrToJson(AValueJsons.Items[4]);
+  volume     := GetStrToJson(AValueJsons.Items[5]);
+  turnover   := GetStrToJson(AValueJsons.Items[6]);
 end;
 
 function TCandelObject.ToString: String;

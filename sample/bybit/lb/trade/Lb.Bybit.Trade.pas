@@ -8,27 +8,29 @@ interface
 uses
   System.Classes,
   System.SysUtils,
-  System.math,
-  System.Threading,
-  System.DateUtils,
-  System.SyncObjs,
   System.Generics.Collections,
-  System.JSON,
   Lb.Bybit.SysUtils,
   Lb.Bybit.Encryption,
   Lb.Bybit.ServerTime;
 
 type
   ///<summary>Генерирует заявку на биржу</summary>
-  TObjectPlaceOrder = class(TObject)
+  TParamOrder = class(TObject)
   public type
+    TTypeProc = (
+      Place,  // Выставить заявку
+      Amend,  // Изменить заявку
+      Cancel  // Отменить заявку
+    );
     TParam = TPair<String,String>;
     TParamList = TList<TParam>;
   private
+    FTypeOrder: TTypeOrder;
     FParams: TParamList;
     procedure AddParam(const AKye, AValue: String);
     function GetValue: String;
   private
+    FTypeProc: TTypeProc;
     procedure SetCategory(const Value: TTypeCategory);
     procedure SetSymbol(const Value: String);
     procedure SetIsLeverage(const Value: Integer);
@@ -58,9 +60,12 @@ type
     procedure SetSlLimitPrice(const Value: Double);
     procedure SetTpOrderType(const Value: Double);
     procedure SetSpOrderType(const Value: Double);
+    procedure SetOrderID(const Value: String);
   public
     constructor Create; virtual;
     destructor Destroy; override;
+    property TypeProc: TTypeProc read FTypeProc write FTypeProc;
+    property OrderID: String write SetOrderID;
     property Category: TTypeCategory write SetCategory;
     property Symbol: String write SetSymbol;
     property IsLeverage: Integer write SetIsLeverage;
@@ -76,7 +81,7 @@ type
     property OrderLv: String write SetOrderLv;
     property TimeInForce: TTypeTimeInForce write SetTimeInForce;
     property PositionIdx: Integer write SetPositionIdx;
-    property OrderLinkId: String write SetOrderLinkId;
+    property OrderLinkID: String write SetOrderLinkID;
     property TakeProfit: Double write SetTakeProfit;
     property StopLoss: Double write SetStopLoss;
     property TP_TriggerBy: TTypeTriggerBy write SetTP_TriggerBy;
@@ -94,21 +99,41 @@ type
   end;
 
   ///<summary>Список отправляемых заявок</summary>
-  TObjectPlaceOrderList = TObjectList<TObjectPlaceOrder>;
+  TParamOrderList = TObjectList<TParamOrder>;
 
   TBybitPlaceOrder = class(TBybitHttpClient)
   private
     FServerTime: TBybitServerTime;
-    FPlaceOrders: TObjectPlaceOrderList;
+    FPlaceOrders: TParamOrderList;
   public
     constructor Create; override;
     destructor Destroy; override;
     procedure Clear;
-    function AddPlaceOrder: TObjectPlaceOrder;
-    property PlaceOrders: TObjectPlaceOrderList read FPlaceOrders;
+    function AddPlaceOrder: TParamOrder;
+    property PlaceOrders: TParamOrderList read FPlaceOrders;
   end;
 
+
+  ///<summary>Ответ отливка на заявку</summary>
+  TOrderResponse = class(TBytiyResponse)
+  private
+    FOrderID: String;
+    FOrderLinkID: String;
+  public
+    procedure SetParserValue(const AValue: String); override;
+    property OrderID: String read FOrderID;
+    ///<summary>Пользовательский идентификатор заказа, настроенный пользователем</summary>
+    property OrderLinkID: String read FOrderLinkID;
+  end;
+
+function SelectedOrder(const ApiKey, ApiSecret: String; APlaceOrder: TParamOrder; AOrderResponse: TOrderResponse): String;
+
 implementation
+
+uses
+  System.Math,
+  System.Hash,
+  System.DateUtils;
 
 function GetDecimalSeparator(const AValue: String): String;
 var
@@ -122,29 +147,88 @@ begin
   Result := xValue;
 end;
 
-{ TObjectPlaceOrder }
+function SelectedOrder(const ApiKey, ApiSecret: String; APlaceOrder: TParamOrder; AOrderResponse: TOrderResponse): String;
+var
+  xValue: String;
+  xModule: TBybitModule;
+  xEncryption: TEncryption;
+  xClientAPI: TBybitHttpClientAPI;
+  xSignature: String;
+begin
+  if not Assigned(APlaceOrder) then
+    raise Exception.Create('Error Message: Параметр объекта');
 
-constructor TObjectPlaceOrder.Create;
+  xModule := TBybitModule.Create;
+  xEncryption:= TEncryption.Create;
+  xClientAPI := TBybitHttpClientAPI.Create;
+  try
+    // Шифрование запроса
+    xEncryption.ApiKey    := ApiKey;
+    xEncryption.ApiSecret := ApiSecret;
+    xEncryption.Timestamp := GetNow.ToString;
+
+    xValue := APlaceOrder.Value;
+    xEncryption.QueryBody := xValue;
+    xSignature := xEncryption.Signature;
+
+    // Оформляем модуль запроса
+    xModule.TypeHttp := TTypeHttp.thPost;
+    xModule.Host := BYBIT_HOST;
+    case APlaceOrder.TypeProc of
+      Place : xModule.Module := '/v5/order/create';
+      Amend : xModule.Module := '/v5/order/amend';
+      Cancel: xModule.Module := '/v5/order/cancel';
+    end;
+    // Значение работы
+    with xModule.Headers do
+    begin
+      Values['X-BAPI-API-KEY']     := xEncryption.ApiKey;
+      Values['X-BAPI-SIGN']        := xSignature;
+      Values['X-BAPI-SIGN-TYPE']   := '2';
+      Values['X-BAPI-TIMESTAMP']   := xEncryption.Timestamp;
+      Values['X-BAPI-RECV-WINDOW'] := xEncryption.RecvWindow;
+    end;
+
+    // Сам запрос
+    xClientAPI.BybitModule := xModule;
+    xClientAPI.Source := xValue;
+    xClientAPI.Selected;
+
+    if Assigned(AOrderResponse) then
+      AOrderResponse.SetParserValue(xClientAPI.ResponseValue);
+
+    Result := xClientAPI.ResponseValue;
+  finally
+    FreeAndNil(xClientAPI);
+    FreeAndNil(xEncryption);
+    FreeAndNil(xModule);
+  end;
+end;
+
+
+{ TParamOrder }
+
+constructor TParamOrder.Create;
 begin
   FParams := TParamList.Create;
 end;
 
-destructor TObjectPlaceOrder.Destroy;
+destructor TParamOrder.Destroy;
 begin
   FreeAndNil(FParams);
   inherited;
 end;
 
-procedure TObjectPlaceOrder.AddParam(const AKye, AValue: String);
+procedure TParamOrder.AddParam(const AKye, AValue: String);
 begin
   FParams.Add(TParam.Create(AKye,AValue));
 end;
 
-function TObjectPlaceOrder.GetValue: String;
+function TParamOrder.GetValue: String;
 var
   xValue: String;
   i, iCount: Integer;
-  xParam: TObjectPlaceOrder.TParam;
+  xParam: TParamOrder.TParam;
 begin
   xValue := '';
   iCount := FParams.Count;
@@ -163,7 +247,15 @@ begin
   Result := xValue;
 end;
 
-procedure TObjectPlaceOrder.SetCategory(const Value: TTypeCategory);
+procedure TParamOrder.SetOrderID(const Value: String);
+begin
+  AddParam(
+    'orderId',
+    '"' + Value + '"'
+  );
+end;
+
+procedure TParamOrder.SetCategory(const Value: TTypeCategory);
 begin
   AddParam(
     'category',
@@ -171,7 +263,7 @@ begin
   );
 end;
 
-procedure TObjectPlaceOrder.SetSymbol(const Value: String);
+procedure TParamOrder.SetSymbol(const Value: String);
 begin
   AddParam(
     'symbol',
@@ -179,7 +271,7 @@ begin
   );
 end;
 
-procedure TObjectPlaceOrder.SetIsLeverage(const Value: Integer);
+procedure TParamOrder.SetIsLeverage(const Value: Integer);
 begin
   AddParam(
     'isLeverage',
@@ -187,7 +279,7 @@ begin
   );
 end;
 
-procedure TObjectPlaceOrder.SetSide(const Value: TTypeSide);
+procedure TParamOrder.SetSide(const Value: TTypeSide);
 begin
   AddParam(
     'side',
@@ -195,7 +287,7 @@ begin
   );
 end;
 
-procedure TObjectPlaceOrder.SetOrderType(const Value: TTypeOrder);
+procedure TParamOrder.SetOrderType(const Value: TTypeOrder);
 begin
   AddParam(
     'orderType',
@@ -203,7 +295,7 @@ begin
   );
 end;
 
-procedure TObjectPlaceOrder.SetQty(const Value: Double);
+procedure TParamOrder.SetQty(const Value: Double);
 begin
   AddParam(
     'qty',
@@ -212,7 +304,7 @@ begin
 end;
 
 
-procedure TObjectPlaceOrder.SetMarketUnit(const Value: String);
+procedure TParamOrder.SetMarketUnit(const Value: String);
 begin
   AddParam(
     'marketUnit',
@@ -220,7 +312,7 @@ begin
   );
 end;
 
-procedure TObjectPlaceOrder.SetPrice(const Value: Double);
+procedure TParamOrder.SetPrice(const Value: Double);
 begin
   AddParam(
     'price',
@@ -228,7 +320,7 @@ begin
   );
 end;
 
-procedure TObjectPlaceOrder.SetTriggerDirection(const Value: Integer);
+procedure TParamOrder.SetTriggerDirection(const Value: Integer);
 begin
   // Параметр условного порядка.
   // Используется для определения ожидаемого направления условного порядка.
@@ -240,7 +332,7 @@ begin
   );
 end;
 
-procedure TObjectPlaceOrder.SetOrderFilter(const Value: TTypeOrderFilter);
+procedure TParamOrder.SetOrderFilter(const Value: TTypeOrderFilter);
 begin
   //tpslOrder: Спотовый ордер TP/SL, активы заняты еще до срабатывания ордера
   //StopOrder: При размещении условного ордера активы не будут заняты
@@ -252,7 +344,7 @@ begin
   );
 end;
 
-procedure TObjectPlaceOrder.SetTriggerPrice(const Value: Double);
+procedure TParamOrder.SetTriggerPrice(const Value: Double);
 begin
   // Для Perps & Futures это цена запуска условного ордера.
   // Если вы ожидаете, что цена повысится для запуска вашего условного ордера,
@@ -264,7 +356,7 @@ begin
   );
 end;
 
-procedure TObjectPlaceOrder.SetTriggerBy(const Value: TTypeTriggerBy);
+procedure TParamOrder.SetTriggerBy(const Value: TTypeTriggerBy);
 begin
   // Тип триггерной цены, параметр условного ордера для Perps и фьючерсов.
   // LastPrice, IndexPrice, MarkPrice
@@ -274,7 +366,7 @@ begin
   );
 end;
 
-procedure TObjectPlaceOrder.SetOrderLv(const Value: String);
+procedure TParamOrder.SetOrderLv(const Value: String);
 begin
   // Подразумеваемая волатильность. только опция. Укажите реальное
   // значение, например, для 10% должно быть передано значение 0,1.
@@ -285,7 +377,7 @@ begin
   );
 end;
 
-procedure TObjectPlaceOrder.SetTimeInForce(const Value: TTypeTimeInForce);
+procedure TParamOrder.SetTimeInForce(const Value: TTypeTimeInForce);
 begin
   AddParam(
     'timeInForce',
@@ -293,7 +385,7 @@ begin
   );
 end;
 
-procedure TObjectPlaceOrder.SetPositionIdx(const Value: Integer);
+procedure TParamOrder.SetPositionIdx(const Value: Integer);
 begin
   // Используется для идентификации позиций в различных режимах
   // позиционирования. В режиме хеджирования этот параметр обязателен
@@ -308,7 +400,7 @@ begin
   );
 end;
 
-procedure TObjectPlaceOrder.SetOrderLinkId(const Value: String);
+procedure TParamOrder.SetOrderLinkId(const Value: String);
 begin
   // Идентификатор заказа, настраиваемый пользователем.
   // Максимум 36 символов. Поддерживаются комбинации цифр,
@@ -319,7 +411,7 @@ begin
   );
 end;
 
-procedure TObjectPlaceOrder.SetTakeProfit(const Value: Double);
+procedure TParamOrder.SetTakeProfit(const Value: Double);
 begin
   // Цена тейк-профита, действительная для линейного и обратного
   AddParam(
@@ -329,7 +421,7 @@ begin
 end;
 
 
-procedure TObjectPlaceOrder.SetStopLoss(const Value: Double);
+procedure TParamOrder.SetStopLoss(const Value: Double);
 begin
   // Цена стоп-лосса, действительная для линейного и обратного
   AddParam(
@@ -338,7 +430,7 @@ begin
   );
 end;
 
-procedure TObjectPlaceOrder.SetTP_TriggerBy(const Value: TTypeTriggerBy);
+procedure TParamOrder.SetTP_TriggerBy(const Value: TTypeTriggerBy);
 begin
   // Тип цены для срабатывания тейк-профита.
   AddParam(
@@ -347,7 +439,7 @@ begin
   );
 end;
 
-procedure TObjectPlaceOrder.SetSL_TriggerBy(const Value: TTypeTriggerBy);
+procedure TParamOrder.SetSL_TriggerBy(const Value: TTypeTriggerBy);
 begin
   // Тип цены для срабатывания стоп-лосса.
   AddParam(
@@ -364,7 +456,7 @@ begin
     Result := 'false';
 end;
 
-procedure TObjectPlaceOrder.SetReduceOnly(const Value: Boolean);
+procedure TParamOrder.SetReduceOnly(const Value: Boolean);
 var
   xValue: String;
 begin
@@ -376,7 +468,7 @@ begin
   );
 end;
 
-procedure TObjectPlaceOrder.SetCloseOnTrigger(const Value: Boolean);
+procedure TParamOrder.SetCloseOnTrigger(const Value: Boolean);
 var
   xValue: String;
 begin
@@ -388,7 +480,7 @@ begin
   );
 end;
 
-procedure TObjectPlaceOrder.SetSmpType(const Value: TTypeSmpType);
+procedure TParamOrder.SetSmpType(const Value: TTypeSmpType);
 begin
   AddParam(
     'smpType',
@@ -396,7 +488,7 @@ begin
   );
 end;
 
-procedure TObjectPlaceOrder.SetMMP(const Value: Boolean);
+procedure TParamOrder.SetMMP(const Value: Boolean);
 var
   xValue: String;
 begin
@@ -418,7 +510,7 @@ begin
 end;
 
 
-procedure TObjectPlaceOrder.SetTpSlMode(const Value: TTypeTpSlMode);
+procedure TParamOrder.SetTpSlMode(const Value: TTypeTpSlMode);
 begin
   AddParam(
     'tpslMode',
@@ -426,7 +518,7 @@ begin
   );
 end;
 
-procedure TObjectPlaceOrder.SetTpLimitPrice(const Value: Double);
+procedure TParamOrder.SetTpLimitPrice(const Value: Double);
 begin
   // Цена лимитного ордера при срабатывании цены тейк-профита.
   // Работает только при tpslMode=Partial и tpOrderType=Limit.
@@ -437,7 +529,7 @@ begin
 end;
 
 
-procedure TObjectPlaceOrder.SetSlLimitPrice(const Value: Double);
+procedure TParamOrder.SetSlLimitPrice(const Value: Double);
 begin
   // Цена лимитного ордера при срабатывании цены тейк-профита.
   // Работает только при tpslMode=Partial и tpOrderType=Limit.
@@ -447,7 +539,7 @@ begin
   );
 end;
 
-procedure TObjectPlaceOrder.SetTpOrderType(const Value: Double);
+procedure TParamOrder.SetTpOrderType(const Value: Double);
 begin
   // Тип ордера при срабатывании тейк-профита. Market(по умолчанию), Limit.
   // Для tpslMode=Full поддерживается только tpOrderType=Market.
@@ -457,7 +549,7 @@ begin
   );
 end;
 
-procedure TObjectPlaceOrder.SetSpOrderType(const Value: Double);
+procedure TParamOrder.SetSpOrderType(const Value: Double);
 begin
   // Тип ордера при срабатывании стоп-лосса. Market(по умолчанию), Limit.
   // Для tpslMode=Full поддерживается только slOrderType=Market.
@@ -473,7 +565,7 @@ constructor TBybitPlaceOrder.Create;
 begin
   inherited;
   FServerTime  := TBybitServerTime.Create;
-  FPlaceOrders := TObjectPlaceOrderList.Create;
+  FPlaceOrders := TParamOrderList.Create;
 end;
 
 destructor TBybitPlaceOrder.Destroy;
@@ -488,13 +580,25 @@ begin
   FPlaceOrders.Clear;
 end;
 
-function TBybitPlaceOrder.AddPlaceOrder: TObjectPlaceOrder;
+function TBybitPlaceOrder.AddPlaceOrder: TParamOrder;
 var
-  xPlaceOrder: TObjectPlaceOrder;
+  xPlaceOrder: TParamOrder;
 begin
-  xPlaceOrder := TObjectPlaceOrder.Create;
+  xPlaceOrder := TParamOrder.Create;
   Result := xPlaceOrder;
   FPlaceOrders.Add(xPlaceOrder);
+end;
+
+{ TOrderResponse }
+
+procedure TOrderResponse.SetParserValue(const AValue: String);
+begin
+  inherited SetParserValue (AValue);
+  if Assigned(ResultObject) then
+  begin
+    FOrderID     := GetStrToJson(ResultObject.Values['orderId']);
+    FOrderLinkID := GetStrToJson(ResultObject.Values['orderLinkId']);
+  end;
 end;
 
 end.

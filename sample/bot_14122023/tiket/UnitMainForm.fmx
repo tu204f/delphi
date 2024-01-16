@@ -2,8 +2,8 @@ object MainForm: TMainForm
   Left = 0
   Top = 0
   Caption = 'Form4'
-  ClientHeight = 480
-  ClientWidth = 859
+  ClientHeight = 417
+  ClientWidth = 1258
   FormFactor.Width = 320
   FormFactor.Height = 480
   FormFactor.Devices = [Desktop]
@@ -13,43 +13,14 @@ object MainForm: TMainForm
   object Memo1: TMemo
     Touch.InteractiveGestures = [Pan, LongTap, DoubleTap]
     DataDetectorTypes = []
-    Anchors = [akLeft, akTop, akBottom]
     Position.X = 8.000000000000000000
     Position.Y = 40.000000000000000000
-    Size.Width = 365.000000000000000000
-    Size.Height = 429.000000000000000000
+    Size.Width = 197.000000000000000000
+    Size.Height = 365.000000000000000000
     Size.PlatformDefault = False
-    TabOrder = 1
-    Viewport.Width = 361.000000000000000000
-    Viewport.Height = 425.000000000000000000
-  end
-  object Chart1: TChart
-    Position.X = 384.000000000000000000
-    Position.Y = 44.000000000000000000
-    Foot.Font.StyleExt = {00040000000200000004000000}
-    Legend.Title.Font.StyleExt = {00070000000000000004000000}
-    Legend.Visible = False
-    SubFoot.Font.StyleExt = {00040000000200000004000000}
-    Title.Text.Strings = (
-      'TChart')
-    View3D = False
-    Zoom.Brush.Kind = None
-    Zoom.Pen.Fill.Color = claSilver
-    TabOrder = 3
-    Anchors = [akLeft, akTop, akRight, akBottom]
-    Size.Width = 464.000000000000000000
-    Size.Height = 425.000000000000000000
-    Size.PlatformDefault = False
-    ColorPaletteIndex = 13
-    object Series1: TLineSeries
-      Brush.BackColor = x00FFFFFF
-      Pointer.InflateMargins = True
-      Pointer.Style = psRectangle
-      XValues.Name = 'X'
-      XValues.Order = loAscending
-      YValues.Name = 'Y'
-      YValues.Order = loNone
-    end
+    TabOrder = 2
+    Viewport.Width = 193.000000000000000000
+    Viewport.Height = 361.000000000000000000
   end
   object TextStatus: TText
     Position.X = 92.000000000000000000
@@ -57,6 +28,8 @@ object MainForm: TMainForm
     Size.Width = 541.000000000000000000
     Size.Height = 21.000000000000000000
     Size.PlatformDefault = False
+    Text = '5454'
+    TextSettings.HorzAlign = Leading
   end
   object ButtonRead: TButton
     Position.X = 8.000000000000000000
@@ -69,7 +42,101 @@ object MainForm: TMainForm
     Enabled = False
     Interval = 50
     OnTimer = TimerReadTimer
-    Left = 168
-    Top = 224
+    Left = 660
+    Top = 20
+  end
+  object GridPanelLayout1: TGridPanelLayout
+    Position.X = 412.000000000000000000
+    Position.Y = 40.000000000000000000
+    Size.Width = 833.000000000000000000
+    Size.Height = 365.000000000000000000
+    Size.PlatformDefault = False
+    TabOrder = 5
+    ColumnCollection = <
+      item
+        Value = 50.000000000000000000
+      end
+      item
+        Value = 50.000000000000000000
+      end>
+    ControlCollection = <
+      item
+        Column = 0
+        Control = Chart1
+        Row = 0
+      end
+      item
+        Column = 1
+        Control = Chart2
+        Row = 0
+      end>
+    RowCollection = <
+      item
+        Value = 100.000000000000000000
+      end>
+    object Chart1: TChart
+      Foot.Font.StyleExt = {00040000000200000004000000}
+      Legend.Title.Font.StyleExt = {00070000000000000004000000}
+      Legend.Visible = False
+      SubFoot.Font.StyleExt = {00040000000200000004000000}
+      Title.Text.Strings = (
+        'TChart')
+      View3D = False
+      Zoom.Brush.Kind = None
+      Zoom.Pen.Fill.Color = claSilver
+      Align = Client
+      TabOrder = 4
+      Size.Width = 416.500000000000000000
+      Size.Height = 365.000000000000000000
+      Size.PlatformDefault = False
+      ColorPaletteIndex = 13
+      object Series1: TLineSeries
+        Brush.BackColor = x00FFFFFF
+        Pointer.InflateMargins = True
+        Pointer.Style = psRectangle
+        XValues.Name = 'X'
+        XValues.Order = loAscending
+        YValues.Name = 'Y'
+        YValues.Order = loNone
+      end
+    end
+    object Chart2: TChart
+      Foot.Font.StyleExt = {00040000000200000004000000}
+      Legend.Title.Font.StyleExt = {00070000000000000004000000}
+      Legend.Visible = False
+      SubFoot.Font.StyleExt = {00040000000200000004000000}
+      Title.Text.Strings = (
+        'TChart')
+      View3D = False
+      Zoom.Brush.Kind = None
+      Zoom.Pen.Fill.Color = claSilver
+      Align = Client
+      TabOrder = 3
+      Size.Width = 416.500000000000000000
+      Size.Height = 365.000000000000000000
+      Size.PlatformDefault = False
+      ColorPaletteIndex = 13
+      object LineSeries1: TLineSeries
+        Brush.BackColor = x00FFFFFF
+        Pointer.InflateMargins = True
+        Pointer.Style = psRectangle
+        XValues.Name = 'X'
+        XValues.Order = loAscending
+        YValues.Name = 'Y'
+        YValues.Order = loNone
+      end
+    end
+  end
+  object Memo2: TMemo
+    Touch.InteractiveGestures = [Pan, LongTap, DoubleTap]
+    DataDetectorTypes = []
+    Position.X = 208.000000000000000000
+    Position.Y = 40.000000000000000000
+    Size.Width = 197.000000000000000000
+    Size.Height = 365.000000000000000000
+    Size.PlatformDefault = False
+    TabOrder = 1
+    Viewport.Width = 193.000000000000000000
+    Viewport.Height = 361.000000000000000000
   end
 end

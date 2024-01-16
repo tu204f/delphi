@@ -1,0 +1,60 @@
+﻿<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+    <PropertyGroup>
+        <ProjectGuid>{28514264-6531-4ED5-B1C4-2683EC63F539}</ProjectGuid>
+    </PropertyGroup>
+    <ItemGroup>
+        <Projects Include="kline\kline.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="random\rand.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="scalp\scalp.dproj">
+            <Dependencies/>
+        </Projects>
+    </ItemGroup>
+    <ProjectExtensions>
+        <Borland.Personality>Default.Personality.12</Borland.Personality>
+        <Borland.ProjectType/>
+        <BorlandProject>
+            <Default.Personality/>
+        </BorlandProject>
+    </ProjectExtensions>
+    <Target Name="kline">
+        <MSBuild Projects="kline\kline.dproj"/>
+    </Target>
+    <Target Name="kline:Clean">
+        <MSBuild Projects="kline\kline.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="kline:Make">
+        <MSBuild Projects="kline\kline.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="rand">
+        <MSBuild Projects="random\rand.dproj"/>
+    </Target>
+    <Target Name="rand:Clean">
+        <MSBuild Projects="random\rand.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="rand:Make">
+        <MSBuild Projects="random\rand.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="scalp">
+        <MSBuild Projects="scalp\scalp.dproj"/>
+    </Target>
+    <Target Name="scalp:Clean">
+        <MSBuild Projects="scalp\scalp.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="scalp:Make">
+        <MSBuild Projects="scalp\scalp.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="Build">
+        <CallTarget Targets="kline;rand;scalp"/>
+    </Target>
+    <Target Name="Clean">
+        <CallTarget Targets="kline:Clean;rand:Clean;scalp:Clean"/>
+    </Target>
+    <Target Name="Make">
+        <CallTarget Targets="kline:Make;rand:Make;scalp:Make"/>
+    </Target>
+    <Import Project="$(BDS)\Bin\CodeGear.Group.Targets" Condition="Exists('$(BDS)\Bin\CodeGear.Group.Targets')"/>
+</Project>

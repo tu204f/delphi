@@ -15,6 +15,9 @@
         <Projects Include="sample\place\place.dproj">
             <Dependencies/>
         </Projects>
+        <Projects Include="sample\reconnect\reconnect.dproj">
+            <Dependencies/>
+        </Projects>
     </ItemGroup>
     <ProjectExtensions>
         <Borland.Personality>Default.Personality.12</Borland.Personality>
@@ -59,14 +62,23 @@
     <Target Name="place:Make">
         <MSBuild Projects="sample\place\place.dproj" Targets="Make"/>
     </Target>
+    <Target Name="reconnect">
+        <MSBuild Projects="sample\reconnect\reconnect.dproj"/>
+    </Target>
+    <Target Name="reconnect:Clean">
+        <MSBuild Projects="sample\reconnect\reconnect.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="reconnect:Make">
+        <MSBuild Projects="sample\reconnect\reconnect.dproj" Targets="Make"/>
+    </Target>
     <Target Name="Build">
-        <CallTarget Targets="bybit;instrument;candels;place"/>
+        <CallTarget Targets="bybit;instrument;candels;place;reconnect"/>
     </Target>
     <Target Name="Clean">
-        <CallTarget Targets="bybit:Clean;instrument:Clean;candels:Clean;place:Clean"/>
+        <CallTarget Targets="bybit:Clean;instrument:Clean;candels:Clean;place:Clean;reconnect:Clean"/>
     </Target>
     <Target Name="Make">
-        <CallTarget Targets="bybit:Make;instrument:Make;candels:Make;place:Make"/>
+        <CallTarget Targets="bybit:Make;instrument:Make;candels:Make;place:Make;reconnect:Make"/>
     </Target>
     <Import Project="$(BDS)\Bin\CodeGear.Group.Targets" Condition="Exists('$(BDS)\Bin\CodeGear.Group.Targets')"/>
 </Project>

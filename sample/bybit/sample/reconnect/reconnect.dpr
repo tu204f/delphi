@@ -1,14 +1,14 @@
-program place;
+program reconnect;
 
 uses
   System.StartUpCopy,
   FMX.Forms,
-  UnitMainForm in 'UnitMainForm.pas' {MainForm},
-  Lb.Bybit.SysUtils in '..\..\lb\Lb.Bybit.SysUtils.pas',
-  Lb.Bybit.Trade in '..\..\lb\trade\Lb.Bybit.Trade.pas',
+  UnitFormMain in 'UnitFormMain.pas' {MainForm},
   Lb.Bybit.Encryption in '..\..\lb\Lb.Bybit.Encryption.pas',
+  Lb.Bybit in '..\..\lb\Lb.Bybit.pas',
   Lb.Bybit.ServerTime in '..\..\lb\market\Lb.Bybit.ServerTime.pas',
-  Lb.Bybit.RealTime in '..\..\lb\trade\Lb.Bybit.RealTime.pas';
+  Lb.Bybit.SysUtils in '..\..\lb\Lb.Bybit.SysUtils.pas',
+  Lb.Bybit.Test in '..\..\lb\Lb.Bybit.Test.pas';
 
 {$R *.res}
 

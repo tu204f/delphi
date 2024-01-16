@@ -22,71 +22,73 @@ object MainForm: TMainForm
     Viewport.Width = 449.000000000000000000
     Viewport.Height = 461.000000000000000000
   end
-  object ButtonOrder1: TButton
+  object ButtonPlaceOrder: TButton
     Position.X = 8.000000000000000000
     Position.Y = 8.000000000000000000
     Size.Width = 165.000000000000000000
     Size.Height = 22.000000000000000000
     Size.PlatformDefault = False
-    TabOrder = 8
-    Text = #1047#1072#1103#1074#1082#1072' #1'
-    OnClick = ButtonOrder1Click
+    TabOrder = 9
+    Text = 'Place Order'
+    OnClick = ButtonPlaceOrderClick
   end
-  object ButtonOrder2: TButton
+  object ButtonCancelOrder1: TButton
     Position.X = 8.000000000000000000
     Position.Y = 32.000000000000000000
     Size.Width = 165.000000000000000000
     Size.Height = 22.000000000000000000
     Size.PlatformDefault = False
-    TabOrder = 7
-    Text = #1047#1072#1103#1074#1082#1072' #2'
-    OnClick = ButtonOrder2Click
+    TabOrder = 8
+    Text = 'Cancel Order (OrderID)'
+    OnClick = ButtonCancelOrder1Click
   end
-  object ButtonOrder3: TButton
+  object ButtonCancelOrder2: TButton
     Position.X = 8.000000000000000000
     Position.Y = 56.000000000000000000
     Size.Width = 165.000000000000000000
     Size.Height = 22.000000000000000000
     Size.PlatformDefault = False
-    TabOrder = 6
-    Text = #1047#1072#1103#1074#1082#1072' #3'
-    OnClick = ButtonOrder3Click
+    TabOrder = 7
+    Text = 'Cancel Order (OrderlinkID)'
+    OnClick = ButtonCancelOrder2Click
   end
-  object ButtonOrder4: TButton
+  object ButtonAmendOrder1: TButton
     Position.X = 8.000000000000000000
     Position.Y = 80.000000000000000000
     Size.Width = 165.000000000000000000
     Size.Height = 22.000000000000000000
     Size.PlatformDefault = False
-    TabOrder = 5
-    Text = #1047#1072#1103#1074#1082#1072' #4'
-    OnClick = ButtonOrder4Click
+    TabOrder = 6
+    Text = 'Amend Order (OrderID)'
+    OnClick = ButtonAmendOrder1Click
   end
-  object ButtonOrder: TButton
+  object ButtonOrders: TButton
+    Position.X = 8.000000000000000000
+    Position.Y = 216.000000000000000000
+    Size.Width = 165.000000000000000000
+    Size.Height = 22.000000000000000000
+    Size.PlatformDefault = False
+    TabOrder = 10
+    Text = #1047#1072#1103#1074#1082#1080
+    OnClick = ButtonOrdersClick
+  end
+  object ButtonOnThread: TButton
+    Position.X = 8.000000000000000000
+    Position.Y = 240.000000000000000000
+    Size.Width = 165.000000000000000000
+    Size.Height = 22.000000000000000000
+    Size.PlatformDefault = False
+    TabOrder = 11
+    Text = 'ButtonOnThread'
+  end
+  object ButtonAmendOrder2: TButton
     Position.X = 8.000000000000000000
     Position.Y = 104.000000000000000000
     Size.Width = 165.000000000000000000
     Size.Height = 22.000000000000000000
     Size.PlatformDefault = False
-    TabOrder = 9
-    Text = #1047#1072#1103#1074#1082#1072
-    OnClick = ButtonOrderClick
-  end
-  object ButtonOnThread: TButton
-    Position.X = 8.000000000000000000
-    Position.Y = 164.000000000000000000
-    Size.Width = 165.000000000000000000
-    Size.Height = 22.000000000000000000
-    Size.PlatformDefault = False
-    TabOrder = 10
-    Text = 'ButtonOnThread'
-    OnClick = ButtonOnThreadClick
-  end
-  object Button1: TButton
-    Position.X = 68.000000000000000000
-    Position.Y = 392.000000000000000000
-    TabOrder = 11
-    Text = 'Button1'
-    OnClick = Button1Click
+    TabOrder = 5
+    Text = 'Amend Order (OrderLinkID)'
+    OnClick = ButtonAmendOrder2Click
   end
 end

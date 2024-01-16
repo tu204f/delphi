@@ -1,6 +1,6 @@
 ﻿<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
     <PropertyGroup>
-        <ProjectGuid>{479B06D1-953C-4F79-8718-FA8B284780E5}</ProjectGuid>
+        <ProjectGuid>{AAA7D0E8-AFC8-4C83-A198-4D4B6E59A69F}</ProjectGuid>
         <ProjectVersion>19.1</ProjectVersion>
         <FrameworkType>FMX</FrameworkType>
         <Base>True</Base>
@@ -8,7 +8,7 @@
         <Platform Condition="'$(Platform)'==''">Win32</Platform>
         <TargetedPlatforms>1</TargetedPlatforms>
         <AppType>Application</AppType>
-        <MainSource>place.dpr</MainSource>
+        <MainSource>reconnect.dpr</MainSource>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Config)'=='Base' or '$(Base)'!=''">
         <Base>true</Base>
@@ -86,7 +86,7 @@
         <AUP_READ_PHONE_STATE>true</AUP_READ_PHONE_STATE>
         <Icon_MainIcon>$(BDS)\bin\delphi_PROJECTICON.ico</Icon_MainIcon>
         <Icns_MainIcns>$(BDS)\bin\delphi_PROJECTICNS.icns</Icns_MainIcns>
-        <SanitizedProjectName>place</SanitizedProjectName>
+        <SanitizedProjectName>reconnect</SanitizedProjectName>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Base_Android)'!=''">
         <DCC_UsePackage>DBXSqliteDriver;RESTComponents;DBXInterBaseDriver;emsclientfiredac;tethering;DataSnapFireDAC;bindcompfmx;FmxTeeUI;fmx;FireDACIBDriver;FireDACDBXDriver;dbexpress;IndyCore;dsnap;emsclient;DataSnapCommon;FireDACCommon;RESTBackendComponents;soapserver;bindengine;CloudService;FireDACCommonDriver;DataSnapClient;inet;IndyIPCommon;bindcompdbx;IndyIPServer;sgcWebSocketsD10_4;IndySystem;fmxFireDAC;FireDAC;FireDACSqliteDriver;ibmonitor;FMXTee;soaprtl;DbxCommonDriver;ibxpress;xmlrtl;soapmidas;DataSnapNativeClient;FireDACDSDriver;rtl;DbxClientDriver;ibxbindings;CustomIPTransport;bindcomp;IndyIPClient;dbxcds;dsnapxml;DataSnapProviderClient;dbrtl;IndyProtocols;$(DCC_UsePackage)</DCC_UsePackage>
@@ -140,6 +140,8 @@
         <Manifest_File>$(BDS)\bin\default_app.manifest</Manifest_File>
         <UWP_DelphiLogo44>$(BDS)\bin\Artwork\Windows\UWP\delphi_UwpDefault_44.png</UWP_DelphiLogo44>
         <UWP_DelphiLogo150>$(BDS)\bin\Artwork\Windows\UWP\delphi_UwpDefault_150.png</UWP_DelphiLogo150>
+        <DCC_ExeOutput>.\bin</DCC_ExeOutput>
+        <DCC_DcuOutput>.\dcu</DCC_DcuOutput>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Base_Win64)'!=''">
         <DCC_UsePackage>DBXSqliteDriver;RESTComponents;fmxase;DBXDb2Driver;DBXInterBaseDriver;vclactnband;vclFireDAC;bindcompvclsmp;emsclientfiredac;tethering;DataSnapFireDAC;FireDACADSDriver;DBXMSSQLDriver;DatasnapConnectorsFreePascal;FireDACMSSQLDriver;vcltouch;vcldb;bindcompfmx;DBXOracleDriver;inetdb;FmxTeeUI;emsedge;fmx;FireDACIBDriver;fmxdae;vcledge;vclib;FireDACDBXDriver;dbexpress;IndyCore;vclx;dsnap;emsclient;DataSnapCommon;FireDACCommon;RESTBackendComponents;DataSnapConnectors;VCLRESTComponents;soapserver;vclie;IcsCommonD104Run;bindengine;DBXMySQLDriver;CloudService;FireDACOracleDriver;FireDACMySQLDriver;DBXFirebirdDriver;FireDACCommonODBC;FireDACCommonDriver;DataSnapClient;inet;IndyIPCommon;bindcompdbx;vcl;IndyIPServer;DBXSybaseASEDriver;sgcWebSocketsD10_4;IndySystem;FireDACDb2Driver;dsnapcon;FireDACMSAccDriver;fmxFireDAC;FireDACInfxDriver;vclimg;IcsFmxD104Run;TeeDB;FireDAC;emshosting;FireDACSqliteDriver;FireDACPgDriver;ibmonitor;FireDACASADriver;OverbyteIcsD104Run;DBXOdbcDriver;FireDACTDataDriver;FMXTee;soaprtl;DbxCommonDriver;ibxpress;Tee;DataSnapServer;xmlrtl;soapmidas;DataSnapNativeClient;fmxobj;vclwinx;FireDACDSDriver;rtl;emsserverresource;DbxClientDriver;ibxbindings;DBXSybaseASADriver;CustomIPTransport;vcldsnap;bindcomp;appanalytics;DBXInformixDriver;IndyIPClient;bindcompvcl;SynEdit_R;TeeUI;dbxcds;VclSmp;adortl;FireDACODBCDriver;DataSnapIndy10ServerTransport;dsnapxml;DataSnapProviderClient;dbrtl;IndyProtocols;inetdbxpress;FireDACMongoDBDriver;DataSnapServerMidas;$(DCC_UsePackage)</DCC_UsePackage>
@@ -164,6 +166,8 @@
         <DCC_RemoteDebug>false</DCC_RemoteDebug>
         <AppEnableRuntimeThemes>true</AppEnableRuntimeThemes>
         <AppDPIAwarenessMode>PerMonitorV2</AppDPIAwarenessMode>
+        <VerInfo_IncludeVerInfo>true</VerInfo_IncludeVerInfo>
+        <VerInfo_Locale>1033</VerInfo_Locale>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Cfg_1_Win64)'!=''">
         <AppEnableRuntimeThemes>true</AppEnableRuntimeThemes>
@@ -187,15 +191,15 @@
         <DelphiCompile Include="$(MainSource)">
             <MainSource>MainSource</MainSource>
         </DelphiCompile>
-        <DCCReference Include="UnitMainForm.pas">
+        <DCCReference Include="UnitFormMain.pas">
             <Form>MainForm</Form>
             <FormType>fmx</FormType>
         </DCCReference>
-        <DCCReference Include="..\..\lb\Lb.Bybit.SysUtils.pas"/>
-        <DCCReference Include="..\..\lb\trade\Lb.Bybit.Trade.pas"/>
         <DCCReference Include="..\..\lb\Lb.Bybit.Encryption.pas"/>
+        <DCCReference Include="..\..\lb\Lb.Bybit.pas"/>
         <DCCReference Include="..\..\lb\market\Lb.Bybit.ServerTime.pas"/>
-        <DCCReference Include="..\..\lb\trade\Lb.Bybit.RealTime.pas"/>
+        <DCCReference Include="..\..\lb\Lb.Bybit.SysUtils.pas"/>
+        <DCCReference Include="..\..\lb\Lb.Bybit.Test.pas"/>
         <BuildConfiguration Include="Release">
             <Key>Cfg_2</Key>
             <CfgParent>Base</CfgParent>
@@ -214,10 +218,22 @@
         <BorlandProject>
             <Delphi.Personality>
                 <Source>
-                    <Source Name="MainSource">place.dpr</Source>
+                    <Source Name="MainSource">reconnect.dpr</Source>
                 </Source>
+                <Excluded_Packages>
+                    <Excluded_Packages Name="C:\Users\Public\Documents\Embarcadero\Studio\21.0\Bpl\IcsVclD104Design.bpl">Overbyte ICS VCL Design-Time Package for Delphi 10.4</Excluded_Packages>
+                    <Excluded_Packages Name="$(BDSBIN)\dcloffice2k270.bpl">Microsoft Office 2000 Sample Automation Server Wrapper Components</Excluded_Packages>
+                    <Excluded_Packages Name="$(BDSBIN)\dclofficexp270.bpl">Microsoft Office XP Sample Automation Server Wrapper Components</Excluded_Packages>
+                    <Excluded_Packages Name="C:\Users\Public\Documents\Embarcadero\Studio\21.0\Bpl\IcsCommonD104Design.bpl">Overbyte ICS Common Design-Time Package for Delphi 10.4</Excluded_Packages>
+                </Excluded_Packages>
             </Delphi.Personality>
             <Deployment Version="3">
+                <DeployFile LocalName="bin\reconnect.exe" Configuration="Debug" Class="ProjectOutput">
+                    <Platform Name="Win32">
+                        <RemoteName>reconnect.exe</RemoteName>
+                        <Overwrite>true</Overwrite>
+                    </Platform>
+                </DeployFile>
                 <DeployFile LocalName="$(BDS)\Redist\osx32\libcgunwind.1.0.dylib" Class="DependencyModule">
                     <Platform Name="OSX32">
                         <Overwrite>true</Overwrite>
@@ -230,12 +246,6 @@
                 </DeployFile>
                 <DeployFile LocalName="$(BDS)\Redist\iossimulator\libpcre.dylib" Class="DependencyModule">
                     <Platform Name="iOSSimulator">
-                        <Overwrite>true</Overwrite>
-                    </Platform>
-                </DeployFile>
-                <DeployFile LocalName="Win32\Debug\place.exe" Configuration="Debug" Class="ProjectOutput">
-                    <Platform Name="Win32">
-                        <RemoteName>place.exe</RemoteName>
                         <Overwrite>true</Overwrite>
                     </Platform>
                 </DeployFile>

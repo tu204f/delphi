@@ -11,24 +11,43 @@ uses
   Lb.SysUtils;
 
 type
+  TOnEventPosition = procedure(const ASander: TObject; AMode: TMode; APrice: Double) of object;
+
+  ///<summary>Тиковый бот</summary>
   TTiketBot = class(TObject)
   private
     FOpenPrice: Double;
     FIsPosition: Boolean;
     FMode: TMode;
     FHealthPoints: Double;
+  protected
+    FOnOpenPosition: TOnEventPosition;
+    FOnClosePosition: TOnEventPosition;
+    procedure DoOpenPosition(AMode: TMode; APrice: Double); virtual;
+    procedure DoClosePosition(AMode: TMode; APrice: Double);  virtual;
   public
     constructor Create; virtual;
     destructor Destroy; override;
-    procedure Clear;
-    procedure SetMode(const ACandel: TCandel); virtual;
+    ///<summary>Значение по умолчанию</summary>
+    procedure Default;
+    ///<summary>Принимаем решение</summary>
+    procedure SetMode; virtual;
+  public {Процедуры управление позиций}
     procedure SetOpenPosition(const ALast: Double); virtual;
     procedure SetUpPosition(const ALast: Double); virtual;
     procedure SetClosePosition(const ALast: Double); virtual;
+  public
+    ///<summary>Позиция принятого решения</summary>
     property IsPosition: Boolean read FIsPosition;
+    ///<summary>Цена открытие</summary>
     property OpenPrice: Double read FOpenPrice;
+    ///<summary>Направление принятого решения</summary>
     property Mode: TMode read FMode;
+    ///<summary>Состояние уровня жизни</summary>
     property HealthPoints: Double read FHealthPoints;
+  public
+    property OnOpenPosition: TOnEventPosition write FOnOpenPosition;
+    property OnClosePosition: TOnEventPosition write FOnClosePosition;
   end;
 
   ///<summary>С фиксированным убытком</summary>
@@ -40,10 +59,16 @@ type
   public
     constructor Create; override;
     destructor Destroy; override;
-    procedure SetMode(const ACandel: TCandel); override;
+    procedure SetMode; override;
+    procedure SetRvsMode(AMode: TMode);
+  public
     procedure SetOpenPosition(const ALast: Double); override;
     procedure SetUpPosition(const ALast: Double); override;
-    property StopLoss: Double read FStopLoss write FStopLoss;
+  public
+    ///<summary>Размер получаемого убытка, </summary>
+    ///<remarks>Значение устанавливается отрицательным</remarks>
+    property StopLoss: Double write FStopLoss;
+    ///<summary>После полученного убытка, количество свечей ожидания<summary>
     property CountStop: Integer read FCountStop write FCountStop;
   end;
 
@@ -58,6 +83,7 @@ type
     procedure SetUpPosition(const ALast: Double); override;
   end;
 
+  ///<summary>C фиксированной приболею</summary>
   TTakeProfitTiketBot = class(TStopLostTiketBot)
   private
     FTakeProfit: Double;
@@ -74,7 +100,7 @@ implementation
 
 constructor TTiketBot.Create;
 begin
-  Clear;
+  Default;
 end;
 
 destructor TTiketBot.Destroy;
@@ -83,14 +109,26 @@ begin
   inherited;
 end;
 
-procedure TTiketBot.Clear;
+procedure TTiketBot.DoOpenPosition(AMode: TMode; APrice: Double);
+begin
+  if Assigned(FOnOpenPosition) then
+    FOnOpenPosition(Self,AMode,APrice);
+end;
+
+procedure TTiketBot.DoClosePosition(AMode: TMode; APrice: Double);
+begin
+  if Assigned(FOnClosePosition) then
+    FOnClosePosition(Self,AMode,APrice);
+end;
+
+procedure TTiketBot.Default;
 begin
   FIsPosition := False;
   FMode := tmNull;
   FHealthPoints := 0;
 end;
 
-procedure TTiketBot.SetMode(const ACandel: TCandel);
+procedure TTiketBot.SetMode;
 begin
   {todo: организовать стретегию входа}
   FMode := GetRandomMode;
@@ -99,17 +137,20 @@ end;
 procedure TTiketBot.SetOpenPosition(const ALast: Double);
 begin
   // открываем позицию
-  if not FIsPosition then
+  if (FMode = tmBuy) or (FMode = tmSell) then
   begin
-    FOpenPrice := ALast;
-    FIsPosition := True;
+    if not FIsPosition then
+    begin
+      FOpenPrice := ALast;
+      FIsPosition := True;
+      DoOpenPosition(FMode,FOpenPrice);
+    end;
   end;
 end;
 
 procedure TTiketBot.SetUpPosition(const ALast: Double);
 begin
   // Обновляем условия позиции
-
 end;
 
 procedure TTiketBot.SetClosePosition(const ALast: Double);
@@ -126,6 +167,7 @@ begin
     end;
     FHealthPoints := FHealthPoints + xHP;
     FIsPosition := False;
+    DoClosePosition(FMode,ALast);
   end;
 end;
 
@@ -145,13 +187,19 @@ begin
   inherited;
 end;
 
-procedure TStopLostTiketBot.SetMode(const ACandel: TCandel);
+
+procedure TStopLostTiketBot.SetMode;
 begin
   FMode := tmNull;
   if FTmpCountStop > 0 then
     Dec(FTmpCountStop)
   else
-    inherited SetMode(ACandel);
+    inherited SetMode;
+end;
+
+procedure TStopLostTiketBot.SetRvsMode(AMode: TMode);
+begin
+  FMode := AMode;
 end;
 
 procedure TStopLostTiketBot.SetOpenPosition(const ALast: Double);
@@ -160,6 +208,8 @@ begin
   if FIsPosition then
     FTmpCountStop := 0;
 end;
+
+
 
 procedure TStopLostTiketBot.SetUpPosition(const ALast: Double);
 var
@@ -172,6 +222,7 @@ begin
       tmBuy : xProfit := ALast - FOpenPrice;
       tmSell: xProfit := FOpenPrice - ALast;
     end;
+    // При достижение придельного значение убытка производим фиксации
     if xProfit < FStopLoss then
     begin
       FTmpCountStop := FCountStop;
@@ -212,6 +263,7 @@ begin
       tmSell: xProfit := FOpenPrice - ALast;
     end;
 
+    // Производи фисацию, результата при росте
     xFixProfit := xProfit + FStopLoss;
     if xFixProfit > FFixProfit then
       FFixProfit := xFixProfit;

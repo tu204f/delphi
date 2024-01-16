@@ -178,6 +178,7 @@ type
     FTask: ITask;              // Задача - указатель на поток
     FBybitModule: TBybitModule;
     FResponse: TBytiyResponse;
+    FEncryption: TEncryption;
   protected
     FOnEventMessage: TNotifyEvent;
     FOnEventException: TNotifyEvent;
@@ -200,6 +201,9 @@ type
     procedure Start(const AInterval: Integer = 0);
     ///<summary>Остановить цикл</summary>
     procedure Stop;
+
+    procedure SetEncryption(const ApiKey, ApiSecret: String);
+
     ///<summary>Параметры запроса</summary>
     property BybitModule: TBybitModule read FBybitModule;
     property Interval: Integer read FInterval;
@@ -216,7 +220,7 @@ type
     property OnEventEndLoading: TNotifyEvent write FOnEventEndLoading;
   end;
 
-  ///<summary>Ответ сервер</summary>
+  ///<summary>Общие параметры отклика</summary>
   TBytiyResponse = class(TObject)
   private
     FretCode: Integer;
@@ -227,12 +231,17 @@ type
   public
     constructor Create; virtual;
     destructor Destroy; override;
-    procedure SetParserValue(const AValue: String);
+    procedure SetParserValue(const AValue: String); virtual;
   public
+    ///<summary>Business data result</summary>
     property ResultObject : TJSONObject read FResultObject;
+    ///<summary>Расширьте информацию. В большинстве случаев это {}</summary>
     property ExtInfoObject: TJSONObject read FExtInfoObject;
+    ///<summary>Success/Error code</summary>
     property RetCode: Integer read FretCode;
+    ///<summary>Success/Error msg. OK, success, SUCCESS indicate a successful response</summary>
     property RetMsg: String read FretMsg;
+    ///<summary>Current timestamp (ms)</summary>
     property RetTime: Double read FretTime;
   end;
 
@@ -299,6 +308,14 @@ type
     destructor Destroy; override;
     procedure SetObjectJson(const AObjectJson: TJSONObject); virtual;
   end;
+
+function GetStrToJson(const AJsonValue: TJSONValue): String;
+function GetIntToJson(const AJsonValue: TJSONValue): Integer;
+function GetInt64ToJson(const AJsonValue: TJSONValue): Int64;
+function GetFloatToJson(const AJsonValue: TJSONValue): Double;
+function GetBoolToJson(const AJsonValue: TJSONValue): Boolean;
+
+function GetNow: Int64;
 
 implementation
 
@@ -425,6 +442,54 @@ begin
   end;
 end;
 
+function GetStrToJson(const AJsonValue: TJSONValue): String;
+begin
+  Result := '';
+  if Assigned(AJsonValue) then
+    Result := AJsonValue.Value;
+end;
+
+function GetIntToJson(const AJsonValue: TJSONValue): Integer;
+begin
+  Result := 0;
+  if Assigned(AJsonValue) then
+    Result := StrToIntDef(AJsonValue.Value,0);
+end;
+
+function GetInt64ToJson(const AJsonValue: TJSONValue): Int64;
+begin
+  Result := 0;
+  if Assigned(AJsonValue) then
+    Result := StrToInt64Def(AJsonValue.Value,0);
+end;
+
+function GetFloatToJson(const AJsonValue: TJSONValue): Double;
+begin
+  Result := 0;
+  if Assigned(AJsonValue) then
+    Result := StrToFloatDef(AJsonValue.Value,0);
+end;
+
+function GetBoolToJson(const AJsonValue: TJSONValue): Boolean;
+var
+  xS: String;
+begin
+  xS := GetStrToJson(AJsonValue);
+  if xS.IsEmpty then
+    Result := False
+  else
+    Result := CharInSet(xS[1],['t','T']);
+end;
+
+///<summary>Текущая дата и время</summary>
+function GetNow: Int64;
+var
+  lDate: TDateTime;
+begin
+  lDate := TTimeZone.Local.ToUniversalTime(Now);
+  Result := Abs(DateTimeToMilliseconds(UnixDateDelta) - DateTimeToMilliseconds(lDate));
+end;
+
 { THeaderList }
 
 function THeaderList.GetValues(AName: String): String;
@@ -447,6 +512,7 @@ begin
   begin
     xHeader := Self.Items[xIndex];
     xHeader.Value := AValue;
+    Self.Items[xIndex] := xHeader;
   end
   else
   begin
@@ -521,6 +587,7 @@ begin
   FValueMessage := '';
   FInterval := 0;
   FSource  := TStringList.Create;
+  FEncryption := TEncryption.Create;
 end;
 
 destructor TBybitHttpClient.Destroy;
@@ -530,6 +597,7 @@ begin
     FTask.Cancel;
     FTask := nil;
   end;
+  FreeAndNil(FEncryption);
   FreeAndNil(FSource);
   FreeAndNil(FResponse);
   FreeAndNil(FBybitModule);
@@ -543,10 +611,22 @@ begin
 
   FValueMessage := AMessage;
   if not FValueMessage.IsEmpty then
+  begin
     FResponse.SetParserValue(FValueMessage);
 
-  if Assigned(FOnEventMessage) then
-    FOnEventMessage(Self);
+    if FResponse.RetCode = 0 then
+    begin
+      if Assigned(FOnEventMessage) then
+        FOnEventMessage(Self);
+    end
+    else
+    begin
+      DoEventException(
+        FResponse.RetCode,
+        FResponse.RetMsg
+      );
+    end;
+  end;
 end;
 
 procedure TBybitHttpClient.DoEventException(const AStatusCode: Integer; const AMessage: String);
@@ -582,10 +662,35 @@ begin
     FOnEventEndLoading(Self);
 end;
 
+procedure TBybitHttpClient.SetEncryption(const ApiKey, ApiSecret: String);
+begin
+  FEncryption.ApiKey := ApiKey;
+  FEncryption.ApiSecret := ApiSecret;
+
+end;
+
 procedure TBybitHttpClient.SetThreading;
+var
+  xSignature: String;
 begin
   if Assigned(FTask) then
     raise Exception.Create('Error Message: Задание уже запущенно');
+
+  if not FEncryption.ApiKey.IsEmpty then
+  begin
+    FEncryption.Timestamp := GetNow.ToString;
+    FEncryption.QueryBody := FBybitModule.Query;
+    xSignature := FEncryption.Signature;
+    with BybitModule.Headers do
+    begin
+      Clear;
+      Values['X-BAPI-API-KEY']     := FEncryption.ApiKey;
+      Values['X-BAPI-SIGN']        := xSignature;
+      Values['X-BAPI-SIGN-TYPE']   := '2';
+      Values['X-BAPI-TIMESTAMP']   := FEncryption.Timestamp;
+      Values['X-BAPI-RECV-WINDOW'] := FEncryption.RecvWindow;
+    end;
+  end;
 
   FTask := TTask.Create(
     procedure()
@@ -693,11 +798,11 @@ begin
 *******************************************************************************)
   try
     xJson          := TJSONObject.ParseJSONValue(AValue) as TJSONObject;
-    FretCode       := xJson.Values['retCode'].Value.ToInteger;
-    FretMsg        := xJson.Values['retMsg'].Value;
+    FretCode       := GetIntToJson(xJson.Values['retCode']);
+    FretMsg        := GetStrToJson(xJson.Values['retMsg']);
     FResultObject  := TJSONObject(xJson.Values['result']);
     FExtInfoObject := TJSONObject(xJson.Values['retExtInfo']);
-    FretTime       := xJson.Values['time'].Value.ToDouble;
+    FretTime       := GetFloatToJson(xJson.Values['time']);
   except
     raise EAbort.Create('Error Message: Парсинг Json – объекта');
   end;
@@ -707,11 +812,11 @@ end;
 
 constructor TBybitModule.Create;
 begin
-  FTypeHttp := TTypeHttp.thNull;
-  FHost     := BYBIT_HOST;
-  FModule   := '';
-  FParams   := TParamList.Create;
-  FHeaders  := THeaderList.Create;
+  FTypeHttp   := TTypeHttp.thNull;
+  FHost       := BYBIT_HOST;
+  FModule     := '';
+  FParams     := TParamList.Create;
+  FHeaders    := THeaderList.Create;
 end;
 
 destructor TBybitModule.Destroy;

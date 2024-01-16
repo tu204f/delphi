@@ -3,12 +3,26 @@ unit UnitMainForm;
 interface
 
 uses
-  System.SysUtils, System.Types, System.UITypes, System.Classes, System.Variants,
-  FMX.Types, FMX.Controls, FMX.Forms, FMX.Graphics, FMX.Dialogs,
-  FMX.Controls.Presentation, FMX.StdCtrls, System.Rtti, FMX.Grid.Style,
-  FMX.ScrollBox, FMX.Grid,
+  System.SysUtils,
+  System.Types,
+  System.UITypes,
+  System.Classes,
+  System.Variants,
+  FMX.Types,
+  FMX.Controls,
+  FMX.Forms,
+  FMX.Graphics,
+  FMX.Dialogs,
+  FMX.Controls.Presentation,
+  FMX.StdCtrls,
+  System.Rtti,
+  FMX.Grid.Style,
+  FMX.ScrollBox,
+  FMX.Grid,
+  FMX.Memo.Types,
+  FMX.Memo,
   Lb.Bybit.SysUtils,
-  Lb.Bybit.Kline, FMX.Memo.Types, FMX.Memo;
+  Lb.Bybit.Kline;
 
 type
   TMainForm = class(TForm)
@@ -72,46 +86,33 @@ begin
   StartTime := '';
   BybitKline.Category := TTypeCategory.tcLinear;
   BybitKline.Symbol   := 'BTCUSDT';
-  BybitKline.Interval := TTypeInterval.ti_1;
+  BybitKline.Interval := TTypeInterval.ti_5;
   BybitKline.Limit    := 5;
-  BybitKline.Selected(1000);
+  BybitKline.Start(1000);
 end;
 
 procedure TMainForm.BybitKlineOnEventEndLoading(Sender: TObject);
 var
-  xStartTime: String;
+  xCandel: TCandelObject;
   i, iCount: Integer;
-  xCandelObject: TCandelObject;
-  xCandelObjects: TCandelObjectList;
 begin
-  xCandelObjects := TCandelObjectList.Create;
-  try
-    SetLinearObjects(BybitKline.ListJson,xCandelObjects);
-    iCount := xCandelObjects.Count;
-    if iCount > 0 then
+  StringGrid1.RowCount := 0;
+  iCount := BybitKline.CandelObjects.Count;
+  if iCount > 0 then
+  begin
+    StringGrid1.RowCount := iCount;
+    for i := 0 to iCount - 1 do
     begin
-      xStartTime := xCandelObjects[i].startTime;
-      if not SameText(StartTime,xStartTime) then
-      begin
-        StartTime := xStartTime;
-        Memo1.Lines.Add('Новаая свеча: ' + StartTime);
-      end;
+      xCandel := BybitKline.CandelObjects[i];
+      StringGrid1.Cells[0,i] := FormatDateTime('dd.mm.yy hh:nn:ss.zzz',xCandel.DateTime);
 
-      StringGrid1.RowCount := iCount;
-      for i := 0 to iCount - 1 do
-      begin
-        xCandelObject := xCandelObjects[i];
-        StringGrid1.Cells[0,i] := DateTimeToStr(xCandelObject.DateTime);
-        StringGrid1.Cells[1,i] := xCandelObject.openPrice;
-        StringGrid1.Cells[2,i] := xCandelObject.highPrice;
-        StringGrid1.Cells[3,i] := xCandelObject.lowPrice;
-        StringGrid1.Cells[4,i] := xCandelObject.closePrice;
-        StringGrid1.Cells[5,i] := xCandelObject.volume;
-        StringGrid1.Cells[6,i] := xCandelObject.turnover;
-      end;
+      StringGrid1.Cells[1,i] := xCandel.openPrice;
+      StringGrid1.Cells[2,i] := xCandel.highPrice;
+      StringGrid1.Cells[3,i] := xCandel.lowPrice;
+      StringGrid1.Cells[4,i] := xCandel.closePrice;
+      StringGrid1.Cells[5,i] := xCandel.volume;
+      StringGrid1.Cells[6,i] := xCandel.turnover;
     end;
-  finally
-    FreeAndNil(xCandelObjects);
   end;
 end;
 

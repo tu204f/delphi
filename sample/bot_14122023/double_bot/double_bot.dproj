@@ -1,14 +1,14 @@
 ﻿<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
     <PropertyGroup>
-        <ProjectGuid>{479B06D1-953C-4F79-8718-FA8B284780E5}</ProjectGuid>
+        <ProjectGuid>{472627F7-5573-487B-8EDA-991D87C7903F}</ProjectGuid>
         <ProjectVersion>19.1</ProjectVersion>
         <FrameworkType>FMX</FrameworkType>
         <Base>True</Base>
         <Config Condition="'$(Config)'==''">Debug</Config>
         <Platform Condition="'$(Platform)'==''">Win32</Platform>
-        <TargetedPlatforms>1</TargetedPlatforms>
+        <TargetedPlatforms>32787</TargetedPlatforms>
         <AppType>Application</AppType>
-        <MainSource>place.dpr</MainSource>
+        <MainSource>double_bot.dpr</MainSource>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Config)'=='Base' or '$(Base)'!=''">
         <Base>true</Base>
@@ -86,7 +86,7 @@
         <AUP_READ_PHONE_STATE>true</AUP_READ_PHONE_STATE>
         <Icon_MainIcon>$(BDS)\bin\delphi_PROJECTICON.ico</Icon_MainIcon>
         <Icns_MainIcns>$(BDS)\bin\delphi_PROJECTICNS.icns</Icns_MainIcns>
-        <SanitizedProjectName>place</SanitizedProjectName>
+        <SanitizedProjectName>double_bot</SanitizedProjectName>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Base_Android)'!=''">
         <DCC_UsePackage>DBXSqliteDriver;RESTComponents;DBXInterBaseDriver;emsclientfiredac;tethering;DataSnapFireDAC;bindcompfmx;FmxTeeUI;fmx;FireDACIBDriver;FireDACDBXDriver;dbexpress;IndyCore;dsnap;emsclient;DataSnapCommon;FireDACCommon;RESTBackendComponents;soapserver;bindengine;CloudService;FireDACCommonDriver;DataSnapClient;inet;IndyIPCommon;bindcompdbx;IndyIPServer;sgcWebSocketsD10_4;IndySystem;fmxFireDAC;FireDAC;FireDACSqliteDriver;ibmonitor;FMXTee;soaprtl;DbxCommonDriver;ibxpress;xmlrtl;soapmidas;DataSnapNativeClient;FireDACDSDriver;rtl;DbxClientDriver;ibxbindings;CustomIPTransport;bindcomp;IndyIPClient;dbxcds;dsnapxml;DataSnapProviderClient;dbrtl;IndyProtocols;$(DCC_UsePackage)</DCC_UsePackage>
@@ -187,15 +187,14 @@
         <DelphiCompile Include="$(MainSource)">
             <MainSource>MainSource</MainSource>
         </DelphiCompile>
-        <DCCReference Include="UnitMainForm.pas">
-            <Form>MainForm</Form>
+        <DCCReference Include="UnitMainFrom.pas">
+            <Form>Form4</Form>
             <FormType>fmx</FormType>
         </DCCReference>
-        <DCCReference Include="..\..\lb\Lb.Bybit.SysUtils.pas"/>
-        <DCCReference Include="..\..\lb\trade\Lb.Bybit.Trade.pas"/>
-        <DCCReference Include="..\..\lb\Lb.Bybit.Encryption.pas"/>
-        <DCCReference Include="..\..\lb\market\Lb.Bybit.ServerTime.pas"/>
-        <DCCReference Include="..\..\lb\trade\Lb.Bybit.RealTime.pas"/>
+        <DCCReference Include="..\lb\Lb.Bot.pas"/>
+        <DCCReference Include="..\lb\Lb.Bot.Tiket.pas"/>
+        <DCCReference Include="..\lb\Lb.ReadPrice.pas"/>
+        <DCCReference Include="..\lb\Lb.SysUtils.pas"/>
         <BuildConfiguration Include="Release">
             <Key>Cfg_2</Key>
             <CfgParent>Base</CfgParent>
@@ -214,7 +213,7 @@
         <BorlandProject>
             <Delphi.Personality>
                 <Source>
-                    <Source Name="MainSource">place.dpr</Source>
+                    <Source Name="MainSource">double_bot.dpr</Source>
                 </Source>
             </Delphi.Personality>
             <Deployment Version="3">
@@ -233,9 +232,9 @@
                         <Overwrite>true</Overwrite>
                     </Platform>
                 </DeployFile>
-                <DeployFile LocalName="Win32\Debug\place.exe" Configuration="Debug" Class="ProjectOutput">
+                <DeployFile LocalName="Win32\Debug\double_bot.exe" Configuration="Debug" Class="ProjectOutput">
                     <Platform Name="Win32">
-                        <RemoteName>place.exe</RemoteName>
+                        <RemoteName>double_bot.exe</RemoteName>
                         <Overwrite>true</Overwrite>
                     </Platform>
                 </DeployFile>
@@ -1001,10 +1000,15 @@
                 <ProjectRoot Platform="Android64" Name="$(PROJECTNAME)"/>
             </Deployment>
             <Platforms>
-                <Platform value="Android">False</Platform>
-                <Platform value="Android64">False</Platform>
+                <Platform value="Android">True</Platform>
+                <Platform value="Android64">True</Platform>
+                <Platform value="iOSDevice32">False</Platform>
+                <Platform value="iOSDevice64">False</Platform>
+                <Platform value="iOSSimulator">False</Platform>
+                <Platform value="OSX32">False</Platform>
+                <Platform value="OSX64">False</Platform>
                 <Platform value="Win32">True</Platform>
-                <Platform value="Win64">False</Platform>
+                <Platform value="Win64">True</Platform>
             </Platforms>
         </BorlandProject>
         <ProjectFileVersion>12</ProjectFileVersion>

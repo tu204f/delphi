@@ -62,7 +62,6 @@ object MainForm: TMainForm
     Size.PlatformDefault = False
     TabOrder = 9
     Text = #1047#1072#1103#1074#1082#1072
-    OnClick = ButtonOrderSpotClick
   end
   object Button1: TButton
     Position.X = 8.000000000000000000
@@ -72,7 +71,6 @@ object MainForm: TMainForm
     Size.PlatformDefault = False
     TabOrder = 8
     Text = #1047#1072#1103#1074#1082#1072
-    OnClick = Button1Click
   end
   object Button2: TButton
     Position.X = 8.000000000000000000
@@ -82,7 +80,6 @@ object MainForm: TMainForm
     Size.PlatformDefault = False
     TabOrder = 7
     Text = #1047#1072#1103#1074#1082#1072
-    OnClick = Button2Click
   end
   object Button3: TButton
     Position.X = 8.000000000000000000
@@ -92,7 +89,6 @@ object MainForm: TMainForm
     Size.PlatformDefault = False
     TabOrder = 6
     Text = #1047#1072#1103#1074#1082#1072
-    OnClick = Button3Click
   end
   object ButtonServerTime: TButton
     Position.X = 4.000000000000000000

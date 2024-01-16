@@ -22,7 +22,6 @@ uses
   FMX.ScrollBox,
   FMX.Memo,
   FMX.Edit,
-  Lb.Bybit.PlaceOrder,
   Lb.Bybit.Position,
   Lb.Bybit.ServerTime,
   Lb.Bybit.SysUtils;
@@ -45,10 +44,6 @@ type
     procedure ButtonSelectedClick(Sender: TObject);
     procedure ButtonSelectedOffCryptClick(Sender: TObject);
     procedure ButtonSelectedOnCryptClick(Sender: TObject);
-    procedure ButtonOrderSpotClick(Sender: TObject);
-    procedure Button1Click(Sender: TObject);
-    procedure Button2Click(Sender: TObject);
-    procedure Button3Click(Sender: TObject);
     procedure ButtonServerTimeClick(Sender: TObject);
   private
     BybitServerTime: TBybitServerTime;
@@ -212,159 +207,6 @@ begin
   end;
 end;
 
-
-
-procedure TMainForm.ButtonOrderSpotClick(Sender: TObject);
-var
-  xPlaceOrder: TObjectPlaceOrder;
-begin
-(*
-  // Spot PostOnly normal order
-  {
-    "category":"spot",
-    "symbol":"BTCUSDT",
-    "side":"Buy",
-    "orderType":"Limit",
-    "qty":"0.1",
-    "price":"15600",
-    "timeInForce":"PostOnly",
-    "orderLinkId":"spot-test-01",
-    "isLeverage":0,
-    "orderFilter":"Order"
-  }
-*)
-  xPlaceOrder := TObjectPlaceOrder.Create;
-  try
-    xPlaceOrder.Category := TTypeCategory.tcSpot;
-    xPlaceOrder.Symbol := 'BTCUSDT';
-    xPlaceOrder.Side := TTypeSide.tsBuy;
-    xPlaceOrder.OrderType := TTypeOrder.Limit;
-    xPlaceOrder.Qty := 0.1;
-    xPlaceOrder.Price := 15600;
-    xPlaceOrder.TimeInForce := TTypeTimeInForce.PostOnly;
-    xPlaceOrder.OrderLinkId := 'spot-test-01';
-    xPlaceOrder.IsLeverage := 0;
-    xPlaceOrder.OrderFilter := TTypeOrderFilter.Order;
-    SetLog(xPlaceOrder.Value);
-    SetLog('****');
-  finally
-    FreeAndNil(xPlaceOrder);
-  end;
-end;
-
-procedure TMainForm.Button1Click(Sender: TObject);
-var
-  xPlaceOrder: TObjectPlaceOrder;
-begin
-(*
-  // Spot TP/SL order
-  {
-    "category":"spot",
-    "symbol":"BTCUSDT",
-    "side":"Buy",
-    "orderType":"Limit",
-    "qty":"0.1",
-    "price":"15600",
-    "triggerPrice": "15000",
-    "timeInForce":"Limit",
-    "orderLinkId":"spot-test-02",
-    "isLeverage":0,
-    "orderFilter":"tpslOrder"
-  }
-*)
-  xPlaceOrder := TObjectPlaceOrder.Create;
-  try
-    xPlaceOrder.Category := TTypeCategory.tcSpot;
-    xPlaceOrder.Symbol := 'BTCUSDT';
-    xPlaceOrder.Side := TTypeSide.tsBuy;
-    xPlaceOrder.OrderType := TTypeOrder.Limit;
-    xPlaceOrder.Qty := 0.1;
-    xPlaceOrder.Price := 15600;
-    xPlaceOrder.TriggerPrice := 15600;
-    xPlaceOrder.TimeInForce := TTypeTimeInForce.PostOnly;
-    xPlaceOrder.OrderLinkId := 'spot-test-02';
-    xPlaceOrder.IsLeverage := 0;
-    xPlaceOrder.OrderFilter := TTypeOrderFilter.tpslOrder;
-    SetLog(xPlaceOrder.Value);
-    SetLog('****');
-  finally
-    FreeAndNil(xPlaceOrder);
-  end;
-end;
-
-procedure TMainForm.Button2Click(Sender: TObject);
-var
-  xPlaceOrder: TObjectPlaceOrder;
-begin
-(*
-  // Spot margin normal order (UTA)
-  {
-    "category":"spot",
-    "symbol":"BTCUSDT",
-    "side":"Buy",
-    "orderType":"Limit",
-    "qty":"0.1",
-    "price":"15600",
-    "timeInForce":"Limit",
-    "orderLinkId":"spot-test-limit",
-    "isLeverage":1,
-    "orderFilter":"Order"
-  }
-*)
-  xPlaceOrder := TObjectPlaceOrder.Create;
-  try
-    xPlaceOrder.Category := TTypeCategory.tcSpot;
-    xPlaceOrder.Symbol := 'BTCUSDT';
-    xPlaceOrder.Side := TTypeSide.tsBuy;
-    xPlaceOrder.OrderType := TTypeOrder.Limit;
-    xPlaceOrder.Qty := 0.1;
-    xPlaceOrder.Price := 15600;
-    xPlaceOrder.TimeInForce := TTypeTimeInForce.PostOnly;
-    xPlaceOrder.OrderLinkId := 'spot-test-limit';
-    xPlaceOrder.IsLeverage := 1;
-    xPlaceOrder.OrderFilter := TTypeOrderFilter.Order;
-    SetLog(xPlaceOrder.Value);
-    SetLog('****');
-  finally
-    FreeAndNil(xPlaceOrder);
-  end;
-end;
-
-procedure TMainForm.Button3Click(Sender: TObject);
-var
-  xPlaceOrder: TObjectPlaceOrder;
-begin
-(*
-  // Spot Market Buy order, qty is quote currency
-  {
-    "category":"spot",
-    "symbol":"BTCUSDT",
-    "side":"Buy",
-    "orderType":"Market",
-    "qty":"200",
-    "timeInForce":"IOC",
-    "orderLinkId":"spot-test-04",
-    "isLeverage":0,
-    "orderFilter":"Order"
-  }
-*)
-  xPlaceOrder := TObjectPlaceOrder.Create;
-  try
-    xPlaceOrder.Category := TTypeCategory.tcSpot;
-    xPlaceOrder.Symbol := 'BTCUSDT';
-    xPlaceOrder.Side := TTypeSide.tsBuy;
-    xPlaceOrder.OrderType := TTypeOrder.Market;
-    xPlaceOrder.Qty := 200;
-    xPlaceOrder.TimeInForce := TTypeTimeInForce.IOC;
-    xPlaceOrder.OrderLinkId := 'spot-test-04';
-    xPlaceOrder.IsLeverage := 0;
-    xPlaceOrder.OrderFilter := TTypeOrderFilter.Order;
-    SetLog(xPlaceOrder.Value);
-    SetLog('****');
-  finally
-    FreeAndNil(xPlaceOrder);
-  end;
-end;
 
 
 procedure TMainForm.ButtonSelectedClick(Sender: TObject);
