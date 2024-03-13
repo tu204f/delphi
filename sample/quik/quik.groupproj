@@ -6,6 +6,9 @@
         <Projects Include="script\script.dproj">
             <Dependencies/>
         </Projects>
+        <Projects Include="rsi\26.02.2024\rsi.dproj">
+            <Dependencies/>
+        </Projects>
     </ItemGroup>
     <ProjectExtensions>
         <Borland.Personality>Default.Personality.12</Borland.Personality>
@@ -23,14 +26,23 @@
     <Target Name="script:Make">
         <MSBuild Projects="script\script.dproj" Targets="Make"/>
     </Target>
+    <Target Name="rsi">
+        <MSBuild Projects="rsi\26.02.2024\rsi.dproj"/>
+    </Target>
+    <Target Name="rsi:Clean">
+        <MSBuild Projects="rsi\26.02.2024\rsi.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="rsi:Make">
+        <MSBuild Projects="rsi\26.02.2024\rsi.dproj" Targets="Make"/>
+    </Target>
     <Target Name="Build">
-        <CallTarget Targets="script"/>
+        <CallTarget Targets="script;rsi"/>
     </Target>
     <Target Name="Clean">
-        <CallTarget Targets="script:Clean"/>
+        <CallTarget Targets="script:Clean;rsi:Clean"/>
     </Target>
     <Target Name="Make">
-        <CallTarget Targets="script:Make"/>
+        <CallTarget Targets="script:Make;rsi:Make"/>
     </Target>
     <Import Project="$(BDS)\Bin\CodeGear.Group.Targets" Condition="Exists('$(BDS)\Bin\CodeGear.Group.Targets')"/>
 </Project>

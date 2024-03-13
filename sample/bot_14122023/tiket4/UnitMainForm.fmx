@@ -1,0 +1,262 @@
+object MainForm: TMainForm
+  Left = 0
+  Top = 0
+  Caption = 'Form4'
+  ClientHeight = 746
+  ClientWidth = 1253
+  FormFactor.Width = 320
+  FormFactor.Height = 480
+  FormFactor.Devices = [Desktop]
+  DesignerMasterStyle = 0
+  object Timer: TTimer
+    Enabled = False
+    Interval = 100
+    OnTimer = TimerTimer
+    Left = 688
+    Top = 12
+  end
+  object MenuLayout: TLayout
+    Align = Top
+    Margins.Left = 5.000000000000000000
+    Margins.Right = 5.000000000000000000
+    Position.X = 5.000000000000000000
+    Size.Width = 1243.000000000000000000
+    Size.Height = 41.000000000000000000
+    Size.PlatformDefault = False
+    TabOrder = 8
+    object ButtonConnect: TButton
+      Align = Left
+      Margins.Top = 5.000000000000000000
+      Margins.Bottom = 5.000000000000000000
+      Position.Y = 5.000000000000000000
+      Size.Width = 80.000000000000000000
+      Size.Height = 31.000000000000000000
+      Size.PlatformDefault = False
+      TabOrder = 0
+      Text = 'Connect'
+      OnClick = ButtonConnectClick
+    end
+    object ButtonOpenPosition: TButton
+      Align = Left
+      Margins.Left = 5.000000000000000000
+      Margins.Top = 5.000000000000000000
+      Margins.Bottom = 5.000000000000000000
+      Position.X = 85.000000000000000000
+      Position.Y = 5.000000000000000000
+      Size.Width = 81.000000000000000000
+      Size.Height = 31.000000000000000000
+      Size.PlatformDefault = False
+      TabOrder = 4
+      Text = #1054#1090#1082#1088#1099#1090#1100
+      OnClick = ButtonOpenPositionClick
+    end
+    object TextStatus: TText
+      Align = Right
+      Margins.Top = 5.000000000000000000
+      Margins.Bottom = 5.000000000000000000
+      Position.X = 930.000000000000000000
+      Position.Y = 5.000000000000000000
+      Size.Width = 313.000000000000000000
+      Size.Height = 31.000000000000000000
+      Size.PlatformDefault = False
+      TextSettings.HorzAlign = Leading
+    end
+    object TextProfit: TText
+      Align = Client
+      Margins.Left = 5.000000000000000000
+      Margins.Top = 5.000000000000000000
+      Margins.Right = 5.000000000000000000
+      Margins.Bottom = 5.000000000000000000
+      Size.Width = 754.000000000000000000
+      Size.Height = 31.000000000000000000
+      Size.PlatformDefault = False
+      TextSettings.HorzAlign = Leading
+    end
+  end
+  object ListLayout: TLayout
+    Align = Left
+    Margins.Left = 5.000000000000000000
+    Margins.Bottom = 5.000000000000000000
+    Position.X = 5.000000000000000000
+    Position.Y = 41.000000000000000000
+    Size.Width = 276.000000000000000000
+    Size.Height = 700.000000000000000000
+    Size.PlatformDefault = False
+    TabOrder = 9
+    object ListBoxFile: TListBox
+      Align = Client
+      Margins.Right = 5.000000000000000000
+      Size.Width = 271.000000000000000000
+      Size.Height = 700.000000000000000000
+      Size.PlatformDefault = False
+      TabOrder = 0
+      DisableFocusEffect = True
+      DefaultItemStyles.ItemStyle = ''
+      DefaultItemStyles.GroupHeaderStyle = ''
+      DefaultItemStyles.GroupFooterStyle = ''
+      Viewport.Width = 267.000000000000000000
+      Viewport.Height = 696.000000000000000000
+    end
+  end
+  object Layout2: TLayout
+    Align = Client
+    Margins.Right = 5.000000000000000000
+    Margins.Bottom = 5.000000000000000000
+    Size.Width = 967.000000000000000000
+    Size.Height = 700.000000000000000000
+    Size.PlatformDefault = False
+    TabOrder = 10
+    object StrGridR: TStringGrid
+      Align = Top
+      CanFocus = True
+      ClipChildren = True
+      Size.Width = 967.000000000000000000
+      Size.Height = 145.000000000000000000
+      Size.PlatformDefault = False
+      TabOrder = 1
+      Options = [Editing, ColumnResize, ColumnMove, ColLines, RowLines, RowSelect, Tabs, Header, HeaderClick, AutoDisplacement]
+      Viewport.Width = 963.000000000000000000
+      Viewport.Height = 120.000000000000000000
+    end
+    object RealGrid: TStringGrid
+      Align = Client
+      CanFocus = True
+      ClipChildren = True
+      Margins.Top = 5.000000000000000000
+      Margins.Bottom = 5.000000000000000000
+      Size.Width = 967.000000000000000000
+      Size.Height = 129.000000000000000000
+      Size.PlatformDefault = False
+      TabOrder = 6
+      Options = [Editing, ColumnResize, ColumnMove, ColLines, RowLines, RowSelect, Tabs, Header, HeaderClick, AutoDisplacement]
+      Viewport.Width = 963.000000000000000000
+      Viewport.Height = 104.000000000000000000
+    end
+    object TabControl1: TTabControl
+      Align = Bottom
+      Position.Y = 284.000000000000000000
+      Size.Width = 967.000000000000000000
+      Size.Height = 416.000000000000000000
+      Size.PlatformDefault = False
+      TabIndex = 1
+      TabOrder = 7
+      TabPosition = PlatformDefault
+      Sizes = (
+        967s
+        390s
+        967s
+        390s)
+      object TabItem1: TTabItem
+        CustomIcon = <
+          item
+          end>
+        IsSelected = False
+        Size.Width = 69.000000000000000000
+        Size.Height = 26.000000000000000000
+        Size.PlatformDefault = False
+        StyleLookup = ''
+        TabOrder = 0
+        Text = 'TabItem1'
+        ExplicitSize.cx = 69.000000000000000000
+        ExplicitSize.cy = 26.000000000000000000
+        object Chart1: TChart
+          Foot.Font.StyleExt = {00040000000200000004000000}
+          Legend.Title.Font.StyleExt = {00070000000000000004000000}
+          Legend.Visible = False
+          SubFoot.Font.StyleExt = {00040000000200000004000000}
+          Title.Text.Strings = (
+            'TChart')
+          Title.Visible = False
+          View3D = False
+          Zoom.Brush.Kind = None
+          Zoom.Pen.Fill.Color = claSilver
+          Align = Client
+          TabOrder = 13
+          Size.Width = 967.000000000000000000
+          Size.Height = 390.000000000000000000
+          Size.PlatformDefault = False
+          ColorPaletteIndex = 13
+          object Series1: TLineSeries
+            Brush.BackColor = x00FFFFFF
+            Pointer.InflateMargins = True
+            Pointer.Style = psRectangle
+            XValues.Name = 'X'
+            XValues.Order = loAscending
+            YValues.Name = 'Y'
+            YValues.Order = loNone
+          end
+        end
+      end
+      object TabItem2: TTabItem
+        CustomIcon = <
+          item
+          end>
+        IsSelected = True
+        Size.Width = 69.000000000000000000
+        Size.Height = 26.000000000000000000
+        Size.PlatformDefault = False
+        StyleLookup = ''
+        TabOrder = 0
+        Text = 'TabItem2'
+        ExplicitSize.cx = 69.000000000000000000
+        ExplicitSize.cy = 26.000000000000000000
+        object Chart2: TChart
+          Foot.Font.StyleExt = {00040000000200000004000000}
+          Legend.Title.Font.StyleExt = {00070000000000000004000000}
+          Legend.Visible = False
+          SubFoot.Font.StyleExt = {00040000000200000004000000}
+          Title.Text.Strings = (
+            'TChart')
+          Title.Visible = False
+          View3D = False
+          Zoom.Brush.Kind = None
+          Zoom.Pen.Fill.Color = claSilver
+          Align = Client
+          TabOrder = 13
+          Size.Width = 967.000000000000000000
+          Size.Height = 390.000000000000000000
+          Size.PlatformDefault = False
+          ColorPaletteIndex = 13
+          object Series2: TLineSeries
+            Brush.BackColor = x00FFFFFF
+            Pointer.InflateMargins = True
+            Pointer.Style = psRectangle
+            XValues.Name = 'X'
+            XValues.Order = loAscending
+            YValues.Name = 'Y'
+            YValues.Order = loNone
+          end
+          object Series3: TLineSeries
+            SeriesColor = xFF05C222
+            Brush.BackColor = x00FFFFFF
+            Pointer.InflateMargins = True
+            Pointer.Style = psRectangle
+            XValues.Name = 'X'
+            XValues.Order = loNone
+            YValues.Name = 'Y'
+            YValues.Order = loNone
+          end
+          object Series4: TLineSeries
+            SeriesColor = xFFE30404
+            Brush.BackColor = x00FFFFFF
+            Pointer.InflateMargins = True
+            Pointer.Style = psRectangle
+            XValues.Name = 'X'
+            XValues.Order = loAscending
+            YValues.Name = 'Y'
+            YValues.Order = loNone
+          end
+          object Series5: TPointSeries
+            ClickableLine = False
+            Pointer.InflateMargins = True
+            Pointer.Style = psDonut
+            XValues.Name = 'X'
+            XValues.Order = loAscending
+            YValues.Name = 'Y'
+            YValues.Order = loNone
+          end
+        end
+      end
+    end
+  end
+end

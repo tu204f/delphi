@@ -12,6 +12,15 @@
         <Projects Include="tiket\tiket.dproj">
             <Dependencies/>
         </Projects>
+        <Projects Include="tiket2\tiket2.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="tiket3\tiket3_10022024.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="tiket4\tiket4.dproj">
+            <Dependencies/>
+        </Projects>
     </ItemGroup>
     <ProjectExtensions>
         <Borland.Personality>Default.Personality.12</Borland.Personality>
@@ -47,14 +56,41 @@
     <Target Name="tiket:Make">
         <MSBuild Projects="tiket\tiket.dproj" Targets="Make"/>
     </Target>
+    <Target Name="tiket2">
+        <MSBuild Projects="tiket2\tiket2.dproj"/>
+    </Target>
+    <Target Name="tiket2:Clean">
+        <MSBuild Projects="tiket2\tiket2.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="tiket2:Make">
+        <MSBuild Projects="tiket2\tiket2.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="tiket3_10022024">
+        <MSBuild Projects="tiket3\tiket3_10022024.dproj"/>
+    </Target>
+    <Target Name="tiket3_10022024:Clean">
+        <MSBuild Projects="tiket3\tiket3_10022024.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="tiket3_10022024:Make">
+        <MSBuild Projects="tiket3\tiket3_10022024.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="tiket4">
+        <MSBuild Projects="tiket4\tiket4.dproj"/>
+    </Target>
+    <Target Name="tiket4:Clean">
+        <MSBuild Projects="tiket4\tiket4.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="tiket4:Make">
+        <MSBuild Projects="tiket4\tiket4.dproj" Targets="Make"/>
+    </Target>
     <Target Name="Build">
-        <CallTarget Targets="read;mono;tiket"/>
+        <CallTarget Targets="read;mono;tiket;tiket2;tiket3_10022024;tiket4"/>
     </Target>
     <Target Name="Clean">
-        <CallTarget Targets="read:Clean;mono:Clean;tiket:Clean"/>
+        <CallTarget Targets="read:Clean;mono:Clean;tiket:Clean;tiket2:Clean;tiket3_10022024:Clean;tiket4:Clean"/>
     </Target>
     <Target Name="Make">
-        <CallTarget Targets="read:Make;mono:Make;tiket:Make"/>
+        <CallTarget Targets="read:Make;mono:Make;tiket:Make;tiket2:Make;tiket3_10022024:Make;tiket4:Make"/>
     </Target>
     <Import Project="$(BDS)\Bin\CodeGear.Group.Targets" Condition="Exists('$(BDS)\Bin\CodeGear.Group.Targets')"/>
 </Project>

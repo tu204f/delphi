@@ -71,10 +71,22 @@ type
     turnover: String;
   private
     function GetDateTime: TDateTime;
+    function GetClose: Double;
+    function GetHigh: Double;
+    function GetLow: Double;
+    function GetOpen: Double;
+    function GetVol: Double;
+  protected
+    function GetFloatToStr(const AValue: String): Double;
   public
     procedure SetObjectJson(const AValueJsons: TJSONArray);
     function ToString: String; override;
     property DateTime: TDateTime read GetDateTime;
+    property Open: Double read GetOpen;
+    property High: Double read GetHigh;
+    property Low: Double read GetLow;
+    property Close: Double read GetClose;
+    property Vol: Double read GetVol;
   end;
 
 procedure SetLinearObjects(AListJson: TJSONArray; ACandelObjects: TCandelObjectList);
@@ -212,6 +224,41 @@ begin
     closePrice + ';' +
     volume     + ';' +
     turnover   + ';';
+end;
+
+function TCandelObject.GetFloatToStr(const AValue: String): Double;
+var
+  xOld: Char;
+begin
+  xOld := FormatSettings.DecimalSeparator;
+  FormatSettings.DecimalSeparator := '.';
+  Result := StrToFloatDef(AValue,0);
+  FormatSettings.DecimalSeparator := xOld;
+end;
+
+function TCandelObject.GetOpen: Double;
+begin
+  Result := GetFloatToStr(openPrice);
+end;
+
+function TCandelObject.GetHigh: Double;
+begin
+  Result := GetFloatToStr(highPrice);
+end;
+
+function TCandelObject.GetLow: Double;
+begin
+  Result := GetFloatToStr(lowPrice);
+end;
+
+function TCandelObject.GetClose: Double;
+begin
+  Result := GetFloatToStr(closePrice);
+end;
+
+function TCandelObject.GetVol: Double;
+begin
+  Result := GetFloatToStr(volume);
 end;
 
 end.

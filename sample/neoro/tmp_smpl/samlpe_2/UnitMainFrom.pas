@@ -13,16 +13,12 @@ type
     Memo: TMemo;
     Button3: TButton;
     Button4: TButton;
-    Button5: TButton;
-    Timer1: TTimer;
     procedure FormCreate(Sender: TObject);
     procedure Button1Click(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure Button2Click(Sender: TObject);
     procedure Button3Click(Sender: TObject);
     procedure Button4Click(Sender: TObject);
-    procedure Button5Click(Sender: TObject);
-    procedure Timer1Timer(Sender: TObject);
   private
     { Private declarations }
     procedure Log(S: String = '');
@@ -44,6 +40,19 @@ uses
 var
   NeuronNet: TNeuronNet = nil;
 
+
+procedure _neuroXOR(ANeuronNet: TNeuronNet; const A, B: Byte);
+var
+  xV: Double;
+begin
+  ANeuronNet.InputNeurons.Values[0] := A;
+  ANeuronNet.InputNeurons.Values[1] := B;
+  ANeuronNet.InputNeurons.Values[2] := 1;
+  ANeuronNet.Calculate;
+  xV := ANeuronNet.OutputNeurons.Values[0];
+  Form4.Log('A = ' + A.ToString + '; B = ' + B.ToString + '; Result = ' + xV.ToString);
+end;
+
 procedure neuroXOR(const A, B: Byte);
 var
   xV: Double;
@@ -53,24 +62,23 @@ begin
   NeuronNet.InputNeurons.Values[2] := 1;
   NeuronNet.Calculate;
   xV := NeuronNet.OutputNeurons.Values[0];
-
   Form4.Log('A = ' + A.ToString + '; B = ' + B.ToString + '; Result = ' + xV.ToString);
 end;
 
 procedure neuroLearnXOR(const A, B, C: Byte);
-var
-  xV: Double;
 begin
+  // Обратная проходка
   NeuronNet.InputNeurons.Values[0] := A;
   NeuronNet.InputNeurons.Values[1] := B;
+  NeuronNet.InputNeurons.Values[2] := 1;
   NeuronNet.Calculate;
-  xV := NeuronNet.OutputNeurons.Values[0];
+  NeuronNet.OutputNeurons.Values[0];
 
   // Начало объекта
   NeuronNet.OutputNeurons.EtalonNullValue;
   NeuronNet.OutputNeurons.Etalons[0] := C;
   NeuronNet.CalculateError;
-  NeuronNet.CalculateLearn(1);
+  NeuronNet.CalculateLearn(0.05);
 end;
 
 { TForm4 }
@@ -103,7 +111,7 @@ end;
 procedure TForm4.Button2Click(Sender: TObject);
 begin
   Log('*************************************************');
-  for var i := 0 to 10000 do
+  for var i := 0 to 100000 do
   begin
     neuroLearnXOR(0,0,0);
     neuroLearnXOR(0,1,1);
@@ -126,30 +134,6 @@ begin
   NeuronNet.Load('xor.neuron');
 end;
 
-procedure _neuroXOR(ANeuronNet: TNeuronNet; const A, B: Byte);
-var
-  xV: Double;
-begin
-  ANeuronNet.InputNeurons.Values[0] := A;
-  ANeuronNet.InputNeurons.Values[1] := B;
-  ANeuronNet.InputNeurons.Values[2] := 1;
-  ANeuronNet.Calculate;
-  xV := ANeuronNet.OutputNeurons.Values[0];
-  Form4.Log('A = ' + A.ToString + '; B = ' + B.ToString + '; Result = ' + xV.ToString);
-end;
 
-procedure TForm4.Button5Click(Sender: TObject);
-begin
-  Timer1.Enabled := not Timer1.Enabled;
-  if Timer1.Enabled then
-    Button5.Caption := 'Стоп'
-  else
-    Button5.Caption := 'Старт';
-end;
-
-procedure TForm4.Timer1Timer(Sender: TObject);
-begin
-  //
-end;
 
 end.

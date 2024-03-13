@@ -228,8 +228,10 @@ begin
   inherited DoEventMessage(AMessage);
   xValueJson := Response.ResultObject.Values['list'];
   if xValueJson is TJSONArray then
+  begin
     xListJson := TJSONArray(xValueJson);
-  SetPositionObjects(xListJson,FPositionObjects);
+    SetPositionObjects(xListJson,FPositionObjects);
+  end;
 end;
 
 { TPositionObject }

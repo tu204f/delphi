@@ -1,0 +1,37 @@
+object MainForm: TMainForm
+  Left = 0
+  Top = 0
+  Caption = #1048#1089#1090#1086#1088#1080#1095#1077#1089#1082#1080#1077' '#1076#1072#1085#1085#1099#1077
+  ClientHeight = 401
+  ClientWidth = 741
+  FormFactor.Width = 320
+  FormFactor.Height = 480
+  FormFactor.Devices = [Desktop]
+  DesignerMasterStyle = 0
+  object StrGrid: TStringGrid
+    Anchors = [akLeft, akTop, akRight, akBottom]
+    CanFocus = True
+    ClipChildren = True
+    Position.X = 4.000000000000000000
+    Position.Y = 36.000000000000000000
+    Size.Width = 733.000000000000000000
+    Size.Height = 360.000000000000000000
+    Size.PlatformDefault = False
+    TabOrder = 0
+    Viewport.Width = 729.000000000000000000
+    Viewport.Height = 335.000000000000000000
+  end
+  object ButtonStart: TButton
+    Position.X = 4.000000000000000000
+    Position.Y = 8.000000000000000000
+    TabOrder = 2
+    Text = #1057#1090#1072#1088#1090
+    OnClick = ButtonStartClick
+  end
+  object ButtonStop: TButton
+    Position.X = 88.000000000000000000
+    Position.Y = 8.000000000000000000
+    TabOrder = 1
+    Text = #1057#1090#1086#1087
+  end
+end

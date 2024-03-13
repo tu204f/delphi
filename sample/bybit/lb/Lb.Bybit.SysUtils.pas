@@ -17,7 +17,7 @@ uses
   Lb.Bybit.Encryption;
 
 const
-{$DEFINE TEST}
+//{$DEFINE TEST}
   BYBIT_HOST =
 {$IFDEF TEST}
   'https://api-testnet.bybit.com';
@@ -33,6 +33,8 @@ const
   ERROR_CODE_PARSER = ERROR_CODE + 2;
 
 type
+  TValueList = TList<Double>;
+
   TTypeCategory = (
     tcSpot,
     tcLinear,  // Бессрочный USDT и контракт USDC, включая USDC perp, фьючерсы USDC
@@ -130,6 +132,12 @@ type
     ti_M  // month
   );
 
+  ///<summary>Тип опции. Call или Put. Применяется только к опции</summary>
+  TOptionType = (
+    Call,
+    Put
+  );
+
 type
   THeader = TNameValuePair;
   THeaderList = class(TList<THeader>)
@@ -169,6 +177,8 @@ type
   /// Также можно задавать интервал запроса
   ///</remarks>
   TBybitHttpClient = class(TObject)
+  public type
+    TTypeSelected = (tsSelected,tsStart);
   private
     FActive: Boolean;
     FSource: TStrings;
@@ -179,6 +189,7 @@ type
     FBybitModule: TBybitModule;
     FResponse: TBytiyResponse;
     FEncryption: TEncryption;
+    FTypeSelected: TTypeSelected;
   protected
     FOnEventMessage: TNotifyEvent;
     FOnEventException: TNotifyEvent;
@@ -297,6 +308,11 @@ function GetStrToTypeSmpType(const ASmpType: TTypeSmpType): String;
 function GetStrToTypeTpSlMode(const ATpSlMode: TTypeTpSlMode): String;
 function GetStrToTypeStatus(AStatus: TTypeStatus): String;
 function GetStrToTypeInterval(AInterval: TTypeInterval): String;
+function GetStrToOptionType(const AOptionType: TOptionType): String;
+
+function GetTypeCategoryToStr(const AValue: String): TTypeCategory;
+function GetTypeSideToStr(const AValue: String): TTypeSide;
+function GetOptionTypeToStr(const AValue: String): TOptionType;
 
 type
   ///<summary>Для всех Json – объектов</summary>
@@ -335,6 +351,20 @@ begin
   end;
 end;
 
+function GetTypeCategoryToStr(const AValue: String): TTypeCategory;
+begin
+  if SameText(AValue,'spot') then
+    Result := TTypeCategory.tcSpot
+  else if SameText(AValue,'linear') then
+    Result := TTypeCategory.tcLinear
+  else if SameText(AValue,'inverse') then
+    Result := TTypeCategory.tcInverse
+  else if SameText(AValue,'option') then
+    Result := TTypeCategory.tcOption
+  else
+    raise Exception.Create('Error Message: Неверный код категории');
+end;
+
 function GetStrToTypeSide(const ASide: TTypeSide): String;
 begin
   case ASide of
@@ -343,6 +373,16 @@ begin
   else
     Result := '';
   end;
+end;
+
+function GetTypeSideToStr(const AValue: String): TTypeSide;
+begin
+  if SameText('Buy',AValue) then
+    Result := TTypeSide.tsBuy
+  else if SameText('Sell',AValue) then
+    Result := TTypeSide.tsSell
+  else
+    raise Exception.Create('Error Message: Тип ошибки направление');
 end;
 
 
@@ -442,6 +482,26 @@ begin
   end;
 end;
 
+function GetStrToOptionType(const AOptionType: TOptionType): String;
+begin
+  case AOptionType of
+    Call: Result := 'Call';
+    Put : Result := 'Put';
+  else
+    raise Exception.Create('Error Message: Тип не определен');
+  end;
+end;
+
+function GetOptionTypeToStr(const AValue: String): TOptionType;
+begin
+  if SameText(AValue,'Call') then
+    Result := TOptionType.Call
+  else if SameText(AValue,'Put') then
+    Result := TOptionType.Put
+  else
+    raise Exception.Create('Error Message: Тип не определен');
+end;
+
 function GetStrToJson(const AJsonValue: TJSONValue): String;
 begin
   Result := '';
@@ -464,10 +524,16 @@ begin
 end;
 
 function GetFloatToJson(const AJsonValue: TJSONValue): Double;
+var
+  xFormatSettings: TFormatSettings;
 begin
   Result := 0;
   if Assigned(AJsonValue) then
-    Result := StrToFloatDef(AJsonValue.Value,0);
+  begin
+    xFormatSettings := FormatSettings;
+    xFormatSettings.DecimalSeparator := '.';
+    Result := StrToFloatDef(AJsonValue.Value,0,xFormatSettings);
+  end;
 end;
 
 function GetBoolToJson(const AJsonValue: TJSONValue): Boolean;
@@ -606,8 +672,12 @@ end;
 
 procedure TBybitHttpClient.DoEventMessage(const AMessage: String);
 begin
+
   if FInterval = 0 then
     FTask := nil;
+
+  if not Assigned(FResponse) then
+    Exit;
 
   FValueMessage := AMessage;
   if not FValueMessage.IsEmpty then
@@ -656,10 +726,10 @@ begin
   except
     FStatusCode := ERROR_CODE_PARSER;
   end;
-  if FActive then
-    FActive := False;
   if Assigned(FOnEventEndLoading) then
     FOnEventEndLoading(Self);
+  if FTypeSelected = tsSelected then
+    Self.Stop;
 end;
 
 procedure TBybitHttpClient.SetEncryption(const ApiKey, ApiSecret: String);
@@ -726,7 +796,12 @@ begin
           Break
         else
           Sleep(FInterval);
-        if FTask.Status = TTaskStatus.Canceled then
+        if Assigned(FTask) then
+        begin
+          if FTask.Status = TTaskStatus.Canceled then
+            Break;
+        end
+        else
           Break;
       end;
     end
@@ -742,6 +817,7 @@ begin
     FInterval := 0;
     SetThreading;
     FActive := True;
+    FTypeSelected := TTypeSelected.tsSelected;
   end;
 end;
 
@@ -751,18 +827,23 @@ begin
   begin
     FInterval := AInterval;
     SetThreading;
+    FActive := True;
+    FTypeSelected := TTypeSelected.tsStart;
   end;
 end;
 
 procedure TBybitHttpClient.Stop;
 begin
   if FActive then
+  begin
     if Assigned(FTask) then
     begin
       FInterval := 0;
       FTask.Cancel;
       FTask := nil;
     end;
+    FActive := False;
+  end;
 end;
 
 { TBytiyResponse }

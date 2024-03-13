@@ -9,9 +9,11 @@ uses
   System.Classes,
   System.Variants,
   System.IniFiles,
-{$IFDEF MSWINDOWS}
-  Vcl.ExtCtrls;
+{$IFDEF VCL}
+  Vcl.ExtCtrls,
+  Vcl.Forms;
 {$ELSE}
+  FMX.Forms,
   FMX.Types;
 {$ENDIF}
 
@@ -73,13 +75,6 @@ type
   end;
 
 implementation
-
-uses
-{$IFDEF MSWINDOWS}
-  Vcl.Forms;
-{$ELSE}
-  FMX.Forms;
-{$ENDIF}
 
 type
   TParam = record

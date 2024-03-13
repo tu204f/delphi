@@ -66,6 +66,10 @@ uses
   System.Hash,
   System.DateUtils;
 
+const
+  API_KEY    = '3bI64e0kw4KuihyRPu';
+  API_SECRET = 'jvwTC14ESSTjIpvXaRbDGW8xd1KoqD3H3cWY';
+
 { TMainForm }
 
 constructor TMainForm.Create(AOwner: TComponent);
@@ -103,16 +107,16 @@ begin
     xPlaceOrder.TypeProc    := TParamOrder.TTypeProc.Place;
     xPlaceOrder.Category    := TTypeCategory.tcLinear;
     xPlaceOrder.Symbol      := 'BTCUSDT';
-    xPlaceOrder.Side        := TTypeSide.tsBuy;
+    xPlaceOrder.Side        := TTypeSide.tsSell;
     xPlaceOrder.PositionIdx := 0;
     xPlaceOrder.OrderType   := TTypeOrder.Limit;
     xPlaceOrder.Qty         := 0.001;
-    xPlaceOrder.Price       := 43596;
+    xPlaceOrder.Price       := 51500;
     xPlaceOrder.timeInForce := TTypeTimeInForce.GTC;
     xPlaceOrder.OrderLinkId := 'test' + Random(65000).ToString;
     xS := SelectedOrder(
-      'xN7ITgfUFq8XoPSuiE',
-      'MXcY548mw6hfp8YVoP6KO4XL8xFOYcMA1w7Z',
+       API_KEY,
+       API_SECRET,
        xPlaceOrder,
        OrderResponse
     );
@@ -134,8 +138,8 @@ begin
     xPlaceOrder.Symbol      := 'BTCUSDT';
     xPlaceOrder.OrderID     := OrderResponse.OrderID;
     xS := SelectedOrder(
-      'xN7ITgfUFq8XoPSuiE',
-      'MXcY548mw6hfp8YVoP6KO4XL8xFOYcMA1w7Z',
+       API_KEY,
+       API_SECRET,
        xPlaceOrder,
        OrderResponse
     );
@@ -157,8 +161,8 @@ begin
     xPlaceOrder.Symbol      := 'BTCUSDT';
     xPlaceOrder.OrderLinkID := OrderResponse.OrderLinkID;
     xS := SelectedOrder(
-      'xN7ITgfUFq8XoPSuiE',
-      'MXcY548mw6hfp8YVoP6KO4XL8xFOYcMA1w7Z',
+       API_KEY,
+       API_SECRET,
        xPlaceOrder,
        OrderResponse
     );
@@ -183,8 +187,8 @@ begin
     xPlaceOrder.Price       := 43455;
     xPlaceOrder.Qty         := 0.002;
     xS := SelectedOrder(
-      'xN7ITgfUFq8XoPSuiE',
-      'MXcY548mw6hfp8YVoP6KO4XL8xFOYcMA1w7Z',
+       API_KEY,
+       API_SECRET,
        xPlaceOrder,
        OrderResponse
     );
@@ -209,8 +213,8 @@ begin
     xPlaceOrder.Price       := 43455;
     xPlaceOrder.Qty         := 0.002;
     xS := SelectedOrder(
-      'xN7ITgfUFq8XoPSuiE',
-      'MXcY548mw6hfp8YVoP6KO4XL8xFOYcMA1w7Z',
+       API_KEY,
+       API_SECRET,
        xPlaceOrder,
        OrderResponse
     );
@@ -241,8 +245,8 @@ procedure TMainForm.ButtonOrdersClick(Sender: TObject);
 begin
   BybitRealTime.OnEventEndLoading := RealTimeEventEndLoading;
   BybitRealTime.SetEncryption(
-    'xN7ITgfUFq8XoPSuiE',
-    'MXcY548mw6hfp8YVoP6KO4XL8xFOYcMA1w7Z'
+    API_KEY,
+    API_SECRET
   );
   BybitRealTime.Category := TTypeCategory.tcLinear;
   BybitRealTime.Symbol := 'BTCUSDT';

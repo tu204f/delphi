@@ -15,7 +15,8 @@ uses
   FMX.Dialogs,
   FMX.StdCtrls,
   FMX.Objects,
-  Lb.SysUtils.Candel, FMX.Layouts;
+  Lb.SysUtils.Candel,
+  FMX.Layouts;
 
 type
   TCandelFrame = class(TFrame)
@@ -41,12 +42,20 @@ type
     property MinPrice: Double read FMinPrice write FMinPrice;
   end;
 
+function PriceToY(const AHeight, APrice, AMaxPrice, AMinPrice: Double): Double;
+
 implementation
 
 {$R *.fmx}
 
-uses
-  Lb.SysUtils;
+function PriceToY(const AHeight, APrice, AMaxPrice, AMinPrice: Double): Double;
+var
+  xDelta: Double;
+begin
+  xDelta := (APrice - AMinPrice)/(AMaxPrice - AMinPrice);
+  Result := AHeight - xDelta * AHeight;
+end;
+
 
 { TCandelFrame }
 

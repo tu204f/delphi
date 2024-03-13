@@ -40,14 +40,12 @@ type
     IndexTiket: Integer;
   protected
     Bot: TTakeProfitTiketBot;
-    Rvs: TTakeProfitTiketBot;
     procedure BotOpenPosition(const ASander: TObject; AMode: TMode; APrice: Double);
     procedure BotClosePosition(const ASander: TObject; AMode: TMode; APrice: Double);
-    procedure RvsOpenPosition(const ASander: TObject; AMode: TMode; APrice: Double);
-    procedure RvsClosePosition(const ASander: TObject; AMode: TMode; APrice: Double);
   public
     BeginTime: Integer;
     SourceTikets: TSourceTikets;
+    BybitSourceTikets: TBybitSourceTikets;
   end;
 
 var
@@ -66,14 +64,6 @@ begin
   Bot.OnOpenPosition := BotOpenPosition;
   Bot.OnClosePosition := BotClosePosition;
 
-  Rvs := TTakeProfitTiketBot.Create;
-  Rvs.StopLoss := -10;
-  Rvs.CountStop := 3;
-  Rvs.TakeProfit := 50;
-  Rvs.OnOpenPosition := RvsOpenPosition;
-  Rvs.OnClosePosition := RvsClosePosition;
-
-
   SourceTikets := TSourceTikets.Create;
   BeginTime := 32400;
 end;
@@ -83,7 +73,6 @@ end;
 procedure TMainForm.FormClose(Sender: TObject; var Action: TCloseAction);
 begin
   FreeAndNil(SourceTikets);
-  FreeAndNil(Rvs);
   FreeAndNil(Bot);
 end;
 
@@ -95,7 +84,6 @@ begin
   Memo2.Lines.Clear;
 
   Bot.Default;
-  Rvs.Default;
 
   Series1.Clear;
   LineSeries1.Clear;
@@ -113,20 +101,6 @@ end;
 procedure TMainForm.BotOpenPosition(const ASander: TObject; AMode: TMode; APrice: Double);
 begin
   Memo1.Lines.Add('bot ###');
-  case AMode of
-    tmBuy: begin
-      Memo1.Lines.Add('buy');
-      Rvs.SetRvsMode(tmSell);
-      Rvs.SetOpenPosition(APrice);
-    end;
-    tmSell: begin
-      Memo1.Lines.Add('sell');
-      Rvs.SetRvsMode(tmBuy);
-      Rvs.SetOpenPosition(APrice);
-    end;
-  else
-    Memo1.Lines.Add('error');
-  end;
   Memo1.Lines.Add('open:' + APrice.ToString);
 end;
 
@@ -137,25 +111,6 @@ begin
   Memo1.Lines.Add('close:' + APrice.ToString);
   //*********************
   Series1.AddY(Bot.HealthPoints);
-end;
-
-procedure TMainForm.RvsOpenPosition(const ASander: TObject; AMode: TMode; APrice: Double);
-begin
-  Memo2.Lines.Add('rvs ###');
-  case AMode of
-    tmBuy: Memo2.Lines.Add('buy');
-    tmSell: Memo2.Lines.Add('sell');
-  else
-    Memo2.Lines.Add('error');
-  end;
-  Memo2.Lines.Add('open:' + APrice.ToString);
-end;
-
-procedure TMainForm.RvsClosePosition(const ASander: TObject; AMode: TMode; APrice: Double);
-begin
-  Memo2.Lines.Add('rvs ###');
-  Memo2.Lines.Add('close:' + APrice.ToString);
-  LineSeries1.AddY(Rvs.HealthPoints);
 end;
 
 procedure TMainForm.TimerReadTimer(Sender: TObject);
@@ -173,17 +128,13 @@ procedure TMainForm.TimerReadTimer(Sender: TObject);
       if (xBeginTime >= xTiket.Time) and (xTiket.Time < xEndTime) then
       begin
         Bot.SetUpPosition(xTiket.Last);
-        Rvs.SetUpPosition(xTiket.Last);
       end
       else
       begin
         if not Bot.IsPosition then
         begin
-          if not Rvs.IsPosition then
-          begin
-            Bot.SetMode;
-            Bot.SetOpenPosition(xTiket.Last);
-          end;
+          Bot.SetMode;
+          Bot.SetOpenPosition(xTiket.Last);
         end;
         BeginTime  := xEndTime;
       end;

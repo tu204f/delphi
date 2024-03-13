@@ -9,13 +9,31 @@
         <Projects Include="sample\Instrument\instrument.dproj">
             <Dependencies/>
         </Projects>
+        <Projects Include="sample\recent_trade\recent_trade.dproj">
+            <Dependencies/>
+        </Projects>
         <Projects Include="sample\candels\candels.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="sample\history\history.dproj">
             <Dependencies/>
         </Projects>
         <Projects Include="sample\place\place.dproj">
             <Dependencies/>
         </Projects>
         <Projects Include="sample\reconnect\reconnect.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="sample\demo_bot\demo_bot.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="sample\demo_bot_2\demo_bot_2.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="sample\indicator\indicator.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="sample\demo_bot_3\demo_bot_3.dproj">
             <Dependencies/>
         </Projects>
     </ItemGroup>
@@ -44,6 +62,15 @@
     <Target Name="instrument:Make">
         <MSBuild Projects="sample\Instrument\instrument.dproj" Targets="Make"/>
     </Target>
+    <Target Name="recent_trade">
+        <MSBuild Projects="sample\recent_trade\recent_trade.dproj"/>
+    </Target>
+    <Target Name="recent_trade:Clean">
+        <MSBuild Projects="sample\recent_trade\recent_trade.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="recent_trade:Make">
+        <MSBuild Projects="sample\recent_trade\recent_trade.dproj" Targets="Make"/>
+    </Target>
     <Target Name="candels">
         <MSBuild Projects="sample\candels\candels.dproj"/>
     </Target>
@@ -52,6 +79,15 @@
     </Target>
     <Target Name="candels:Make">
         <MSBuild Projects="sample\candels\candels.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="history">
+        <MSBuild Projects="sample\history\history.dproj"/>
+    </Target>
+    <Target Name="history:Clean">
+        <MSBuild Projects="sample\history\history.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="history:Make">
+        <MSBuild Projects="sample\history\history.dproj" Targets="Make"/>
     </Target>
     <Target Name="place">
         <MSBuild Projects="sample\place\place.dproj"/>
@@ -71,14 +107,50 @@
     <Target Name="reconnect:Make">
         <MSBuild Projects="sample\reconnect\reconnect.dproj" Targets="Make"/>
     </Target>
+    <Target Name="demo_bot">
+        <MSBuild Projects="sample\demo_bot\demo_bot.dproj"/>
+    </Target>
+    <Target Name="demo_bot:Clean">
+        <MSBuild Projects="sample\demo_bot\demo_bot.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="demo_bot:Make">
+        <MSBuild Projects="sample\demo_bot\demo_bot.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="demo_bot_2">
+        <MSBuild Projects="sample\demo_bot_2\demo_bot_2.dproj"/>
+    </Target>
+    <Target Name="demo_bot_2:Clean">
+        <MSBuild Projects="sample\demo_bot_2\demo_bot_2.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="demo_bot_2:Make">
+        <MSBuild Projects="sample\demo_bot_2\demo_bot_2.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="indicator">
+        <MSBuild Projects="sample\indicator\indicator.dproj"/>
+    </Target>
+    <Target Name="indicator:Clean">
+        <MSBuild Projects="sample\indicator\indicator.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="indicator:Make">
+        <MSBuild Projects="sample\indicator\indicator.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="demo_bot_3">
+        <MSBuild Projects="sample\demo_bot_3\demo_bot_3.dproj"/>
+    </Target>
+    <Target Name="demo_bot_3:Clean">
+        <MSBuild Projects="sample\demo_bot_3\demo_bot_3.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="demo_bot_3:Make">
+        <MSBuild Projects="sample\demo_bot_3\demo_bot_3.dproj" Targets="Make"/>
+    </Target>
     <Target Name="Build">
-        <CallTarget Targets="bybit;instrument;candels;place;reconnect"/>
+        <CallTarget Targets="bybit;instrument;recent_trade;candels;history;place;reconnect;demo_bot;demo_bot_2;indicator;demo_bot_3"/>
     </Target>
     <Target Name="Clean">
-        <CallTarget Targets="bybit:Clean;instrument:Clean;candels:Clean;place:Clean;reconnect:Clean"/>
+        <CallTarget Targets="bybit:Clean;instrument:Clean;recent_trade:Clean;candels:Clean;history:Clean;place:Clean;reconnect:Clean;demo_bot:Clean;demo_bot_2:Clean;indicator:Clean;demo_bot_3:Clean"/>
     </Target>
     <Target Name="Make">
-        <CallTarget Targets="bybit:Make;instrument:Make;candels:Make;place:Make;reconnect:Make"/>
+        <CallTarget Targets="bybit:Make;instrument:Make;recent_trade:Make;candels:Make;history:Make;place:Make;reconnect:Make;demo_bot:Make;demo_bot_2:Make;indicator:Make;demo_bot_3:Make"/>
     </Target>
     <Import Project="$(BDS)\Bin\CodeGear.Group.Targets" Condition="Exists('$(BDS)\Bin\CodeGear.Group.Targets')"/>
 </Project>

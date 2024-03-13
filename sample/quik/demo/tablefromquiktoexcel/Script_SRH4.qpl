@@ -1,0 +1,193 @@
+PORTFOLIO_EX Script_SRH4;
+DESCRIPTION Script_SRH4;
+CLIENTS_LIST ALL_CLIENTS;
+FIRMS_LIST ALL_FIRMS;
+
+USE_CASE_SENSITIVE_CONSTANTS
+
+PROGRAM
+secClass = "SPBFUT"
+secCode = "SRH4"
+timeFrame = 5
+candleMaxCount = 3000
+
+DELETE_ALL_ITEMS()
+
+dateTime = GET_DATETIME()
+yearPart = GET_VALUE(dateTime, "YEAR")
+monthPart = GET_VALUE(dateTime, "MONTH")
+dayPart = GET_VALUE(dateTime, "DAY")
+hourPart = GET_VALUE(dateTime, "HOUR")
+minutePart = GET_VALUE(dateTime, "MIN")
+
+minutePart = timeFrame * FLOOR(minutePart / timeFrame)
+
+for i from 1 to candleMaxCount
+if(i > 5000)
+i = 10000
+end if
+dateString = GetDataString(yearPart, monthPart, dayPart)
+timeString = GetTimeString(hourPart, minutePart)
+candle = GET_CANDLE(secClass, secCode, "", timeFrame, "PRICE", dateString, timeString)
+open = GET_VALUE(candle, "OPEN") + 0
+if (open = 0)
+candleMaxCount = candleMaxCount + 1
+end if
+
+if (open > 0)
+high = GET_VALUE(Candle, "HIGH")
+low = GET_VALUE(Candle, "LOW")
+close = GET_VALUE(Candle, "CLOSE")
+volume = GET_VALUE(candle, "VOLUME")
+output = CREATE_MAP()
+output = SET_VALUE(output, "Date", dateString)
+output = SET_VALUE(output, "Time", timeString)
+output = SET_VALUE(output, "OpenPrice", open)
+output = SET_VALUE(output, "HighPrice", high)
+output = SET_VALUE(output, "LowPrice", low)
+output = SET_VALUE(output, "ClosePrice", close)
+output = SET_VALUE(output, "Volume", volume)
+Ind1 = GET_CANDLE_EX ("RSI",dateString, timeString)
+LineCount_ind1 = GET_VALUE (Ind1,"COUNT")
+
+Lines_ind1 = GET_VALUE (Ind1,"LINES")
+FOR lineID FROM 0 TO LineCount_ind1-1
+Line = GET_COLLECTION_ITEM (Lines_ind1, lineID)
+close_ind = Get_Value (Line,"CLOSE")
+output = SET_VALUE(output, "Ind1_Par"&(lineID+1), close_ind)
+END FOR
+
+Ind2 = GET_CANDLE_EX ("Ident2",dateString, timeString)
+LineCount_ind2 = GET_VALUE (Ind2,"COUNT")
+
+Lines_ind2 = GET_VALUE (Ind2,"LINES")
+FOR lineID FROM 0 TO LineCount_ind2-1
+Line = GET_COLLECTION_ITEM (Lines_ind2, lineID)
+close_ind = Get_Value (Line,"CLOSE")
+output = SET_VALUE(output, "Ind2_Par"&(lineID+1), close_ind)
+END FOR
+
+ADD_ITEM(i, output)
+end if
+minutePart = minutePart - timeFrame
+if minutePart < 0
+minutePart = 60 - timeFrame
+hourPart = hourPart - 1
+if hourPart < 0
+hourPart = 23
+dayPart = dayPart - 1
+if dayPart < 1
+dayPart = 31
+monthPart = monthPart - 1
+if monthPart < 1
+monthPart = 12
+yearPart = yearPart - 1
+end if
+end if
+end if
+end if
+end for
+
+func GetDataString(year, month, day)
+if (LEN(month) < 2)
+month = "0" & month
+end if
+if (LEN(day) < 2)
+day = "0" & day
+end if
+result = year & month & day
+end func
+
+func GetTimeString(hour, min)
+if (LEN(hour) < 2)
+hour = "0" & hour
+end if
+if (LEN(min) < 2)
+min = "0" & min
+end if
+result = hour & min & "00"
+end func
+
+END_PROGRAM
+
+PARAMETER Date;
+PARAMETER_TITLE Дата;
+PARAMETER_DESCRIPTION Дата cвечки;
+PARAMETER_TYPE STRING(30);
+END
+
+PARAMETER Time;
+PARAMETER_TITLE Время;
+PARAMETER_DESCRIPTION Время cвечки;
+PARAMETER_TYPE STRING(30);
+END
+
+PARAMETER OpenPrice;
+PARAMETER_TITLE Цена открытия;
+PARAMETER_DESCRIPTION Цена открытия свечки;
+PARAMETER_TYPE NUMERIC(10,0);
+END
+
+PARAMETER HighPrice;
+PARAMETER_TITLE Максимальная цена;
+PARAMETER_DESCRIPTION Максимальная цена свечки;
+PARAMETER_TYPE NUMERIC(10,0);
+END
+
+PARAMETER LowPrice;
+PARAMETER_TITLE Минимальная цена;
+PARAMETER_DESCRIPTION Минимальная цена свечки;
+PARAMETER_TYPE NUMERIC(10,0);
+END
+
+PARAMETER ClosePrice;
+PARAMETER_TITLE Цена закрытия;
+PARAMETER_DESCRIPTION Цена закрытия свечки;
+PARAMETER_TYPE NUMERIC(10,0);
+END
+
+PARAMETER Volume;
+PARAMETER_TITLE Объем;
+PARAMETER_DESCRIPTION Объем сделок в свечке;
+PARAMETER_TYPE NUMERIC(10,0);
+END
+
+
+PARAMETER Ind1_Par1;
+PARAMETER_TITLE Инд.1 пар.1;
+PARAMETER_DESCRIPTION Индикатор 1;
+PARAMETER_TYPE NUMERIC(10,2);
+END
+
+PARAMETER Ind1_Par2;
+PARAMETER_TITLE Инд.1 пар.2;
+PARAMETER_DESCRIPTION Индикатор 1;
+PARAMETER_TYPE NUMERIC(10,2);
+END
+
+PARAMETER Ind1_Par3;
+PARAMETER_TITLE Инд.1 пар.3;
+PARAMETER_DESCRIPTION Индикатор 1;
+PARAMETER_TYPE NUMERIC(10,2);
+END
+
+
+PARAMETER Ind2_Par1;
+PARAMETER_TITLE Инд.2 пар.1;
+PARAMETER_DESCRIPTION Индикатор 2;
+PARAMETER_TYPE NUMERIC(10,2);
+END
+
+PARAMETER Ind2_Par2;
+PARAMETER_TITLE Инд.2 пар.2;
+PARAMETER_DESCRIPTION Индикатор 2;
+PARAMETER_TYPE NUMERIC(10,2);
+END
+
+PARAMETER Ind2_Par3;
+PARAMETER_TITLE Инд.2 пар.3;
+PARAMETER_DESCRIPTION Индикатор 2;
+PARAMETER_TYPE NUMERIC(10,2);
+END
+
+END_PORTFOLIO_EX

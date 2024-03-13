@@ -20,7 +20,8 @@ uses
   FMX.StdCtrls,
   FMX.Objects,
   Lb.SysUtils.Candel,
-  UnitCandelFrame, FMX.Layouts;
+  UnitCandelFrame,
+  FMX.Layouts;
 
 type
   ///<summary>Список свечей</summary>
@@ -66,8 +67,6 @@ type
 implementation
 
 {$R *.fmx}
-
-uses Lb.SysUtils;
 
 { TChartFrame }
 

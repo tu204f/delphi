@@ -10,8 +10,6 @@ uses
   System.Variants;
 
 type
-  TMode = (tmNull = 0, tmBuy, tmSell);
-
   TCandel = record
     Open : Double;
     High : Double;
@@ -36,18 +34,18 @@ type
   end;
 
 function GetParamToCandel(const ACandel: TCandel): TParam;
-function GetRandomMode: TMode;
+//function GetRandomMode: TMode;
 
 implementation
 
-function GetRandomMode: TMode;
-var
-  xMode: Integer;
-begin
-  // Здесь модуль принимает решение
-  xMode := Random(3);
-  Result := TMode(xMode);
-end;
+//function GetRandomMode: TMode;
+//var
+//  xMode: Integer;
+//begin
+//  // Здесь модуль принимает решение
+//  xMode := Random(3);
+//  Result := TMode(xMode);
+//end;
 
 
 function GetParamToCandel(const ACandel: TCandel): TParam;

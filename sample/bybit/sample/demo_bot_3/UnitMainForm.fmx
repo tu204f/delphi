@@ -1,0 +1,116 @@
+object MainForm: TMainForm
+  Left = 0
+  Top = 0
+  Caption = 'Form5'
+  ClientHeight = 631
+  ClientWidth = 762
+  FormFactor.Width = 320
+  FormFactor.Height = 480
+  FormFactor.Devices = [Desktop]
+  DesignerMasterStyle = 0
+  object Layout: TLayout
+    Align = Client
+    Margins.Left = 5.000000000000000000
+    Margins.Top = 5.000000000000000000
+    Margins.Right = 5.000000000000000000
+    Margins.Bottom = 5.000000000000000000
+    Size.Width = 752.000000000000000000
+    Size.Height = 621.000000000000000000
+    Size.PlatformDefault = False
+    TabOrder = 0
+    object LayoutMenu: TLayout
+      Align = Top
+      Padding.Top = 5.000000000000000000
+      Padding.Bottom = 5.000000000000000000
+      Size.Width = 752.000000000000000000
+      Size.Height = 37.000000000000000000
+      Size.PlatformDefault = False
+      TabOrder = 0
+      object ButtonStart: TButton
+        Align = Left
+        Position.Y = 5.000000000000000000
+        Size.Width = 100.000000000000000000
+        Size.Height = 27.000000000000000000
+        Size.PlatformDefault = False
+        TabOrder = 0
+        Text = #1057#1090#1072#1088#1090
+        OnClick = ButtonStartClick
+      end
+    end
+    object LayoutMain: TLayout
+      Align = Client
+      Size.Width = 752.000000000000000000
+      Size.Height = 379.000000000000000000
+      Size.PlatformDefault = False
+      TabOrder = 1
+      object TabControl: TTabControl
+        Align = Client
+        Size.Width = 752.000000000000000000
+        Size.Height = 379.000000000000000000
+        Size.PlatformDefault = False
+        TabIndex = 0
+        TabOrder = 0
+        TabPosition = PlatformDefault
+        Sizes = (
+          752s
+          353s
+          752s
+          353s)
+        object TabItemBot: TTabItem
+          CustomIcon = <
+            item
+            end>
+          IsSelected = True
+          Size.Width = 39.000000000000000000
+          Size.Height = 26.000000000000000000
+          Size.PlatformDefault = False
+          StyleLookup = ''
+          TabOrder = 0
+          Text = #1041#1086#1090
+          ExplicitSize.cx = 39.000000000000000000
+          ExplicitSize.cy = 26.000000000000000000
+        end
+        object TabItemHistory: TTabItem
+          CustomIcon = <
+            item
+            end>
+          IsSelected = False
+          Size.Width = 215.000000000000000000
+          Size.Height = 26.000000000000000000
+          Size.PlatformDefault = False
+          StyleLookup = ''
+          TabOrder = 0
+          Text = #1048#1089#1090#1086#1088#1080#1095#1077#1089#1082#1080#1077' '#1076#1072#1085#1085#1099#1077' '#1080' '#1080#1085#1076#1080#1082#1072#1090#1086#1088
+          ExplicitSize.cx = 215.000000000000000000
+          ExplicitSize.cy = 26.000000000000000000
+        end
+      end
+    end
+    object LayoutLog: TLayout
+      Align = Bottom
+      Position.Y = 416.000000000000000000
+      Size.Width = 752.000000000000000000
+      Size.Height = 205.000000000000000000
+      Size.PlatformDefault = False
+      TabOrder = 2
+      object Memo1: TMemo
+        Touch.InteractiveGestures = [Pan, LongTap, DoubleTap]
+        DataDetectorTypes = []
+        Align = Client
+        Margins.Top = 5.000000000000000000
+        Size.Width = 752.000000000000000000
+        Size.Height = 200.000000000000000000
+        Size.PlatformDefault = False
+        TabOrder = 0
+        Viewport.Width = 748.000000000000000000
+        Viewport.Height = 196.000000000000000000
+      end
+    end
+  end
+  object Timer: TTimer
+    Enabled = False
+    OnTimer = TimerTimer
+    Left = 401
+    Top = 178
+  end
+end

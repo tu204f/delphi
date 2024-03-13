@@ -25,6 +25,10 @@ uses
   Lb.Bybit.SysUtils;
 
 type
+  TLinearObject = class;
+  ///<summary>Список объект</summary>
+  TLinearObjectList = TObjectList<TLinearObject>;
+
   ///<summary>Get Instruments Info</summary>
   TBybitInstrumentsInfo = class(TBybitHttpClient)
   private
@@ -42,6 +46,7 @@ type
     procedure SetCursor(const Value: String);
   protected
     FListJson: TJSONArray;
+    FLinearObjects: TLinearObjectList;
     procedure DoEventParser; override;
   public
     constructor Create; override;
@@ -63,9 +68,9 @@ type
 
   public
     property ListJson: TJSONArray read FListJson;
+    property LinearObjects: TLinearObjectList read FLinearObjects;
   end;
 
-type
   ///<summary>Linear/Inverse</summary>
   TLinearObject = class(TCustonObjectJson)
   public type
@@ -142,9 +147,6 @@ type
     procedure SetObjectJson(const AObjectJson: TJSONObject); override;
   end;
 
-  ///<summary>Список объект</summary>
-  TLinearObjectList = TObjectList<TLinearObject>;
-
 procedure SetLinearObjects(AListJson: TJSONArray; ALinearObjects: TLinearObjectList);
 
 implementation
@@ -176,6 +178,8 @@ end;
 constructor TBybitInstrumentsInfo.Create;
 begin
   inherited;
+  FLinearObjects := TLinearObjectList.Create;
+
   BybitModule.TypeHttp := TTypeHttp.thGet;
   BybitModule.Module := '/v5/market/instruments-info';
   with BybitModule.Params do
@@ -193,6 +197,7 @@ end;
 
 destructor TBybitInstrumentsInfo.Destroy;
 begin
+  FreeAndNil(FLinearObjects);
   inherited;
 end;
 
@@ -244,7 +249,10 @@ begin
   *)
   xValueJson := Response.ResultObject.Values['list'];
   if xValueJson is TJSONArray then
+  begin
     FListJson := TJSONArray(xValueJson);
+    SetLinearObjects(FListJson,FLinearObjects);
+  end;
 end;
 
 { TLinearObject.TLeverageFilter }
@@ -259,9 +267,9 @@ begin
                     "leverageStep": "0.01"
                 },
   *)
-  MinLeverage  := AObjectJson.Values['minLeverage'].Value;  // String;  // "1",
-  MaxLeverage  := AObjectJson.Values['maxLeverage'].Value;  // String;  // "100.00",
-  LeverageStep := AObjectJson.Values['leverageStep'].Value; // String; // "0.01"
+  MinLeverage  := GetStrToJson(AObjectJson.Values['minLeverage']);  // String;  // "1",
+  MaxLeverage  := GetStrToJson(AObjectJson.Values['maxLeverage']);  // String;  // "100.00",
+  LeverageStep := GetStrToJson(AObjectJson.Values['leverageStep']); // String; // "0.01"
 end;
 
 { TLinearObject.TPriceFilter }
@@ -276,9 +284,9 @@ begin
                     "tickSize": "0.50"
                 },
 *)
-  MinPrice := AObjectJson.Values['minPrice'].Value;  // String; // "0.50",
-  MaxPrice := AObjectJson.Values['maxPrice'].Value;  // String; // "999999.00",
-  TickSize := AObjectJson.Values['tickSize'].Value;  // String; // "0.50"
+  MinPrice := GetStrToJson(AObjectJson.Values['minPrice']);  // String; // "0.50",
+  MaxPrice := GetStrToJson(AObjectJson.Values['maxPrice']);  // String; // "999999.00",
+  TickSize := GetStrToJson(AObjectJson.Values['tickSize']);  // String; // "0.50"
 end;
 
 { TLinearObject.TLotSizeFilter }
@@ -294,10 +302,10 @@ begin
                     "postOnlyMaxOrderQty": "1000.000"
                 },
 *)
-  MaxOrderQty         := AObjectJson.Values['maxOrderQty'].Value; // "100.000",
-  MinOrderQty         := AObjectJson.Values['minOrderQty'].Value; // "0.001",
-  QtyStep             := AObjectJson.Values['qtyStep'].Value;     // "0.001",
-  PostOnlyMaxOrderQty := AObjectJson.Values['postOnlyMaxOrderQty'].Value; //"1000.000"
+  MaxOrderQty         := GetStrToJson(AObjectJson.Values['maxOrderQty']); // "100.000",
+  MinOrderQty         := GetStrToJson(AObjectJson.Values['minOrderQty']); // "0.001",
+  QtyStep             := GetStrToJson(AObjectJson.Values['qtyStep']);     // "0.001",
+  PostOnlyMaxOrderQty := GetStrToJson(AObjectJson.Values['postOnlyMaxOrderQty']); //"1000.000"
 end;
 
 { TLinearObject }
@@ -322,23 +330,23 @@ procedure TLinearObject.SetObjectJson(const AObjectJson: TJSONObject);
 begin
   inherited;
   // -----------------------------------------------------------------
-  Symbol          := AObjectJson.Values['symbol'].Value;
-  ContractType    := AObjectJson.Values['contractType'].Value;
-  Status          := AObjectJson.Values['status'].Value;
-  BaseCoin        := AObjectJson.Values['baseCoin'].Value;
-  QuoteCoin       := AObjectJson.Values['quoteCoin'].Value;
-  LaunchTime      := AObjectJson.Values['launchTime'].Value;
-  DeliveryTime    := AObjectJson.Values['deliveryTime'].Value;
-  DeliveryFeeRate := AObjectJson.Values['deliveryFeeRate'].Value;
-  PriceScale      := AObjectJson.Values['priceScale'].Value;
+  Symbol          := GetStrToJson(AObjectJson.Values['symbol']);
+  ContractType    := GetStrToJson(AObjectJson.Values['contractType']);
+  Status          := GetStrToJson(AObjectJson.Values['status']);
+  BaseCoin        := GetStrToJson(AObjectJson.Values['baseCoin']);
+  QuoteCoin       := GetStrToJson(AObjectJson.Values['quoteCoin']);
+  LaunchTime      := GetStrToJson(AObjectJson.Values['launchTime']);
+  DeliveryTime    := GetStrToJson(AObjectJson.Values['deliveryTime']);
+  DeliveryFeeRate := GetStrToJson(AObjectJson.Values['deliveryFeeRate']);
+  PriceScale      := GetStrToJson(AObjectJson.Values['priceScale']);
   // -----------------------------------------------------------------
   LeverageFilter.SetObjectJson(TJSONObject(AObjectJson.Values['leverageFilter']));
   PriceFilter.SetObjectJson(TJSONObject(AObjectJson.Values['priceFilter']));
   LotSizeFilter.SetObjectJson(TJSONObject(AObjectJson.Values['lotSizeFilter']));
   // -----------------------------------------------------------------
-  UnifiedMarginTrade := AObjectJson.Values['unifiedMarginTrade'].Value;
-  FundingInterval    := AObjectJson.Values['fundingInterval'].Value;
-  SettleCoin         := AObjectJson.Values['settleCoin'].Value;
+  UnifiedMarginTrade := GetStrToJson(AObjectJson.Values['unifiedMarginTrade']);
+  FundingInterval    := GetStrToJson(AObjectJson.Values['fundingInterval']);
+  SettleCoin         := GetStrToJson(AObjectJson.Values['settleCoin']);
 end;
 
 end.

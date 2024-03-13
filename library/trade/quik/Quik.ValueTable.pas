@@ -96,9 +96,15 @@ type
     function BOF: Boolean;
 
     property RowID: Integer read FRowID write FRowID;
+
     function AsInteger(const ANameField: String): Integer;
     function AsDouble(const ANameField: String): Double;
     function AsString(const ANameField: String): String;
+
+    function AsByIndexInteger(const ACol: Integer): Integer;
+    function AsByIndexDouble(const ACol: Integer): Double;
+    function AsByIndexString(const ACol: Integer): String;
+
   public
     /// <summary>
     /// ѕровер€ем содержитс€ ли данный параметр в строке
@@ -544,8 +550,54 @@ begin
        (xValue.TypeValue = TDT_INTEGER) then
       Result := VarToStrDef(xValue.Value,'');
   end;
-end; 
+end;
 
+function TQuikTable.AsByIndexInteger(const ACol: Integer): Integer;
+var
+  xValue: TValue;
+begin
+  Result := 0;
+  if ACol >= 0 then
+  begin
+    xValue := Self.Values[ACol,FRowID];
+    case xValue.TypeValue of
+      TDT_FLOAT: Result := Trunc(xValue.Value);
+      TDT_STRING: Result := StrToIntDef(xValue.Value,0);
+      TDT_INTEGER: Result := xValue.Value;
+    end;
+  end;
+end;
+
+function TQuikTable.AsByIndexDouble(const ACol: Integer): Double;
+var
+  xValue: TValue;
+begin
+  Result := 0;
+  if ACol >= 0 then
+  begin
+    xValue := Self.Values[ACol,FRowID];
+    case xValue.TypeValue of
+      TDT_FLOAT: Result := xValue.Value;
+      TDT_STRING: Result := StrToFloatDef(xValue.Value,0);
+      TDT_INTEGER: Result := xValue.Value;
+    end;
+  end;
+end;
+
+function TQuikTable.AsByIndexString(const ACol: Integer): String;
+var
+  xValue: TValue;
+begin
+  Result := '';
+  if ACol >= 0 then
+  begin
+    xValue := Self.Values[ACol,FRowID];
+    if (xValue.TypeValue = TDT_FLOAT) or
+       (xValue.TypeValue = TDT_STRING) or
+       (xValue.TypeValue = TDT_INTEGER) then
+      Result := VarToStrDef(xValue.Value,'');
+  end;
+end;
 
 function TQuikTable.GetIsRowSearchParam(const ARow: Integer; const AValue: Variant): Boolean;
 var

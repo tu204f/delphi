@@ -1,0 +1,34 @@
+object BotFrame: TBotFrame
+  Align = Client
+  Size.Width = 706.000000000000000000
+  Size.Height = 450.000000000000000000
+  Size.PlatformDefault = False
+  object StrGrid: TStringGrid
+    Align = Client
+    CanFocus = True
+    ClipChildren = True
+    PopupMenu = PopupMenu
+    Size.Width = 706.000000000000000000
+    Size.Height = 428.000000000000000000
+    Size.PlatformDefault = False
+    TabOrder = 7
+    Viewport.Width = 702.000000000000000000
+    Viewport.Height = 403.000000000000000000
+  end
+  object Edit1: TEdit
+    Touch.InteractiveGestures = [LongTap, DoubleTap]
+    Align = Top
+    TabOrder = 8
+    Size.Width = 706.000000000000000000
+    Size.Height = 22.000000000000000000
+    Size.PlatformDefault = False
+  end
+  object PopupMenu: TPopupMenu
+    Left = 192
+    Top = 164
+    object MenuItem1: TMenuItem
+      Text = #1057#1086#1093#1088#1072#1085#1080#1090#1100
+      OnClick = MenuItem1Click
+    end
+  end
+end

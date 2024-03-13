@@ -105,7 +105,7 @@ begin
         _Interval,
         UpDown.Position
       );
-      xStr.SaveToFile(SaveDialog.FileName);
+      xStr.SaveToFile(SaveDialog.FileName,TEncoding.ANSI);
       _SaveParam;
     finally
       FreeAndNil(xStr);

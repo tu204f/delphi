@@ -19,18 +19,27 @@ type
   ///<summary>Объект проверки соединение</summary>
   TBybitTest = class(TObject)
   private
+    FTimeSecond: Int64;
     FOnEventSing: TNotifyEvent;
+    FOnEventTimer: TNotifyEvent;
     FTimeOut: Integer;
     FTimer: TTimer;
     FServerTime: TBybitServerTime;
     procedure TimerUpData(Sender: TObject);
+    function GetTimeSecond: TDateTime;
+  protected
+    procedure DoEventSing;
+    procedure DoEventTimer;
   public
     constructor Create; virtual;
     destructor Destroy; override;
     procedure Start;
+    procedure Stop;
     ///<summary>Задержка времени</summary>
     property TimeOut: Integer read FTimeOut write FTimeOut;
     property OnEventSing: TNotifyEvent write FOnEventSing;
+    property OnEventTimer: TNotifyEvent write FOnEventTimer;
+    property TimeSecond: TDateTime read GetTimeSecond;
   end;
 
 implementation
@@ -56,6 +65,23 @@ begin
   inherited;
 end;
 
+procedure TBybitTest.DoEventSing;
+begin
+  if Assigned(FOnEventSing) then
+    FOnEventSing(Self);
+end;
+
+procedure TBybitTest.DoEventTimer;
+begin
+  if Assigned(FOnEventTimer) then
+    FOnEventTimer(Self);
+end;
+
+function TBybitTest.GetTimeSecond: TDateTime;
+begin
+  Result := UnixToDateTime(FTimeSecond);
+end;
+
 procedure TBybitTest.Start;
 begin
   if not FTimer.Enabled then
@@ -65,19 +91,26 @@ begin
   end;
 end;
 
+procedure TBybitTest.Stop;
+begin
+  FTimer.Enabled := False;
+  FServerTime.Stop;
+end;
+
 procedure TBybitTest.TimerUpData(Sender: TObject);
 var
   xDelta: Integer;
   xNowTime: Int64;
 begin
+  FTimeSecond := StrToInt64Def(FServerTime.TimeSecond,0);
   xNowTime := GetNow;
-  xDelta := StrToInt64Def(FServerTime.TimeSecond,0) * 1000 - xNowTime;
+  xDelta := FTimeSecond * 1000 - xNowTime;
   xDelta := Abs(xDelta);
   if xDelta > FTimeOut then
-  begin
-    if Assigned(FOnEventSing) then
-      FOnEventSing(Self);
-  end;
+    DoEventSing;
+  DoEventTimer;
+
+
 end;
 
 end.
