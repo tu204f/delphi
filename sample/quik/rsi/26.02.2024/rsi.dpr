@@ -15,7 +15,8 @@ uses
   Lb.Setting in '..\..\..\..\library\Lb.Setting.pas',
   UnitQuikTableForm in 'UnitQuikTableForm.pas' {QuikTableForm},
   UnitAddOrderForm in 'UnitAddOrderForm.pas' {AddOrderForm},
-  Lb.SysUtils in 'Lb.SysUtils.pas';
+  Lb.SysUtils in 'Lb.SysUtils.pas',
+  UnitUserOrderFrame in 'UnitUserOrderFrame.pas' {UserOrderFrame: TFrame};
 
 {$R *.res}
 

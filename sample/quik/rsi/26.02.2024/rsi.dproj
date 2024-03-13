@@ -129,6 +129,11 @@
             <FormType>dfm</FormType>
         </DCCReference>
         <DCCReference Include="Lb.SysUtils.pas"/>
+        <DCCReference Include="UnitUserOrderFrame.pas">
+            <Form>UserOrderFrame</Form>
+            <FormType>dfm</FormType>
+            <DesignClass>TFrame</DesignClass>
+        </DCCReference>
         <None Include="..\..\..\..\library\trade\quik\quik_connect.inc"/>
         <BuildConfiguration Include="Release">
             <Key>Cfg_2</Key>
