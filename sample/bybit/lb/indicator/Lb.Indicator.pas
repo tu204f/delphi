@@ -25,8 +25,14 @@ type
     property Period: Integer read FPeriod write FPeriod;
   end;
 
+type
   ///<summary>Производим расчет осциллятор RSI</summary>
   TRSI = class(TCustomIndicator)
+  public type
+    TCurrent = record
+      Value: Double;
+      AvgValue: Double;
+    end;
   private
     FGainValues: TValueList;
     FLosValues: TValueList;
@@ -36,6 +42,7 @@ type
     FRSI: TValueList;
     FAvgRSI: TValueList;
   private
+    FCurrent: TCurrent;
     FAvgPeriod: Integer;
   public
     constructor Create; override;
@@ -49,6 +56,8 @@ type
     property RS: TValueList read FRS;
     property Values: TValueList read FRSI;
     property AvgValues: TValueList read FAvgRSI;
+  public
+    property Current: TCurrent read FCurrent;
   end;
 
   ///<summary>средний дневной диапазон</summary>
@@ -284,7 +293,7 @@ procedure TRSI.SetCandels(ACandelObjects: TCandelObjectList);
 
 begin
   inherited;
-  
+
   if FAvgPeriod = 0 then
     raise Exception.Create('Error Message: Период сглаживания не может принимать нулевое значения');
   
@@ -302,6 +311,12 @@ begin
   _RS;
   _RSI;
   Avg(FAvgPeriod,FRSI,FAvgRSI);
+
+  if FRSI.Count > 0 then
+  begin
+    FCurrent.Value := FRSI[0];
+    FCurrent.AvgValue := FAvgRSI[0];
+  end;
 end;
 
 { TADR }

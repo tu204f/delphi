@@ -13,9 +13,14 @@ type
     ButtonOK: TButton;
     ledClassCode: TLabeledEdit;
     ledSecCode: TLabeledEdit;
+    ledTrdaccID: TLabeledEdit;
+    LabeledEdit1: TLabeledEdit;
+    Button1: TButton;
+    OpenDialog1: TOpenDialog;
     procedure FormShow(Sender: TObject);
     procedure ButtonCancelClick(Sender: TObject);
     procedure ButtonOKClick(Sender: TObject);
+    procedure Button1Click(Sender: TObject);
   private
     { Private declarations }
   public
@@ -40,8 +45,21 @@ begin
   // AClassCode
   // ASecCode
   ledQuickTableName.Text := TSetting.ReadString('config.sys.quik_table_rsi','s_rsi');
-  ledClassCode.Text := TSetting.ReadString('config.sys.class_code','');
-  ledSecCode.Text := TSetting.ReadString('config.sys.sec_code','');
+  ledClassCode.Text      := TSetting.ReadString('config.sys.class_code','');
+  ledSecCode.Text        := TSetting.ReadString('config.sys.sec_code','');
+  ledTrdaccID.Text       := TSetting.ReadString('config.sys.trdacc_id','');
+  LabeledEdit1.Text      := TSetting.ReadString('config.sys.path_quik','');
+end;
+
+procedure TToolsForm.Button1Click(Sender: TObject);
+var
+  xFileName: String;
+begin
+  if OpenDialog1.Execute then
+  begin
+    xFileName := OpenDialog1.FileName;
+    LabeledEdit1.Text := xFileName;
+  end;
 end;
 
 procedure TToolsForm.ButtonCancelClick(Sender: TObject);
@@ -55,6 +73,8 @@ begin
 
   TSetting.WriteString('config.sys.class_code',ledClassCode.Text);
   TSetting.WriteString('config.sys.sec_code',ledSecCode.Text);
+  TSetting.WriteString('config.sys.trdacc_id',ledTrdaccID.Text);
+  TSetting.WriteString('config.sys.path_quik',LabeledEdit1.Text);
 
   Self.ModalResult := mrOk;
 end;

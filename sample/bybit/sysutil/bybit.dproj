@@ -205,6 +205,7 @@
         <DCCReference Include="..\lb\position\Lb.Bybit.Position.pas"/>
         <DCCReference Include="..\lb\trade\Lb.Bybit.Trade.pas"/>
         <DCCReference Include="..\lb\Lb.Bybit.pas"/>
+        <DCCReference Include="..\lb\market\Lb.Bybit.OrderBook.pas"/>
         <BuildConfiguration Include="Release">
             <Key>Cfg_2</Key>
             <CfgParent>Base</CfgParent>

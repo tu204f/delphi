@@ -1,0 +1,174 @@
+object IndicatorFrame: TIndicatorFrame
+  Size.Width = 528.000000000000000000
+  Size.Height = 74.000000000000000000
+  Size.PlatformDefault = False
+  object Rectangle: TRectangle
+    Align = Client
+    Size.Width = 528.000000000000000000
+    Size.Height = 74.000000000000000000
+    Size.PlatformDefault = False
+    object Layout: TLayout
+      Align = Client
+      Margins.Left = 2.000000000000000000
+      Margins.Top = 2.000000000000000000
+      Margins.Right = 2.000000000000000000
+      Margins.Bottom = 3.000000000000000000
+      Size.Width = 524.000000000000000000
+      Size.Height = 69.000000000000000000
+      Size.PlatformDefault = False
+      TabOrder = 1
+      object TextTitle: TText
+        Align = Top
+        Size.Width = 524.000000000000000000
+        Size.Height = 25.000000000000000000
+        Size.PlatformDefault = False
+        Text = #1058#1077#1082#1091#1097#1080#1077' '#1079#1085#1072#1095#1077#1085#1080#1077
+        TextSettings.Font.StyleExt = {00070000000000000004000000}
+        TextSettings.HorzAlign = Leading
+      end
+      object GridLayout: TGridPanelLayout
+        Align = Client
+        Size.Width = 524.000000000000000000
+        Size.Height = 44.000000000000000000
+        Size.PlatformDefault = False
+        TabOrder = 1
+        ColumnCollection = <
+          item
+            Value = 25.000000000000000000
+          end
+          item
+            Value = 25.000000000000000000
+          end
+          item
+            Value = 25.000000000000000000
+          end
+          item
+            Value = 25.000000000000000000
+          end>
+        ControlCollection = <
+          item
+            Column = 0
+            Control = TextTime
+            Row = 0
+          end
+          item
+            Column = 0
+            Control = EditTime
+            Row = 1
+          end
+          item
+            Column = 1
+            Control = TextClose
+            Row = 0
+          end
+          item
+            Column = 3
+            Control = TextVolRSI
+            Row = 0
+          end
+          item
+            Column = 2
+            Control = TextRSI
+            Row = 0
+          end
+          item
+            Column = 1
+            Control = EditClose
+            Row = 1
+          end
+          item
+            Column = 2
+            Control = EditRSI
+            Row = 1
+          end
+          item
+            Column = 3
+            Control = EditAvgRSI
+            Row = 1
+          end>
+        RowCollection = <
+          item
+            Value = 50.000000000000000000
+          end
+          item
+            Value = 50.000000000000000000
+          end>
+        object TextTime: TText
+          Align = Client
+          Size.Width = 131.000000000000000000
+          Size.Height = 22.000000000000000000
+          Size.PlatformDefault = False
+          Text = 'Time'
+          TextSettings.HorzAlign = Leading
+        end
+        object EditTime: TEdit
+          Touch.InteractiveGestures = [LongTap, DoubleTap]
+          Align = Client
+          TabOrder = 2
+          Margins.Right = 2.000000000000000000
+          Size.Width = 129.000000000000000000
+          Size.Height = 22.000000000000000000
+          Size.PlatformDefault = False
+        end
+        object TextClose: TText
+          Align = Client
+          Size.Width = 131.000000000000000000
+          Size.Height = 22.000000000000000000
+          Size.PlatformDefault = False
+          Text = 'Close'
+          TextSettings.HorzAlign = Leading
+        end
+        object TextVolRSI: TText
+          Align = Client
+          Size.Width = 131.000000000000000000
+          Size.Height = 22.000000000000000000
+          Size.PlatformDefault = False
+          Text = #1089#1088#1077#1076'.RSI'
+          TextSettings.HorzAlign = Leading
+        end
+        object TextRSI: TText
+          Align = Client
+          Size.Width = 131.000000000000000000
+          Size.Height = 22.000000000000000000
+          Size.PlatformDefault = False
+          Text = 'RSI'
+          TextSettings.HorzAlign = Leading
+        end
+        object EditClose: TEdit
+          Touch.InteractiveGestures = [LongTap, DoubleTap]
+          Align = Client
+          TabOrder = 5
+          Margins.Left = 2.000000000000000000
+          Margins.Right = 2.000000000000000000
+          Size.Width = 127.000000000000000000
+          Size.Height = 22.000000000000000000
+          Size.PlatformDefault = False
+        end
+        object EditRSI: TEdit
+          Touch.InteractiveGestures = [LongTap, DoubleTap]
+          Align = Client
+          TabOrder = 3
+          Margins.Left = 2.000000000000000000
+          Margins.Right = 2.000000000000000000
+          Size.Width = 127.000000000000000000
+          Size.Height = 22.000000000000000000
+          Size.PlatformDefault = False
+        end
+        object EditAvgRSI: TEdit
+          Touch.InteractiveGestures = [LongTap, DoubleTap]
+          Align = Client
+          TabOrder = 1
+          Margins.Left = 2.000000000000000000
+          Size.Width = 129.000000000000000000
+          Size.Height = 22.000000000000000000
+          Size.PlatformDefault = False
+        end
+      end
+    end
+  end
+  object TimerIsConnect: TTimer
+    OnTimer = TimerIsConnectTimer
+    Left = 362
+    Top = 10
+  end
+end

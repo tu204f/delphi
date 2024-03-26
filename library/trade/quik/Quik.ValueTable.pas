@@ -1,5 +1,7 @@
 unit Quik.ValueTable;
 
+{$I quik_connect.inc}
+
 interface
 
 {Сохранение данных в файл на диске}
@@ -9,7 +11,7 @@ interface
 
 uses
   System.SysUtils,
-  System.Variants,
+  //System.Variants,
   System.Classes,
   System.Generics.Collections,
   Quik.SysUtils;
@@ -109,7 +111,7 @@ type
     /// <summary>
     /// Проверяем содержится ли данный параметр в строке
     /// </summary>
-    function GetIsRowSearchParam(const ARow: Integer; const AValue: Variant): Boolean;
+    function GetIsRowSearchParam(const ARow: Integer; const AValue: String): Boolean;
     function GetRowsSearchParam(const AValue: Variant): String;
     /// <summary>
     /// Если пустая таблица
@@ -191,9 +193,9 @@ function TCell.GetAsDouble: Double;
 begin
   Result := 0;
   case FValue.TypeValue of
-    TDT_FLOAT: Result := FValue.Value;
-    TDT_STRING: Result := StrToIntDef(Self.AsString,0);
-    TDT_INTEGER: Result := FValue.Value;
+    TTypeData.tdtFloat: Result := FValue.AsDouble;
+    TTypeData.tdtString: Result := StrToIntDef(Self.AsString,0);
+    TTypeData.tdtInteger: Result := FValue.AsInteger;
   end;
 end;
 
@@ -201,9 +203,9 @@ function TCell.GetAsInt64: Int64;
 begin
   Result := 0;
   case FValue.TypeValue of
-    TDT_FLOAT: Result := Trunc(FValue.Value);
-    TDT_STRING: Result := StrToIntDef(Self.AsString,0);
-    TDT_INTEGER: Result := FValue.Value;
+    TTypeData.tdtFloat: Result := Trunc(FValue.AsDouble);
+    TTypeData.tdtString: Result := StrToIntDef(Self.AsString,0);
+    TTypeData.tdtInteger: Result := FValue.AsInteger;
   end;
 end;
 
@@ -211,19 +213,19 @@ function TCell.GetAsInteger: Integer;
 begin    
   Result := 0;
   case FValue.TypeValue of
-    TDT_FLOAT: Result := Trunc(FValue.Value);
-    TDT_STRING: Result := StrToIntDef(FValue.Value,0);
-    TDT_INTEGER: Result := FValue.Value;
+    TTypeData.tdtFloat: Result := Trunc(FValue.AsDouble);
+    TTypeData.tdtString: Result := StrToIntDef(FValue.AsString,0);
+    TTypeData.tdtInteger: Result := FValue.AsInteger;
   end;
 end;
 
 function TCell.GetAsString: String;
 begin
   Result := '';
-  if (FValue.TypeValue = TDT_FLOAT) or
-     (FValue.TypeValue = TDT_STRING) or
-     (FValue.TypeValue = TDT_INTEGER) then
-      Result := VarToStrDef(FValue.Value,'');
+  if (FValue.TypeValue = TTypeData.tdtFloat) or
+     (FValue.TypeValue = TTypeData.tdtString) or
+     (FValue.TypeValue = TTypeData.tdtInteger) then
+      Result := FValue.AsString;
 end;
 
 function TCell.GetAsTime: TDateTime;
@@ -264,6 +266,8 @@ end;
 { TRow }
 
 procedure TRow.SetCol(const ACol: Integer; const AValue: TValue);
+var
+  xValue: TValue;
 begin
   if Self.Count >= ACol then
   begin
@@ -272,7 +276,10 @@ begin
   else if Self.Count < ACol then
   begin
     while Self.Count <= ACol do
-      Self.Add(TValue.Create(TDT_NULL,Unassigned));
+    begin
+      xValue.Clear;
+      Self.Add(xValue);
+    end;
     Self.Items[ACol - 1] := AValue;
   end;
 end;
@@ -431,8 +438,8 @@ var
   xRow: TRow;
   xValue: TValue;
 begin
-  xValue.TypeValue := TDT_NULL;
-  xValue.Value := Unassigned;
+  xValue.TypeValue := TTypeData.tdtNull;
+  xValue.Clear;
   if (Row >= 0) and (FRows.Count > Row) then
   begin
     xRow := FRows[Row];
@@ -510,9 +517,9 @@ begin
   begin
     xValue := Self.Values[xCol,FRowID];
     case xValue.TypeValue of
-      TDT_FLOAT: Result := Trunc(xValue.Value);
-      TDT_STRING: Result := StrToIntDef(xValue.Value,0);
-      TDT_INTEGER: Result := xValue.Value;
+      TTypeData.tdtFloat  : Result := Trunc(xValue.AsDouble);
+      TTypeData.tdtString : Result := StrToIntDef(xValue.AsString,0);
+      TTypeData.tdtInteger: Result := xValue.AsInteger;
     end;
   end;
 end;
@@ -528,9 +535,9 @@ begin
   begin
     xValue := Self.Values[xCol,FRowID];
     case xValue.TypeValue of
-      TDT_FLOAT: Result := xValue.Value;
-      TDT_STRING: Result := StrToFloatDef(xValue.Value,0);
-      TDT_INTEGER: Result := xValue.Value;
+      TTypeData.tdtFloat  : Result := xValue.AsDouble;
+      TTypeData.tdtString : Result := StrToFloatDef(xValue.AsString,0);
+      TTypeData.tdtInteger: Result := xValue.AsInteger;
     end;
   end;
 end;
@@ -545,10 +552,10 @@ begin
   if xCol >= 0 then
   begin
     xValue := Self.Values[xCol,FRowID];
-    if (xValue.TypeValue = TDT_FLOAT) or
-       (xValue.TypeValue = TDT_STRING) or
-       (xValue.TypeValue = TDT_INTEGER) then
-      Result := VarToStrDef(xValue.Value,'');
+    if (xValue.TypeValue = TTypeData.tdtFloat) or
+       (xValue.TypeValue = TTypeData.tdtString) or
+       (xValue.TypeValue = TTypeData.tdtInteger) then
+      Result := xValue.AsString;
   end;
 end;
 
@@ -561,9 +568,9 @@ begin
   begin
     xValue := Self.Values[ACol,FRowID];
     case xValue.TypeValue of
-      TDT_FLOAT: Result := Trunc(xValue.Value);
-      TDT_STRING: Result := StrToIntDef(xValue.Value,0);
-      TDT_INTEGER: Result := xValue.Value;
+      TTypeData.tdtFloat: Result := Trunc(xValue.AsDouble);
+      TTypeData.tdtString: Result := StrToIntDef(xValue.AsString,0);
+      TTypeData.tdtInteger: Result := xValue.AsInteger;
     end;
   end;
 end;
@@ -577,9 +584,9 @@ begin
   begin
     xValue := Self.Values[ACol,FRowID];
     case xValue.TypeValue of
-      TDT_FLOAT: Result := xValue.Value;
-      TDT_STRING: Result := StrToFloatDef(xValue.Value,0);
-      TDT_INTEGER: Result := xValue.Value;
+      TTypeData.tdtFloat: Result := xValue.AsDouble;
+      TTypeData.tdtString: Result := StrToFloatDef(xValue.AsString,0);
+      TTypeData.tdtInteger: Result := xValue.AsInteger;
     end;
   end;
 end;
@@ -592,20 +599,20 @@ begin
   if ACol >= 0 then
   begin
     xValue := Self.Values[ACol,FRowID];
-    if (xValue.TypeValue = TDT_FLOAT) or
-       (xValue.TypeValue = TDT_STRING) or
-       (xValue.TypeValue = TDT_INTEGER) then
-      Result := VarToStrDef(xValue.Value,'');
+    if (xValue.TypeValue = TTypeData.tdtFloat) or
+       (xValue.TypeValue = TTypeData.tdtString) or
+       (xValue.TypeValue = TTypeData.tdtInteger) then
+      Result := xValue.AsString;
   end;
 end;
 
-function TQuikTable.GetIsRowSearchParam(const ARow: Integer; const AValue: Variant): Boolean;
+function TQuikTable.GetIsRowSearchParam(const ARow: Integer; const AValue: String): Boolean;
 var
   xS, xValue: String;
   i, iCount: Integer;
 begin
   Result := False;
-  xValue := VarToStrDef(AValue,'');
+  xValue := AValue;
   if not xValue.IsEmpty then
   begin
     iCount := Self.ColCount;

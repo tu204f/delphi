@@ -14,7 +14,8 @@ uses
   Lb.Bybit.Encryption in '..\lb\Lb.Bybit.Encryption.pas',
   Lb.Bybit.Position in '..\lb\position\Lb.Bybit.Position.pas',
   Lb.Bybit.Trade in '..\lb\trade\Lb.Bybit.Trade.pas',
-  Lb.Bybit in '..\lb\Lb.Bybit.pas';
+  Lb.Bybit in '..\lb\Lb.Bybit.pas',
+  Lb.Bybit.OrderBook in '..\lb\market\Lb.Bybit.OrderBook.pas';
 
 {$R *.res}
 

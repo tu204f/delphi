@@ -34,7 +34,7 @@ type
     MemoResult: TMemo;
     ButtonSelectedOffCrypt: TButton;
     ButtonSelectedOnCrypt: TButton;
-    ButtonOrder: TButton;
+    ButtonOrderBook: TButton;
     Button1: TButton;
     Button2: TButton;
     Button3: TButton;
@@ -45,6 +45,7 @@ type
     procedure ButtonSelectedOffCryptClick(Sender: TObject);
     procedure ButtonSelectedOnCryptClick(Sender: TObject);
     procedure ButtonServerTimeClick(Sender: TObject);
+    procedure ButtonOrderBookClick(Sender: TObject);
   private
     BybitServerTime: TBybitServerTime;
     BybitObject: TBybitHttpClient;
@@ -207,8 +208,6 @@ begin
   end;
 end;
 
-
-
 procedure TMainForm.ButtonSelectedClick(Sender: TObject);
 var
   xEncryption: TEncryption;
@@ -255,5 +254,13 @@ begin
 
   FreeAndNil(xEncryption);
 end;
+
+procedure TMainForm.ButtonOrderBookClick(Sender: TObject);
+var
+  xOrderBook: TBybitOrderBook;
+begin
+  //
+end;
+
 
 end.

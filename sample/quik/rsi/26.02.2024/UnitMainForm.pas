@@ -17,7 +17,8 @@ uses
   Vcl.ExtCtrls,
   Quik.Manager.DDE,
   Quik.SysUtils,
-  Quik.ValueTable, UnitUserOrderFrame;
+  Quik.ValueTable,
+  UnitUserOrderFrame;
 
 type
   ///<summary>Главная форма</summary>
@@ -29,15 +30,17 @@ type
     GridPanel: TGridPanel;
     PanelLeft: TPanel;
     PanelRight: TPanel;
-    UserOrderFrame1: TUserOrderFrame;
-    UserOrderFrame2: TUserOrderFrame;
+    UserOrderBuy: TUserOrderFrame;
+    UserOrderSell: TUserOrderFrame;
     procedure ButtonTollsClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure ButtonQuikTableClick(Sender: TObject);
     procedure TimerTimer(Sender: TObject);
+    procedure FormShow(Sender: TObject);
   private
   public
     QuikTable: TQuikTable;
+    Security : TQuikTable;
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
   end;
@@ -50,11 +53,12 @@ implementation
 {$R *.dfm}
 
 uses
+  System.Math,
   UnitQuikTableForm,
   UnitToolsForm,
   Lb.Setting,
   UnitAddOrderForm,
-  Lb.SysUtils;
+  Lb.SysUtils, Lb.Logger;
 
 { TMainForm }
 
@@ -62,6 +66,7 @@ constructor TMainForm.Create(AOwner: TComponent);
 begin
   inherited;
   QuikTable := nil;
+  Security  := nil;
 end;
 
 destructor TMainForm.Destroy;
@@ -73,6 +78,12 @@ end;
 procedure TMainForm.FormCreate(Sender: TObject);
 begin
   Self.Caption := 'Управление заявками (По RSI)';
+end;
+
+procedure TMainForm.FormShow(Sender: TObject);
+begin
+  UserOrderBuy.BuySell := 'B';
+  UserOrderSell.BuySell := 'S';
 end;
 
 procedure TMainForm.TimerTimer(Sender: TObject);
@@ -87,27 +98,47 @@ procedure TMainForm.TimerTimer(Sender: TObject);
       var xInd := QuikManagerTable.IndexOfTable(xQuikTableName);
       if xInd >= 0 then
         QuikTable := QuikManagerTable.Tables[xInd];
+
+      xInd := QuikManagerTable.IndexOfTable('security');
+      if xInd >= 0 then
+      begin
+        Security := QuikManagerTable.Tables[xInd];
+        UserOrderBuy.Security := Security;
+        UserOrderSell.Security := Security;
+      end;
     end;
   end;
 
-
 var
   xS: String;
+  xRSI: Double;
 begin
-  // отслеживаем
-  if Assigned(QuikTable) then
-  begin
-    QuikTable.Fisrt;
-    xS := 'QUIK.RSI:' + QuikTable.AsByIndexString(8);
-    EditSecurity.Text := xS;
-  end else
-    _SetConnetQuikTable;
+  try
+    if Assigned(QuikTable) then
+    begin
+      QuikTable.Fisrt;
+      xRSI := QuikTable.AsByIndexDouble(8);
+      xS := RoundTo(xRSI,-1).ToString;
+      EditSecurity.Text := xS;
+
+      UserOrderBuy.SetValueRSI(xRSI);
+      UserOrderSell.SetValueRSI(xRSI);
+
+    end
+    else
+      _SetConnetQuikTable;
+  except
+    on E : Exception do
+      TLogger.Log(E.ClassName + ' ошибка с сообщением : ' + E.Message)
+  end;
 end;
 
 procedure TMainForm.ButtonTollsClick(Sender: TObject);
 begin
   // Настройка работы
+  Self.FormStyle := fsNormal;
   ToolsForm.ShowModal;
+  Self.FormStyle := fsStayOnTop;
 end;
 
 procedure TMainForm.ButtonQuikTableClick(Sender: TObject);

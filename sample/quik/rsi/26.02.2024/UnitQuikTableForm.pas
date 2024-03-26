@@ -87,7 +87,12 @@ begin
     if iCount > 0 then
       for i := 0 to iCount - 1 do
         for j := 0 to jCount - 1 do
-          StrGrid.Cells[i,j] := FQuikTable.Cells[i,j].AsString;
+        begin
+          if j = 0 then
+            StrGrid.Cells[i,j] := '[' + i.ToString + ']:' + FQuikTable.Cells[i,j].AsString
+          else
+            StrGrid.Cells[i,j] := FQuikTable.Cells[i,j].AsString
+        end;
   end
   else
   begin

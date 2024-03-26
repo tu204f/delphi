@@ -65,8 +65,8 @@ type
     ///<summary>Limit for data size per page. [1, 1000]. Default: 500</summary>
     property Limit: Integer read FLimit write SetLimit;
     property Cursor: String read FCursor write SetCursor;
-
   public
+    function IndexOfSymbol(const ASymbol: String): Integer;
     property ListJson: TJSONArray read FListJson;
     property LinearObjects: TLinearObjectList read FLinearObjects;
   end;
@@ -255,17 +255,33 @@ begin
   end;
 end;
 
+function TBybitInstrumentsInfo.IndexOfSymbol(const ASymbol: String): Integer;
+var
+  xLinear: TLinearObject;
+begin
+  Result := -1;
+  for var i := 0 to FLinearObjects.Count - 1 do
+  begin
+    xLinear := FLinearObjects[i];
+    if SameText(xLinear.Symbol,ASymbol) then
+    begin
+      Result := i;
+      Break;
+    end;
+  end;
+end;
+
 { TLinearObject.TLeverageFilter }
 
 procedure TLinearObject.TLeverageFilter.SetObjectJson(const AObjectJson: TJSONObject);
 begin
   inherited;
   (*
-                "leverageFilter": {
-                    "minLeverage": "1",
-                    "maxLeverage": "100.00",
-                    "leverageStep": "0.01"
-                },
+      "leverageFilter": {
+          "minLeverage": "1",
+          "maxLeverage": "100.00",
+          "leverageStep": "0.01"
+      },
   *)
   MinLeverage  := GetStrToJson(AObjectJson.Values['minLeverage']);  // String;  // "1",
   MaxLeverage  := GetStrToJson(AObjectJson.Values['maxLeverage']);  // String;  // "100.00",
@@ -277,13 +293,13 @@ end;
 procedure TLinearObject.TPriceFilter.SetObjectJson(const AObjectJson: TJSONObject);
 begin
   inherited;
-(*
-                "priceFilter": {
-                    "minPrice": "0.50",
-                    "maxPrice": "999999.00",
-                    "tickSize": "0.50"
-                },
-*)
+  (*
+      "priceFilter": {
+          "minPrice": "0.50",
+          "maxPrice": "999999.00",
+          "tickSize": "0.50"
+      },
+  *)
   MinPrice := GetStrToJson(AObjectJson.Values['minPrice']);  // String; // "0.50",
   MaxPrice := GetStrToJson(AObjectJson.Values['maxPrice']);  // String; // "999999.00",
   TickSize := GetStrToJson(AObjectJson.Values['tickSize']);  // String; // "0.50"
@@ -294,14 +310,14 @@ end;
 procedure TLinearObject.TLotSizeFilter.SetObjectJson(const AObjectJson: TJSONObject);
 begin
   inherited;
-(*
-                "lotSizeFilter": {
-                    "maxOrderQty": "100.000",
-                    "minOrderQty": "0.001",
-                    "qtyStep": "0.001",
-                    "postOnlyMaxOrderQty": "1000.000"
-                },
-*)
+  (*
+      "lotSizeFilter": {
+          "maxOrderQty": "100.000",
+          "minOrderQty": "0.001",
+          "qtyStep": "0.001",
+          "postOnlyMaxOrderQty": "1000.000"
+      },
+  *)
   MaxOrderQty         := GetStrToJson(AObjectJson.Values['maxOrderQty']); // "100.000",
   MinOrderQty         := GetStrToJson(AObjectJson.Values['minOrderQty']); // "0.001",
   QtyStep             := GetStrToJson(AObjectJson.Values['qtyStep']);     // "0.001",

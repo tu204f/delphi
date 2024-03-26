@@ -1,34 +1,130 @@
 object BotFrame: TBotFrame
   Align = Client
-  Size.Width = 706.000000000000000000
-  Size.Height = 450.000000000000000000
+  Size.Width = 718.000000000000000000
+  Size.Height = 512.000000000000000000
   Size.PlatformDefault = False
-  object StrGrid: TStringGrid
+  object GridLayout: TGridPanelLayout
     Align = Client
-    CanFocus = True
-    ClipChildren = True
-    PopupMenu = PopupMenu
-    Size.Width = 706.000000000000000000
-    Size.Height = 428.000000000000000000
+    Size.Width = 484.000000000000000000
+    Size.Height = 471.000000000000000000
     Size.PlatformDefault = False
     TabOrder = 7
-    Viewport.Width = 702.000000000000000000
-    Viewport.Height = 403.000000000000000000
-  end
-  object Edit1: TEdit
-    Touch.InteractiveGestures = [LongTap, DoubleTap]
-    Align = Top
-    TabOrder = 8
-    Size.Width = 706.000000000000000000
-    Size.Height = 22.000000000000000000
-    Size.PlatformDefault = False
-  end
-  object PopupMenu: TPopupMenu
-    Left = 192
-    Top = 164
-    object MenuItem1: TMenuItem
-      Text = #1057#1086#1093#1088#1072#1085#1080#1090#1100
-      OnClick = MenuItem1Click
+    ColumnCollection = <
+      item
+        Value = 50.000000000000000000
+      end
+      item
+        Value = 50.000000000000000000
+      end>
+    ControlCollection = <
+      item
+        Column = 0
+        Control = LayoutBuy
+        Row = 0
+      end
+      item
+        Column = 1
+        Control = LayoutSell
+        Row = 0
+      end>
+    RowCollection = <
+      item
+        Value = 100.000000000000000000
+      end>
+    object LayoutBuy: TLayout
+      Align = Client
+      Size.Width = 242.000000000000000000
+      Size.Height = 471.000000000000000000
+      Size.PlatformDefault = False
+      TabOrder = 0
     end
+    object LayoutSell: TLayout
+      Align = Client
+      Size.Width = 242.000000000000000000
+      Size.Height = 471.000000000000000000
+      Size.PlatformDefault = False
+      TabOrder = 1
+    end
+  end
+  object LayoutTop: TLayout
+    Align = Top
+    Size.Width = 718.000000000000000000
+    Size.Height = 41.000000000000000000
+    Size.PlatformDefault = False
+    TabOrder = 8
+    object TextInfo1: TText
+      Align = Left
+      Size.Width = 69.000000000000000000
+      Size.Height = 41.000000000000000000
+      Size.PlatformDefault = False
+      Text = #1042#1088#1077#1084#1103': '
+      TextSettings.Font.Size = 18.000000000000000000
+      TextSettings.Font.StyleExt = {00070000000000000004000000}
+      TextSettings.HorzAlign = Leading
+    end
+    object TextTime: TText
+      Align = Left
+      Position.X = 69.000000000000000000
+      Size.Width = 108.000000000000000000
+      Size.Height = 41.000000000000000000
+      Size.PlatformDefault = False
+      Text = '[]'
+      TextSettings.Font.Size = 18.000000000000000000
+      TextSettings.Font.StyleExt = {00070000000000000004000000}
+      TextSettings.HorzAlign = Leading
+    end
+    object TextInfo2: TText
+      Align = Left
+      Position.X = 177.000000000000000000
+      Size.Width = 69.000000000000000000
+      Size.Height = 41.000000000000000000
+      Size.PlatformDefault = False
+      Text = #1062#1077#1085#1072': '
+      TextSettings.Font.Size = 18.000000000000000000
+      TextSettings.Font.StyleExt = {00070000000000000004000000}
+      TextSettings.HorzAlign = Leading
+    end
+    object TextPrice: TText
+      Align = Left
+      Position.X = 246.000000000000000000
+      Size.Width = 108.000000000000000000
+      Size.Height = 41.000000000000000000
+      Size.PlatformDefault = False
+      Text = '[]'
+      TextSettings.Font.Size = 18.000000000000000000
+      TextSettings.Font.StyleExt = {00070000000000000004000000}
+      TextSettings.HorzAlign = Leading
+    end
+    object TextInfo3: TText
+      Align = Left
+      Position.X = 354.000000000000000000
+      Size.Width = 39.000000000000000000
+      Size.Height = 41.000000000000000000
+      Size.PlatformDefault = False
+      Text = 'RSI: '
+      TextSettings.Font.Size = 18.000000000000000000
+      TextSettings.Font.StyleExt = {00070000000000000004000000}
+      TextSettings.HorzAlign = Leading
+    end
+    object TextRSI: TText
+      Align = Left
+      Position.X = 393.000000000000000000
+      Size.Width = 108.000000000000000000
+      Size.Height = 41.000000000000000000
+      Size.PlatformDefault = False
+      Text = '[]'
+      TextSettings.Font.Size = 18.000000000000000000
+      TextSettings.Font.StyleExt = {00070000000000000004000000}
+      TextSettings.HorzAlign = Leading
+    end
+  end
+  object LayoutOrderBook: TLayout
+    Align = Right
+    Position.X = 484.000000000000000000
+    Position.Y = 41.000000000000000000
+    Size.Width = 234.000000000000000000
+    Size.Height = 471.000000000000000000
+    Size.PlatformDefault = False
+    TabOrder = 9
   end
 end

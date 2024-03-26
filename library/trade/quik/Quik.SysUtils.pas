@@ -2,6 +2,8 @@ unit Quik.SysUtils;
 
 interface
 
+{$I quik_connect.inc}
+
 uses
   System.SysUtils,
   System.Variants,
@@ -9,15 +11,28 @@ uses
   System.Generics.Collections;
 
 const
-  TDT_TABLE = 16;
-  TDT_FLOAT = 1;
-  TDT_STRING = 2;
-  TDT_BOOL = 3;
-  TDT_ERROR = 4;
-  TDT_BLANK = 5;
-  TDT_INTEGER = 6;
-  TDT_SKIP = 7;
-  TDT_NULL = -1;
+  _TDT_TABLE = 16;
+  _TDT_FLOAT = 1;
+  _TDT_STRING = 2;
+  _TDT_BOOL = 3;
+  _TDT_ERROR = 4;
+  _TDT_BLANK = 5;
+  _TDT_INTEGER = 6;
+  _TDT_SKIP = 7;
+  _TDT_NULL = -1;
+
+type
+  TTypeData = (
+    tdtTable   = _TDT_TABLE,
+    tdtFloat   = _TDT_FLOAT,
+    tdtString  = _TDT_STRING,
+    tdtBool    = _TDT_BOOL,
+    tdtError   = _TDT_ERROR,
+    tdtBlank   = _TDT_BLANK,
+    tdtInteger = _TDT_INTEGER,
+    tdtSkip    = _TDT_SKIP,
+    tdtNull    = _TDT_NULL
+  );
 
 type
   TBlock = packed record
@@ -34,13 +49,29 @@ type
   TValueBlockList = TList<TValueBlock>;
 
   TValue = record
-    TypeValue: Integer;
+    TypeValue: TTypeData;
     Value: Variant;
+  private
+    function GetAsBoolean: Boolean;
+    function GetAsDouble: Double;
+    function GetAsInteger: Integer;
+    function GetAsString: String;
   public
-    constructor Create(ATypeValue: Integer; AValue: Variant);
+    constructor CreateErrorCode(AValue: Integer);
+    constructor Create(ATypeData: TTypeData; AValue: Variant); overload;
+    constructor Create(AValue: Double); overload;
+    constructor Create(AValue: String); overload;
+    constructor Create(AValue: Boolean); overload;
+    constructor Create(AValue: Integer); overload;
+    procedure Clear;
+  public
+    property AsDouble: Double read GetAsDouble;
+    property AsString: String read GetAsString;
+    property AsBoolean: Boolean read GetAsBoolean;
+    property AsInteger: Integer read GetAsInteger;
   end;
   TValueList = TList<TValue>;
-  TValues = TArray<TValue>;
+  TValues    = TArray<TValue>;
 
   /// <summary>
   /// Парсер данных
@@ -87,18 +118,21 @@ procedure SetParserBlockData(AData: TBytes; ASize: LongWord; ABlocks: TBlocks);
 
 implementation
 
+uses
+  Lb.Logger;
 
-function GetTypeBlock(const TypeBlock: Integer): String;
+
+function GetTypeBlock(const ATypeBlock: TTypeData): String;
 begin
-  case TypeBlock of
-    TDT_TABLE: Result := 'table';
-    TDT_FLOAT: Result := 'flaot';
-    TDT_STRING: Result := 'string';
-    TDT_BOOL: Result := 'bool';
-    TDT_ERROR: Result := 'error';
-    TDT_BLANK: Result := 'blank';
-    TDT_INTEGER: Result := 'integer';
-    TDT_SKIP: Result := 'skip';
+  case ATypeBlock of
+    TTypeData.tdtTable  : Result := 'table';
+    TTypeData.tdtFloat  : Result := 'flaot';
+    TTypeData.tdtString : Result := 'string';
+    TTypeData.tdtBool   : Result := 'bool';
+    TTypeData.tdtError  : Result := 'error';
+    TTypeData.tdtBlank  : Result := 'blank';
+    TTypeData.tdtInteger: Result := 'integer';
+    TTypeData.tdtSkip   : Result := 'skip';
   else
     Result := 'null';
   end;
@@ -148,20 +182,25 @@ procedure SetParserBlockData(AData: TBytes; ASize: LongWord; ABlocks: TBlocks);
     end;
   end;
 
-  function GetStrToArr(AValue: array of AnsiChar): String;
+  function GetStrToArr(AValue: TBytes): String;
   var
-    tmpS: AnsiString;
-    xC: AnsiChar;
+    xR: String;
+    xChars: TArray<AnsiChar>;
   begin
-    tmpS := '';
-    for xC in AValue  do
-      tmpS := tmpS + xC;
-    Result := Trim(String(tmpS));
+    SetLength(xChars,Length(AValue));
+    xChars :=  TArray<AnsiChar>(AValue);
+
+    for var xC  in xChars do
+      xR := xR + Char(xC);
+
+    Result := xR;
+
+    SetLength(xChars,0);
   end;
 
   procedure SetPaserStr(ABlock: TBlock; AParserData: TParserData);
   var
-    xValue: array of AnsiChar;
+    xValue: TBytes;
     xSizeBlock: Word;
     xLenght: Byte;
   begin
@@ -206,24 +245,33 @@ var
   xParserData: TParserData;
   xColCount, xRowCount: Word;
 begin
+  {$IFDEF LOG_QUIK_TABLE}
+  TLogger.LogForm('table','SetParserBlockData');
+  {$ENDIF}
   xParserData := TParserData.Create(AData,ASize);
   try
     while xParserData.Position < xParserData.Size do
     begin
       xParserData.Read(xBlock,4);
-      case xBlock.TypeBlock of
-        TDT_TABLE: begin
+      case TTypeData(xBlock.TypeBlock) of
+        TTypeData.tdtTable: begin
           xParserData.Read(xRowCount,2);
           xParserData.Read(xColCount,2);
           ABlocks.SetSize(xColCount,xRowCount);
+          {$IFDEF LOG_QUIK_TABLE}
+          TLogger.LogForm('table','Размеры блока: количество строк ' + 
+            IntToStr(xRowCount) + ' || количество колонок ' + 
+            IntToStr(xColCount)
+          );
+          {$ENDIF}
         end;
-        TDT_FLOAT: SetPaserFloat(xBlock,xParserData);
-        TDT_BOOL: SetPaserBool(xBlock,xParserData);
-        TDT_INTEGER: SetPaserInt(xBlock,xParserData);
-        TDT_STRING: SetPaserStr(xBlock,xParserData);
-        TDT_ERROR: SetPaserError(xBlock,xParserData);
-        TDT_BLANK: SetPaserBlankAndSkip(xBlock,xParserData);
-        TDT_SKIP: SetPaserBlankAndSkip(xBlock,xParserData);
+        TTypeData.tdtFloat  : SetPaserFloat(xBlock,xParserData);
+        TTypeData.tdtBool   : SetPaserBool(xBlock,xParserData);
+        TTypeData.tdtInteger: SetPaserInt(xBlock,xParserData);
+        TTypeData.tdtString : SetPaserStr(xBlock,xParserData);
+        TTypeData.tdtError  : SetPaserError(xBlock,xParserData);
+        TTypeData.tdtBlank  : SetPaserBlankAndSkip(xBlock,xParserData);
+        TTypeData.tdtSkip   : SetPaserBlankAndSkip(xBlock,xParserData);
       else
         xParserData.Position := xParserData.Position + xBlock.SizeBlock;
       end;
@@ -235,10 +283,74 @@ end;
 
 { TValue }
 
-constructor TValue.Create(ATypeValue: Integer; AValue: Variant);
+procedure TValue.Clear;
 begin
-  TypeValue := ATypeValue;
+  TypeValue := TTypeData.tdtNull;
+  Value := Unassigned;
+end;
+
+constructor TValue.Create(ATypeData: TTypeData; AValue: Variant);
+begin
+  TypeValue := ATypeData;
   Value := AValue;
+end;
+
+constructor TValue.Create(AValue: Double);
+begin
+  Create(TTypeData.tdtFloat,AValue);
+end;
+
+constructor TValue.Create(AValue: String);
+begin
+  Create(TTypeData.tdtString,AValue);
+end;
+
+constructor TValue.Create(AValue: Boolean);
+begin
+  Create(TTypeData.tdtBool,AValue);
+end;
+
+constructor TValue.Create(AValue: Integer);
+begin
+  Create(TTypeData.tdtInteger,AValue);
+end;
+
+
+constructor TValue.CreateErrorCode(AValue: Integer);
+begin
+  Create(TTypeData.tdtError,AValue);
+end;
+
+function TValue.GetAsBoolean: Boolean;
+begin
+  try
+    Result := Boolean(Value);  
+  except
+    Result := False;
+  end;
+end;
+
+function TValue.GetAsDouble: Double;
+begin
+  try
+    Result := Double(Value);
+  except
+    Result := 0;
+  end;
+end;
+
+function TValue.GetAsInteger: Integer;
+begin
+  try
+    Result := Integer(Value);
+  except
+    Result := 0;
+  end;
+end;
+
+function TValue.GetAsString: String;
+begin
+  Result := VarToStrDef(Value,'');
 end;
 
 { TParserData }
@@ -276,6 +388,7 @@ end;
 
 destructor TBlocks.Destroy;
 begin
+  Self.Clear;  
   inherited;
 end;
 
@@ -286,6 +399,8 @@ end;
 
 procedure TBlocks.Clear;
 begin
+  for var xV in FValues do
+    xV.Clear;
   FCount := 0;
   SetLength(FValues,FCount);
 end;
@@ -298,32 +413,32 @@ end;
 
 procedure TBlocks.AddValue(const AValue: Double);
 begin
-  Self.Add(TValue.Create(TDT_FLOAT,AValue));
+  Self.Add(TValue.Create(AValue));
 end;
 
 procedure TBlocks.AddValue(const AValue: String);
 begin
-  Self.Add(TValue.Create(TDT_STRING,AValue));
+  Self.Add(TValue.Create(AValue));
 end;
 
 procedure TBlocks.AddValue(const AValue: Boolean);
 begin
-  Self.Add(TValue.Create(TDT_BOOL,AValue));
+  Self.Add(TValue.Create(AValue));
 end;
 
 procedure TBlocks.AddValue(const AValue: Integer);
 begin
-  Self.Add(TValue.Create(TDT_INTEGER,AValue));
+  Self.Add(TValue.Create(AValue));
 end;
 
 procedure TBlocks.AddErrorCode(const AErrorCode: Integer);
 begin
-  Self.Add(TValue.Create(TDT_ERROR,AErrorCode));
+  Self.Add(TValue.CreateErrorCode(AErrorCode));
 end;
 
 procedure TBlocks.AddValue;
 begin
-  Self.Add(TValue.Create(TDT_NULL,Unassigned));
+  Self.Add(TValue.Create(TTypeData.tdtNull,Unassigned));
 end;
 
 procedure TBlocks.SetSize(const AColCount, ARowCount: Integer);

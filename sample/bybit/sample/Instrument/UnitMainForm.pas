@@ -142,16 +142,22 @@ begin
         StrGrid.Cells[ 6,i] := xLinearObject.DeliveryTime;
         StrGrid.Cells[ 7,i] := xLinearObject.DeliveryFeeRate;
         StrGrid.Cells[ 8,i] := xLinearObject.PriceScale;
+
+        // --------------------------------------------------------------------
         StrGrid.Cells[ 9,i] := xLinearObject.LeverageFilter.MinLeverage;
         StrGrid.Cells[10,i] := xLinearObject.LeverageFilter.MaxLeverage;
         StrGrid.Cells[11,i] := xLinearObject.LeverageFilter.LeverageStep;
+        // --------------------------------------------------------------------
         StrGrid.Cells[12,i] := xLinearObject.PriceFilter.MinPrice;
         StrGrid.Cells[13,i] := xLinearObject.PriceFilter.MaxPrice;
         StrGrid.Cells[14,i] := xLinearObject.PriceFilter.TickSize;
+        // --------------------------------------------------------------------
         StrGrid.Cells[15,i] := xLinearObject.LotSizeFilter.MaxOrderQty;
         StrGrid.Cells[16,i] := xLinearObject.LotSizeFilter.MinOrderQty;
         StrGrid.Cells[17,i] := xLinearObject.LotSizeFilter.QtyStep;
         StrGrid.Cells[18,i] := xLinearObject.LotSizeFilter.PostOnlyMaxOrderQty;
+        // --------------------------------------------------------------------
+
         StrGrid.Cells[19,i] := xLinearObject.UnifiedMarginTrade;
         StrGrid.Cells[20,i] := xLinearObject.FundingInterval;
         StrGrid.Cells[21,i] := xLinearObject.SettleCoin;

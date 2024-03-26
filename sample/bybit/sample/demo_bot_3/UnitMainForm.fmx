@@ -1,12 +1,14 @@
 object MainForm: TMainForm
   Left = 0
   Top = 0
-  Caption = 'Form5'
-  ClientHeight = 631
-  ClientWidth = 762
+  BorderIcons = [biSystemMenu, biMinimize]
+  Caption = #1058#1086#1088#1075#1086#1074#1099#1081' '#1088#1086#1073#1086#1090':'
+  ClientHeight = 725
+  ClientWidth = 539
   FormFactor.Width = 320
   FormFactor.Height = 480
   FormFactor.Devices = [Desktop]
+  OnShow = FormShow
   DesignerMasterStyle = 0
   object Layout: TLayout
     Align = Client
@@ -14,15 +16,15 @@ object MainForm: TMainForm
     Margins.Top = 5.000000000000000000
     Margins.Right = 5.000000000000000000
     Margins.Bottom = 5.000000000000000000
-    Size.Width = 752.000000000000000000
-    Size.Height = 621.000000000000000000
+    Size.Width = 529.000000000000000000
+    Size.Height = 715.000000000000000000
     Size.PlatformDefault = False
     TabOrder = 0
     object LayoutMenu: TLayout
       Align = Top
       Padding.Top = 5.000000000000000000
       Padding.Bottom = 5.000000000000000000
-      Size.Width = 752.000000000000000000
+      Size.Width = 529.000000000000000000
       Size.Height = 37.000000000000000000
       Size.PlatformDefault = False
       TabOrder = 0
@@ -36,81 +38,77 @@ object MainForm: TMainForm
         Text = #1057#1090#1072#1088#1090
         OnClick = ButtonStartClick
       end
+      object ComboEditSymbol: TComboEdit
+        Touch.InteractiveGestures = [LongTap, DoubleTap]
+        TabOrder = 1
+        ItemHeight = 19.000000000000000000
+        ItemIndex = -1
+        Position.X = 104.000000000000000000
+        Position.Y = 8.000000000000000000
+        Size.Width = 177.000000000000000000
+        Size.Height = 22.000000000000000000
+        Size.PlatformDefault = False
+        OnChange = ComboBoxSymbolChange
+      end
+      object ButtonInstrumentsInfo: TButton
+        Align = Right
+        Position.X = 375.000000000000000000
+        Position.Y = 5.000000000000000000
+        Size.Width = 154.000000000000000000
+        Size.Height = 27.000000000000000000
+        Size.PlatformDefault = False
+        TabOrder = 2
+        Text = #1048#1085#1089#1090#1088#1091#1084#1077#1085#1090
+        OnClick = ButtonInstrumentsInfoClick
+      end
     end
     object LayoutMain: TLayout
       Align = Client
-      Size.Width = 752.000000000000000000
-      Size.Height = 379.000000000000000000
+      Size.Width = 529.000000000000000000
+      Size.Height = 352.000000000000000000
       Size.PlatformDefault = False
       TabOrder = 1
-      object TabControl: TTabControl
-        Align = Client
-        Size.Width = 752.000000000000000000
-        Size.Height = 379.000000000000000000
+      object LayoutHistoryIndicator: TLayout
+        Align = Top
+        Size.Width = 529.000000000000000000
+        Size.Height = 73.000000000000000000
         Size.PlatformDefault = False
-        TabIndex = 0
         TabOrder = 0
-        TabPosition = PlatformDefault
-        Sizes = (
-          752s
-          353s
-          752s
-          353s)
-        object TabItemBot: TTabItem
-          CustomIcon = <
-            item
-            end>
-          IsSelected = True
-          Size.Width = 39.000000000000000000
-          Size.Height = 26.000000000000000000
-          Size.PlatformDefault = False
-          StyleLookup = ''
-          TabOrder = 0
-          Text = #1041#1086#1090
-          ExplicitSize.cx = 39.000000000000000000
-          ExplicitSize.cy = 26.000000000000000000
-        end
-        object TabItemHistory: TTabItem
-          CustomIcon = <
-            item
-            end>
-          IsSelected = False
-          Size.Width = 215.000000000000000000
-          Size.Height = 26.000000000000000000
-          Size.PlatformDefault = False
-          StyleLookup = ''
-          TabOrder = 0
-          Text = #1048#1089#1090#1086#1088#1080#1095#1077#1089#1082#1080#1077' '#1076#1072#1085#1085#1099#1077' '#1080' '#1080#1085#1076#1080#1082#1072#1090#1086#1088
-          ExplicitSize.cx = 215.000000000000000000
-          ExplicitSize.cy = 26.000000000000000000
-        end
+      end
+      object LayoutBot: TLayout
+        Position.X = 8.000000000000000000
+        Position.Y = 92.000000000000000000
+        Size.Width = 189.000000000000000000
+        Size.Height = 109.000000000000000000
+        Size.PlatformDefault = False
+        TabOrder = 1
       end
     end
     object LayoutLog: TLayout
       Align = Bottom
-      Position.Y = 416.000000000000000000
-      Size.Width = 752.000000000000000000
-      Size.Height = 205.000000000000000000
+      Position.Y = 389.000000000000000000
+      Size.Width = 529.000000000000000000
+      Size.Height = 326.000000000000000000
       Size.PlatformDefault = False
       TabOrder = 2
-      object Memo1: TMemo
+      object MemoLog: TMemo
         Touch.InteractiveGestures = [Pan, LongTap, DoubleTap]
         DataDetectorTypes = []
         Align = Client
         Margins.Top = 5.000000000000000000
-        Size.Width = 752.000000000000000000
-        Size.Height = 200.000000000000000000
+        Size.Width = 529.000000000000000000
+        Size.Height = 321.000000000000000000
         Size.PlatformDefault = False
         TabOrder = 0
-        Viewport.Width = 748.000000000000000000
-        Viewport.Height = 196.000000000000000000
+        Viewport.Width = 525.000000000000000000
+        Viewport.Height = 317.000000000000000000
       end
     end
   end
   object Timer: TTimer
     Enabled = False
     OnTimer = TimerTimer
-    Left = 401
-    Top = 178
+    Left = 37
+    Top = 162
   end
 end

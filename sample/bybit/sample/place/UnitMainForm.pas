@@ -111,7 +111,7 @@ begin
     xPlaceOrder.PositionIdx := 0;
     xPlaceOrder.OrderType   := TTypeOrder.Limit;
     xPlaceOrder.Qty         := 0.001;
-    xPlaceOrder.Price       := 51500;
+    xPlaceOrder.Price       := 73500;
     xPlaceOrder.timeInForce := TTypeTimeInForce.GTC;
     xPlaceOrder.OrderLinkId := 'test' + Random(65000).ToString;
     xS := SelectedOrder(
@@ -184,7 +184,7 @@ begin
     xPlaceOrder.OrderID     := OrderResponse.OrderID;
     xPlaceOrder.Category    := TTypeCategory.tcLinear;
     xPlaceOrder.Symbol      := 'BTCUSDT';
-    xPlaceOrder.Price       := 43455;
+    xPlaceOrder.Price       := 73455;
     xPlaceOrder.Qty         := 0.002;
     xS := SelectedOrder(
        API_KEY,
@@ -210,7 +210,7 @@ begin
     xPlaceOrder.OrderLinkID := OrderResponse.OrderLinkID;
     xPlaceOrder.Category    := TTypeCategory.tcLinear;
     xPlaceOrder.Symbol      := 'BTCUSDT';
-    xPlaceOrder.Price       := 43455;
+    xPlaceOrder.Price       := 73455;
     xPlaceOrder.Qty         := 0.002;
     xS := SelectedOrder(
        API_KEY,

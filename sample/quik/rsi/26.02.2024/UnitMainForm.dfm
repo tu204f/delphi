@@ -4,58 +4,64 @@ object MainForm: TMainForm
   BorderIcons = [biSystemMenu, biMinimize]
   BorderStyle = bsSingle
   Caption = 'MainForm'
-  ClientHeight = 171
-  ClientWidth = 507
+  ClientHeight = 141
+  ClientWidth = 265
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
-  Font.Height = -11
+  Font.Height = -15
   Font.Name = 'Tahoma'
-  Font.Style = []
+  Font.Style = [fsBold]
+  FormStyle = fsStayOnTop
   OldCreateOrder = False
   Position = poScreenCenter
   OnCreate = FormCreate
+  OnShow = FormShow
   DesignSize = (
-    507
-    171)
+    265
+    141)
   PixelsPerInch = 96
-  TextHeight = 13
+  TextHeight = 18
   object ButtonTolls: TButton
-    Left = 8
-    Top = 8
-    Width = 141
+    Left = 1
+    Top = 2
+    Width = 107
     Height = 25
-    Caption = #1053#1072#1089#1090#1088#1086#1081#1082#1080' | '#1048#1085#1089#1090#1088#1091#1084#1077#1085#1090
+    Caption = #1048#1085#1089#1090#1088#1091#1084#1077#1085#1090
     TabOrder = 0
     OnClick = ButtonTollsClick
   end
   object EditSecurity: TEdit
-    Left = 155
-    Top = 8
-    Width = 221
-    Height = 21
-    Anchors = [akLeft, akTop, akRight]
+    Left = 114
+    Top = 1
+    Width = 89
+    Height = 36
     Color = clBtnFace
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clWindowText
+    Font.Height = -23
+    Font.Name = 'Tahoma'
+    Font.Style = [fsBold]
+    ParentFont = False
     ReadOnly = True
     TabOrder = 1
-    ExplicitWidth = 351
+    Text = '000'
   end
   object ButtonQuikTable: TButton
-    Left = 382
-    Top = 8
-    Width = 117
+    Left = 209
+    Top = 2
+    Width = 47
     Height = 25
-    Anchors = [akTop, akRight]
-    Caption = #1058#1072#1073#1083#1080#1094#1072' QUIK'
+    Anchors = [akTop]
+    Caption = 'QUIK'
     TabOrder = 2
     OnClick = ButtonQuikTableClick
-    ExplicitLeft = 512
   end
   object GridPanel: TGridPanel
-    Left = 10
-    Top = 39
-    Width = 489
-    Height = 124
+    Left = 1
+    Top = 28
+    Width = 262
+    Height = 112
     Anchors = [akLeft, akTop, akRight, akBottom]
     ColumnCollection = <
       item
@@ -75,90 +81,154 @@ object MainForm: TMainForm
         Control = PanelRight
         Row = 0
       end>
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clWindowText
+    Font.Height = -15
+    Font.Name = 'Tahoma'
+    Font.Style = [fsBold]
+    ParentFont = False
     RowCollection = <
       item
         Value = 100.000000000000000000
       end>
     TabOrder = 3
-    ExplicitWidth = 494
-    ExplicitHeight = 175
     object PanelLeft: TPanel
       Left = 1
       Top = 1
-      Width = 244
-      Height = 122
+      Width = 130
+      Height = 110
       Align = alClient
       BevelInner = bvLowered
       BevelKind = bkFlat
       BevelOuter = bvSpace
       TabOrder = 0
-      inline UserOrderFrame1: TUserOrderFrame
+      inline UserOrderBuy: TUserOrderFrame
         Left = 2
         Top = 2
-        Width = 236
-        Height = 114
+        Width = 122
+        Height = 102
         Align = alClient
+        Font.Charset = DEFAULT_CHARSET
+        Font.Color = clWindowText
+        Font.Height = -21
+        Font.Name = 'Tahoma'
+        Font.Style = [fsBold]
+        ParentFont = False
         TabOrder = 0
-        ExplicitLeft = 3
-        ExplicitTop = 52
+        ExplicitLeft = 2
+        ExplicitTop = 2
+        ExplicitHeight = 102
         inherited ledValueRSI: TLabeledEdit
-          EditLabel.ExplicitLeft = 0
-          EditLabel.ExplicitTop = -16
-          EditLabel.ExplicitWidth = 57
+          Height = 33
+          EditLabel.Width = 46
+          EditLabel.Height = 25
+          EditLabel.ExplicitLeft = 3
+          EditLabel.ExplicitTop = 42
+          EditLabel.ExplicitWidth = 46
+          EditLabel.ExplicitHeight = 25
+          ExplicitHeight = 33
         end
         inherited UpDownStepPrice: TUpDown
-          Top = 64
-          ExplicitTop = 64
+          Height = 33
+          ExplicitHeight = 33
         end
         inherited ledStepPrice: TLabeledEdit
-          EditLabel.ExplicitLeft = 0
-          EditLabel.ExplicitTop = -16
-          EditLabel.ExplicitWidth = 59
+          Height = 33
+          EditLabel.Width = 38
+          EditLabel.Height = 25
+          EditLabel.ExplicitLeft = 11
+          EditLabel.ExplicitTop = 221
+          EditLabel.ExplicitWidth = 38
+          EditLabel.ExplicitHeight = 25
+          ExplicitHeight = 33
+        end
+        inherited UpDownValueRSI: TUpDown
+          Height = 33
+          ExplicitHeight = 33
+        end
+        inherited UpDownQuantity: TUpDown
+          Height = 33
+          ExplicitHeight = 33
         end
         inherited ledQuantity: TLabeledEdit
-          EditLabel.ExplicitLeft = 0
-          EditLabel.ExplicitTop = -16
-          EditLabel.ExplicitWidth = 56
+          Height = 33
+          EditLabel.Width = 23
+          EditLabel.Height = 25
+          EditLabel.ExplicitLeft = 2
+          EditLabel.ExplicitTop = 9
+          EditLabel.ExplicitWidth = 23
+          EditLabel.ExplicitHeight = 25
+          ExplicitHeight = 33
         end
       end
     end
     object PanelRight: TPanel
-      Left = 245
+      Left = 131
       Top = 1
-      Width = 243
-      Height = 122
+      Width = 130
+      Height = 110
       Align = alClient
       BevelInner = bvLowered
       BevelKind = bkFlat
       BevelOuter = bvSpace
       TabOrder = 1
-      inline UserOrderFrame2: TUserOrderFrame
+      inline UserOrderSell: TUserOrderFrame
         Left = 2
         Top = 2
-        Width = 235
-        Height = 114
+        Width = 122
+        Height = 102
         Align = alClient
+        Font.Charset = DEFAULT_CHARSET
+        Font.Color = clWindowText
+        Font.Height = -21
+        Font.Name = 'Tahoma'
+        Font.Style = [fsBold]
+        ParentFont = False
         TabOrder = 0
-        ExplicitLeft = 3
-        ExplicitTop = 52
+        ExplicitLeft = 2
+        ExplicitTop = 2
+        ExplicitHeight = 102
         inherited ledValueRSI: TLabeledEdit
-          EditLabel.ExplicitLeft = 0
-          EditLabel.ExplicitTop = -16
-          EditLabel.ExplicitWidth = 57
+          Height = 33
+          EditLabel.Width = 46
+          EditLabel.Height = 25
+          EditLabel.ExplicitLeft = 3
+          EditLabel.ExplicitTop = 42
+          EditLabel.ExplicitWidth = 46
+          EditLabel.ExplicitHeight = 25
+          ExplicitHeight = 33
         end
         inherited UpDownStepPrice: TUpDown
-          Top = 64
-          ExplicitTop = 64
+          Height = 33
+          ExplicitHeight = 33
         end
         inherited ledStepPrice: TLabeledEdit
-          EditLabel.ExplicitLeft = 0
-          EditLabel.ExplicitTop = -16
-          EditLabel.ExplicitWidth = 59
+          Height = 33
+          EditLabel.Width = 38
+          EditLabel.Height = 25
+          EditLabel.ExplicitLeft = 11
+          EditLabel.ExplicitTop = 221
+          EditLabel.ExplicitWidth = 38
+          EditLabel.ExplicitHeight = 25
+          ExplicitHeight = 33
+        end
+        inherited UpDownValueRSI: TUpDown
+          Height = 33
+          ExplicitHeight = 33
+        end
+        inherited UpDownQuantity: TUpDown
+          Height = 33
+          ExplicitHeight = 33
         end
         inherited ledQuantity: TLabeledEdit
-          EditLabel.ExplicitLeft = 0
-          EditLabel.ExplicitTop = -16
-          EditLabel.ExplicitWidth = 56
+          Height = 33
+          EditLabel.Width = 23
+          EditLabel.Height = 25
+          EditLabel.ExplicitLeft = 2
+          EditLabel.ExplicitTop = 9
+          EditLabel.ExplicitWidth = 23
+          EditLabel.ExplicitHeight = 25
+          ExplicitHeight = 33
         end
       end
     end
@@ -166,7 +236,7 @@ object MainForm: TMainForm
   object Timer: TTimer
     Interval = 500
     OnTimer = TimerTimer
-    Left = 264
-    Top = 12
+    Left = 32
+    Top = 96
   end
 end

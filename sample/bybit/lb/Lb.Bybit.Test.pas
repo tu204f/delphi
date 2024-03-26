@@ -109,8 +109,6 @@ begin
   if xDelta > FTimeOut then
     DoEventSing;
   DoEventTimer;
-
-
 end;
 
 end.

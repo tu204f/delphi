@@ -1,0 +1,148 @@
+object ValueUpDataFrame: TValueUpDataFrame
+  Size.Width = 362.000000000000000000
+  Size.Height = 29.000000000000000000
+  Size.PlatformDefault = False
+  object Rectangle: TRectangle
+    Align = Client
+    Size.Width = 362.000000000000000000
+    Size.Height = 29.000000000000000000
+    Size.PlatformDefault = False
+  end
+  object GridLayout: TGridPanelLayout
+    Align = Client
+    Size.Width = 362.000000000000000000
+    Size.Height = 29.000000000000000000
+    Size.PlatformDefault = False
+    TabOrder = 1
+    ColumnCollection = <
+      item
+        Value = 50.000000000000000000
+      end
+      item
+        Value = 50.000000000000000000
+      end
+      item
+        SizeStyle = Absolute
+        Value = 100.000000000000000000
+      end>
+    ControlCollection = <
+      item
+        Column = 0
+        Control = TextTitle
+        Row = 0
+      end
+      item
+        Column = 1
+        Control = EditValue
+        Row = 0
+      end
+      item
+        Column = 2
+        Control = GridLayoutButtom
+        Row = 0
+      end>
+    RowCollection = <
+      item
+        Value = 100.000000000000000000
+      end>
+    object TextTitle: TText
+      Align = Client
+      Margins.Left = 2.000000000000000000
+      Margins.Top = 2.000000000000000000
+      Margins.Right = 2.000000000000000000
+      Margins.Bottom = 2.000000000000000000
+      Size.Width = 127.000000000000000000
+      Size.Height = 25.000000000000000000
+      Size.PlatformDefault = False
+      TextSettings.HorzAlign = Leading
+    end
+    object EditValue: TEdit
+      Touch.InteractiveGestures = [LongTap, DoubleTap]
+      Align = Client
+      Anchors = []
+      TabOrder = 2
+      Margins.Left = 2.000000000000000000
+      Margins.Top = 2.000000000000000000
+      Margins.Right = 2.000000000000000000
+      Margins.Bottom = 2.000000000000000000
+      Size.Width = 127.000000000000000000
+      Size.Height = 25.000000000000000000
+      Size.PlatformDefault = False
+    end
+    object GridLayoutButtom: TGridPanelLayout
+      Align = Client
+      Size.Width = 100.000000000000000000
+      Size.Height = 29.000000000000000000
+      Size.PlatformDefault = False
+      TabOrder = 3
+      ColumnCollection = <
+        item
+          Value = 50.000000000000000000
+        end
+        item
+          Value = 50.000000000000000000
+        end>
+      ControlCollection = <
+        item
+          Column = 0
+          Control = RectanglePlus
+          Row = 0
+        end
+        item
+          Column = 1
+          Control = RectangleMinus
+          Row = 0
+        end>
+      RowCollection = <
+        item
+          Value = 100.000000000000000000
+        end>
+      object RectanglePlus: TRectangle
+        Align = Client
+        Margins.Top = 2.000000000000000000
+        Margins.Right = 2.000000000000000000
+        Margins.Bottom = 2.000000000000000000
+        Size.Width = 48.000000000000000000
+        Size.Height = 25.000000000000000000
+        Size.PlatformDefault = False
+        object ButtonPlus: TButton
+          Align = Client
+          Margins.Left = 2.000000000000000000
+          Margins.Top = 2.000000000000000000
+          Margins.Right = 2.000000000000000000
+          Margins.Bottom = 2.000000000000000000
+          Size.Width = 44.000000000000000000
+          Size.Height = 21.000000000000000000
+          Size.PlatformDefault = False
+          StyleLookup = 'stepperbuttonright'
+          TabOrder = 0
+          Text = 'ButtonPlus'
+          OnClick = ButtonPlusClick
+        end
+      end
+      object RectangleMinus: TRectangle
+        Align = Client
+        Margins.Top = 2.000000000000000000
+        Margins.Right = 2.000000000000000000
+        Margins.Bottom = 2.000000000000000000
+        Size.Width = 48.000000000000000000
+        Size.Height = 25.000000000000000000
+        Size.PlatformDefault = False
+        object ButtonMinus: TButton
+          Align = Client
+          Margins.Left = 2.000000000000000000
+          Margins.Top = 2.000000000000000000
+          Margins.Right = 2.000000000000000000
+          Margins.Bottom = 2.000000000000000000
+          Size.Width = 44.000000000000000000
+          Size.Height = 21.000000000000000000
+          Size.PlatformDefault = False
+          StyleLookup = 'stepperbuttonleft'
+          TabOrder = 0
+          Text = 'ButtonMinus'
+          OnClick = ButtonMinusClick
+        end
+      end
+    end
+  end
+end

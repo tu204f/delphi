@@ -17,7 +17,7 @@ uses
   Lb.Bybit.Encryption;
 
 const
-//{$DEFINE TEST}
+{$DEFINE TEST}
   BYBIT_HOST =
 {$IFDEF TEST}
   'https://api-testnet.bybit.com';
@@ -237,6 +237,7 @@ type
     FretCode: Integer;
     FretMsg: String;
     FretTime: Double;
+    FCurrentTime: String;
     FResultObject: TJSONObject;
     FExtInfoObject: TJSONObject;
   public
@@ -254,6 +255,8 @@ type
     property RetMsg: String read FretMsg;
     ///<summary>Current timestamp (ms)</summary>
     property RetTime: Double read FretTime;
+    ///<summary>Current timestamp (ms)</summary>
+    property CurrentTime: String read FCurrentTime;
   end;
 
   ///<summary>Структура запрашиваемого модуля</summary>
@@ -298,6 +301,8 @@ type
     property StatusCode: Integer read FStatusCode;
   end;
 
+function GetStrToFloat(const AValue: String): Double; inline;
+
 function GetStrToTypeCategory(ACategory: TTypeCategory): String;
 function GetStrToTypeSide(const ASide: TTypeSide): String;
 function GetStrToTypeOrder(const ATypeOrder: TTypeOrder): String;
@@ -338,6 +343,15 @@ implementation
 uses
   System.IniFiles,
   System.RTTI;
+
+function GetStrToFloat(const AValue: String): Double; inline;
+var
+  xFormatSettings: TFormatSettings;
+begin
+  xFormatSettings := FormatSettings;
+  xFormatSettings.DecimalSeparator := '.';
+  Result := StrToFloatDef(AValue,0,xFormatSettings);
+end;
 
 function GetStrToTypeCategory(ACategory: TTypeCategory): String;
 begin
@@ -524,16 +538,10 @@ begin
 end;
 
 function GetFloatToJson(const AJsonValue: TJSONValue): Double;
-var
-  xFormatSettings: TFormatSettings;
 begin
   Result := 0;
   if Assigned(AJsonValue) then
-  begin
-    xFormatSettings := FormatSettings;
-    xFormatSettings.DecimalSeparator := '.';
-    Result := StrToFloatDef(AJsonValue.Value,0,xFormatSettings);
-  end;
+    Result := GetStrToFloat(AJsonValue.Value);
 end;
 
 function GetBoolToJson(const AJsonValue: TJSONValue): Boolean;
@@ -883,7 +891,9 @@ begin
     FretMsg        := GetStrToJson(xJson.Values['retMsg']);
     FResultObject  := TJSONObject(xJson.Values['result']);
     FExtInfoObject := TJSONObject(xJson.Values['retExtInfo']);
-    FretTime       := GetFloatToJson(xJson.Values['time']);
+
+    FCurrentTime   := GetStrToJson(xJson.Values['time']);
+    FretTime       := GetStrToFloat(FCurrentTime);
   except
     raise EAbort.Create('Error Message: Парсинг Json – объекта');
   end;
