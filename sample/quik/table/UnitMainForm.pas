@@ -54,7 +54,7 @@ procedure TMainForm.TimerTimer(Sender: TObject);
   var
     xInd: Integer;
   begin
-    xInd := QuikManagerTable.IndexOfTable('s_rsi');
+    xInd := QuikManagerTable.IndexOfTable('security');
     if xInd >= 0 then
       QuikTable := QuikManagerTable.Tables[xInd];
   end;
@@ -66,6 +66,9 @@ procedure TMainForm.TimerTimer(Sender: TObject);
     iCount := QuikTable.ColCount;
     jCount := QuikTable.RowCount;
     if iCount > 0 then
+    begin
+      StrGrid.ColCount := iCount;
+      StrGrid.RowCount := jCount;
       for i := 0 to iCount - 1 do
         for j := 0 to jCount - 1 do
         begin
@@ -74,6 +77,7 @@ procedure TMainForm.TimerTimer(Sender: TObject);
           else
             StrGrid.Cells[i,j] := QuikTable.Cells[i,j].AsString
         end;
+    end;
   end;
 
 begin

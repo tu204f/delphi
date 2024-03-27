@@ -183,19 +183,8 @@ procedure SetParserBlockData(AData: TBytes; ASize: LongWord; ABlocks: TBlocks);
   end;
 
   function GetStrToArr(AValue: TBytes): String;
-  var
-    xR: String;
-    xChars: TArray<AnsiChar>;
   begin
-    SetLength(xChars,Length(AValue));
-    xChars :=  TArray<AnsiChar>(AValue);
-
-    for var xC  in xChars do
-      xR := xR + Char(xC);
-
-    Result := xR;
-
-    SetLength(xChars,0);
+    Result := TEncoding.ANSI.GetString(AValue);
   end;
 
   procedure SetPaserStr(ABlock: TBlock; AParserData: TParserData);
