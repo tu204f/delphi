@@ -61,13 +61,28 @@ type
     property IsActiveTrade: Boolean read FIsActiveTrade write FIsActiveTrade;
   end;
 
+  ///<summary>
+  /// Напровление объекта
+  ///</summary>
+  TTypeTrade = (
+    ttNull,
+    ttBuy,
+    ttSell
+  );
+
+  ///<summary>
+  /// Трейдер бот
+  ///</summary>
   TTradeBot = class(TObject)
   private
-    FTradeBuy: TConditionTrade;
-    FTradeSell: TConditionTrade;
+  protected
+    function GetIndexRSI(const ASide: TTypeSide): Double;
   public
     constructor Create; virtual;
     destructor Destroy; override;
+    ///<summary>
+    /// Обновление данных
+    ///</summary>
     procedure UpDate(const APriceBid, APriceAsk, ACurrentRSI: Double);
   end;
 
@@ -75,21 +90,8 @@ implementation
 
 uses
   Lb.Setting,
+  Lb.OperationTrade,
   Lb.Bybit.Trade;
-
-const
-  API_KEY    = '3bI64e0kw4KuihyRPu';
-  API_SECRET = 'jvwTC14ESSTjIpvXaRbDGW8xd1KoqD3H3cWY';
-
-function GetApiKey: String;
-begin
-  Result := TSetting.ReadString('config.sys.api_key',API_KEY);
-end;
-
-function GetApiSecret: String;
-begin
-  Result := TSetting.ReadString('config.sys.api_secret',API_SECRET);
-end;
 
 { TConditionTrade }
 
@@ -108,47 +110,8 @@ begin
 end;
 
 procedure TConditionTrade.SetOperationTrade;
-
-  function _GetOrderLinkId: String;
-  begin
-    // Уникальный нормер операции
-    Result := Random(65000).ToString;
-  end;
-
 begin
-  // Инструмент отслеживания
-  // Передача ключей программе
 
-  if FSymbol.IsEmpty then
-    raise Exception.Create('Error Message: Инструмент не определен Symbol');
-
-  var xOrderResponse := TOrderResponse.Create;
-  try
-    var xPlaceOrder := TParamOrder.Create;
-    try
-      xPlaceOrder.TypeProc    := TParamOrder.TTypeProc.Place;
-      {todo: сохранение данных}
-      xPlaceOrder.Category    := TTypeCategory.tcLinear;
-      xPlaceOrder.Symbol      := FSymbol;
-      xPlaceOrder.Side        := FSide;
-      xPlaceOrder.PositionIdx := 0;
-      xPlaceOrder.OrderType   := TTypeOrder.Limit;
-      xPlaceOrder.Qty         := FQuantity;
-      xPlaceOrder.Price       := FPrice;
-      xPlaceOrder.timeInForce := TTypeTimeInForce.GTC;
-      xPlaceOrder.OrderLinkId := _GetOrderLinkId;
-      SelectedOrder(
-         GetApiKey,
-         GetApiSecret,
-         xPlaceOrder,
-         xOrderResponse
-      );
-    finally
-      FreeAndNil(xPlaceOrder);
-    end;
-  finally
-    FreeAndNil(xOrderResponse);
-  end;
 end;
 
 procedure TConditionTrade.UpDate(const APrice, ACurrentRSI: Double);
@@ -175,24 +138,35 @@ end;
 
 constructor TTradeBot.Create;
 begin
-  FTradeBuy  := TConditionTrade.Create;
-  FTradeBuy.Side := TTypeSide.tsBuy;
 
-  FTradeSell := TConditionTrade.Create;
-  FTradeSell.Side := TTypeSide.tsSell;
 end;
 
 destructor TTradeBot.Destroy;
 begin
-  FreeAndNil(FTradeSell);
-  FreeAndNil(FTradeBuy);
+
   inherited;
+end;
+
+function TTradeBot.GetIndexRSI(const ASide: TTypeSide): Double;
+begin
+  // Рекомендуемые заначение
+  // Выводить значение результата RSI
+  case ASide of
+    tsBuy : Result := 20;
+    tsSell: Result := 80;
+  end;
 end;
 
 procedure TTradeBot.UpDate(const APriceBid, APriceAsk, ACurrentRSI: Double);
 begin
-  FTradeBuy.UpDate(APriceAsk,ACurrentRSI);
-  FTradeSell.UpDate(APriceBid,ACurrentRSI);
+  if ACurrentRSI < GetIndexRSI(TTypeSide.tsBuy) then
+  begin
+    // Покупать
+  end;
+  if ACurrentRSI > GetIndexRSI(TTypeSide.tsSell) then
+  begin
+    // Продать
+  end;
 end;
 
 end.

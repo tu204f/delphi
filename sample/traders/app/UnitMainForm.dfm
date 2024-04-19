@@ -50,6 +50,7 @@ object MainForm: TMainForm
     Anchors = [akLeft, akTop, akBottom]
     ItemHeight = 13
     TabOrder = 1
+    OnClick = ListBoxTikersClick
   end
   object Button1: TButton
     Left = 8
@@ -59,5 +60,13 @@ object MainForm: TMainForm
     Caption = #1057#1086#1073#1088#1072#1090#1100' '#1074#1089#1077' '#1089#1076#1077#1083#1082#1080
     TabOrder = 2
     OnClick = Button1Click
+  end
+  object ListBox1: TListBox
+    Left = 224
+    Top = 8
+    Width = 367
+    Height = 358
+    ItemHeight = 13
+    TabOrder = 3
   end
 end

@@ -104,7 +104,7 @@
         </DCCReference>
         <DCCReference Include="..\lib\Lb.NeuronNet.pas"/>
         <DCCReference Include="Lb.GA.pas"/>
-        <DCCReference Include="..\lib\Lb.NeuronNet.V2.pas"/>
+        <DCCReference Include="..\lib\Lb.NeuronNet.Neuron.pas"/>
         <DCCReference Include="..\lib\Lb.ActivationFunction.pas"/>
         <BuildConfiguration Include="Release">
             <Key>Cfg_2</Key>

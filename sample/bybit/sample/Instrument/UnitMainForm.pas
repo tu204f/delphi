@@ -105,6 +105,8 @@ end;
 procedure TMainForm.ButtonStartClick(Sender: TObject);
 begin
   {todo: передать параметры для запроса}
+  InstrumentsInfo.IsSaveResponse := True;
+  InstrumentsInfo.FileName := ExtractFilePath(ParamStr(0)) + 'instrument.json';
   InstrumentsInfo.Category := TTypeCategory.tcLinear;
   InstrumentsInfo.Selected;
 end;
@@ -115,15 +117,7 @@ begin
     InstrumentsInfo.Stop;
 end;
 
-procedure TMainForm.InstrumentsInfoOnEventEndLoading(Sender: TObject);
-var
-  i, iCount: Integer;
-  xLinearObjects: TLinearObjectList;
-  xLinearObject: TLinearObject;
-begin
-  xLinearObjects := TLinearObjectList.Create;
-  try
-    SetLinearObjects(InstrumentsInfo.ListJson, xLinearObjects);
+(*
     StrGrid.RowCount := 0;
     iCount := xLinearObjects.Count;
     if iCount > 0 then
@@ -164,7 +158,98 @@ begin
 
       end;
     end;
+*)
+
+procedure TMainForm.InstrumentsInfoOnEventEndLoading(Sender: TObject);
+
+  procedure _StrLinear(ASource: TStrings);
+  var
+    xS: String;
+  begin
+    xS := '';
+    xS := xS + 'Symbol' + ';';
+    xS := xS + 'ContractType' + ';';
+    xS := xS + 'Status' + ';';
+    xS := xS + 'BaseCoin' + ';';
+    xS := xS + 'QuoteCoin' + ';';
+    xS := xS + 'LaunchTime' + ';';
+    xS := xS + 'DeliveryTime' + ';';
+    xS := xS + 'DeliveryFeeRate' + ';';
+    xS := xS + 'PriceScale' + ';';
+    // --------------------------------------------------------------------
+    xS := xS + 'LeverageFilter.MinLeverage' + ';';
+    xS := xS + 'LeverageFilter.MaxLeverage' + ';';
+    xS := xS + 'LeverageFilter.LeverageStep' + ';';
+    // --------------------------------------------------------------------
+    xS := xS + 'PriceFilter.MinPrice' + ';';
+    xS := xS + 'PriceFilter.MaxPrice' + ';';
+    xS := xS + 'PriceFilter.TickSize' + ';';
+    // --------------------------------------------------------------------
+    xS := xS + 'LotSizeFilter.MaxOrderQty' + ';';
+    xS := xS + 'LotSizeFilter.MinOrderQty' + ';';
+    xS := xS + 'LotSizeFilter.QtyStep' + ';';
+    xS := xS + 'LotSizeFilter.PostOnlyMaxOrderQty' + ';';
+    // --------------------------------------------------------------------
+    xS := xS + 'UnifiedMarginTrade' + ';';
+    xS := xS + 'FundingInterval' + ';';
+    xS := xS + 'SettleCoin' + ';';
+    // --------------------------------------------------------------------
+    ASource.Add(xS);
+  end;
+
+var
+  xS: String;
+  xStr: TStrings;
+  i, iCount: Integer;
+  xLinearObjects: TLinearObjectList;
+  xLinearObject: TLinearObject;
+begin
+  xStr := TStringList.Create;
+  xLinearObjects := TLinearObjectList.Create;
+  try
+    xStr.Clear;
+    _StrLinear(xStr);
+    SetLinearObjects(InstrumentsInfo.ListJson, xLinearObjects);
+    iCount := xLinearObjects.Count;
+    if iCount > 0 then
+      for i := 0 to iCount - 1 do
+      begin
+        xLinearObject := xLinearObjects[i];
+        // --------------------------------------------------------------------
+        xS := '';
+        xS := xS + xLinearObject.Symbol + ';';
+        xS := xS + xLinearObject.ContractType + ';';
+        xS := xS + xLinearObject.Status + ';';
+        xS := xS + xLinearObject.BaseCoin + ';';
+        xS := xS + xLinearObject.QuoteCoin + ';';
+        xS := xS + xLinearObject.LaunchTime + ';';
+        xS := xS + xLinearObject.DeliveryTime + ';';
+        xS := xS + xLinearObject.DeliveryFeeRate + ';';
+        xS := xS + xLinearObject.PriceScale + ';';
+        // --------------------------------------------------------------------
+        xS := xS + xLinearObject.LeverageFilter.MinLeverage + ';';
+        xS := xS + xLinearObject.LeverageFilter.MaxLeverage + ';';
+        xS := xS + xLinearObject.LeverageFilter.LeverageStep + ';';
+        // --------------------------------------------------------------------
+        xS := xS + xLinearObject.PriceFilter.MinPrice + ';';
+        xS := xS + xLinearObject.PriceFilter.MaxPrice + ';';
+        xS := xS + xLinearObject.PriceFilter.TickSize + ';';
+        // --------------------------------------------------------------------
+        xS := xS + xLinearObject.LotSizeFilter.MaxOrderQty + ';';
+        xS := xS + xLinearObject.LotSizeFilter.MinOrderQty + ';';
+        xS := xS + xLinearObject.LotSizeFilter.QtyStep + ';';
+        xS := xS + xLinearObject.LotSizeFilter.PostOnlyMaxOrderQty + ';';
+        // --------------------------------------------------------------------
+        xS := xS + xLinearObject.UnifiedMarginTrade + ';';
+        xS := xS + xLinearObject.FundingInterval + ';';
+        xS := xS + xLinearObject.SettleCoin + ';';
+        // --------------------------------------------------------------------
+        xStr.Add(xS);
+      end;
+    xStr.SaveToFile(ExtractFilePath(ParamStr(0)) + 'instrument.csv');
   finally
+
+    FreeAndNil(xStr);
     FreeAndNil(xLinearObjects);
   end;
 end;

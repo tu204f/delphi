@@ -5,7 +5,7 @@ uses
   UnitMainFrom in 'UnitMainFrom.pas' {Form4},
   Lb.NeuronNet in '..\lib\Lb.NeuronNet.pas',
   Lb.GA in 'Lb.GA.pas',
-  Lb.NeuronNet.V2 in '..\lib\Lb.NeuronNet.V2.pas',
+  Lb.NeuronNet.Neuron in '..\lib\Lb.NeuronNet.Neuron.pas',
   Lb.ActivationFunction in '..\lib\Lb.ActivationFunction.pas';
 
 {$R *.res}

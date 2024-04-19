@@ -26,8 +26,7 @@ type
   TCell = class(TObject)
   private
     FValue: TValue;
-    function GetValue: TValue;
-    procedure SetValue(const Value: TValue);
+  private
     function GetAsDate: TDateTime;
     function GetAsDouble: Double;
     function GetAsInteger: Integer;
@@ -35,7 +34,8 @@ type
     function GetAsTime: TDateTime;
     function GetAsInt64: Int64;
   protected
-    property Value: TValue read GetValue write SetValue;
+    function IsNullValue: Boolean;
+    property Value: TValue read FValue write FValue;
   public
     procedure Clear;
     property AsString: String read GetAsString;
@@ -166,6 +166,11 @@ procedure SetStringToQuikTable(AQuikTable: TQuikTable; AStrings: TStrings);
 
 implementation
 
+{$IFDEF DEBUG}
+uses
+  Lb.Logger;
+{$ENDIF}
+
 procedure SetStringToQuikTable(AQuikTable: TQuikTable; AStrings: TStrings);
 var
   xS: String;
@@ -192,40 +197,53 @@ end;
 function TCell.GetAsDouble: Double;
 begin
   Result := 0;
-  case FValue.TypeValue of
-    TTypeData.tdtFloat: Result := FValue.AsDouble;
-    TTypeData.tdtString: Result := StrToIntDef(Self.AsString,0);
-    TTypeData.tdtInteger: Result := FValue.AsInteger;
+  if IsNullValue then
+  begin
+    case FValue.TypeValue of
+      TTypeData.tdtFloat: Result := FValue.AsDouble;
+      TTypeData.tdtString: Result := StrToIntDef(Self.AsString,0);
+      TTypeData.tdtInteger: Result := FValue.AsInteger;
+    end;
   end;
 end;
 
 function TCell.GetAsInt64: Int64;
 begin
   Result := 0;
-  case FValue.TypeValue of
-    TTypeData.tdtFloat: Result := Trunc(FValue.AsDouble);
-    TTypeData.tdtString: Result := StrToIntDef(Self.AsString,0);
-    TTypeData.tdtInteger: Result := FValue.AsInteger;
+  if IsNullValue then
+  begin
+    Result := 0;
+    case FValue.TypeValue of
+      TTypeData.tdtFloat: Result := Trunc(FValue.AsDouble);
+      TTypeData.tdtString: Result := StrToIntDef(Self.AsString,0);
+      TTypeData.tdtInteger: Result := FValue.AsInteger;
+    end;
   end;
 end;
 
 function TCell.GetAsInteger: Integer;
 begin    
   Result := 0;
-  case FValue.TypeValue of
-    TTypeData.tdtFloat: Result := Trunc(FValue.AsDouble);
-    TTypeData.tdtString: Result := StrToIntDef(FValue.AsString,0);
-    TTypeData.tdtInteger: Result := FValue.AsInteger;
+  if IsNullValue then
+  begin
+    case FValue.TypeValue of
+      TTypeData.tdtFloat: Result := Trunc(FValue.AsDouble);
+      TTypeData.tdtString: Result := StrToIntDef(FValue.AsString,0);
+      TTypeData.tdtInteger: Result := FValue.AsInteger;
+    end;
   end;
 end;
 
 function TCell.GetAsString: String;
 begin
   Result := '';
-  if (FValue.TypeValue = TTypeData.tdtFloat) or
-     (FValue.TypeValue = TTypeData.tdtString) or
-     (FValue.TypeValue = TTypeData.tdtInteger) then
-      Result := FValue.AsString;
+  if IsNullValue then
+  begin
+    if (FValue.TypeValue = TTypeData.tdtFloat) or
+       (FValue.TypeValue = TTypeData.tdtString) or
+       (FValue.TypeValue = TTypeData.tdtInteger) then
+        Result := FValue.AsString;
+  end;
 end;
 
 function TCell.GetAsTime: TDateTime;
@@ -238,9 +256,14 @@ begin
   Result := StrToTimeDef(xS,0);
 end;
 
+function TCell.IsNullValue: Boolean;
+begin
+  Result := Assigned(FValue);
+end;
+
 procedure TCell.Clear;
 begin
-  FillChar(FValue,SizeOf(FValue),0);
+  FValue := nil;
 end;
 
 function TCell.GetAsDate: TDateTime;
@@ -253,34 +276,19 @@ begin
   Result := StrToDateDef(xS,0);
 end;
 
-function TCell.GetValue: TValue;
-begin
-  Result := FValue;
-end;
-
-procedure TCell.SetValue(const Value: TValue);
-begin
-  FValue := Value;
-end;
-
 { TRow }
 
 procedure TRow.SetCol(const ACol: Integer; const AValue: TValue);
-var
-  xValue: TValue;
 begin
   if Self.Count >= ACol then
   begin
-    Self.Items[ACol - 1] := AValue;
+    Self.Items[ACol - 1].Copy(AValue);
   end
   else if Self.Count < ACol then
   begin
     while Self.Count <= ACol do
-    begin
-      xValue.Clear;
-      Self.Add(xValue);
-    end;
-    Self.Items[ACol - 1] := AValue;
+      Self.Add(TValue.Create);
+    Self.Items[ACol - 1].Copy(AValue);
   end;
 end;
 
@@ -355,6 +363,9 @@ var
   xValue: TValue;
   i, Count, xRow, xCol: Integer;
 begin
+  {$IFDEF LOG_QUIK_TABLE}
+  TLogger.LogTree(0,'TQuikTable.SetValueBlock');
+  {$ENDIF}
   if Assigned(ABlocks) then
   begin
     Count := ABlocks.Count;
@@ -365,6 +376,9 @@ begin
       for i := 0 to Count - 1 do
       begin
         xValue := ABlocks.Items[i];
+        {$IFDEF LOG_QUIK_TABLE};
+        TLogger.LogTreeText(3,Format('[%d,%d] = %s',[xRow,xCol,xValue.AsString]));
+        {$ENDIF}
         SetCells(xCol,xRow,xValue);
         Inc(xCol);
         if xCol > ACol2 then
@@ -436,20 +450,14 @@ end;
 function TQuikTable.GetValues(Col, Row: Integer): TValue;
 var
   xRow: TRow;
-  xValue: TValue;
 begin
-  xValue.TypeValue := TTypeData.tdtNull;
-  xValue.Clear;
+  Result := nil;
   if (Row >= 0) and (FRows.Count > Row) then
   begin
     xRow := FRows[Row];
     if Assigned(xRow) then
-    begin
-      xValue := xRow[Col];
-      Result := xValue;
-    end;
+      Result := xRow[Col];
   end;
-  Result := xValue;
 end;
 
 function TQuikTable.IndexOfName(const ANameField: String): Integer;

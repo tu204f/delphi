@@ -17,7 +17,7 @@ uses
   Lb.Bybit.Encryption;
 
 const
-{$DEFINE TEST}
+//{$DEFINE TEST}
   BYBIT_HOST =
 {$IFDEF TEST}
   'https://api-testnet.bybit.com';
@@ -190,6 +190,9 @@ type
     FResponse: TBytiyResponse;
     FEncryption: TEncryption;
     FTypeSelected: TTypeSelected;
+  private
+    FFileName: String;
+    FIsSaveResponse: Boolean;
   protected
     FOnEventMessage: TNotifyEvent;
     FOnEventException: TNotifyEvent;
@@ -229,6 +232,9 @@ type
     property OnEventException: TNotifyEvent write FOnEventException;
     property OnEventBeginLoading: TNotifyEvent write FOnEventBeginLoading;
     property OnEventEndLoading: TNotifyEvent write FOnEventEndLoading;
+  public
+    property FileName: String read FFileName write FFileName;
+    property IsSaveResponse: Boolean read FIsSaveResponse write FIsSaveResponse;
   end;
 
   ///<summary>Общие параметры отклика</summary>
@@ -662,6 +668,9 @@ begin
   FInterval := 0;
   FSource  := TStringList.Create;
   FEncryption := TEncryption.Create;
+
+  FFileName := '';
+  FIsSaveResponse := False;
 end;
 
 destructor TBybitHttpClient.Destroy;
@@ -679,6 +688,26 @@ begin
 end;
 
 procedure TBybitHttpClient.DoEventMessage(const AMessage: String);
+
+  procedure _SaveResponse(const AValue: String);
+  var
+    xStr: TStrings;
+  begin
+    if FFileName.IsEmpty then
+      Exit;
+
+    if FIsSaveResponse then
+    begin
+      xStr := TStringList.Create;
+      try
+        xStr.Text := AValue;
+        xStr.SaveToFile(FFileName);
+      finally
+        FreeAndNil(xStr);
+      end;
+    end;
+  end;
+
 begin
 
   if FInterval = 0 then
@@ -688,6 +717,8 @@ begin
     Exit;
 
   FValueMessage := AMessage;
+  _SaveResponse(AMessage);
+
   if not FValueMessage.IsEmpty then
   begin
     FResponse.SetParserValue(FValueMessage);
@@ -831,6 +862,7 @@ end;
 
 procedure TBybitHttpClient.Start(const AInterval: Integer);
 begin
+  FIsSaveResponse := False;
   if not FActive then
   begin
     FInterval := AInterval;

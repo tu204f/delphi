@@ -61,7 +61,7 @@ function QuikManagerTable: TQuikManagerTable;
 implementation
 
 uses
-{$IFDEF LOG_QUIK}
+{$IFDEF DEBUG}
   Lb.Logger,
 {$ENDIF}
   VCL.Forms;

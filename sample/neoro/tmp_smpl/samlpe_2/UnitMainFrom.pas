@@ -13,6 +13,7 @@ type
     Memo: TMemo;
     Button3: TButton;
     Button4: TButton;
+    Button5: TButton;
     procedure FormCreate(Sender: TObject);
     procedure Button1Click(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
@@ -47,7 +48,7 @@ var
 begin
   ANeuronNet.InputNeurons.Values[0] := A;
   ANeuronNet.InputNeurons.Values[1] := B;
-  ANeuronNet.InputNeurons.Values[2] := 1;
+  //ANeuronNet.InputNeurons.Values[2] := 1;
   ANeuronNet.Calculate;
   xV := ANeuronNet.OutputNeurons.Values[0];
   Form4.Log('A = ' + A.ToString + '; B = ' + B.ToString + '; Result = ' + xV.ToString);
@@ -59,7 +60,7 @@ var
 begin
   NeuronNet.InputNeurons.Values[0] := A;
   NeuronNet.InputNeurons.Values[1] := B;
-  NeuronNet.InputNeurons.Values[2] := 1;
+  //NeuronNet.InputNeurons.Values[2] := 1;
   NeuronNet.Calculate;
   xV := NeuronNet.OutputNeurons.Values[0];
   Form4.Log('A = ' + A.ToString + '; B = ' + B.ToString + '; Result = ' + xV.ToString);
@@ -70,7 +71,7 @@ begin
   // Обратная проходка
   NeuronNet.InputNeurons.Values[0] := A;
   NeuronNet.InputNeurons.Values[1] := B;
-  NeuronNet.InputNeurons.Values[2] := 1;
+  //NeuronNet.InputNeurons.Values[2] := 1;
   NeuronNet.Calculate;
   NeuronNet.OutputNeurons.Values[0];
 
@@ -87,7 +88,7 @@ procedure TForm4.FormCreate(Sender: TObject);
 begin
   NeuronNet := TNeuronNet.Create;
   NeuronNet.TypeFuction := TTypeFuction.tfSigma;
-  NeuronNet.CompileNetWork([3,3,1]);
+  NeuronNet.CompileNetWork([2,1]);
 end;
 
 procedure TForm4.Log(S: String);

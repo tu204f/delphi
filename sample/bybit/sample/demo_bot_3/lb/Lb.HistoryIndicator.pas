@@ -10,11 +10,44 @@ uses
   System.Variants,
   Lb.Bybit.SysUtils,
   Lb.Bybit.Kline,
+  Lb.Bybit.OrderBook,
   Lb.Indicator;
 
 type
-  ///<summary>Исторические данные, с индикатором</summary>
-  THistoryIndicator = class(TObject)
+  ///<summary>
+  /// Тип объекта
+  ///</summary>
+  TTypeObject = (
+    tobNullObject,
+    tobHistoryIndicator,
+    tobInstrumentPrice
+  );
+
+  ///<summary>
+  /// Ответ сервера
+  ///</summary>
+  TEventResponse = procedure(ASander: TObject; ATypeObject: TTypeObject) of object;
+
+  ///<summary>
+  /// Базовый объект стратегии
+  ///</summary>
+  TBasicObjectStrategy = class(TObject)
+  private
+    FTypeObject: TTypeObject;
+    FOnResponse: TEventResponse;
+  protected
+    procedure DoEventResponse;
+  public
+    constructor Create; virtual;
+    destructor Destroy; override;
+    function UpDate: Boolean; virtual;
+    property OnResponse: TEventResponse write FOnResponse;
+  end;
+
+  ///<summary>
+  /// Исторические данные, с индикатором RSI
+  ///</summary>
+  THistoryIndicator = class(TBasicObjectStrategy)
   private
     FRSI: TRSI;
     FCurrentCandel: TCandelObject;
@@ -31,9 +64,11 @@ type
     procedure SetAvgPeriod(const Value: Integer);
     function GetCandels: TCandelObjectList;
   public
-    constructor Create; virtual;
+    constructor Create; override;
     destructor Destroy; override;
-    function UpDate: Boolean;
+    ///<summary>Обновление данных</summary>
+    function UpDate: Boolean; override;
+  public
     property RSI: TRSI read FRSI;
     property Period: Integer read GetPeriod write SetPeriod;
     property AvgPeriod: Integer read GetAvgPeriod write SetAvgPeriod;
@@ -47,12 +82,77 @@ type
     property BybitKline: TBybitKline read FBybitKline;
   end;
 
+  ///<summary>
+  /// Цены инструмента, получаются из котировального стакана
+  ///</summary>
+  ///<remarks>
+  /// Получать значение работы, на основание OrderBook
+  ///</remarks>
+  TInstrumentPrice = class(TBasicObjectStrategy)
+  private
+    FSymbol: String;
+    FCategory: TTypeCategory;
+    FLimit: Integer;
+    FBybitOrderBook: TBybitOrderBook;
+    procedure OrderBookOnEventEndLoading(Sender: TObject);
+  private
+    FSpred: Double;
+    FBid: Double;
+    FBidQuantity: Double;
+    FAsk: Double;
+    FAskQuantity: Double;
+  public
+    constructor Create; override;
+    destructor Destroy; override;
+    ///<summary>Обновление данных</summary>
+    function UpDate: Boolean; override;
+  public
+    property Symbol: String read FSymbol write FSymbol;
+    property Category: TTypeCategory read FCategory write FCategory;
+    property Limit: Integer read FLimit write FLimit;
+  public
+    property Spred: Double read FSpred;
+    property Bid: Double read FBid;
+    property BidQuantity: Double read FBidQuantity;
+    property Ask: Double read FAsk;
+    property AskQuantity: Double read FAskQuantity;
+  end;
+
 implementation
+
+{ TBasicObjectStrategy }
+
+constructor TBasicObjectStrategy.Create;
+begin
+  FTypeObject := tobNullObject;
+end;
+
+destructor TBasicObjectStrategy.Destroy;
+begin
+  inherited;
+end;
+
+function TBasicObjectStrategy.UpDate: Boolean;
+begin
+  Result := True;
+  DoEventResponse;
+end;
+
+procedure TBasicObjectStrategy.DoEventResponse;
+begin
+  if Assigned(FOnResponse) then
+    FOnResponse(Self,FTypeObject);
+end;
+
 
 { THistoryIndicator }
 
 constructor THistoryIndicator.Create;
 begin
+  inherited Create;
+
+  FTypeObject := tobHistoryIndicator;
+
   FSymbol := '';
   FCategory := TTypeCategory.tcLinear;
   FInterval := TTypeInterval.ti_5;
@@ -71,7 +171,7 @@ destructor THistoryIndicator.Destroy;
 begin
   FreeAndNil(FBybitKline);
   FreeAndNil(FRSI);
-  inherited;
+  inherited Destroy;
 end;
 
 function THistoryIndicator.GetPeriod: Integer;
@@ -118,7 +218,7 @@ end;
 
 function THistoryIndicator.UpDate: Boolean;
 begin
-  Result := True;
+  Result := inherited UpDate;
   try
     FBybitKline.Category := FCategory;
     FBybitKline.Symbol   := FSymbol;
@@ -128,6 +228,51 @@ begin
   except
     Result := False;
   end;
+end;
+
+{ TInstrumentPrice }
+
+constructor TInstrumentPrice.Create;
+begin
+  inherited;
+  FTypeObject := tobInstrumentPrice;
+
+  FBybitOrderBook := TBybitOrderBook.Create;
+  FBybitOrderBook.OnEventEndLoading := OrderBookOnEventEndLoading;
+
+  FSpred := 0;
+  FBid := 0;
+  FBidQuantity := 0;
+  FAsk := 0;
+  FAskQuantity := 0;
+end;
+
+destructor TInstrumentPrice.Destroy;
+begin
+  FreeAndNil(FBybitOrderBook);
+  inherited;
+end;
+
+function TInstrumentPrice.UpDate: Boolean;
+begin
+  Result := inherited UpDate;
+  try
+    FBybitOrderBook.Category := FCategory;
+    FBybitOrderBook.Symbol := FSymbol;
+    FBybitOrderBook.Limit := FLimit;
+    FBybitOrderBook.Selected;
+  except
+    Result := False;
+  end;
+end;
+
+procedure TInstrumentPrice.OrderBookOnEventEndLoading(Sender: TObject);
+begin
+  FSpred       := FBybitOrderBook.OrderBook.Spred;
+  FBid         := FBybitOrderBook.OrderBook.Bid;
+  FBidQuantity := FBybitOrderBook.OrderBook.BidQuantity;
+  FAsk         := FBybitOrderBook.OrderBook.Ask;
+  FAskQuantity := FBybitOrderBook.OrderBook.AskQuantity;
 end;
 
 end.

@@ -137,7 +137,7 @@ object IndicatorFrame: TIndicatorFrame
         object EditClose: TEdit
           Touch.InteractiveGestures = [LongTap, DoubleTap]
           Align = Client
-          TabOrder = 5
+          TabOrder = 4
           Margins.Left = 2.000000000000000000
           Margins.Right = 2.000000000000000000
           Size.Width = 127.000000000000000000

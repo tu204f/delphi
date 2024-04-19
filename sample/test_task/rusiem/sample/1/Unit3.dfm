@@ -13,6 +13,13 @@ object Form3: TForm3
   OldCreateOrder = False
   PixelsPerInch = 96
   TextHeight = 13
+  object PageControl: TPageControl
+    Left = 40
+    Top = 72
+    Width = 289
+    Height = 193
+    TabOrder = 0
+  end
   object IdUDPServer1: TIdUDPServer
     Bindings = <>
     DefaultPort = 0

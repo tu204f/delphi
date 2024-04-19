@@ -13,6 +13,9 @@ object MainForm: TMainForm
   OldCreateOrder = False
   OnCreate = FormCreate
   OnShow = FormShow
+  DesignSize = (
+    695
+    354)
   PixelsPerInch = 96
   TextHeight = 13
   object StrGrid: TStringGrid
@@ -20,6 +23,7 @@ object MainForm: TMainForm
     Top = 8
     Width = 679
     Height = 338
+    Anchors = [akLeft, akTop, akRight, akBottom]
     DefaultRowHeight = 18
     FixedCols = 0
     Options = [goFixedVertLine, goFixedHorzLine, goVertLine, goHorzLine, goRangeSelect, goColSizing, goRowSelect, goFixedRowDefAlign]

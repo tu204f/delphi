@@ -12,6 +12,9 @@
         <Projects Include="table\table.dproj">
             <Dependencies/>
         </Projects>
+        <Projects Include="..\traders\app\trades.dproj">
+            <Dependencies/>
+        </Projects>
     </ItemGroup>
     <ProjectExtensions>
         <Borland.Personality>Default.Personality.12</Borland.Personality>
@@ -47,14 +50,23 @@
     <Target Name="table:Make">
         <MSBuild Projects="table\table.dproj" Targets="Make"/>
     </Target>
+    <Target Name="trades">
+        <MSBuild Projects="..\traders\app\trades.dproj"/>
+    </Target>
+    <Target Name="trades:Clean">
+        <MSBuild Projects="..\traders\app\trades.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="trades:Make">
+        <MSBuild Projects="..\traders\app\trades.dproj" Targets="Make"/>
+    </Target>
     <Target Name="Build">
-        <CallTarget Targets="script;rsi;table"/>
+        <CallTarget Targets="script;rsi;table;trades"/>
     </Target>
     <Target Name="Clean">
-        <CallTarget Targets="script:Clean;rsi:Clean;table:Clean"/>
+        <CallTarget Targets="script:Clean;rsi:Clean;table:Clean;trades:Clean"/>
     </Target>
     <Target Name="Make">
-        <CallTarget Targets="script:Make;rsi:Make;table:Make"/>
+        <CallTarget Targets="script:Make;rsi:Make;table:Make;trades:Make"/>
     </Target>
     <Import Project="$(BDS)\Bin\CodeGear.Group.Targets" Condition="Exists('$(BDS)\Bin\CodeGear.Group.Targets')"/>
 </Project>

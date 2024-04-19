@@ -199,6 +199,7 @@
         <DCCReference Include="..\..\lb\Lb.Bybit.SysUtils.pas"/>
         <DCCReference Include="..\..\lb\market\Lb.Bybit.Kline.pas"/>
         <DCCReference Include="..\..\lb\indicator\Lb.Indicator.pas"/>
+        <DCCReference Include="Lb.SaveHistory.pas"/>
         <BuildConfiguration Include="Release">
             <Key>Cfg_2</Key>
             <CfgParent>Base</CfgParent>

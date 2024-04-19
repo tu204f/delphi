@@ -26,38 +26,45 @@ uses
   Lb.Bybit.InstrumentsInfo,
   Lb.Bybit.OrderBook,
   UnitIndicatorFrame,
-  UnitBotFrame;
+  UnitBotFrame,
+  Lb.OperationTrade,
+  FMX.Objects,
+  FMX.TabControl,
+  UnitSecurityFrame;
 
 type
   TMainForm = class(TForm)
     LayoutMenu: TLayout;
-    LayoutMain: TLayout;
     Layout: TLayout;
     ButtonStart: TButton;
     Timer: TTimer;
-    LayoutLog: TLayout;
-    MemoLog: TMemo;
-    LayoutHistoryIndicator: TLayout;
     ComboEditSymbol: TComboEdit;
-    LayoutBot: TLayout;
     ButtonInstrumentsInfo: TButton;
-    procedure TimerTimer(Sender: TObject);
+    TabControl: TTabControl;
+    TabItemTrade: TTabItem;
+    TabItemSecurity: TTabItem;
     procedure ButtonStartClick(Sender: TObject);
-    procedure ComboBoxSymbolChange(Sender: TObject);
     procedure FormShow(Sender: TObject);
-    procedure ButtonInstrumentsInfoClick(Sender: TObject);
+    procedure TimerTimer(Sender: TObject);
   private
+    FValueRSI: Double;
+    FOperation: TTypeOperation;
+  private
+    ///<summary>
+    /// Количесво
+    ///</summary>
+    FQuantity: Double;
+    FEventCount: Integer;
+    HistoryIndicator: THistoryIndicator;
+    InstrumentPrice: TInstrumentPrice;
     procedure SetStart;
     procedure SetStop;
-  private {bybit - списо инструментов и придельные значение}
-    InstrumentsInfo: TBybitInstrumentsInfo;
-    procedure SelectedInstrumentsInfo;
-    procedure InstrumentsInfoOnEventEndLoading(Sender: TObject);
-  private {bybit - котировачный стакан}
-    BybitOrderBook: TBybitOrderBook;
+    procedure SetOperationTrade;
+    procedure EventResponse(ASander: TObject; ATypeObject: TTypeObject);
+    procedure SetLog(S: String);
+  protected
+    SecurityFrame: TSecurityFrame;
   public
-    HistoryIndicator: THistoryIndicator;
-    IndicatorFrame  : TIndicatorFrame;
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
   end;
@@ -70,11 +77,13 @@ implementation
 {$R *.fmx}
 
 uses
+  System.TypInfo,
+  System.RTTI,
   Lb.Params,
   Lb.Setting;
 
 var
-  InstrumentInfo: TStringParams = nil;
+  ParamInstrumentInfo: TStringParams = nil;
 
 { TForm5 }
 
@@ -82,58 +91,60 @@ constructor TMainForm.Create(AOwner: TComponent);
 begin
   inherited Create(AOwner);
 
+  FQuantity := 0.01;
+  FOperation := TTypeOperation.toNull;
+
   // Загужаем история
   HistoryIndicator := THistoryIndicator.Create;
+  HistoryIndicator.OnResponse := EventResponse;
+  // Котеровальный стакан
+  InstrumentPrice := TInstrumentPrice.Create;
+  InstrumentPrice.OnResponse := EventResponse;
 
-  // Фрем вывода
-  IndicatorFrame := TIndicatorFrame.Create(Self);
-  IndicatorFrame.Parent := LayoutHistoryIndicator;
-  IndicatorFrame.Align := TAlignLayout.Client;
+  // Параметры работы
+  ParamInstrumentInfo := TStringParams.Create;
 
-  // Информация инструменту
-  InstrumentsInfo := TBybitInstrumentsInfo.Create;
-  InstrumentsInfo.OnEventEndLoading := InstrumentsInfoOnEventEndLoading;
-
-  InstrumentInfo := TStringParams.Create;
+  // Таблица финасовых инструментов
+  SecurityFrame := TSecurityFrame.Create(nil);
+  SecurityFrame.Parent := TabItemSecurity;
+  SecurityFrame.Align := TAlignLayout.Client;
 end;
 
 
 destructor TMainForm.Destroy;
 begin
-  FreeAndNil(InstrumentInfo);
-  FreeAndNil(InstrumentsInfo);
-  FreeAndNil(IndicatorFrame);
+  FreeAndNil(SecurityFrame);
+  FreeAndNil(ParamInstrumentInfo);
+  FreeAndNil(InstrumentPrice);
   inherited;
 end;
 
 procedure TMainForm.FormShow(Sender: TObject);
 begin
-  InstrumentInfo.Load('instrument');
+  ParamInstrumentInfo.Load('instrument');
 
   // ОПеределяем параметры
   {todo: параметры перевести под настройку проекта}
-  HistoryIndicator.Symbol := InstrumentInfo.AsString['symbol'];
+  HistoryIndicator.Symbol := ParamInstrumentInfo.AsString['symbol'];
   HistoryIndicator.Category := TTypeCategory.tcLinear;
-  HistoryIndicator.Interval := TTypeInterval.ti_5;
+  HistoryIndicator.Interval := TTypeInterval.ti_1;
   HistoryIndicator.Period := 14;
 
-  ComboEditSymbol.Text := InstrumentInfo.AsString['symbol'];
+  InstrumentPrice.Symbol := ParamInstrumentInfo.AsString['symbol'];
+  InstrumentPrice.Category := TTypeCategory.tcLinear;
+  InstrumentPrice.Limit := 10;
 
-end;
-
-procedure TMainForm.SelectedInstrumentsInfo;
-begin
-  InstrumentsInfo.Category := TTypeCategory.tcLinear;
-  InstrumentsInfo.Status := TTypeStatus.tsTrading;
-  InstrumentsInfo.Selected;
+  ComboEditSymbol.Text := ParamInstrumentInfo.AsString['symbol'];
 end;
 
 procedure TMainForm.SetStart;
 begin
+  SetInitialization('','');
+
   ButtonStart.Text := 'Стоп';
   HistoryIndicator.UpDate;
-  if IndicatorFrame.SetUpDate(HistoryIndicator) then
-    Timer.Enabled := True;
+  InstrumentPrice.UpDate;
+  Timer.Enabled := True;
 end;
 
 procedure TMainForm.SetStop;
@@ -141,46 +152,6 @@ begin
   ButtonStart.Text := 'Старт';
   Timer.Enabled := False;
 end;
-
-procedure TMainForm.InstrumentsInfoOnEventEndLoading(Sender: TObject);
-var
-  xLinearObject: TLinearObject;
-begin
-  ComboEditSymbol.BeginUpdate;
-  try
-    ComboEditSymbol.Items.Clear;
-    for xLinearObject in InstrumentsInfo.LinearObjects do
-      ComboEditSymbol.Items.Add(xLinearObject.Symbol);
-  finally
-    ComboEditSymbol.EndUpdate;
-  end;
-end;
-
-procedure TMainForm.ComboBoxSymbolChange(Sender: TObject);
-var
-  xItem: String;
-  xIndex: Integer;
-  xLinearObject: TLinearObject;
-begin
-  xIndex := ComboEditSymbol.ItemIndex;
-  xItem := ComboEditSymbol.Text;
-  if (not xItem.IsEmpty) and (xIndex >= 0) then
-  begin
-    TSetting.WriteString('config.sys.Symbol',xItem);
-    xLinearObject := InstrumentsInfo.LinearObjects[xIndex];
-
-    InstrumentInfo.AsString['Symbol'] := xLinearObject.Symbol;
-    InstrumentInfo.AsString['PriceFilter.TickSize'] := xLinearObject.PriceFilter.TickSize;
-    InstrumentInfo.AsString['LotSizeFilter.QtyStep'] := xLinearObject.LotSizeFilter.QtyStep;
-    InstrumentInfo.Save('instrument');
-  end;
-end;
-
-procedure TMainForm.ButtonInstrumentsInfoClick(Sender: TObject);
-begin
-  Self.SelectedInstrumentsInfo;
-end;
-
 
 procedure TMainForm.ButtonStartClick(Sender: TObject);
 begin
@@ -192,10 +163,41 @@ end;
 
 procedure TMainForm.TimerTimer(Sender: TObject);
 begin
-  // Обновление индикатора
+  FValueRSI := 0;
+  FEventCount := 0;
+
   HistoryIndicator.UpDate;
-  if not IndicatorFrame.SetUpDate(HistoryIndicator) then
-    SetStop;
+  InstrumentPrice.UpDate;
+end;
+
+procedure TMainForm.SetLog(S: String);
+//var
+//  xS: String;
+begin
+//  xS := FormatDateTime('hh:mm:ss.zzz',Time) + ' || ' + S;
+//  SetLogText(xS);
+end;
+
+procedure TMainForm.EventResponse(ASander: TObject; ATypeObject: TTypeObject);
+begin
+  Inc(FEventCount);
+  case ATypeObject of
+    tobNullObject: begin
+      SetLog('MainForm.EventResponse.NullObject [' + FEventCount.ToString + ']');
+    end;
+    tobHistoryIndicator: begin
+      FValueRSI := HistoryIndicator.RSI.Current.AvgValue;
+    end;
+    tobInstrumentPrice: begin
+    end;
+  end;
+  if FEventCount = 2 then
+    SetOperationTrade;
+end;
+
+procedure TMainForm.SetOperationTrade;
+begin
+
 end;
 
 end.

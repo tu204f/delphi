@@ -54,7 +54,7 @@ procedure TMainForm.TimerTimer(Sender: TObject);
   var
     xInd: Integer;
   begin
-    xInd := QuikManagerTable.IndexOfTable('security');
+    xInd := QuikManagerTable.IndexOfTable('s_rsi');
     if xInd >= 0 then
       QuikTable := QuikManagerTable.Tables[xInd];
   end;

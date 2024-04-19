@@ -14,11 +14,13 @@ type
     Label2: TLabel;
     ListBoxTikers: TListBox;
     Button1: TButton;
+    ListBox1: TListBox;
     procedure FormCreate(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure FormShow(Sender: TObject);
     procedure ComboBoxTradesClick(Sender: TObject);
     procedure Button1Click(Sender: TObject);
+    procedure ListBoxTikersClick(Sender: TObject);
   private
   public
     InfoUsers: TInfoUsers;
@@ -43,6 +45,7 @@ begin
   InfoUsers.Load;
   InfoUsers.NameTraders(ComboBoxTrades.Items);
 end;
+
 
 procedure TMainForm.ComboBoxTradesClick(Sender: TObject);
 var
@@ -89,5 +92,19 @@ begin
   MarketTrades.SetNameTikers(ListBoxTikers.Items);
   _SaveSCV;
 end;
+
+procedure TMainForm.ListBoxTikersClick(Sender: TObject);
+var
+  xIndex: Integer;
+  xMarketTrade: TMarketTrade;
+begin
+  xIndex := ListBoxTikers.ItemIndex;
+  if xIndex > 0 then
+  begin
+    MarketTrades.Items[xIndex];
+
+  end;
+end;
+
 
 end.

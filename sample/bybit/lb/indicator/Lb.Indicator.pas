@@ -107,6 +107,63 @@ type
     property PeriodD: Integer read FPeriodD write FPeriodD;
   end;
 
+  ///<summary>Средние значение</summary>
+  TAvg = class(TCustomIndicator)
+  private
+    FStepPrice: Double;
+    FValues: TValueList;
+  public
+    constructor Create; override;
+    destructor Destroy; override;
+    property StepPrice: Double write FStepPrice;
+    procedure SetCandels(ACandelObjects: TCandelObjectList); override;
+    property Values: TValueList read FValues;
+  end;
+
+  ///<summary>Конверт — для канального индикатора</summary>
+  TEnvelopes = class(TAvg)
+  private
+    FUpA: TValueList;
+    FUpB: TValueList;
+    FUpC: TValueList;
+    FUpD: TValueList;
+    FUpE: TValueList;
+  private
+    FDownA: TValueList;
+    FDownB: TValueList;
+    FDownC: TValueList;
+    FDownD: TValueList;
+    FDownE: TValueList;
+  private
+    FCoffA: Double;
+    FCoffB: Double;
+    FCoffC: Double;
+    FCoffD: Double;
+    FCoffE: Double;
+  public
+    constructor Create; override;
+    destructor Destroy; override;
+    procedure SetCandels(ACandelObjects: TCandelObjectList); override;
+  public
+    property UpA: TValueList read FUpA;
+    property UpB: TValueList read FUpB;
+    property UpC: TValueList read FUpC;
+    property UpD: TValueList read FUpD;
+    property UpE: TValueList read FUpE;
+  public
+    property DownA: TValueList read FDownA;
+    property DownB: TValueList read FDownB;
+    property DownC: TValueList read FDownC;
+    property DownD: TValueList read FDownD;
+    property DownE: TValueList read FDownE;
+  public
+    property CoffA: Double write FCoffA;
+    property CoffB: Double write FCoffB;
+    property CoffC: Double write FCoffC;
+    property CoffD: Double write FCoffD;
+    property CoffE: Double write FCoffE;
+  end;
+
 implementation
 
 function GetRound(const AValue: Double): Double;
@@ -473,6 +530,134 @@ begin
   end;
   Avg(FPeriodK, FValues, FK);
   Avg(FPeriodD, FK, FD);
+end;
+
+{ TAvg }
+
+constructor TAvg.Create;
+begin
+  inherited;
+  FStepPrice := 0.01;
+  FValues := TValueList.Create;
+end;
+
+destructor TAvg.Destroy;
+begin
+  FreeAndNil(FValues);
+  inherited;
+end;
+
+procedure TAvg.SetCandels(ACandelObjects: TCandelObjectList);
+var
+  i, iCount: Integer;
+  xValues: TValueList;
+  xCandel: TCandelObject;
+begin
+  inherited;
+  xValues := TValueList.Create;
+  try
+    FValues.Clear;
+    iCount := ACandelObjects.Count;
+    if iCount > 0 then
+    begin
+      for i := 0 to iCount - 1 do
+      begin
+        xCandel := ACandelObjects.Items[i];
+        xValues.Add(xCandel.Close);
+        FValues.Add(0);
+      end;
+    end;
+    Avg(FPeriod,xValues,FValues);
+  finally
+    FreeAndNil(xValues);
+  end;
+end;
+
+{ TEnvelopes }
+
+constructor TEnvelopes.Create;
+begin
+  inherited;
+
+  FUpA := TValueList.Create;
+  FUpB := TValueList.Create;
+  FUpC := TValueList.Create;
+  FUpD := TValueList.Create;
+  FUpE := TValueList.Create;
+
+  FDownA := TValueList.Create;
+  FDownB := TValueList.Create;
+  FDownC := TValueList.Create;
+  FDownD := TValueList.Create;
+  FDownE := TValueList.Create;
+
+
+  FCoffA := 0.1;
+  FCoffB := 0.2;
+  FCoffC := 0.3;
+  FCoffD := 0.5;
+  FCoffE := 0.8;
+end;
+
+destructor TEnvelopes.Destroy;
+begin
+  FreeAndNil(FDownE);
+  FreeAndNil(FDownD);
+  FreeAndNil(FDownC);
+  FreeAndNil(FDownB);
+  FreeAndNil(FDownA);
+
+  FreeAndNil(FUpE);
+  FreeAndNil(FUpD);
+  FreeAndNil(FUpC);
+  FreeAndNil(FUpB);
+  FreeAndNil(FUpA);
+
+  inherited;
+end;
+
+procedure TEnvelopes.SetCandels(ACandelObjects: TCandelObjectList);
+
+  function _RoundPrice(const AValue: Double): Double;
+  begin
+    Result := Trunc(AValue/FStepPrice) * FStepPrice;
+  end;
+
+  procedure _SetLevelVlaue(const ACoff, AValue: Double; var AUp, ADown: Double);
+  var
+    xDelta: Double;
+  begin
+    xDelta := AValue * (ACoff/100);
+    AUp    := _RoundPrice(AValue - xDelta);
+    ADown  := _RoundPrice(AValue + xDelta);
+  end;
+
+var
+  xValUp, xValDown: Double;
+begin
+  inherited SetCandels(ACandelObjects);
+  for var xAvgValue in FValues do
+  begin
+    _SetLevelVlaue(FCoffA, xAvgValue, xValUp, xValDown);
+    FUpA.Add(xValUp);
+    FDownA.Add(xValDown);
+
+    _SetLevelVlaue(FCoffB, xAvgValue, xValUp, xValDown);
+    FUpB.Add(xValUp);
+    FDownB.Add(xValDown);
+
+    _SetLevelVlaue(FCoffC, xAvgValue, xValUp, xValDown);
+    FUpC.Add(xValUp);
+    FDownC.Add(xValDown);
+
+    _SetLevelVlaue(FCoffD, xAvgValue, xValUp, xValDown);
+    FUpD.Add(xValUp);
+    FDownD.Add(xValDown);
+
+    _SetLevelVlaue(FCoffE, xAvgValue, xValUp, xValDown);
+    FUpE.Add(xValUp);
+    FDownE.Add(xValDown);
+  end;
 end;
 
 end.

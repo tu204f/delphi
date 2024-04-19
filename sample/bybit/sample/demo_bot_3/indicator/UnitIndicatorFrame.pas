@@ -75,7 +75,7 @@ end;
 function TIndicatorFrame.SetUpDate(const AHistoryIndicator: THistoryIndicator): Boolean;
 var
   xValueRSI, xAvgValueRSI: Double;
-  i, iCount: Integer;
+  iCount: Integer;
   xCandel: TCandelObject;
 begin
   Result := True;

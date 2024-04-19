@@ -27,6 +27,9 @@
         <Projects Include="sample_6\block_6.dproj">
             <Dependencies/>
         </Projects>
+        <Projects Include="sample_10\nr_10.dproj">
+            <Dependencies/>
+        </Projects>
     </ItemGroup>
     <ProjectExtensions>
         <Borland.Personality>Default.Personality.12</Borland.Personality>
@@ -107,14 +110,23 @@
     <Target Name="block_6:Make">
         <MSBuild Projects="sample_6\block_6.dproj" Targets="Make"/>
     </Target>
+    <Target Name="nr_10">
+        <MSBuild Projects="sample_10\nr_10.dproj"/>
+    </Target>
+    <Target Name="nr_10:Clean">
+        <MSBuild Projects="sample_10\nr_10.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="nr_10:Make">
+        <MSBuild Projects="sample_10\nr_10.dproj" Targets="Make"/>
+    </Target>
     <Target Name="Build">
-        <CallTarget Targets="Project1;nr_1;nr_2;nr_3;nr_4;matrix;nr_5;block_6"/>
+        <CallTarget Targets="Project1;nr_1;nr_2;nr_3;nr_4;matrix;nr_5;block_6;nr_10"/>
     </Target>
     <Target Name="Clean">
-        <CallTarget Targets="Project1:Clean;nr_1:Clean;nr_2:Clean;nr_3:Clean;nr_4:Clean;matrix:Clean;nr_5:Clean;block_6:Clean"/>
+        <CallTarget Targets="Project1:Clean;nr_1:Clean;nr_2:Clean;nr_3:Clean;nr_4:Clean;matrix:Clean;nr_5:Clean;block_6:Clean;nr_10:Clean"/>
     </Target>
     <Target Name="Make">
-        <CallTarget Targets="Project1:Make;nr_1:Make;nr_2:Make;nr_3:Make;nr_4:Make;matrix:Make;nr_5:Make;block_6:Make"/>
+        <CallTarget Targets="Project1:Make;nr_1:Make;nr_2:Make;nr_3:Make;nr_4:Make;matrix:Make;nr_5:Make;block_6:Make;nr_10:Make"/>
     </Target>
     <Import Project="$(BDS)\Bin\CodeGear.Group.Targets" Condition="Exists('$(BDS)\Bin\CodeGear.Group.Targets')"/>
 </Project>

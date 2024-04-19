@@ -1,8 +1,5 @@
-{$IFDEF DEBUG}
+//{$IFDEF DEBUG}
 //  {$DEFINE LOG_QUIK}
-{$ENDIF}
+//  {$DEFINE LOG_QUIK_TABLE}
+//{$ENDIF}
 
-{$IFDEF LOG_QUIK}
-  // ¬ходной данные дл€ формирование таблицы
-  {$DEFINE LOG_QUIK_TABLE}
-{$ENDIF}

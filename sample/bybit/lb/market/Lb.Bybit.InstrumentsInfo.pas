@@ -71,7 +71,9 @@ type
     property LinearObjects: TLinearObjectList read FLinearObjects;
   end;
 
-  ///<summary>Linear/Inverse</summary>
+  ///<summary>
+  ///   Linear/Inverse
+  ///</summary>
   TLinearObject = class(TCustonObjectJson)
   public type
 

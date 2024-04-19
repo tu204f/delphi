@@ -48,30 +48,31 @@ type
   end;
   TValueBlockList = TList<TValueBlock>;
 
-  TValue = record
+  TValue = class(TObject)
     TypeValue: TTypeData;
-    Value: Variant;
   private
+    FValue: Variant;
     function GetAsBoolean: Boolean;
     function GetAsDouble: Double;
     function GetAsInteger: Integer;
     function GetAsString: String;
   public
-    constructor CreateErrorCode(AValue: Integer);
+    constructor Create; overload;
     constructor Create(ATypeData: TTypeData; AValue: Variant); overload;
     constructor Create(AValue: Double); overload;
     constructor Create(AValue: String); overload;
     constructor Create(AValue: Boolean); overload;
     constructor Create(AValue: Integer); overload;
     procedure Clear;
+    procedure Copy(const AValue: TValue);
+    property Data: Variant read FValue write FValue;
   public
     property AsDouble: Double read GetAsDouble;
     property AsString: String read GetAsString;
     property AsBoolean: Boolean read GetAsBoolean;
     property AsInteger: Integer read GetAsInteger;
   end;
-  TValueList = TList<TValue>;
-  TValues    = TArray<TValue>;
+  TValueList = TObjectList<TValue>;
 
   /// <summary>
   /// Парсер данных
@@ -90,26 +91,31 @@ type
 
   TBlocks = class(TObject)
   private
-    FValues: TValues;
-    FCount: Integer;
+    FValues: TValueList;
     FLenght: Integer;
     FColCount, FRowCount: Integer;
     function GetItems(Index: Integer): TValue;
+    function GetCount: Integer;
   protected
     procedure Add(const AValue: TValue); overload;
   public
     constructor Create;
     destructor Destroy; override;
     procedure Clear;
+
     procedure AddValue(const AValue: Double); overload;
     procedure AddValue(const AValue: String); overload;
     procedure AddValue(const AValue: Boolean); overload;
     procedure AddValue(const AValue: Integer); overload;
     procedure AddErrorCode(const AErrorCode: Integer);
     procedure AddValue; overload;
+
+    procedure CheckValues;
+
     procedure SetSize(const AColCount, ARowCount: Integer);
     property Items[Index: Integer]: TValue read GetItems;
-    property Count: Integer read FCount;
+
+    property Count: Integer read GetCount;
     property ColCount: Integer read FColCount;
     property RowCount: Integer read FRowCount;
   end;
@@ -118,8 +124,10 @@ procedure SetParserBlockData(AData: TBytes; ASize: LongWord; ABlocks: TBlocks);
 
 implementation
 
+{$IFDEF DEBUG}
 uses
   Lb.Logger;
+{$ENDIF}
 
 
 function GetTypeBlock(const ATypeBlock: TTypeData): String;
@@ -145,6 +153,7 @@ procedure SetParserBlockData(AData: TBytes; ASize: LongWord; ABlocks: TBlocks);
     xValue: Double;
     xSizeBlock: Word;
   begin
+
     xSizeBlock := ABlock.SizeBlock;
     while xSizeBlock > 0 do
     begin
@@ -268,6 +277,9 @@ begin
   finally
     FreeAndNil(xParserData);
   end;
+  {$IFDEF LOG_QUIK_TABLE}
+  TLogger.Log('Blocks.Count := ' + IntToStr(ABlocks.Count));
+  {$ENDIF}
 end;
 
 { TValue }
@@ -275,13 +287,24 @@ end;
 procedure TValue.Clear;
 begin
   TypeValue := TTypeData.tdtNull;
-  Value := Unassigned;
+  FValue := Unassigned;
+end;
+
+constructor TValue.Create;
+begin
+  Clear;
+end;
+
+procedure TValue.Copy(const AValue: TValue);
+begin
+  TypeValue := AValue.TypeValue;
+  Data := AValue.Data;
 end;
 
 constructor TValue.Create(ATypeData: TTypeData; AValue: Variant);
 begin
   TypeValue := ATypeData;
-  Value := AValue;
+  FValue := AValue;
 end;
 
 constructor TValue.Create(AValue: Double);
@@ -304,16 +327,10 @@ begin
   Create(TTypeData.tdtInteger,AValue);
 end;
 
-
-constructor TValue.CreateErrorCode(AValue: Integer);
-begin
-  Create(TTypeData.tdtError,AValue);
-end;
-
 function TValue.GetAsBoolean: Boolean;
 begin
   try
-    Result := Boolean(Value);  
+    Result := Boolean(FValue);
   except
     Result := False;
   end;
@@ -322,7 +339,7 @@ end;
 function TValue.GetAsDouble: Double;
 begin
   try
-    Result := Double(Value);
+    Result := Double(FValue);
   except
     Result := 0;
   end;
@@ -331,7 +348,7 @@ end;
 function TValue.GetAsInteger: Integer;
 begin
   try
-    Result := Integer(Value);
+    Result := Integer(FValue);
   except
     Result := 0;
   end;
@@ -339,7 +356,7 @@ end;
 
 function TValue.GetAsString: String;
 begin
-  Result := VarToStrDef(Value,'');
+  Result := VarToStrDef(FValue,'');
 end;
 
 { TParserData }
@@ -372,13 +389,18 @@ end;
 
 constructor TBlocks.Create;
 begin
-  Self.Clear;
+  FValues := TValueList.Create;
 end;
 
 destructor TBlocks.Destroy;
 begin
-  Self.Clear;  
+  FreeAndNil(FValues);
   inherited;
+end;
+
+function TBlocks.GetCount: Integer;
+begin
+  Result := FValues.Count;
 end;
 
 function TBlocks.GetItems(Index: Integer): TValue;
@@ -388,16 +410,15 @@ end;
 
 procedure TBlocks.Clear;
 begin
-  for var xV in FValues do
-    xV.Clear;
-  FCount := 0;
-  SetLength(FValues,FCount);
+  FValues.Clear;
 end;
 
 procedure TBlocks.Add(const AValue: TValue);
 begin
-  FValues[FCount] := AValue;
-  Inc(FCount);
+  {$IFDEF LOG_QUIK_TABLE}
+  TLogger.Log('   >>. value_quik: table ' + AValue.AsString);
+  {$ENDIF}
+  FValues.Add(AValue);
 end;
 
 procedure TBlocks.AddValue(const AValue: Double);
@@ -422,7 +443,7 @@ end;
 
 procedure TBlocks.AddErrorCode(const AErrorCode: Integer);
 begin
-  Self.Add(TValue.CreateErrorCode(AErrorCode));
+  Self.Add(TValue.Create(TTypeData.tdtError,AErrorCode));
 end;
 
 procedure TBlocks.AddValue;
@@ -434,11 +455,19 @@ procedure TBlocks.SetSize(const AColCount, ARowCount: Integer);
 begin
   FLenght := AColCount * ARowCount;
   if FLenght > 0 then
-    SetLength(FValues,FLenght);
+    FValues.Capacity := FLenght;
   FColCount := AColCount;
   FRowCount := ARowCount;
 end;
 
+procedure TBlocks.CheckValues;
+var
+  xCountValue: Integer;
+begin
+  xCountValue := FColCount * FRowCount;
+  if xCountValue <> FValues.Count then
+    raise Exception.Create('Error Message: Не верная структура данных, разное количество ячеек');
+end;
 
 end.
 

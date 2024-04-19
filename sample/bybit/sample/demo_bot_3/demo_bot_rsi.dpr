@@ -23,7 +23,12 @@ uses
   Lb.HistoryIndicator in 'lb\Lb.HistoryIndicator.pas',
   Lb.Bybit.InstrumentsInfo in '..\..\lb\market\Lb.Bybit.InstrumentsInfo.pas',
   Lb.TradeBot in 'lb\Lb.TradeBot.pas',
-  Lb.Params in 'lb\Lb.Params.pas';
+  Lb.Params in 'lb\Lb.Params.pas',
+  Lb.OperationTrade in 'lb\Lb.OperationTrade.pas',
+  Lb.Instruments in 'lb\Lb.Instruments.pas',
+  UnitSecurityFrame in 'lb\security\UnitSecurityFrame.pas' {SecurityFrame: TFrame},
+  Lb.TableSCV in 'lb\security\Lb.TableSCV.pas',
+  Lb.Agent in 'lb\agent\Lb.Agent.pas';
 
 {$R *.res}
 

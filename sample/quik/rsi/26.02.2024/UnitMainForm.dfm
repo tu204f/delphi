@@ -5,7 +5,7 @@ object MainForm: TMainForm
   BorderStyle = bsSingle
   Caption = 'MainForm'
   ClientHeight = 141
-  ClientWidth = 265
+  ClientWidth = 258
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -18,24 +18,25 @@ object MainForm: TMainForm
   OnCreate = FormCreate
   OnShow = FormShow
   DesignSize = (
-    265
+    258
     141)
   PixelsPerInch = 96
   TextHeight = 18
   object ButtonTolls: TButton
     Left = 1
     Top = 2
-    Width = 107
+    Width = 123
     Height = 25
-    Caption = #1048#1085#1089#1090#1088#1091#1084#1077#1085#1090
+    Caption = #1048#1085#1089#1090#1088#1091#1084#1077#1085#1090#1099
     TabOrder = 0
     OnClick = ButtonTollsClick
   end
   object EditSecurity: TEdit
-    Left = 114
-    Top = 1
-    Width = 89
+    Left = 162
+    Top = 2
+    Width = 56
     Height = 36
+    Alignment = taRightJustify
     Color = clBtnFace
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clWindowText
@@ -48,11 +49,10 @@ object MainForm: TMainForm
     Text = '000'
   end
   object ButtonQuikTable: TButton
-    Left = 209
+    Left = 322
     Top = 2
     Width = 47
     Height = 25
-    Anchors = [akTop]
     Caption = 'QUIK'
     TabOrder = 2
     OnClick = ButtonQuikTableClick
@@ -60,7 +60,7 @@ object MainForm: TMainForm
   object GridPanel: TGridPanel
     Left = 1
     Top = 28
-    Width = 262
+    Width = 255
     Height = 112
     Anchors = [akLeft, akTop, akRight, akBottom]
     ColumnCollection = <
@@ -92,20 +92,22 @@ object MainForm: TMainForm
         Value = 100.000000000000000000
       end>
     TabOrder = 3
+    ExplicitWidth = 262
     object PanelLeft: TPanel
       Left = 1
       Top = 1
-      Width = 130
+      Width = 126
       Height = 110
       Align = alClient
       BevelInner = bvLowered
       BevelKind = bkFlat
       BevelOuter = bvSpace
       TabOrder = 0
+      ExplicitWidth = 130
       inline UserOrderBuy: TUserOrderFrame
         Left = 2
         Top = 2
-        Width = 122
+        Width = 118
         Height = 102
         Align = alClient
         Font.Charset = DEFAULT_CHARSET
@@ -163,19 +165,21 @@ object MainForm: TMainForm
       end
     end
     object PanelRight: TPanel
-      Left = 131
+      Left = 127
       Top = 1
-      Width = 130
+      Width = 127
       Height = 110
       Align = alClient
       BevelInner = bvLowered
       BevelKind = bkFlat
       BevelOuter = bvSpace
       TabOrder = 1
+      ExplicitLeft = 131
+      ExplicitWidth = 130
       inline UserOrderSell: TUserOrderFrame
         Left = 2
         Top = 2
-        Width = 122
+        Width = 119
         Height = 102
         Align = alClient
         Font.Charset = DEFAULT_CHARSET
