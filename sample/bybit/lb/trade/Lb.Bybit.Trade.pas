@@ -25,7 +25,10 @@ type
     TParam = TPair<String,String>;
     TParamList = TList<TParam>;
   private
-    FTypeOrder: TTypeOrder;
+    FSymbol: String;
+    FSide: TTypeSide;
+    FQty: Double;
+    FPrice: Double;
     FParams: TParamList;
     procedure AddParam(const AKye, AValue: String);
     function GetValue: String;
@@ -67,13 +70,13 @@ type
     property TypeProc: TTypeProc read FTypeProc write FTypeProc;
     property OrderID: String write SetOrderID;
     property Category: TTypeCategory write SetCategory;
-    property Symbol: String write SetSymbol;
+    property Symbol: String read FSymbol write SetSymbol;
     property IsLeverage: Integer write SetIsLeverage;
-    property Side: TTypeSide write SetSide;
+    property Side: TTypeSide read FSide write SetSide;
     property OrderType: TTypeOrder write SetOrderType;
-    property Qty: Double write SetQty;
+    property Qty: Double read FQty write SetQty;
     property MarketUnit: String write SetMarketUnit;
-    property Price: Double write SetPrice;
+    property Price: Double read FPrice write SetPrice;
     property TriggerDirection: Integer write SetTriggerDirection;
     property OrderFilter: TTypeOrderFilter write SetOrderFilter;
     property TriggerPrice: Double write SetTriggerPrice;
@@ -134,6 +137,7 @@ uses
   System.Math,
   System.Hash,
   System.DateUtils;
+
 
 function GetDecimalSeparator(const AValue: String): String;
 var
@@ -265,6 +269,7 @@ end;
 
 procedure TParamOrder.SetSymbol(const Value: String);
 begin
+  FSymbol := Value;
   AddParam(
     'symbol',
     '"' + Value + '"'
@@ -281,6 +286,7 @@ end;
 
 procedure TParamOrder.SetSide(const Value: TTypeSide);
 begin
+  FSide := Value;
   AddParam(
     'side',
     '"' + GetStrToTypeSide(Value) + '"'
@@ -297,6 +303,7 @@ end;
 
 procedure TParamOrder.SetQty(const Value: Double);
 begin
+  FQty := Value;
   AddParam(
     'qty',
    '"' + GetDecimalSeparator(Value.ToString) + '"'
@@ -314,6 +321,7 @@ end;
 
 procedure TParamOrder.SetPrice(const Value: Double);
 begin
+  FPrice := Value;
   AddParam(
     'price',
    '"' + GetDecimalSeparator(Value.ToString) + '"'
@@ -600,5 +608,9 @@ begin
     FOrderLinkID := GetStrToJson(ResultObject.Values['orderLinkId']);
   end;
 end;
+
+initialization
+
+finalization
 
 end.

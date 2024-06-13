@@ -39,6 +39,12 @@
         <Projects Include="sample\demo_bot_3\demo_bot_rsi.dproj">
             <Dependencies/>
         </Projects>
+        <Projects Include="sample\learning\learning.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="sample\learning_2\learning_2.dproj">
+            <Dependencies/>
+        </Projects>
     </ItemGroup>
     <ProjectExtensions>
         <Borland.Personality>Default.Personality.12</Borland.Personality>
@@ -155,14 +161,32 @@
     <Target Name="demo_bot_rsi:Make">
         <MSBuild Projects="sample\demo_bot_3\demo_bot_rsi.dproj" Targets="Make"/>
     </Target>
+    <Target Name="learning">
+        <MSBuild Projects="sample\learning\learning.dproj"/>
+    </Target>
+    <Target Name="learning:Clean">
+        <MSBuild Projects="sample\learning\learning.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="learning:Make">
+        <MSBuild Projects="sample\learning\learning.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="learning_2">
+        <MSBuild Projects="sample\learning_2\learning_2.dproj"/>
+    </Target>
+    <Target Name="learning_2:Clean">
+        <MSBuild Projects="sample\learning_2\learning_2.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="learning_2:Make">
+        <MSBuild Projects="sample\learning_2\learning_2.dproj" Targets="Make"/>
+    </Target>
     <Target Name="Build">
-        <CallTarget Targets="bybit;instrument;recent_trade;candels;history;place;reconnect;orderbook;demo_bot;demo_bot_2;indicator;demo_bot_rsi"/>
+        <CallTarget Targets="bybit;instrument;recent_trade;candels;history;place;reconnect;orderbook;demo_bot;demo_bot_2;indicator;demo_bot_rsi;learning;learning_2"/>
     </Target>
     <Target Name="Clean">
-        <CallTarget Targets="bybit:Clean;instrument:Clean;recent_trade:Clean;candels:Clean;history:Clean;place:Clean;reconnect:Clean;orderbook:Clean;demo_bot:Clean;demo_bot_2:Clean;indicator:Clean;demo_bot_rsi:Clean"/>
+        <CallTarget Targets="bybit:Clean;instrument:Clean;recent_trade:Clean;candels:Clean;history:Clean;place:Clean;reconnect:Clean;orderbook:Clean;demo_bot:Clean;demo_bot_2:Clean;indicator:Clean;demo_bot_rsi:Clean;learning:Clean;learning_2:Clean"/>
     </Target>
     <Target Name="Make">
-        <CallTarget Targets="bybit:Make;instrument:Make;recent_trade:Make;candels:Make;history:Make;place:Make;reconnect:Make;orderbook:Make;demo_bot:Make;demo_bot_2:Make;indicator:Make;demo_bot_rsi:Make"/>
+        <CallTarget Targets="bybit:Make;instrument:Make;recent_trade:Make;candels:Make;history:Make;place:Make;reconnect:Make;orderbook:Make;demo_bot:Make;demo_bot_2:Make;indicator:Make;demo_bot_rsi:Make;learning:Make;learning_2:Make"/>
     </Target>
     <Import Project="$(BDS)\Bin\CodeGear.Group.Targets" Condition="Exists('$(BDS)\Bin\CodeGear.Group.Targets')"/>
 </Project>

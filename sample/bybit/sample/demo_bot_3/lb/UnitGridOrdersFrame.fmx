@@ -1,0 +1,36 @@
+object GridOrdersFrame: TGridOrdersFrame
+  Size.Width = 554.000000000000000000
+  Size.Height = 425.000000000000000000
+  Size.PlatformDefault = False
+  object StrGrid: TStringGrid
+    Align = Client
+    CanFocus = True
+    ClipChildren = True
+    Size.Width = 554.000000000000000000
+    Size.Height = 425.000000000000000000
+    Size.PlatformDefault = False
+    TabOrder = 0
+    Viewport.Width = 554.000000000000000000
+    Viewport.Height = 425.000000000000000000
+    object StringColumnSymbol: TStringColumn
+      Header = 'Symbol'
+    end
+    object StringColumnSide: TStringColumn
+      Header = 'Side'
+    end
+    object StringColumnQty: TStringColumn
+      Header = 'Qty'
+    end
+    object StringColumnPrice: TStringColumn
+      Header = 'Price'
+    end
+    object StringColumnValue: TStringColumn
+      Header = 'Value'
+    end
+  end
+  object Timer: TTimer
+    OnTimer = TimerTimer
+    Left = 216
+    Top = 136
+  end
+end

@@ -199,16 +199,6 @@
         <DCCReference Include="..\..\lb\Lb.Bybit.SysUtils.pas"/>
         <DCCReference Include="..\..\lb\market\Lb.Bybit.Kline.pas"/>
         <DCCReference Include="..\..\lb\indicator\Lb.Indicator.pas"/>
-        <DCCReference Include="UnitBotFrame.pas">
-            <Form>BotFrame</Form>
-            <FormType>fmx</FormType>
-            <DesignClass>TFrame</DesignClass>
-        </DCCReference>
-        <DCCReference Include="indicator\UnitIndicatorFrame.pas">
-            <Form>IndicatorFrame</Form>
-            <FormType>fmx</FormType>
-            <DesignClass>TFrame</DesignClass>
-        </DCCReference>
         <DCCReference Include="UnitOrderFrame.pas">
             <Form>OrderFrame</Form>
             <FormType>fmx</FormType>
@@ -217,11 +207,6 @@
         <DCCReference Include="..\..\lb\trade\Lb.Bybit.RealTime.pas"/>
         <DCCReference Include="..\..\lb\trade\Lb.Bybit.Trade.pas"/>
         <DCCReference Include="..\..\lb\market\Lb.Bybit.ServerTime.pas"/>
-        <DCCReference Include="UnitValueUpDataFrame.pas">
-            <Form>ValueUpDataFrame</Form>
-            <FormType>fmx</FormType>
-            <DesignClass>TFrame</DesignClass>
-        </DCCReference>
         <DCCReference Include="..\..\..\..\library\Lb.Logger.pas"/>
         <DCCReference Include="..\..\..\..\library\Lb.Setting.pas"/>
         <DCCReference Include="..\..\lb\market\Lb.Bybit.OrderBook.pas"/>
@@ -247,7 +232,23 @@
             <DesignClass>TFrame</DesignClass>
         </DCCReference>
         <DCCReference Include="lb\security\Lb.TableSCV.pas"/>
-        <DCCReference Include="lb\agent\Lb.Agent.pas"/>
+        <DCCReference Include="lb\agent\Lb.VirtualTrade.pas"/>
+        <DCCReference Include="lb\edit\UnitEditFrame.pas">
+            <Form>ValueFrame</Form>
+            <FormType>fmx</FormType>
+            <DesignClass>TFrame</DesignClass>
+        </DCCReference>
+        <DCCReference Include="lb\UnitGridOrdersFrame.pas">
+            <Form>GridOrdersFrame</Form>
+            <FormType>fmx</FormType>
+            <DesignClass>TFrame</DesignClass>
+        </DCCReference>
+        <DCCReference Include="lb\edit\UnitLineEditFrame.pas">
+            <Form>LineEditFrame</Form>
+            <FormType>fmx</FormType>
+            <DesignClass>TFrame</DesignClass>
+        </DCCReference>
+        <None Include="demo_bot.inc"/>
         <BuildConfiguration Include="Release">
             <Key>Cfg_2</Key>
             <CfgParent>Base</CfgParent>
@@ -288,6 +289,12 @@
                 </DeployFile>
                 <DeployFile LocalName="$(BDS)\Redist\iossimulator\libpcre.dylib" Class="DependencyModule">
                     <Platform Name="iOSSimulator">
+                        <Overwrite>true</Overwrite>
+                    </Platform>
+                </DeployFile>
+                <DeployFile LocalName="demo_bot.inc" Configuration="Debug" Class="ProjectFile">
+                    <Platform Name="Win32">
+                        <RemoteDir>.\</RemoteDir>
                         <Overwrite>true</Overwrite>
                     </Platform>
                 </DeployFile>

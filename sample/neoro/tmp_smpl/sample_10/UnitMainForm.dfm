@@ -2,8 +2,8 @@ object Form5: TForm5
   Left = 0
   Top = 0
   Caption = 'Form5'
-  ClientHeight = 448
-  ClientWidth = 329
+  ClientHeight = 478
+  ClientWidth = 545
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -36,7 +36,7 @@ object Form5: TForm5
   object Memo: TMemo
     Left = 8
     Top = 39
-    Width = 305
+    Width = 527
     Height = 394
     Lines.Strings = (
       'Memo')
@@ -51,5 +51,23 @@ object Form5: TForm5
     Caption = 'Button3'
     TabOrder = 3
     OnClick = Button3Click
+  end
+  object Button4: TButton
+    Left = 8
+    Top = 444
+    Width = 75
+    Height = 25
+    Caption = 'Button4'
+    TabOrder = 4
+    OnClick = Button4Click
+  end
+  object Button5: TButton
+    Left = 89
+    Top = 444
+    Width = 75
+    Height = 25
+    Caption = 'Button5'
+    TabOrder = 5
+    OnClick = Button5Click
   end
 end

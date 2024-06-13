@@ -20,9 +20,9 @@ const
 //{$DEFINE TEST}
   BYBIT_HOST =
 {$IFDEF TEST}
+  // Тесторый сервер: https://testnet.bybit.com
   'https://api-testnet.bybit.com';
 {$ELSE}
-  // Тесторый сервер: https://testnet.bybit.com
   'https://api.bybit.com';
 {$ENDIF}
 
@@ -240,10 +240,12 @@ type
   ///<summary>Общие параметры отклика</summary>
   TBytiyResponse = class(TObject)
   private
+    FValue: String;
     FretCode: Integer;
     FretMsg: String;
     FretTime: Double;
     FCurrentTime: String;
+    FResponseJson: TJSONObject;
     FResultObject: TJSONObject;
     FExtInfoObject: TJSONObject;
   public
@@ -263,6 +265,8 @@ type
     property RetTime: Double read FretTime;
     ///<summary>Current timestamp (ms)</summary>
     property CurrentTime: String read FCurrentTime;
+    ///<summary>Получение сообщение</summary>
+    property Value: String read FValue;
   end;
 
   ///<summary>Структура запрашиваемого модуля</summary>
@@ -696,15 +700,12 @@ procedure TBybitHttpClient.DoEventMessage(const AMessage: String);
     if FFileName.IsEmpty then
       Exit;
 
-    if FIsSaveResponse then
-    begin
-      xStr := TStringList.Create;
-      try
-        xStr.Text := AValue;
-        xStr.SaveToFile(FFileName);
-      finally
-        FreeAndNil(xStr);
-      end;
+    xStr := TStringList.Create;
+    try
+      xStr.Text := AValue;
+      xStr.SaveToFile(FFileName);
+    finally
+      FreeAndNil(xStr);
     end;
   end;
 
@@ -717,12 +718,12 @@ begin
     Exit;
 
   FValueMessage := AMessage;
-  _SaveResponse(AMessage);
+  if FIsSaveResponse then
+    _SaveResponse(AMessage);
 
   if not FValueMessage.IsEmpty then
   begin
     FResponse.SetParserValue(FValueMessage);
-
     if FResponse.RetCode = 0 then
     begin
       if Assigned(FOnEventMessage) then
@@ -896,13 +897,12 @@ end;
 
 destructor TBytiyResponse.Destroy;
 begin
-
+  if Assigned(FResponseJson) then
+    FreeAndNil(FResponseJson);
   inherited;
 end;
 
 procedure TBytiyResponse.SetParserValue(const AValue: String);
-var
-  xJson: TJSONObject;
 begin
 (*******************************************************************************
   Response Example
@@ -918,14 +918,21 @@ begin
   }
 *******************************************************************************)
   try
-    xJson          := TJSONObject.ParseJSONValue(AValue) as TJSONObject;
-    FretCode       := GetIntToJson(xJson.Values['retCode']);
-    FretMsg        := GetStrToJson(xJson.Values['retMsg']);
-    FResultObject  := TJSONObject(xJson.Values['result']);
-    FExtInfoObject := TJSONObject(xJson.Values['retExtInfo']);
+    FValue := AValue;
 
-    FCurrentTime   := GetStrToJson(xJson.Values['time']);
+    if Assigned(FResponseJson) then
+      FreeAndNil(FResponseJson);
+    FResponseJson  := TJSONObject.ParseJSONValue(AValue) as TJSONObject;
+
+    FretCode       := GetIntToJson(FResponseJson.Values['retCode']);
+    FretMsg        := GetStrToJson(FResponseJson.Values['retMsg']);
+
+    FResultObject  := TJSONObject(FResponseJson.Values['result']);
+    FExtInfoObject := TJSONObject(FResponseJson.Values['retExtInfo']);
+
+    FCurrentTime   := GetStrToJson(FResponseJson.Values['time']);
     FretTime       := GetStrToFloat(FCurrentTime);
+
   except
     raise EAbort.Create('Error Message: Парсинг Json – объекта');
   end;

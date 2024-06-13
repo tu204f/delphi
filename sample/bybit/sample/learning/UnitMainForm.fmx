@@ -1,0 +1,71 @@
+object MainForm: TMainForm
+  Left = 0
+  Top = 0
+  Caption = 'Form5'
+  ClientHeight = 480
+  ClientWidth = 784
+  FormFactor.Width = 320
+  FormFactor.Height = 480
+  FormFactor.Devices = [Desktop]
+  OnCreate = FormCreate
+  OnClose = FormClose
+  DesignerMasterStyle = 0
+  object ListBox1: TListBox
+    Position.X = 8.000000000000000000
+    Position.Y = 216.000000000000000000
+    Size.Width = 765.000000000000000000
+    Size.Height = 261.000000000000000000
+    Size.PlatformDefault = False
+    TabOrder = 0
+    DisableFocusEffect = True
+    DefaultItemStyles.ItemStyle = ''
+    DefaultItemStyles.GroupHeaderStyle = ''
+    DefaultItemStyles.GroupFooterStyle = ''
+    Viewport.Width = 761.000000000000000000
+    Viewport.Height = 257.000000000000000000
+  end
+  object Button1: TButton
+    Position.X = 8.000000000000000000
+    Position.Y = 8.000000000000000000
+    TabOrder = 1
+    Text = #1054#1073#1091#1095#1077#1085#1080#1077
+    OnClick = Button1Click
+  end
+  object Text1: TText
+    Position.X = 8.000000000000000000
+    Position.Y = 36.000000000000000000
+    Size.Width = 309.000000000000000000
+    Size.Height = 29.000000000000000000
+    Size.PlatformDefault = False
+    TextSettings.HorzAlign = Leading
+  end
+  object Text2: TText
+    Position.X = 8.000000000000000000
+    Position.Y = 68.000000000000000000
+    Size.Width = 309.000000000000000000
+    Size.Height = 29.000000000000000000
+    Size.PlatformDefault = False
+    TextSettings.HorzAlign = Leading
+  end
+  object ButtonTest: TButton
+    Position.X = 332.000000000000000000
+    Position.Y = 4.000000000000000000
+    TabOrder = 5
+    Text = #1058#1077#1089#1090
+    OnClick = ButtonTestClick
+  end
+  object ButtonDebug: TButton
+    Position.X = 416.000000000000000000
+    Position.Y = 4.000000000000000000
+    TabOrder = 6
+    Text = 'Debug'
+    OnClick = ButtonDebugClick
+  end
+  object Timer1: TTimer
+    Enabled = False
+    Interval = 10
+    OnTimer = Timer1Timer
+    Left = 108
+    Top = 128
+  end
+end

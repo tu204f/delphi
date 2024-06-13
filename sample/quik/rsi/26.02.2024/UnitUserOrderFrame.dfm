@@ -1,8 +1,8 @@
 object UserOrderFrame: TUserOrderFrame
   Left = 0
   Top = 0
-  Width = 122
-  Height = 105
+  Width = 171
+  Height = 285
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
   Font.Height = -23
@@ -11,47 +11,25 @@ object UserOrderFrame: TUserOrderFrame
   ParentFont = False
   TabOrder = 0
   object ledValueRSI: TLabeledEdit
-    Left = 52
-    Top = 37
+    Left = 28
+    Top = 43
     Width = 40
     Height = 36
-    EditLabel.Width = 51
+    EditLabel.Width = 144
     EditLabel.Height = 28
-    EditLabel.Caption = 'RSI:'
+    EditLabel.Caption = 'ledValueRSI'
     LabelPosition = lpLeft
     TabOrder = 0
     Text = '50'
   end
-  object UpDownStepPrice: TUpDown
-    Left = 92
-    Top = 216
-    Width = 26
-    Height = 36
-    Associate = ledStepPrice
-    Min = -100
-    Position = 5
-    TabOrder = 1
-  end
-  object ledStepPrice: TLabeledEdit
-    Left = 52
-    Top = 216
-    Width = 40
-    Height = 36
-    EditLabel.Width = 43
-    EditLabel.Height = 28
-    EditLabel.Caption = 'Slip'
-    LabelPosition = lpLeft
-    TabOrder = 2
-    Text = '5'
-  end
-  object UpDownValueRSI: TUpDown
-    Left = 92
-    Top = 37
-    Width = 26
+  object UpDownValue1: TUpDown
+    Left = 68
+    Top = 43
+    Width = 28
     Height = 36
     Associate = ledValueRSI
     Position = 50
-    TabOrder = 3
+    TabOrder = 1
   end
   object UpDownQuantity: TUpDown
     Left = 92
@@ -61,7 +39,7 @@ object UserOrderFrame: TUserOrderFrame
     Associate = ledQuantity
     Min = 1
     Position = 1
-    TabOrder = 4
+    TabOrder = 2
   end
   object ledQuantity: TLabeledEdit
     Left = 28
@@ -72,38 +50,331 @@ object UserOrderFrame: TUserOrderFrame
     EditLabel.Height = 28
     EditLabel.Caption = #1050':'
     LabelPosition = lpLeft
-    TabOrder = 5
+    TabOrder = 3
     Text = '1'
   end
-  object CheckBoxActiveOrder: TCheckBox
-    Left = 3
-    Top = 79
-    Width = 61
+  object CheckBoxActive1: TCheckBox
+    Left = 9
+    Top = 52
+    Width = 16
     Height = 17
-    Caption = #1040#1082#1090#1080#1074#1085#1086#1077' '#1089#1086#1089#1090#1086#1103#1085#1080#1077
-    TabOrder = 6
+    Caption = '1'
+    TabOrder = 4
   end
-  object CheckBoxAuto: TCheckBox
-    Left = 79
-    Top = 79
-    Width = 34
+  object CheckBoxAuto1: TCheckBox
+    Left = 153
+    Top = 52
+    Width = 20
     Height = 17
-    Caption = 'Auto'
-    TabOrder = 7
+    Checked = True
+    State = cbChecked
+    TabOrder = 5
   end
   object Button1: TButton
-    Left = 15
-    Top = 173
-    Width = 90
+    Left = 9
+    Top = 381
+    Width = 122
     Height = 37
     Caption = 'Button1'
-    TabOrder = 8
+    TabOrder = 6
     OnClick = Button1Click
   end
-  object Timer: TTimer
-    Enabled = False
-    OnTimer = TimerTimer
-    Left = 31
-    Top = 40
+  object UpDownValueActive1: TUpDown
+    Left = 131
+    Top = 43
+    Width = 16
+    Height = 36
+    Associate = Edit1
+    Min = -100
+    Position = 5
+    TabOrder = 7
+  end
+  object Edit1: TEdit
+    Left = 95
+    Top = 43
+    Width = 36
+    Height = 36
+    TabOrder = 8
+    Text = '5'
+  end
+  object LabeledEdit1: TLabeledEdit
+    Left = 28
+    Top = 80
+    Width = 40
+    Height = 36
+    EditLabel.Width = 151
+    EditLabel.Height = 28
+    EditLabel.Caption = 'LabeledEdit1'
+    LabelPosition = lpLeft
+    TabOrder = 9
+    Text = '50'
+  end
+  object UpDownValue2: TUpDown
+    Left = 68
+    Top = 80
+    Width = 28
+    Height = 36
+    Associate = LabeledEdit1
+    Position = 50
+    TabOrder = 10
+  end
+  object UpDownValueActive2: TUpDown
+    Left = 132
+    Top = 80
+    Width = 16
+    Height = 36
+    Associate = Edit2
+    Min = -100
+    Position = 5
+    TabOrder = 11
+  end
+  object Edit2: TEdit
+    Left = 96
+    Top = 80
+    Width = 36
+    Height = 36
+    TabOrder = 12
+    Text = '5'
+  end
+  object LabeledEdit2: TLabeledEdit
+    Left = 28
+    Top = 117
+    Width = 40
+    Height = 36
+    EditLabel.Width = 151
+    EditLabel.Height = 28
+    EditLabel.Caption = 'LabeledEdit2'
+    LabelPosition = lpLeft
+    TabOrder = 13
+    Text = '50'
+  end
+  object UpDownValue3: TUpDown
+    Left = 68
+    Top = 117
+    Width = 24
+    Height = 36
+    Associate = LabeledEdit2
+    Position = 50
+    TabOrder = 14
+  end
+  object UpDownValueActive3: TUpDown
+    Left = 131
+    Top = 117
+    Width = 16
+    Height = 36
+    Associate = Edit3
+    Min = -100
+    Position = 5
+    TabOrder = 15
+  end
+  object Edit3: TEdit
+    Left = 95
+    Top = 117
+    Width = 36
+    Height = 36
+    TabOrder = 16
+    Text = '5'
+  end
+  object CheckBoxAuto2: TCheckBox
+    Left = 153
+    Top = 90
+    Width = 20
+    Height = 17
+    Checked = True
+    State = cbChecked
+    TabOrder = 17
+  end
+  object CheckBoxActive2: TCheckBox
+    Left = 6
+    Top = 85
+    Width = 16
+    Height = 17
+    Caption = '1'
+    TabOrder = 18
+  end
+  object CheckBoxAuto3: TCheckBox
+    Left = 153
+    Top = 126
+    Width = 20
+    Height = 17
+    Checked = True
+    State = cbChecked
+    TabOrder = 19
+  end
+  object CheckBoxActive3: TCheckBox
+    Left = 6
+    Top = 126
+    Width = 16
+    Height = 17
+    Caption = '1'
+    TabOrder = 20
+  end
+  object LabeledEdit3: TLabeledEdit
+    Left = 28
+    Top = 163
+    Width = 40
+    Height = 36
+    EditLabel.Width = 151
+    EditLabel.Height = 28
+    EditLabel.Caption = 'LabeledEdit2'
+    LabelPosition = lpLeft
+    TabOrder = 21
+    Text = '50'
+  end
+  object UpDownValue4: TUpDown
+    Left = 68
+    Top = 163
+    Width = 26
+    Height = 36
+    Associate = LabeledEdit3
+    Position = 50
+    TabOrder = 22
+  end
+  object UpDownValueActive4: TUpDown
+    Left = 131
+    Top = 163
+    Width = 16
+    Height = 36
+    Associate = Edit4
+    Min = -100
+    Position = 6
+    TabOrder = 23
+  end
+  object Edit4: TEdit
+    Left = 95
+    Top = 163
+    Width = 36
+    Height = 36
+    TabOrder = 24
+    Text = '6'
+  end
+  object CheckBoxAuto4: TCheckBox
+    Left = 153
+    Top = 172
+    Width = 20
+    Height = 18
+    Checked = True
+    State = cbChecked
+    TabOrder = 25
+  end
+  object CheckBoxActive4: TCheckBox
+    Left = 6
+    Top = 172
+    Width = 16
+    Height = 18
+    Caption = '1'
+    TabOrder = 26
+  end
+  object LabeledEdit4: TLabeledEdit
+    Left = 28
+    Top = 203
+    Width = 40
+    Height = 36
+    EditLabel.Width = 151
+    EditLabel.Height = 28
+    EditLabel.Caption = 'LabeledEdit2'
+    LabelPosition = lpLeft
+    TabOrder = 27
+    Text = '50'
+  end
+  object UpDownValue5: TUpDown
+    Left = 68
+    Top = 203
+    Width = 26
+    Height = 36
+    Associate = LabeledEdit4
+    Position = 50
+    TabOrder = 28
+  end
+  object UpDownValueActive5: TUpDown
+    Left = 131
+    Top = 203
+    Width = 16
+    Height = 36
+    Associate = Edit5
+    Min = -100
+    Position = 5
+    TabOrder = 29
+  end
+  object Edit5: TEdit
+    Left = 95
+    Top = 203
+    Width = 36
+    Height = 36
+    TabOrder = 30
+    Text = '5'
+  end
+  object CheckBoxAuto5: TCheckBox
+    Left = 153
+    Top = 212
+    Width = 20
+    Height = 18
+    Checked = True
+    State = cbChecked
+    TabOrder = 31
+  end
+  object CheckBoxActive5: TCheckBox
+    Left = 6
+    Top = 212
+    Width = 16
+    Height = 18
+    Caption = '1'
+    TabOrder = 32
+  end
+  object LabeledEdit5: TLabeledEdit
+    Left = 28
+    Top = 243
+    Width = 40
+    Height = 36
+    EditLabel.Width = 151
+    EditLabel.Height = 28
+    EditLabel.Caption = 'LabeledEdit2'
+    LabelPosition = lpLeft
+    TabOrder = 33
+    Text = '50'
+  end
+  object UpDownValue6: TUpDown
+    Left = 68
+    Top = 243
+    Width = 26
+    Height = 36
+    Associate = LabeledEdit5
+    Position = 50
+    TabOrder = 34
+  end
+  object UpDownValueActive6: TUpDown
+    Left = 131
+    Top = 243
+    Width = 16
+    Height = 36
+    Associate = Edit6
+    Min = -100
+    Position = 5
+    TabOrder = 35
+  end
+  object Edit6: TEdit
+    Left = 95
+    Top = 243
+    Width = 36
+    Height = 36
+    TabOrder = 36
+    Text = '5'
+  end
+  object CheckBoxAuto6: TCheckBox
+    Left = 153
+    Top = 252
+    Width = 20
+    Height = 18
+    Checked = True
+    State = cbChecked
+    TabOrder = 37
+  end
+  object CheckBoxActive6: TCheckBox
+    Left = 6
+    Top = 252
+    Width = 16
+    Height = 18
+    Caption = '1'
+    TabOrder = 38
   end
 end

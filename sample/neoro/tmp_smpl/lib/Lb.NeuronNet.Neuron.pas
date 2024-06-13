@@ -30,9 +30,12 @@ type
   ///</summary>
   TLink = class(TObject)
   private
+    FLinkID: Integer;
     FNeuron: TNeuron;
     FParent: TNeuron;
     FWeight: Double;
+  protected
+    property LinkID: Integer read FLinkID;
   public
     constructor Create(const AParent, ANeuron: TNeuron); virtual;
     destructor Destroy; override;
@@ -83,6 +86,8 @@ type
     FID: Integer;
     FNeurons: TNeuronList;
     FNeuronNet: TNeuronNet;
+  protected
+    property NeuronNet: TNeuronNet read FNeuronNet;
   public
     constructor Create(ANeuronNet: TNeuronNet; ANeuronCount: Integer; AOutput: Boolean = True); virtual;
     destructor Destroy; override;
@@ -92,6 +97,7 @@ type
   end;
   TLayerList = TObjectList<TLayer>;
 
+  {todo: Сохранение структуры нейроной сети}
   ///<summary>
   /// Нейронная сеть
   ///</summary>
@@ -99,7 +105,7 @@ type
   private
     FLayers: TLayerList;
   protected
-    procedure CreateLayerLink(const AInput, ALayer: TLayer);
+    procedure CreateLayerLink(const AInput, ALayer: TLayer; AIsInput: Boolean = False);
   public
     constructor Create; virtual;
     destructor Destroy; override;
@@ -126,6 +132,15 @@ type
   end;
 
 implementation
+
+var
+  LocalLinkID: Integer = 0;
+
+function GetLinkID: Integer;
+begin
+  Inc(LocalLinkID);
+  Result := LocalLinkID;
+end;
 
 (******************************************************************************)
 (* Тестовая функция активации - линейная                                      *)
@@ -294,6 +309,7 @@ constructor TLink.Create(const AParent, ANeuron: TNeuron);
   end;
 
 begin
+  FLinkID := GetLinkID;
   FNeuron := ANeuron;
   FParent := AParent;
   FWeight := _RandonValueWeight;
@@ -397,12 +413,13 @@ begin
   inherited;
 end;
 
+
 procedure TNeuronNet.Clear;
 begin
   FLayers.Clear;
 end;
 
-procedure TNeuronNet.CreateLayerLink(const AInput, ALayer: TLayer);
+procedure TNeuronNet.CreateLayerLink(const AInput, ALayer: TLayer; AIsInput: Boolean);
 var
   i, iCount: Integer;
   j, jCount: Integer;
@@ -413,8 +430,13 @@ begin
   iCount := ALayer.Neurons.Count;
   if iCount > 0 then
   begin
-    if iCount > 1 then
-      iCount := iCount - 1;
+
+    if not AIsInput then
+    begin
+      if iCount > 1 then
+        iCount := iCount - 1;
+    end;
+
     for i := 0 to iCount - 1 do
     begin
       xNeuron := ALayer.Neurons[i];
@@ -446,7 +468,7 @@ begin
   xLayer := TLayer.Create(Self,ANeuronCount);
   Result := xLayer;
   if FLayers.Count > 0 then
-    CreateLayerLink(FLayers[FLayers.Count - 1],xLayer);
+    CreateLayerLink(FLayers[FLayers.Count - 1],xLayer,False);
   FLayers.Add(xLayer);
 end;
 
@@ -456,20 +478,23 @@ var
 begin
   xLayer := TLayer.Create(Self,ANeuronCount,False);
   if FLayers.Count > 0 then
-    CreateLayerLink(FLayers[FLayers.Count - 1],xLayer);
+    CreateLayerLink(FLayers[FLayers.Count - 1],xLayer,True);
   FLayers.Add(xLayer);
 end;
-
 
 procedure TNeuronNet.Calculate(const AOutputValues: TDoubleList);
 var
   xLayer: TLayer;
+  xValue: Double;
   xNeuron: TNeuron;
 begin
   AOutputValues.Clear;
   xLayer := FLayers.Items[FLayers.Count - 1];
   for xNeuron in xLayer.Neurons do
-    AOutputValues.Add(xNeuron.Value);
+  begin
+    xValue := xNeuron.Value;
+    AOutputValues.Add(xValue);
+  end;
 end;
 
 procedure TNeuronNet.CalculateError(const AStandardValues, AResultValues: TDoubleList);
@@ -522,6 +547,7 @@ end;
 
 procedure TNeuronNet.Calc(AInPut, AOutPut: TDoubleList);
 var
+  xValue: Double;
   xLayer: TLayer;
   i, iCount: Integer;
 begin
@@ -533,7 +559,10 @@ begin
   begin
     iCount := AInPut.Count;
     for i := 0 to iCount - 1 do
-      xLayer.Neurons[i].Value := AInPut[i];
+    begin
+      xValue := AInPut[i];
+      xLayer.Neurons[i].Value := xValue;
+    end;
     Calculate(AOutPut);
   end
   else
@@ -549,5 +578,7 @@ begin
   CalculateError(AStandard,AOutPut);
   CalculateLearn(AStepValue);
 end;
+
+
 
 end.

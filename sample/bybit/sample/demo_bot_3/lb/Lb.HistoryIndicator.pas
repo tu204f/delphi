@@ -49,7 +49,9 @@ type
   ///</summary>
   THistoryIndicator = class(TBasicObjectStrategy)
   private
-    FRSI: TRSI;
+    FLongRSI: TRSI;
+    FMediumRSI: TRSI;
+    FShortSRI: TRSI;
     FCurrentCandel: TCandelObject;
     FBybitKline: TBybitKline;
     procedure BybitKlineOnEventEndLoading(Sender: TObject);
@@ -58,10 +60,6 @@ type
     FCategory: TTypeCategory;
     FInterval: TTypeInterval;
     FLimit: Integer;
-    function GetPeriod: Integer;
-    function GetAvgPeriod: Integer;
-    procedure SetPeriod(const Value: Integer);
-    procedure SetAvgPeriod(const Value: Integer);
     function GetCandels: TCandelObjectList;
   public
     constructor Create; override;
@@ -69,9 +67,9 @@ type
     ///<summary>Обновление данных</summary>
     function UpDate: Boolean; override;
   public
-    property RSI: TRSI read FRSI;
-    property Period: Integer read GetPeriod write SetPeriod;
-    property AvgPeriod: Integer read GetAvgPeriod write SetAvgPeriod;
+    property LongRSI: TRSI read FLongRSI;
+    property MediumRSI: TRSI read FMediumRSI;
+    property ShortSRI: TRSI read FShortSRI;
     property Candels: TCandelObjectList read GetCandels;
     property CurrentCandel: TCandelObject read FCurrentCandel write FCurrentCandel;
   public
@@ -148,6 +146,17 @@ end;
 { THistoryIndicator }
 
 constructor THistoryIndicator.Create;
+
+  function _GetRSI(const APeriod, AvgPeriod: Integer): TRSI;
+  var
+    xRSI: TRSI;
+  begin
+    xRSI := TRSI.Create;
+    xRSI.Period := APeriod;
+    xRSI.AvgPeriod := AvgPeriod;
+    Result := xRSI;
+  end;
+
 begin
   inherited Create;
 
@@ -159,9 +168,10 @@ begin
 
   FCurrentCandel := nil;
 
-  FRSI := TRSI.Create;
-  FRSI.Period := 14;
-  FRSI.AvgPeriod := 3;
+  FLimit := 150;
+  FLongRSI := _GetRSI(28,6);
+  FMediumRSI := _GetRSI(14,3);
+  FShortSRI := _GetRSI(7,3);
 
   FBybitKline := TBybitKline.Create;
   FBybitKline.OnEventEndLoading := BybitKlineOnEventEndLoading;
@@ -170,36 +180,17 @@ end;
 destructor THistoryIndicator.Destroy;
 begin
   FreeAndNil(FBybitKline);
-  FreeAndNil(FRSI);
+
+  FreeAndNil(FLongRSI);
+  FreeAndNil(FMediumRSI);
+  FreeAndNil(FShortSRI);
+
   inherited Destroy;
-end;
-
-function THistoryIndicator.GetPeriod: Integer;
-begin
-  Result := FRSI.Period;
-end;
-
-procedure THistoryIndicator.SetPeriod(const Value: Integer);
-begin
-  FLimit := Value * 10;
-  if FLimit < 150 then
-    FLimit := 150;
-  FRSI.Period := Value;
-end;
-
-function THistoryIndicator.GetAvgPeriod: Integer;
-begin
-  Result := FRSI.AvgPeriod;
 end;
 
 function THistoryIndicator.GetCandels: TCandelObjectList;
 begin
   Result := FBybitKline.CandelObjects;
-end;
-
-procedure THistoryIndicator.SetAvgPeriod(const Value: Integer);
-begin
-  FRSI.AvgPeriod := Value;
 end;
 
 procedure THistoryIndicator.BybitKlineOnEventEndLoading(Sender: TObject);
@@ -209,7 +200,9 @@ begin
   iCount := FBybitKline.CandelObjects.Count;
   if iCount > 0 then
   begin
-    FRSI.SetCandels(FBybitKline.CandelObjects);
+    FLongRSI.SetCandels(FBybitKline.CandelObjects);
+    FMediumRSI.SetCandels(FBybitKline.CandelObjects);
+    FShortSRI.SetCandels(FBybitKline.CandelObjects);
     FCurrentCandel := FBybitKline.CandelObjects[0];
   end
   else

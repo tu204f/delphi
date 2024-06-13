@@ -2,8 +2,8 @@ object MainForm: TMainForm
   Left = 0
   Top = 0
   Caption = 'Form5'
-  ClientHeight = 166
-  ClientWidth = 642
+  ClientHeight = 814
+  ClientWidth = 750
   FormFactor.Width = 320
   FormFactor.Height = 480
   FormFactor.Devices = [Desktop]

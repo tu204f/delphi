@@ -26,17 +26,11 @@ type
     Timer: TTimer;
     procedure TimerTimer(Sender: TObject);
     procedure ButtonSSClick(Sender: TObject);
-    procedure StrGridDrawColumnCell(Sender: TObject; const Canvas: TCanvas;
-      const Column: TColumn; const Bounds: TRectF; const Row: Integer;
-      const Value: TValue; const State: TGridDrawStates);
   private
     procedure BybitKlineOnEventEndLoading(Sender: TObject);
   public
     RSI: TRSI;
-    ADR: TADR;
-    RVI: TRVI;
-    Envelopes: TEnvelopes;
-    Stochastic: TStochastic;
+    Momentum: TMomentum;
     BybitKline: TBybitKline;
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
@@ -75,23 +69,7 @@ constructor TMainForm.Create(AOwner: TComponent);
     _SetAddCol(AGrid,'Vol');
     _SetAddCol(AGrid,'RSI',125);
     _SetAddCol(AGrid,'Avg.RSI',125);
-    _SetAddCol(AGrid,'ADR',125);
-    _SetAddCol(AGrid,'K%',125);
-    _SetAddCol(AGrid,'D%',125);
-    _SetAddCol(AGrid,'stoc.K%');
-    _SetAddCol(AGrid,'stoc.D%');
-
-    _SetAddCol(AGrid,'DownE');
-    _SetAddCol(AGrid,'DownD');
-    _SetAddCol(AGrid,'DownC');
-    _SetAddCol(AGrid,'DownB');
-    _SetAddCol(AGrid,'DownA');
-    _SetAddCol(AGrid,'Avg');
-    _SetAddCol(AGrid,'UpA');
-    _SetAddCol(AGrid,'UpB');
-    _SetAddCol(AGrid,'UpC');
-    _SetAddCol(AGrid,'UpD');
-    _SetAddCol(AGrid,'UpE');
+    _SetAddCol(AGrid,'Momentum',125);
   end;
 
 begin
@@ -101,19 +79,14 @@ begin
   _SetHeaders(StrGrid);
 
   RSI := TRSI.Create;
-  ADR := TADR.Create;
-  RVI := TRVI.Create;
-  Stochastic := TStochastic.Create;
-  Envelopes := TEnvelopes.Create;
+  Momentum := TMomentum.Create;
 end;
 
 destructor TMainForm.Destroy;
 begin
-  FreeAndNil(Envelopes);
-  FreeAndNil(Stochastic);
-  FreeAndNil(RVI);
+
+  FreeAndNil(Momentum);
   FreeAndNil(RSI);
-  FreeAndNil(ADR);
   FreeAndNil(BybitKline);
   inherited;
 end;
@@ -125,7 +98,7 @@ begin
   BybitKline.Symbol := 'ETHUSDT';
   BybitKline.Interval := TTypeInterval.ti_5;
   BybitKline.Limit := 1000;
-  BybitKline.Selected;
+  BybitKline.Start(1000);
 end;
 
 procedure TMainForm.ButtonSSClick(Sender: TObject);
@@ -150,10 +123,15 @@ end;
 
 procedure TMainForm.BybitKlineOnEventEndLoading(Sender: TObject);
 var
+  xSource: TStrings;
+var
   xS: String;
+  xFileName: String;
   xCandel: TCandelObject;
   i, iCount: Integer;
 begin
+  xSource := TStringList.Create;
+
   iCount := BybitKline.CandelObjects.Count;
   if iCount > 0 then
   begin
@@ -161,24 +139,14 @@ begin
     RSI.AvgPeriod := 3;
     RSI.SetCandels(BybitKline.CandelObjects);
 
-    ADR.Period := 15;
-    ADR.SetCandels(BybitKline.CandelObjects);
+    Momentum.Period := 14;
+    Momentum.SetCandels(BybitKline.CandelObjects);
 
-    RVI.Period := 25;
-    RVI.PeriodSignal := 5;
-    RVI.SetCandels(BybitKline.CandelObjects);
-
-    Stochastic.SetCandels(BybitKline.CandelObjects);
-
-
-    Envelopes.Period := 20;
-    Envelopes.SetCandels(BybitKline.CandelObjects);
-
-    xS := '';
     StrGrid.RowCount := iCount;
     for i := 0 to iCount - 1 do
     begin
       xCandel := BybitKline.CandelObjects[i];
+
       StrGrid.Cells[0,i]  := (i + 1).ToString;
       StrGrid.Cells[1,i]  := DateTimeToStr(xCandel.DateTime);
       StrGrid.Cells[2,i]  := xCandel.openPrice;
@@ -188,138 +156,32 @@ begin
       StrGrid.Cells[6,i]  := xCandel.volume;
       StrGrid.Cells[7,i]  := RSI.Values[i].ToString;
       StrGrid.Cells[8,i]  := RSI.AvgValues[i].ToString;
-      StrGrid.Cells[9,i]  := ADR.Values[i].ToString;
-      StrGrid.Cells[10,i] := RVI.K[i].ToString;
-      StrGrid.Cells[11,i] := RVI.D[i].ToString;
-      StrGrid.Cells[12,i] := Stochastic.K[i].ToString;
-      StrGrid.Cells[13,i] := Stochastic.D[i].ToString;
-
-      StrGrid.Cells[14,i] := Envelopes.UpE[i].ToString;
-      StrGrid.Cells[15,i] := Envelopes.UpD[i].ToString;
-      StrGrid.Cells[16,i] := Envelopes.UpC[i].ToString;
-      StrGrid.Cells[17,i] := Envelopes.UpB[i].ToString;
-      StrGrid.Cells[18,i] := Envelopes.UpA[i].ToString;
-      StrGrid.Cells[19,i] := Envelopes.Values[i].ToString;
-      StrGrid.Cells[20,i] := Envelopes.DownA[i].ToString;
-      StrGrid.Cells[21,i] := Envelopes.DownB[i].ToString;
-      StrGrid.Cells[22,i] := Envelopes.DownC[i].ToString;
-      StrGrid.Cells[23,i] := Envelopes.DownD[i].ToString;
-      StrGrid.Cells[24,i] := Envelopes.DownE[i].ToString;
-
+      StrGrid.Cells[9,i]  := Momentum.Values[i].ToString;
 
       xS := '';
       xS := xS + (i + 1).ToString + ';';
-      xS := xS + xCandel.startTime + ';';
       xS := xS + DateTimeToStr(xCandel.DateTime) + ';';
+      xS := xS + xCandel.Open.ToString + ';';
+      xS := xS + xCandel.High.ToString + ';';
+      xS := xS + xCandel.Low.ToString + ';';
+      xS := xS + xCandel.Close.ToString + ';';
+      xS := xS + xCandel.Vol.ToString + ';';
+      xS := xS + RSI.Values[i].ToString + ';';
+      xS := xS + RSI.AvgValues[i].ToString + ';';
+      xS := xS + Momentum.Values[i].ToString + ';';
 
-
-      xS := xS + xCandel.openPrice  + ';';
-      xS := xS + xCandel.highPrice  + ';';
-      xS := xS + xCandel.lowPrice  + ';';
-      xS := xS + xCandel.closePrice  + ';';
-      xS := xS + xCandel.volume  + ';';
-      xS := xS + RSI.Values[i].ToString  + ';';
-      xS := xS + RSI.AvgValues[i].ToString  + ';';
-      xS := xS + ADR.Values[i].ToString  + ';';
-      xS := xS + RVI.K[i].ToString  + ';';
-      xS := xS + RVI.D[i].ToString  + ';';
-      xS := xS + Stochastic.K[i].ToString  + ';';
-      xS := xS + Stochastic.D[i].ToString  + ';';
+      xSource.Add(xS);
     end;
+
+    xFileName := ExtractFilePath(ParamStr(0)) + 'candel.csv';
+    xSource.SaveToFile(xFileName);
 
     Timer.Enabled := False;
   end
   else
     StrGrid.RowCount := 0;
-end;
 
-procedure TMainForm.StrGridDrawColumnCell(Sender: TObject;
-  const Canvas: TCanvas; const Column: TColumn; const Bounds: TRectF;
-  const Row: Integer; const Value: TValue; const State: TGridDrawStates);
-//var
-//  xValue, xValueK, xValueD: Double;
-//  xRowColor: TBrush;
-begin
-//  {$region 'Свернуть объекта'}
-//
-//  if StrGrid.Columns[8] = Column then
-//    if (Row >= 0) and (Row < RSI.AvgValues.Count) then
-//    begin
-//      xRowColor := TBrush.Create(TBrushKind.Solid,TAlphaColors.Alpha);
-//      try
-//        xValue := RSI.AvgValues[Row];
-//        if xValue > 50 then
-//          xRowColor.Color := TAlphaColors.Green
-//        else
-//          xRowColor.Color := TAlphaColors.Red;
-//        Canvas.FillRect(Bounds, 0, 0, [], 1, xRowColor);
-//        Column.DefaultDrawCell(Canvas, Bounds, Row, Value, State);
-//      finally
-//        FreeAndNil(xRowColor);
-//      end;
-//    end;
-//
-//  if (StrGrid.Columns[10] = Column) or (StrGrid.Columns[11] = Column) then
-//    if (Row >= 0) and (Row < RVI.K.Count) then
-//    begin
-//      xRowColor := TBrush.Create(TBrushKind.Solid,TAlphaColors.Alpha);
-//      try
-//        xValueK := RVI.K[Row];
-//        xValueD := RVI.D[Row];
-//
-//        if xValueK > xValueD then
-//          xRowColor.Color := TAlphaColors.Green
-//        else
-//          xRowColor.Color := TAlphaColors.Red;
-//        Canvas.FillRect(Bounds, 0, 0, [], 1, xRowColor);
-//        Column.DefaultDrawCell(Canvas, Bounds, Row, Value, State);
-//      finally
-//        FreeAndNil(xRowColor);
-//      end;
-//    end;
-//
-//  if (StrGrid.Columns[12] = Column) or (StrGrid.Columns[13] = Column) then
-//    if (Row >= 0) and (Row < Stochastic.K.Count) then
-//    begin
-//      xRowColor := TBrush.Create(TBrushKind.Solid,TAlphaColors.Alpha);
-//      try
-//        xValueK := Stochastic.K[Row];
-//
-//        if xValueK < 30 then
-//          xRowColor.Color := TAlphaColors.Green
-//        else if xValueK > 70 then
-//          xRowColor.Color := TAlphaColors.Red
-//        else
-//          xRowColor.Color := TAlphaColors.White;
-//
-//        Canvas.FillRect(Bounds, 0, 0, [], 1, xRowColor);
-//        Column.DefaultDrawCell(Canvas, Bounds, Row, Value, State);
-//      finally
-//        FreeAndNil(xRowColor);
-//      end;
-//    end;
-//
-//  if (StrGrid.Columns[13] = Column) then
-//    if (Row >= 0) and (Row < Stochastic.K.Count) then
-//    begin
-//      xRowColor := TBrush.Create(TBrushKind.Solid,TAlphaColors.Alpha);
-//      try
-//        xValueD := Stochastic.D[Row];
-//        if xValueD < 30 then
-//          xRowColor.Color := TAlphaColors.Green
-//        else if xValueD > 70 then
-//          xRowColor.Color := TAlphaColors.Red
-//        else
-//          xRowColor.Color := TAlphaColors.White;
-//
-//        Canvas.FillRect(Bounds, 0, 0, [], 1, xRowColor);
-//        Column.DefaultDrawCell(Canvas, Bounds, Row, Value, State);
-//      finally
-//        FreeAndNil(xRowColor);
-//      end;
-//    end;
-//  {$endregion}
+  FreeAndNil(xSource);
 end;
-
 
 end.

@@ -23,36 +23,69 @@ uses
   BTMemoryModule,
   QuikTrans2Order,
   QuikTrans2QuikAPI,
-  QuikTransOrder;
+  QuikTransOrder,
+
+  Lb.Trade.RSI;
+
+const
+  STEP_PRICE = 5;
 
 type
   TUserOrderFrame = class(TFrame)
     ledValueRSI: TLabeledEdit;
-    UpDownStepPrice: TUpDown;
-    ledStepPrice: TLabeledEdit;
-    UpDownValueRSI: TUpDown;
+    UpDownValue1: TUpDown;
     UpDownQuantity: TUpDown;
     ledQuantity: TLabeledEdit;
-    CheckBoxActiveOrder: TCheckBox;
-    CheckBoxAuto: TCheckBox;
-    Timer: TTimer;
+    CheckBoxActive1: TCheckBox;
+    CheckBoxAuto1: TCheckBox;
     Button1: TButton;
-    procedure TimerTimer(Sender: TObject);
+    UpDownValueActive1: TUpDown;
+    Edit1: TEdit;
+    LabeledEdit1: TLabeledEdit;
+    UpDownValue2: TUpDown;
+    UpDownValueActive2: TUpDown;
+    Edit2: TEdit;
+    LabeledEdit2: TLabeledEdit;
+    UpDownValue3: TUpDown;
+    UpDownValueActive3: TUpDown;
+    Edit3: TEdit;
+    CheckBoxAuto2: TCheckBox;
+    CheckBoxActive2: TCheckBox;
+    CheckBoxAuto3: TCheckBox;
+    CheckBoxActive3: TCheckBox;
+    LabeledEdit3: TLabeledEdit;
+    UpDownValue4: TUpDown;
+    UpDownValueActive4: TUpDown;
+    Edit4: TEdit;
+    CheckBoxAuto4: TCheckBox;
+    CheckBoxActive4: TCheckBox;
+    LabeledEdit4: TLabeledEdit;
+    UpDownValue5: TUpDown;
+    UpDownValueActive5: TUpDown;
+    Edit5: TEdit;
+    CheckBoxAuto5: TCheckBox;
+    CheckBoxActive5: TCheckBox;
+    LabeledEdit5: TLabeledEdit;
+    UpDownValue6: TUpDown;
+    UpDownValueActive6: TUpDown;
+    Edit6: TEdit;
+    CheckBoxAuto6: TCheckBox;
+    CheckBoxActive6: TCheckBox;
     procedure Button1Click(Sender: TObject);
   private
     FBuySell: Char;
     SyncOrder: TCustomSyncOrder;
     procedure SetBuySell(const Value: Char);
     procedure SetOperationTrade;
-  private
-    StarTime: Integer;
-    procedure SetStartTimer;
   public
     Security : TQuikTable;
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
     procedure SetValueRSI(const AValue: Double);
     property BuySell: Char write SetBuySell;
+  public
+    procedure SetSave;
+    procedure SetLoad;
   end;
 
 implementation
@@ -76,6 +109,14 @@ constructor TUserOrderFrame.Create(AOwner: TComponent);
 begin
   inherited;
   SyncOrder := TCustomSyncOrder.Create;
+
+  ledValueRSI.EditLabel.Caption := '';
+  LabeledEdit1.EditLabel.Caption := '';
+  LabeledEdit2.EditLabel.Caption := '';
+  LabeledEdit3.EditLabel.Caption := '';
+  LabeledEdit4.EditLabel.Caption := '';
+  LabeledEdit5.EditLabel.Caption := '';
+
 end;
 
 destructor TUserOrderFrame.Destroy;
@@ -90,21 +131,94 @@ procedure TUserOrderFrame.SetBuySell(const Value: Char);
   begin
     ledQuantity.EditLabel.Font.Color := AColor;
     ledValueRSI.EditLabel.Font.Color := AColor;
-    ledStepPrice.EditLabel.Font.Color := AColor;
+  end;
+
+  procedure _UpDownValue(
+    UpDownValue: TUpDown;
+    UpDownValueActive: TUpDown;
+    AValue, AValueActive: Integer
+  );
+  begin
+    UpDownValue.Position := AValue;
+    UpDownValueActive.Position := AValueActive;
   end;
 
 begin
   FBuySell := Value;
   case Value of
     'B': begin
-      UpDownValueRSI.Position := 20;
+
+      _UpDownValue(UpDownValue1,UpDownValueActive1,25,35);
+      _UpDownValue(UpDownValue2,UpDownValueActive2,15,25);
+      _UpDownValue(UpDownValue3,UpDownValueActive3,10,20);
+      _UpDownValue(UpDownValue4,UpDownValueActive4,10,20);
+      _UpDownValue(UpDownValue5,UpDownValueActive5,15,25);
+      _UpDownValue(UpDownValue6,UpDownValueActive6,10,20);
+
       _SetLed(clGreen);
     end;
     'S': begin
-      UpDownValueRSI.Position := 80;
+
+      _UpDownValue(UpDownValue1,UpDownValueActive1,75,25);
+      _UpDownValue(UpDownValue2,UpDownValueActive2,65,15);
+      _UpDownValue(UpDownValue3,UpDownValueActive3,55,10);
+      _UpDownValue(UpDownValue4,UpDownValueActive4,55,10);
+      _UpDownValue(UpDownValue5,UpDownValueActive5,55,10);
+      _UpDownValue(UpDownValue6,UpDownValueActive6,55,10);
+
       _SetLed(clRed);
     end;
   end;
+end;
+
+procedure TUserOrderFrame.SetSave;
+
+  procedure _SettingValue(
+    AIndex: Integer;
+    UpDownValue: TUpDown;
+    UpDownValueActive: TUpDown;
+    CheckBoxAuto: TCheckBox;
+    CheckBoxActive: TCheckBox
+  );
+  begin
+    TSetting.WriteInteger('config.' + FBuySell + '_' + AIndex.ToString + '.Value',UpDownValue.Position);
+    TSetting.WriteInteger('config.' + FBuySell + '_' + AIndex.ToString + '.ValueActive',UpDownValueActive.Position);
+    TSetting.WriteBool('config.' + FBuySell + '_' + AIndex.ToString + '.Auto',CheckBoxAuto.Checked);
+    TSetting.WriteBool('config.' + FBuySell + '_' + AIndex.ToString + '.Active',CheckBoxActive.Checked);
+  end;
+
+begin
+  _SettingValue(1,UpDownValue1, UpDownValueActive1, CheckBoxAuto1, CheckBoxActive1);
+  _SettingValue(2,UpDownValue2, UpDownValueActive2, CheckBoxAuto2, CheckBoxActive2);
+  _SettingValue(3,UpDownValue3, UpDownValueActive3, CheckBoxAuto3, CheckBoxActive3);
+  _SettingValue(4,UpDownValue4, UpDownValueActive4, CheckBoxAuto4, CheckBoxActive4);
+  _SettingValue(5,UpDownValue5, UpDownValueActive5, CheckBoxAuto5, CheckBoxActive5);
+  _SettingValue(6,UpDownValue6, UpDownValueActive6, CheckBoxAuto6, CheckBoxActive6);
+end;
+
+procedure TUserOrderFrame.SetLoad;
+
+  procedure _SettingValue(
+    AIndex: Integer;
+    UpDownValue: TUpDown;
+    UpDownValueActive: TUpDown;
+    CheckBoxAuto: TCheckBox;
+    CheckBoxActive: TCheckBox
+  );
+  begin
+    UpDownValue.Position       := TSetting.ReadInteger('config.' + FBuySell + '_' + AIndex.ToString + '.Value',50);
+    UpDownValueActive.Position := TSetting.ReadInteger('config.' + FBuySell + '_' + AIndex.ToString + '.ValueActive',40);
+    CheckBoxAuto.Checked       := TSetting.ReadBool('config.' + FBuySell + '_' + AIndex.ToString + '.Auto',False);
+    CheckBoxActive.Checked     := TSetting.ReadBool('config.' + FBuySell + '_' + AIndex.ToString + '.Active',True);
+  end;
+
+begin
+  _SettingValue(1, UpDownValue1, UpDownValueActive1, CheckBoxAuto1, CheckBoxActive1);
+  _SettingValue(2, UpDownValue2, UpDownValueActive2, CheckBoxAuto2, CheckBoxActive2);
+  _SettingValue(3, UpDownValue3, UpDownValueActive3, CheckBoxAuto3, CheckBoxActive3);
+  _SettingValue(4, UpDownValue4, UpDownValueActive4, CheckBoxAuto4, CheckBoxActive4);
+  _SettingValue(5, UpDownValue5, UpDownValueActive5, CheckBoxAuto5, CheckBoxActive5);
+  _SettingValue(6, UpDownValue6, UpDownValueActive6, CheckBoxAuto6, CheckBoxActive6);
 end;
 
 procedure TUserOrderFrame.SetOperationTrade;
@@ -139,12 +253,12 @@ procedure TUserOrderFrame.SetOperationTrade;
     case FBuySell of
       'B': begin
         xPrice := Security.AsDouble('OFFER');// AsByIndexDouble(81);  // OFFER
-        xPrice := xPrice + UpDownStepPrice.Position * xStepPrice;
+        xPrice := xPrice + STEP_PRICE * xStepPrice;
         xPrice := _PriceNorm(xPrice,xStepPrice);
       end;
       'S': begin
         xPrice := Security.AsDouble('BID'); // AsByIndexDouble(91); // BID
-        xPrice := xPrice - UpDownStepPrice.Position * xStepPrice;
+        xPrice := xPrice - STEP_PRICE * xStepPrice;
         xPrice := _PriceNorm(xPrice,xStepPrice);
       end;
     end;
@@ -178,58 +292,73 @@ begin
 end;
 
 
+
 procedure TUserOrderFrame.SetValueRSI(const AValue: Double);
 
-  function _IsRSI(const AValue: Double): Boolean;
+  procedure _SetOrder(AUpDownValue: TUpDown; ACheckBoxActive: TCheckBox; AValueRSI: Double);
   begin
-    Result := False;
-    if AValue > 0 then
+    if not ACheckBoxActive.Checked then
+      Exit;
+
+    if (AValueRSI > 0) then
     begin
       case FBuySell of
-        'B': Result := UpDownValueRSI.Position > AValue;
-        'S': Result := UpDownValueRSI.Position < AValue;
+        'B':
+          if AValueRSI < AUpDownValue.Position then
+          begin
+            SetOperationTrade;
+            ACheckBoxActive.Checked := False;
+          end;
+        'S':
+          if AValueRSI > AUpDownValue.Position then
+          begin
+            SetOperationTrade;
+            ACheckBoxActive.Checked := False;
+          end;
       end;
     end;
   end;
 
-begin
-  try
-    if CheckBoxActiveOrder.Checked then
-    begin
-      if _IsRSI(AValue) then
-      begin
-        Self.SetOperationTrade;
-        CheckBoxActiveOrder.Checked := False;
-        if CheckBoxAuto.Checked then
-          SetStartTimer;
-      end;
-    end;
-  except
-    on E : Exception do
-      TLogger.Log(E.ClassName + ' ошибка с сообщением : ' + E.Message)
-  end;
-end;
-
-procedure TUserOrderFrame.SetStartTimer;
-begin
-  StarTime := GetTimeCountSec(Time);
-  Timer.Enabled := True;
-end;
-
-procedure TUserOrderFrame.TimerTimer(Sender: TObject);
-var
-  xCurrentTime: Integer;
-  xDeltaTime: Integer;
-begin
-  xCurrentTime := GetTimeCountSec(Time);
-  xDeltaTime := (xCurrentTime - StarTime);
-  if xDeltaTime = (30 * 60) then
+  procedure _SetActiveOrder(AUpDownValueActive: TUpDown; ACheckBoxActive, ACheckBoxAuto: TCheckBox; const AValueRSI: Double);
   begin
-    CheckBoxActiveOrder.Checked := True;
-    Timer.Enabled := False;
-  end;
-end;
+    if not ACheckBoxAuto.Checked then
+      Exit;
 
+    if (AValueRSI > 0) then
+    begin
+      case FBuySell of
+        'B': begin
+          if AValueRSI > AUpDownValueActive.Position then
+            ACheckBoxActive.Checked := True;
+        end;
+        'S': begin
+          if AValueRSI < AUpDownValueActive.Position then
+            ACheckBoxActive.Checked := True;
+        end;
+      end;
+    end;
+  end;
+
+  procedure _IsValue(
+    AUpDownValue: TUpDown;         // Значение для активации заявки
+    AUpDownValueActive: TUpDown;   // Возобновление заявки РеЗаначение
+    ACheckBoxAuto: TCheckBox;      // Галочка для активации  РеАктивация
+    ACheckBoxActive: TCheckBox;    // Галочка для возобновление Активация
+    AValue: Double
+  );
+  begin
+    _SetOrder(AUpDownValue, ACheckBoxActive, AValue);
+    _SetActiveOrder(AUpDownValueActive, ACheckBoxActive, ACheckBoxAuto, AValue);
+  end;
+
+begin
+  _IsValue(UpDownValue1, UpDownValueActive1, CheckBoxAuto1, CheckBoxActive1, AValue);
+  _IsValue(UpDownValue2, UpDownValueActive2, CheckBoxAuto2, CheckBoxActive2, AValue);
+  _IsValue(UpDownValue3, UpDownValueActive3, CheckBoxAuto3, CheckBoxActive3, AValue);
+  _IsValue(UpDownValue4, UpDownValueActive4, CheckBoxAuto4, CheckBoxActive4, AValue);
+  _IsValue(UpDownValue5, UpDownValueActive5, CheckBoxAuto5, CheckBoxActive5, AValue);
+  _IsValue(UpDownValue6, UpDownValueActive6, CheckBoxAuto6, CheckBoxActive6, AValue);
+end;
 
 procedure TUserOrderFrame.Button1Click(Sender: TObject);
 begin

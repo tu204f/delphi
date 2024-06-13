@@ -16,7 +16,8 @@ uses
   UnitQuikTableForm in 'UnitQuikTableForm.pas' {QuikTableForm},
   UnitAddOrderForm in 'UnitAddOrderForm.pas' {AddOrderForm},
   Lb.SysUtils in 'Lb.SysUtils.pas',
-  UnitUserOrderFrame in 'UnitUserOrderFrame.pas' {UserOrderFrame: TFrame};
+  UnitUserOrderFrame in 'UnitUserOrderFrame.pas' {UserOrderFrame: TFrame},
+  Lb.Trade.RSI in 'Lb.Trade.RSI.pas';
 
 {$R *.res}
 

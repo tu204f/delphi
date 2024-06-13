@@ -2,10 +2,9 @@ object MainForm: TMainForm
   Left = 0
   Top = 0
   BorderIcons = [biSystemMenu, biMinimize]
-  BorderStyle = bsSingle
   Caption = 'MainForm'
-  ClientHeight = 141
-  ClientWidth = 258
+  ClientHeight = 350
+  ClientWidth = 359
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -15,11 +14,12 @@ object MainForm: TMainForm
   FormStyle = fsStayOnTop
   OldCreateOrder = False
   Position = poScreenCenter
+  OnClose = FormClose
   OnCreate = FormCreate
   OnShow = FormShow
   DesignSize = (
-    258
-    141)
+    359
+    350)
   PixelsPerInch = 96
   TextHeight = 18
   object ButtonTolls: TButton
@@ -60,8 +60,8 @@ object MainForm: TMainForm
   object GridPanel: TGridPanel
     Left = 1
     Top = 28
-    Width = 255
-    Height = 112
+    Width = 356
+    Height = 321
     Anchors = [akLeft, akTop, akRight, akBottom]
     ColumnCollection = <
       item
@@ -92,23 +92,23 @@ object MainForm: TMainForm
         Value = 100.000000000000000000
       end>
     TabOrder = 3
-    ExplicitWidth = 262
+    ExplicitHeight = 163
     object PanelLeft: TPanel
       Left = 1
       Top = 1
-      Width = 126
-      Height = 110
+      Width = 177
+      Height = 319
       Align = alClient
       BevelInner = bvLowered
       BevelKind = bkFlat
       BevelOuter = bvSpace
       TabOrder = 0
-      ExplicitWidth = 130
+      ExplicitHeight = 161
       inline UserOrderBuy: TUserOrderFrame
         Left = 2
         Top = 2
-        Width = 118
-        Height = 102
+        Width = 169
+        Height = 311
         Align = alClient
         Font.Charset = DEFAULT_CHARSET
         Font.Color = clWindowText
@@ -119,33 +119,24 @@ object MainForm: TMainForm
         TabOrder = 0
         ExplicitLeft = 2
         ExplicitTop = 2
-        ExplicitHeight = 102
+        ExplicitWidth = 169
+        ExplicitHeight = 153
         inherited ledValueRSI: TLabeledEdit
+          Top = 42
           Height = 33
-          EditLabel.Width = 46
+          EditLabel.Width = 127
           EditLabel.Height = 25
-          EditLabel.ExplicitLeft = 3
-          EditLabel.ExplicitTop = 42
-          EditLabel.ExplicitWidth = 46
+          EditLabel.ExplicitLeft = -102
+          EditLabel.ExplicitTop = 46
+          EditLabel.ExplicitWidth = 127
           EditLabel.ExplicitHeight = 25
+          ExplicitTop = 42
           ExplicitHeight = 33
         end
-        inherited UpDownStepPrice: TUpDown
+        inherited UpDownValue1: TUpDown
+          Top = 42
           Height = 33
-          ExplicitHeight = 33
-        end
-        inherited ledStepPrice: TLabeledEdit
-          Height = 33
-          EditLabel.Width = 38
-          EditLabel.Height = 25
-          EditLabel.ExplicitLeft = 11
-          EditLabel.ExplicitTop = 221
-          EditLabel.ExplicitWidth = 38
-          EditLabel.ExplicitHeight = 25
-          ExplicitHeight = 33
-        end
-        inherited UpDownValueRSI: TUpDown
-          Height = 33
+          ExplicitTop = 42
           ExplicitHeight = 33
         end
         inherited UpDownQuantity: TUpDown
@@ -160,27 +151,160 @@ object MainForm: TMainForm
           EditLabel.ExplicitTop = 9
           EditLabel.ExplicitWidth = 23
           EditLabel.ExplicitHeight = 25
+          ExplicitHeight = 33
+        end
+        inherited UpDownValueActive1: TUpDown
+          Height = 33
+          ExplicitHeight = 33
+        end
+        inherited Edit1: TEdit
+          Height = 33
+          ExplicitHeight = 33
+        end
+        inherited LabeledEdit1: TLabeledEdit
+          Height = 33
+          EditLabel.Width = 135
+          EditLabel.Height = 25
+          EditLabel.ExplicitLeft = -110
+          EditLabel.ExplicitWidth = 135
+          EditLabel.ExplicitHeight = 25
+          ExplicitHeight = 33
+        end
+        inherited UpDownValue2: TUpDown
+          Height = 33
+          ExplicitHeight = 33
+        end
+        inherited UpDownValueActive2: TUpDown
+          Height = 33
+          ExplicitHeight = 33
+        end
+        inherited Edit2: TEdit
+          Height = 33
+          ExplicitHeight = 33
+        end
+        inherited LabeledEdit2: TLabeledEdit
+          Height = 33
+          EditLabel.Width = 135
+          EditLabel.Height = 25
+          EditLabel.ExplicitLeft = -110
+          EditLabel.ExplicitWidth = 135
+          EditLabel.ExplicitHeight = 25
+          ExplicitHeight = 33
+        end
+        inherited UpDownValue3: TUpDown
+          Height = 33
+          ExplicitHeight = 33
+        end
+        inherited UpDownValueActive3: TUpDown
+          Height = 33
+          ExplicitHeight = 33
+        end
+        inherited Edit3: TEdit
+          Height = 33
+          ExplicitHeight = 33
+        end
+        inherited LabeledEdit3: TLabeledEdit
+          Height = 33
+          EditLabel.Width = 135
+          EditLabel.Height = 25
+          EditLabel.ExplicitLeft = -110
+          EditLabel.ExplicitWidth = 135
+          EditLabel.ExplicitHeight = 25
+          ExplicitHeight = 33
+        end
+        inherited UpDownValue4: TUpDown
+          Height = 33
+          ExplicitHeight = 33
+        end
+        inherited UpDownValueActive4: TUpDown
+          Height = 33
+          ExplicitHeight = 33
+        end
+        inherited Edit4: TEdit
+          Height = 33
+          ExplicitHeight = 33
+        end
+        inherited LabeledEdit4: TLabeledEdit
+          Height = 33
+          EditLabel.Width = 135
+          EditLabel.Height = 25
+          EditLabel.ExplicitLeft = -110
+          EditLabel.ExplicitWidth = 135
+          EditLabel.ExplicitHeight = 25
+          ExplicitHeight = 33
+        end
+        inherited UpDownValue5: TUpDown
+          Height = 33
+          ExplicitHeight = 33
+        end
+        inherited UpDownValueActive5: TUpDown
+          Height = 33
+          ExplicitHeight = 33
+        end
+        inherited Edit5: TEdit
+          Height = 33
+          ExplicitHeight = 33
+        end
+        inherited LabeledEdit5: TLabeledEdit
+          Height = 33
+          EditLabel.Width = 135
+          EditLabel.Height = 25
+          EditLabel.ExplicitLeft = -110
+          EditLabel.ExplicitWidth = 135
+          EditLabel.ExplicitHeight = 25
+          ExplicitHeight = 33
+        end
+        inherited UpDownValue6: TUpDown
+          Height = 33
+          ExplicitHeight = 33
+        end
+        inherited UpDownValueActive6: TUpDown
+          Height = 33
+          ExplicitHeight = 33
+        end
+        inherited Edit6: TEdit
+          Height = 33
+          ExplicitHeight = 33
+        end
+        inherited LabeledEdit6: TLabeledEdit
+          Height = 33
+          EditLabel.Width = 135
+          EditLabel.Height = 25
+          EditLabel.ExplicitLeft = -110
+          EditLabel.ExplicitWidth = 135
+          EditLabel.ExplicitHeight = 25
+          ExplicitHeight = 33
+        end
+        inherited UpDownValue7: TUpDown
+          Height = 33
+          ExplicitHeight = 33
+        end
+        inherited UpDownValueActive7: TUpDown
+          Height = 33
+          ExplicitHeight = 33
+        end
+        inherited Edit7: TEdit
+          Height = 33
           ExplicitHeight = 33
         end
       end
     end
     object PanelRight: TPanel
-      Left = 127
+      Left = 178
       Top = 1
-      Width = 127
-      Height = 110
+      Width = 177
+      Height = 319
       Align = alClient
       BevelInner = bvLowered
       BevelKind = bkFlat
       BevelOuter = bvSpace
       TabOrder = 1
-      ExplicitLeft = 131
-      ExplicitWidth = 130
+      ExplicitHeight = 161
       inline UserOrderSell: TUserOrderFrame
         Left = 2
         Top = 2
-        Width = 119
-        Height = 102
+        Width = 169
+        Height = 311
         Align = alClient
         Font.Charset = DEFAULT_CHARSET
         Font.Color = clWindowText
@@ -191,33 +315,24 @@ object MainForm: TMainForm
         TabOrder = 0
         ExplicitLeft = 2
         ExplicitTop = 2
-        ExplicitHeight = 102
+        ExplicitWidth = 169
+        ExplicitHeight = 153
         inherited ledValueRSI: TLabeledEdit
+          Top = 41
           Height = 33
-          EditLabel.Width = 46
+          EditLabel.Width = 127
           EditLabel.Height = 25
-          EditLabel.ExplicitLeft = 3
-          EditLabel.ExplicitTop = 42
-          EditLabel.ExplicitWidth = 46
+          EditLabel.ExplicitLeft = -102
+          EditLabel.ExplicitTop = 45
+          EditLabel.ExplicitWidth = 127
           EditLabel.ExplicitHeight = 25
+          ExplicitTop = 41
           ExplicitHeight = 33
         end
-        inherited UpDownStepPrice: TUpDown
+        inherited UpDownValue1: TUpDown
+          Top = 41
           Height = 33
-          ExplicitHeight = 33
-        end
-        inherited ledStepPrice: TLabeledEdit
-          Height = 33
-          EditLabel.Width = 38
-          EditLabel.Height = 25
-          EditLabel.ExplicitLeft = 11
-          EditLabel.ExplicitTop = 221
-          EditLabel.ExplicitWidth = 38
-          EditLabel.ExplicitHeight = 25
-          ExplicitHeight = 33
-        end
-        inherited UpDownValueRSI: TUpDown
-          Height = 33
+          ExplicitTop = 41
           ExplicitHeight = 33
         end
         inherited UpDownQuantity: TUpDown
@@ -232,6 +347,140 @@ object MainForm: TMainForm
           EditLabel.ExplicitTop = 9
           EditLabel.ExplicitWidth = 23
           EditLabel.ExplicitHeight = 25
+          ExplicitHeight = 33
+        end
+        inherited UpDownValueActive1: TUpDown
+          Height = 33
+          ExplicitHeight = 33
+        end
+        inherited Edit1: TEdit
+          Height = 33
+          ExplicitHeight = 33
+        end
+        inherited LabeledEdit1: TLabeledEdit
+          Height = 33
+          EditLabel.Width = 135
+          EditLabel.Height = 25
+          EditLabel.ExplicitLeft = -110
+          EditLabel.ExplicitWidth = 135
+          EditLabel.ExplicitHeight = 25
+          ExplicitHeight = 33
+        end
+        inherited UpDownValue2: TUpDown
+          Height = 33
+          ExplicitHeight = 33
+        end
+        inherited UpDownValueActive2: TUpDown
+          Height = 33
+          ExplicitHeight = 33
+        end
+        inherited Edit2: TEdit
+          Height = 33
+          ExplicitHeight = 33
+        end
+        inherited LabeledEdit2: TLabeledEdit
+          Height = 33
+          EditLabel.Width = 135
+          EditLabel.Height = 25
+          EditLabel.ExplicitLeft = -110
+          EditLabel.ExplicitWidth = 135
+          EditLabel.ExplicitHeight = 25
+          ExplicitHeight = 33
+        end
+        inherited UpDownValue3: TUpDown
+          Height = 33
+          ExplicitHeight = 33
+        end
+        inherited UpDownValueActive3: TUpDown
+          Height = 33
+          ExplicitHeight = 33
+        end
+        inherited Edit3: TEdit
+          Height = 33
+          ExplicitHeight = 33
+        end
+        inherited LabeledEdit3: TLabeledEdit
+          Height = 33
+          EditLabel.Width = 135
+          EditLabel.Height = 25
+          EditLabel.ExplicitLeft = -110
+          EditLabel.ExplicitWidth = 135
+          EditLabel.ExplicitHeight = 25
+          ExplicitHeight = 33
+        end
+        inherited UpDownValue4: TUpDown
+          Height = 33
+          ExplicitHeight = 33
+        end
+        inherited UpDownValueActive4: TUpDown
+          Height = 33
+          ExplicitHeight = 33
+        end
+        inherited Edit4: TEdit
+          Height = 33
+          ExplicitHeight = 33
+        end
+        inherited LabeledEdit4: TLabeledEdit
+          Height = 33
+          EditLabel.Width = 135
+          EditLabel.Height = 25
+          EditLabel.ExplicitLeft = -110
+          EditLabel.ExplicitWidth = 135
+          EditLabel.ExplicitHeight = 25
+          ExplicitHeight = 33
+        end
+        inherited UpDownValue5: TUpDown
+          Height = 33
+          ExplicitHeight = 33
+        end
+        inherited UpDownValueActive5: TUpDown
+          Height = 33
+          ExplicitHeight = 33
+        end
+        inherited Edit5: TEdit
+          Height = 33
+          ExplicitHeight = 33
+        end
+        inherited LabeledEdit5: TLabeledEdit
+          Height = 33
+          EditLabel.Width = 135
+          EditLabel.Height = 25
+          EditLabel.ExplicitLeft = -110
+          EditLabel.ExplicitWidth = 135
+          EditLabel.ExplicitHeight = 25
+          ExplicitHeight = 33
+        end
+        inherited UpDownValue6: TUpDown
+          Height = 33
+          ExplicitHeight = 33
+        end
+        inherited UpDownValueActive6: TUpDown
+          Height = 33
+          ExplicitHeight = 33
+        end
+        inherited Edit6: TEdit
+          Height = 33
+          ExplicitHeight = 33
+        end
+        inherited LabeledEdit6: TLabeledEdit
+          Height = 33
+          EditLabel.Width = 135
+          EditLabel.Height = 25
+          EditLabel.ExplicitLeft = -110
+          EditLabel.ExplicitWidth = 135
+          EditLabel.ExplicitHeight = 25
+          ExplicitHeight = 33
+        end
+        inherited UpDownValue7: TUpDown
+          Height = 33
+          ExplicitHeight = 33
+        end
+        inherited UpDownValueActive7: TUpDown
+          Height = 33
+          ExplicitHeight = 33
+        end
+        inherited Edit7: TEdit
+          Height = 33
           ExplicitHeight = 33
         end
       end

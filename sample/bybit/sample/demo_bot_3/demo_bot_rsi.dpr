@@ -8,13 +8,10 @@ uses
   Lb.Bybit.SysUtils in '..\..\lb\Lb.Bybit.SysUtils.pas',
   Lb.Bybit.Kline in '..\..\lb\market\Lb.Bybit.Kline.pas',
   Lb.Indicator in '..\..\lb\indicator\Lb.Indicator.pas',
-  UnitBotFrame in 'UnitBotFrame.pas' {BotFrame: TFrame},
-  UnitIndicatorFrame in 'indicator\UnitIndicatorFrame.pas' {IndicatorFrame: TFrame},
   UnitOrderFrame in 'UnitOrderFrame.pas' {OrderFrame: TFrame},
   Lb.Bybit.RealTime in '..\..\lb\trade\Lb.Bybit.RealTime.pas',
   Lb.Bybit.Trade in '..\..\lb\trade\Lb.Bybit.Trade.pas',
   Lb.Bybit.ServerTime in '..\..\lb\market\Lb.Bybit.ServerTime.pas',
-  UnitValueUpDataFrame in 'UnitValueUpDataFrame.pas' {ValueUpDataFrame: TFrame},
   Lb.Logger in '..\..\..\..\library\Lb.Logger.pas',
   Lb.Setting in '..\..\..\..\library\Lb.Setting.pas',
   Lb.Bybit.OrderBook in '..\..\lb\market\Lb.Bybit.OrderBook.pas',
@@ -28,11 +25,18 @@ uses
   Lb.Instruments in 'lb\Lb.Instruments.pas',
   UnitSecurityFrame in 'lb\security\UnitSecurityFrame.pas' {SecurityFrame: TFrame},
   Lb.TableSCV in 'lb\security\Lb.TableSCV.pas',
-  Lb.Agent in 'lb\agent\Lb.Agent.pas';
+  Lb.VirtualTrade in 'lb\agent\Lb.VirtualTrade.pas',
+  UnitEditFrame in 'lb\edit\UnitEditFrame.pas' {ValueFrame: TFrame},
+  UnitGridOrdersFrame in 'lb\UnitGridOrdersFrame.pas' {GridOrdersFrame: TFrame},
+  UnitLineEditFrame in 'lb\edit\UnitLineEditFrame.pas' {LineEditFrame: TFrame};
 
 {$R *.res}
 
 begin
+  {$IFDEF DEBUG}
+  TLogger.ClearLog;
+  ReportMemoryLeaksOnShutdown := True;
+  {$ENDIF}
   Application.Initialize;
   Application.CreateForm(TMainForm, MainForm);
   Application.Run;

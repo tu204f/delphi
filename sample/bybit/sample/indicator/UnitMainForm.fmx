@@ -2,8 +2,8 @@ object MainForm: TMainForm
   Left = 0
   Top = 0
   Caption = 'Form5'
-  ClientHeight = 843
-  ClientWidth = 1104
+  ClientHeight = 570
+  ClientWidth = 962
   FormFactor.Width = 320
   FormFactor.Height = 480
   FormFactor.Devices = [Desktop]
@@ -22,13 +22,13 @@ object MainForm: TMainForm
     Locked = True
     Position.X = 8.000000000000000000
     Position.Y = 36.000000000000000000
-    Size.Width = 1085.000000000000000000
-    Size.Height = 800.000000000000000000
+    Size.Width = 943.000000000000000000
+    Size.Height = 527.000000000000000000
     Size.PlatformDefault = False
     TabOrder = 1
-    OnDrawColumnCell = StrGridDrawColumnCell
-    Viewport.Width = 1081.000000000000000000
-    Viewport.Height = 775.000000000000000000
+    Options = [ColumnResize, ColumnMove, ColLines, RowLines, RowSelect, Tabs, Header, HeaderClick, AutoDisplacement]
+    Viewport.Width = 939.000000000000000000
+    Viewport.Height = 502.000000000000000000
   end
   object Timer: TTimer
     Enabled = False

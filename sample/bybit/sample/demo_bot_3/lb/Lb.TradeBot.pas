@@ -13,6 +13,10 @@ uses
 
 type
   ///<summary>
+  /// Событие объекта
+  ///</summary>
+  TOnEventConditionTrade = procedure(ASender: TObject; ASide: TTypeSide) of object;
+  ///<summary>
   /// Сделка с условием
   ///</summary>
   ///<remarks>
@@ -20,71 +24,43 @@ type
   ///</remarks>
   TConditionTrade = class(TObject)
   private
-    FSymbol: String;
     FSide: TTypeSide;
-    FPrice: Double;
-    FQuantity: Double;
+    FIsActive: Boolean;
+    FIsResuming: Boolean;
     FValueRSI: Double;
-    FIsActiveTrade: Boolean;
+    FResumingRSI: Double;
+    FEventConditionTrade: TOnEventConditionTrade;
   protected
-    procedure SetOperationTrade;
+    procedure DoEventConditionTrade;
   public
     constructor Create; virtual;
     destructor Destroy; override;
     ///<summary>
     /// Обновление значение
     ///</summary>
-    ///<remarks>
-    /// Цена по которой будет совершать цена.
-    /// И текущие значение RSI
-    ///</remarks>
-    procedure UpDate(const APrice, ACurrentRSI: Double);
+    procedure UpDataEvent(const ACurrentRSI: Double);
     ///<summary>
-    /// Значение Индикатора RSI
+    /// Напровление сделки
     ///</summary>
-    property ValueRSI: Double write FValueRSI;
+    property Side: TTypeSide read FSide write FSide;
     ///<summary>
-    /// Напровление операции
+    /// Стартовое заняение индикатора
     ///</summary>
-    property Side: TTypeSide write FSide;
+    property ValueRSI: Double read FValueRSI write FValueRSI;
     ///<summary>
-    /// Символ - инструмента, скоторым работаем
+    /// Значение RSI - для возобновление
     ///</summary>
-    property Symbol: String write FSymbol;
+    property ResumingRSI: Double read FResumingRSI write FResumingRSI;
     ///<summary>
-    /// Количество инструментом
+    /// Активируем оперцию сделку
     ///</summary>
-    property Quantity: Double write FQuantity;
+    property IsActive: Boolean read FIsActive write FIsActive;
     ///<summary>
-    /// Совершаем торговые операции
+    /// Возобновление
     ///</summary>
-    property IsActiveTrade: Boolean read FIsActiveTrade write FIsActiveTrade;
+    property IsResuming: Boolean read FIsResuming write FIsResuming;
   end;
 
-  ///<summary>
-  /// Напровление объекта
-  ///</summary>
-  TTypeTrade = (
-    ttNull,
-    ttBuy,
-    ttSell
-  );
-
-  ///<summary>
-  /// Трейдер бот
-  ///</summary>
-  TTradeBot = class(TObject)
-  private
-  protected
-    function GetIndexRSI(const ASide: TTypeSide): Double;
-  public
-    constructor Create; virtual;
-    destructor Destroy; override;
-    ///<summary>
-    /// Обновление данных
-    ///</summary>
-    procedure UpDate(const APriceBid, APriceAsk, ACurrentRSI: Double);
-  end;
 
 implementation
 
@@ -97,10 +73,9 @@ uses
 
 constructor TConditionTrade.Create;
 begin
-  FIsActiveTrade := False;
-  FSymbol := '';
-  FQuantity := 0;
-  FPrice := 0;
+  FSide := TTypeSide.tsBuy;
+  FIsActive := False;
+  FIsResuming := False;
 end;
 
 destructor TConditionTrade.Destroy;
@@ -109,63 +84,47 @@ begin
   inherited;
 end;
 
-procedure TConditionTrade.SetOperationTrade;
+procedure TConditionTrade.DoEventConditionTrade;
 begin
-
+  if Assigned(FEventConditionTrade) then
+    FEventConditionTrade(Self,FSide);
 end;
 
-procedure TConditionTrade.UpDate(const APrice, ACurrentRSI: Double);
+procedure TConditionTrade.UpDataEvent(const ACurrentRSI: Double);
 begin
-  FPrice := APrice;
   case FSide of
-    tsBuy:
-      if FIsActiveTrade and (FValueRSI > ACurrentRSI) then
+    tsBuy: begin
+      if FIsActive then
       begin
-        SetOperationTrade;
-        FIsActiveTrade := False;
-      end;
-    tsSell:
-      if FIsActiveTrade and (FValueRSI < ACurrentRSI) then
+        if FValueRSI > ACurrentRSI then
+        begin
+          DoEventConditionTrade;
+          FIsActive := False;
+        end;
+      end
+      else
       begin
-        SetOperationTrade;
-        FIsActiveTrade := False;
+        if FIsResuming then
+          if FResumingRSI < ACurrentRSI then
+            FIsActive := True;
       end;
-  end;
-end;
-
-
-{ TTradeBot }
-
-constructor TTradeBot.Create;
-begin
-
-end;
-
-destructor TTradeBot.Destroy;
-begin
-
-  inherited;
-end;
-
-function TTradeBot.GetIndexRSI(const ASide: TTypeSide): Double;
-begin
-  // Рекомендуемые заначение
-  // Выводить значение результата RSI
-  case ASide of
-    tsBuy : Result := 20;
-    tsSell: Result := 80;
-  end;
-end;
-
-procedure TTradeBot.UpDate(const APriceBid, APriceAsk, ACurrentRSI: Double);
-begin
-  if ACurrentRSI < GetIndexRSI(TTypeSide.tsBuy) then
-  begin
-    // Покупать
-  end;
-  if ACurrentRSI > GetIndexRSI(TTypeSide.tsSell) then
-  begin
-    // Продать
+    end;
+    tsSell: begin
+      if FIsActive then
+      begin
+        if FValueRSI < ACurrentRSI then
+        begin
+          DoEventConditionTrade;
+          FIsActive := False;
+        end;
+      end
+      else
+      begin
+        if FIsResuming then
+          if FResumingRSI > ACurrentRSI then
+            FIsActive := True;
+      end;
+    end;
   end;
 end;
 

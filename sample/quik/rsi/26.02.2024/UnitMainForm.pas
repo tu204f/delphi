@@ -37,6 +37,7 @@ type
     procedure ButtonQuikTableClick(Sender: TObject);
     procedure TimerTimer(Sender: TObject);
     procedure FormShow(Sender: TObject);
+    procedure FormClose(Sender: TObject; var Action: TCloseAction);
   private
   public
     QuikTable: TQuikTable;
@@ -83,7 +84,15 @@ end;
 procedure TMainForm.FormShow(Sender: TObject);
 begin
   UserOrderBuy.BuySell := 'B';
+  UserOrderBuy.SetLoad;
   UserOrderSell.BuySell := 'S';
+  UserOrderSell.SetLoad;
+end;
+
+procedure TMainForm.FormClose(Sender: TObject; var Action: TCloseAction);
+begin
+  UserOrderBuy.SetSave;
+  UserOrderSell.SetSave;
 end;
 
 procedure TMainForm.TimerTimer(Sender: TObject);
@@ -145,5 +154,9 @@ procedure TMainForm.ButtonQuikTableClick(Sender: TObject);
 begin
   QuikTableForm.Show;
 end;
+
+
+
+
 
 end.

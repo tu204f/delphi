@@ -85,8 +85,8 @@ begin
   BybitServerTime := TBybitServerTime.Create;
   BybitServerTime.OnEventBeginLoading := BybitServerTimeOnEventBeginLoading;
   BybitServerTime.OnEventEndLoading   := BybitServerTimeOnEventEndLoading;
-  BybitServerTime.OnEventMessage   := BybitServerTimeOnEventMessage;
-  BybitServerTime.OnEventException := BybitServerTimeOnEventException;
+  BybitServerTime.OnEventMessage      := BybitServerTimeOnEventMessage;
+  BybitServerTime.OnEventException    := BybitServerTimeOnEventException;
 end;
 
 procedure TMainForm.FormClose(Sender: TObject; var Action: TCloseAction);
@@ -94,6 +94,7 @@ begin
   FreeAndNil(BybitServerTime);
   if Assigned(BybitObject) then
     FreeAndNil(BybitObject);
+  MemoResult.Lines.Clear;
 end;
 
 procedure TMainForm.ButtonServerTimeClick(Sender: TObject);
@@ -256,8 +257,6 @@ begin
 end;
 
 procedure TMainForm.ButtonOrderBookClick(Sender: TObject);
-var
-  xOrderBook: TBybitOrderBook;
 begin
   //
 end;

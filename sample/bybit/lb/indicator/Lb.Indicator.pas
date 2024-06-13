@@ -164,6 +164,17 @@ type
     property CoffE: Double write FCoffE;
   end;
 
+  ///<summary>Скорость изменение цены</summary>
+  TMomentum = class(TCustomIndicator)
+  private
+    FValues: TValueList;
+  public
+    constructor Create; override;
+    destructor Destroy; override;
+    procedure SetCandels(ACandelObjects: TCandelObjectList); override;
+    property Values: TValueList read FValues;
+  end;
+
 implementation
 
 function GetRound(const AValue: Double): Double;
@@ -657,6 +668,47 @@ begin
     _SetLevelVlaue(FCoffE, xAvgValue, xValUp, xValDown);
     FUpE.Add(xValUp);
     FDownE.Add(xValDown);
+  end;
+end;
+
+{ TMomentum }
+
+constructor TMomentum.Create;
+begin
+  inherited;
+  FValues := TValueList.Create;
+end;
+
+destructor TMomentum.Destroy;
+begin
+  FreeAndNil(FValues);
+  inherited;
+end;
+
+procedure TMomentum.SetCandels(ACandelObjects: TCandelObjectList);
+var
+  xValue: Double;
+  i, xInd, iCount: Integer;
+  xCandel1, xCandel2: TCandelObject;
+begin
+  inherited;
+  FValues.Clear;
+  iCount := ACandelObjects.Count;
+  if iCount > 0 then
+  begin
+    for i := 0 to iCount - 1 do
+    begin
+      xInd := i + FPeriod;
+      if xInd < iCount then
+      begin
+        xCandel1 := ACandelObjects.Items[i];
+        xCandel2 := ACandelObjects.Items[xInd];
+        xValue   := (xCandel1.Close/xCandel2.Close) - 0.5;
+        FValues.Add(xValue);
+      end
+      else
+        FValues.Add(0);
+    end;
   end;
 end;
 

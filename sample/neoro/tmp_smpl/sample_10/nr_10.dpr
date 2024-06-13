@@ -3,7 +3,8 @@ program nr_10;
 uses
   Vcl.Forms,
   UnitMainForm in 'UnitMainForm.pas' {Form5},
-  Lb.NeuronNet.Neuron in '..\lib\Lb.NeuronNet.Neuron.pas';
+  Lb.NeuronNet.Neuron in '..\lib\Lb.NeuronNet.Neuron.pas',
+  Lb.NeuronNet.Files in '..\lib\Lb.NeuronNet.Files.pas';
 
 {$R *.res}
 
