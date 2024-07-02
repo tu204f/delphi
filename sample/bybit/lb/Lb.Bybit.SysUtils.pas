@@ -315,6 +315,7 @@ function GetStrToFloat(const AValue: String): Double; inline;
 
 function GetStrToTypeCategory(ACategory: TTypeCategory): String;
 function GetStrToTypeSide(const ASide: TTypeSide): String;
+function GetCrossTypeSide(const ASide: TTypeSide): TTypeSide;
 function GetStrToTypeOrder(const ATypeOrder: TTypeOrder): String;
 function GetStrToTypeOrderFilter(const AOrderFilter: TTypeOrderFilter): String;
 function GetStrToTypeTriggerBy(const ATriggerBy: TTypeTriggerBy): String;
@@ -324,6 +325,7 @@ function GetStrToTypeTpSlMode(const ATpSlMode: TTypeTpSlMode): String;
 function GetStrToTypeStatus(AStatus: TTypeStatus): String;
 function GetStrToTypeInterval(AInterval: TTypeInterval): String;
 function GetStrToOptionType(const AOptionType: TOptionType): String;
+
 
 function GetTypeCategoryToStr(const AValue: String): TTypeCategory;
 function GetTypeSideToStr(const AValue: String): TTypeSide;
@@ -396,6 +398,16 @@ begin
     tsSell: Result := 'Sell';
   else
     Result := '';
+  end;
+end;
+
+function GetCrossTypeSide(const ASide: TTypeSide): TTypeSide;
+begin
+  case ASide of
+    tsBuy: Result := tsSell;
+    tsSell: Result := tsBuy;
+  else
+    raise Exception.Create('Error Message: Значение неопределенно, для реверсирование');
   end;
 end;
 

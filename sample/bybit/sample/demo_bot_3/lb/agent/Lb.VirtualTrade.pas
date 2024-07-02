@@ -14,16 +14,19 @@ uses
   Lb.Bybit.Trade;
 
 type
+  TTypeLine = (tlNull,tlLine1,tlLine2,tlLine3,tlLine4,tlLine5,tlLine6,tlCloseLine);
+  TTypeStr = TTypeSide;
+
   ///<summary>Виртуальная сделка</summary>
   TVirtualTrade = record
   public
     Symbol: String;      // Наименование инструмента
     Side: TTypeSide;     // Напровление
     Qty: Double;         // Количество
+    TypeLine: TTypeLine;
+    TypeStr: TTypeStr;
   public
-    LongRSI: Double;     // Длиное значение RSI
-    MediumRSI: Double;   // Средние значение RSI
-    ShortSRI: Double;    // Короткая значение RSI
+    ValueRSI: Double;    // Короткая значение RSI
   private
     FPrice: Double;
     FMaxPrice: Double;
@@ -42,6 +45,8 @@ type
     property Value: Double read GetValue;
     property ProfitMax: Double read GetProfitMax;
     property ProfitMin: Double read GetProfitMin;
+  public
+    function ToStr: String;
   end;
 
   ///<summary>Списко вертуальных сделок</summary>
@@ -49,7 +54,9 @@ type
 
 procedure SetVirtualOrderSelectedOrder(
   const APlaceOrder: TParamOrder;
-  const ALongRSI, AMediumRSI, AShortSRI: Double
+  const AValueRSI: Double;
+  ATypeLine: TTypeLine;
+  ATypeStr: TTypeStr
 );
 
 function GetVirtualTrades: TVirtualTradeList;
@@ -57,6 +64,7 @@ function GetVirtualTrades: TVirtualTradeList;
 implementation
 
 uses
+  System.SyncObjs,
   System.DateUtils;
 
 var
@@ -69,9 +77,28 @@ begin
   Result := localVirtualTrades;
 end;
 
+procedure SaveTrade(AVirtualTrade: TVirtualTrade);
+var
+  F: TextFile;
+  xS: String;
+  xPath: String;
+begin
+  xS := AVirtualTrade.ToStr;
+  xPath := ExtractFilePath(ParamStr(0)) + 'trades.csv';
+  AssignFile(f,xPath);
+  if FileExists(xPath) then
+    Append(F)
+  else
+    Rewrite(F);
+  WriteLn(F, xS);
+  CloseFile(F);
+end;
+
 procedure SetVirtualOrderSelectedOrder(
   const APlaceOrder: TParamOrder;
-  const ALongRSI, AMediumRSI, AShortSRI: Double
+  const AValueRSI: Double;
+  ATypeLine: TTypeLine;
+  ATypeStr: TTypeStr
   );
 var
   xVirtualTrade: TVirtualTrade;
@@ -83,11 +110,12 @@ begin
     Side := APlaceOrder.Side;     // Напровление
     Price := APlaceOrder.Price;   // Цена
     Qty := APlaceOrder.Qty;       // Количество
-    LongRSI := ALongRSI;          // Длиное значение RSI
-    MediumRSI := AMediumRSI;      // Средние значение RSI
-    ShortSRI := AShortSRI;        // Короткая значение RSI
+    ValueRSI := AValueRSI;        // Длиное значение RSI
+    TypeLine := ATypeLine;
+    TypeStr := ATypeStr;
   end;
   GetVirtualTrades.Add(xVirtualTrade);
+  SaveTrade(xVirtualTrade);
 end;
 
 { TVirtualTrade }
@@ -97,9 +125,7 @@ begin
   Symbol := '';            // Наименование инструмента
   Side := TTypeSide.tsBuy; // Напровление
   Qty := 0;                // Количество
-  LongRSI := 0;            // Длиное значение RSI
-  MediumRSI := 0;          // Средние значение RSI
-  ShortSRI := 0;           // Короткая значение RSI
+  ValueRSI := 0;           // Длиное значение RSI
   FPrice := 0;             // Цена
   MaxPrice := 0;
   MinPrice := 0;
@@ -152,6 +178,34 @@ begin
   end;
 end;
 
+function TVirtualTrade.ToStr: String;
+var
+  xS: String;
+begin
+  xS := Symbol + ';' +             // Наименование инструмента
+    GetStrToTypeSide(Side) + ';' + // Напровление
+    Price.ToString + ';' +         // Цена
+    Qty.ToString + ';' +           // Количество
+    ValueRSI.ToString + ';';       // Короткая значение RSI   \
+
+
+    case TypeLine of
+      tlLine1: xS := xS + 'line1;';
+      tlLine2: xS := xS + 'line2;';
+      tlLine3: xS := xS + 'line3;';
+      tlLine4: xS := xS + 'line4;';
+      tlLine5: xS := xS + 'line5;';
+      tlCloseLine: xS := xS + 'close_line;';
+    end;
+
+
+    case TypeStr of
+      tsBuy: xS := xS + 'buy;';
+      tsSell: xS := xS + 'sell;';
+    end;
+
+  Result := xS;
+end;
 
 initialization
 

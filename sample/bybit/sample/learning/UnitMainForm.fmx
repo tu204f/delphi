@@ -24,12 +24,12 @@ object MainForm: TMainForm
     Viewport.Width = 761.000000000000000000
     Viewport.Height = 257.000000000000000000
   end
-  object Button1: TButton
+  object ButtonLearning: TButton
     Position.X = 8.000000000000000000
     Position.Y = 8.000000000000000000
     TabOrder = 1
     Text = #1054#1073#1091#1095#1077#1085#1080#1077
-    OnClick = Button1Click
+    OnClick = ButtonLearningClick
   end
   object Text1: TText
     Position.X = 8.000000000000000000
@@ -53,13 +53,6 @@ object MainForm: TMainForm
     TabOrder = 5
     Text = #1058#1077#1089#1090
     OnClick = ButtonTestClick
-  end
-  object ButtonDebug: TButton
-    Position.X = 416.000000000000000000
-    Position.Y = 4.000000000000000000
-    TabOrder = 6
-    Text = 'Debug'
-    OnClick = ButtonDebugClick
   end
   object Timer1: TTimer
     Enabled = False

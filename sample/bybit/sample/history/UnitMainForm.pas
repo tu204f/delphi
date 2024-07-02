@@ -94,8 +94,10 @@ begin
   BybitKline.Category := TTypeCategory.tcLinear;
   BybitKline.Symbol := 'BTCUSDT';
   BybitKline.Interval := TTypeInterval.ti_5;
-  BybitKline.Limit := 1;
-  BybitKline.Start(500);
+  //BybitKline.StartTime := 1718402400000;
+  //BybitKline.EndTime   := 1718402400000 - 5000;
+  BybitKline.Limit := 3000;
+  BybitKline.Selected;
 end;
 
 function TMainForm.GetRSI(const AIndex, ACount: Integer): Double;
@@ -184,6 +186,7 @@ begin
         StrGrid.Cells[7,i] := xCandel.turnover;
 
         xS :=
+          xCandel.startTime + ';' +
           DateTimeToStr(xCandel.DateTime) + ';' +
           FloatToStr(xCandel.Open) + ';' +
           FloatToStr(xCandel.High) + ';' +

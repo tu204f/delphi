@@ -196,8 +196,6 @@
             <FormType>fmx</FormType>
         </DCCReference>
         <DCCReference Include="lib\Lb.Source.pas"/>
-        <DCCReference Include="lib\Lb.NeuronNet.Neuron.pas"/>
-        <DCCReference Include="lib\Lb.NeuronNet.Files.pas"/>
         <DCCReference Include="..\..\..\..\library\Lb.Logger.pas"/>
         <BuildConfiguration Include="Release">
             <Key>Cfg_2</Key>

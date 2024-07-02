@@ -49,9 +49,7 @@ type
   ///</summary>
   THistoryIndicator = class(TBasicObjectStrategy)
   private
-    FLongRSI: TRSI;
-    FMediumRSI: TRSI;
-    FShortSRI: TRSI;
+    FValueRSI: TRSI;
     FCurrentCandel: TCandelObject;
     FBybitKline: TBybitKline;
     procedure BybitKlineOnEventEndLoading(Sender: TObject);
@@ -67,9 +65,7 @@ type
     ///<summary>Обновление данных</summary>
     function UpDate: Boolean; override;
   public
-    property LongRSI: TRSI read FLongRSI;
-    property MediumRSI: TRSI read FMediumRSI;
-    property ShortSRI: TRSI read FShortSRI;
+    property RSI: TRSI read FValueRSI;
     property Candels: TCandelObjectList read GetCandels;
     property CurrentCandel: TCandelObject read FCurrentCandel write FCurrentCandel;
   public
@@ -114,6 +110,22 @@ type
     property BidQuantity: Double read FBidQuantity;
     property Ask: Double read FAsk;
     property AskQuantity: Double read FAskQuantity;
+  end;
+
+  ///<summary>В ведем историю изменение, сохраняем знамение свечей</summary>
+  TLoadHistory = class(TObject)
+  private
+    FSymbol: String;
+    FFileName: String;
+    FValues: TStrings;
+    FStartTime: String;
+    procedure SetSymbol(const Value: String);
+  public
+    constructor Create; virtual;
+    destructor Destroy; override;
+    ///<summary>Наименование</summary>
+    property Symbol: String read FSymbol write SetSymbol;
+    procedure SetCurrentCandel(const ACandel: TCandelObject);
   end;
 
 implementation
@@ -169,9 +181,7 @@ begin
   FCurrentCandel := nil;
 
   FLimit := 150;
-  FLongRSI := _GetRSI(28,6);
-  FMediumRSI := _GetRSI(14,3);
-  FShortSRI := _GetRSI(7,3);
+  FValueRSI := _GetRSI(7,3);
 
   FBybitKline := TBybitKline.Create;
   FBybitKline.OnEventEndLoading := BybitKlineOnEventEndLoading;
@@ -180,11 +190,7 @@ end;
 destructor THistoryIndicator.Destroy;
 begin
   FreeAndNil(FBybitKline);
-
-  FreeAndNil(FLongRSI);
-  FreeAndNil(FMediumRSI);
-  FreeAndNil(FShortSRI);
-
+  FreeAndNil(FValueRSI);
   inherited Destroy;
 end;
 
@@ -200,9 +206,7 @@ begin
   iCount := FBybitKline.CandelObjects.Count;
   if iCount > 0 then
   begin
-    FLongRSI.SetCandels(FBybitKline.CandelObjects);
-    FMediumRSI.SetCandels(FBybitKline.CandelObjects);
-    FShortSRI.SetCandels(FBybitKline.CandelObjects);
+    FValueRSI.SetCandels(FBybitKline.CandelObjects);
     FCurrentCandel := FBybitKline.CandelObjects[0];
   end
   else
@@ -266,6 +270,41 @@ begin
   FBidQuantity := FBybitOrderBook.OrderBook.BidQuantity;
   FAsk         := FBybitOrderBook.OrderBook.Ask;
   FAskQuantity := FBybitOrderBook.OrderBook.AskQuantity;
+end;
+
+{ TLoadHistory }
+
+constructor TLoadHistory.Create;
+begin
+  FValues := TStringList.Create;
+  FStartTime := '';
+end;
+
+destructor TLoadHistory.Destroy;
+begin
+  FreeAndNil(FValues);
+  inherited;
+end;
+
+procedure TLoadHistory.SetSymbol(const Value: String);
+begin
+  FSymbol := Value;
+  FFileName := ExtractFilePath(ParamStr(0)) + 'data\';
+  FFileName := FFileName + FSymbol + '.txt';
+  FValues.LoadFromFile(FFileName);
+end;
+
+procedure TLoadHistory.SetCurrentCandel(const ACandel: TCandelObject);
+var
+  xS: String;
+begin
+  if not SameText(FStartTime,ACandel.startTime) then
+  else
+  begin
+    xS := ACandel.ToString;
+    FValues.Add(xS);
+  end;
+  FValues.SaveToFile(FFileName);
 end;
 
 end.

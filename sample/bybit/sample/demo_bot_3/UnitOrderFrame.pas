@@ -10,6 +10,7 @@ uses
   System.UITypes,
   System.Classes,
   System.Variants,
+  System.Generics.Collections,
   FMX.Types,
   FMX.Graphics,
   FMX.Controls,
@@ -27,7 +28,8 @@ uses
   FMX.ScrollBox,
   FMX.Memo,
   UnitEditFrame,
-  UnitLineEditFrame;
+  UnitLineEditFrame,
+  Lb.VirtualTrade;
 
 type
   TParam = record
@@ -49,9 +51,16 @@ type
     TextPrice: TText;
     LayoutPrice: TLayout;
     GridPanelOrder: TGridPanelLayout;
-    LayoutLongRSI: TLayout;
-    LayoutMediumRSI: TLayout;
-    LayoutShortSRI: TLayout;
+    GridPanelLine: TGridPanelLayout;
+    Layout1: TLayout;
+    Layout2: TLayout;
+    Layout3: TLayout;
+    Layout4: TLayout;
+    Layout5: TLayout;
+    Layout6: TLayout;
+    Text1: TText;
+    Text2: TText;
+    LayoutClose: TLayout;
     procedure ButtonOrderClick(Sender: TObject);
   public const
     {todo: Получать эти параметры}
@@ -68,18 +77,22 @@ type
     procedure SetSide(const Value: TTypeSide);
     procedure SetPrice(const Value: Double);
     procedure SetSymbol(const Value: String);
-    procedure SetStepQuantity(const Value: Double);
-    procedure SetQuantity(const Value: Double);
   protected
     BybitRealTime: TBybitRealTime;
     OrderResponse: TOrderResponse;
-    procedure SetOperationTrade;
-    procedure EventOperationTrade(Sender: TObject);
+    procedure SetOperationTrade(ASide: TTypeSide; AQty: Double;  ATypeLine: TTypeLine; ATypeStr: TTypeStr);
+    procedure EventOperationTrade(Sender: TObject; ASide: TTypeSide; AQty: Double);
   public
-    QtyValueFrame: TValueFrame;
-    LongLineEditFrame: TLineEditFrame;
-    MediumLineEditFrame: TLineEditFrame;
-    ShortLineEditFrame: TLineEditFrame;
+
+    LineEditFrame1: TLineEditFrame;
+    LineEditFrame2: TLineEditFrame;
+    LineEditFrame3: TLineEditFrame;
+    LineEditFrame4: TLineEditFrame;
+    LineEditFrame5: TLineEditFrame;
+    LineEditFrame6: TLineEditFrame;
+
+    LineEditFrameClose: TLineEditFrame;
+
   public
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
@@ -88,8 +101,6 @@ type
     property Symbol: String write SetSymbol;
     property Side: TTypeSide write SetSide;
     property Price: Double write SetPrice;
-    property StepQuantity: Double write SetStepQuantity;
-    property Quantity: Double write SetQuantity;
   public
     procedure SetSave;
     procedure SetLoad;
@@ -100,13 +111,13 @@ implementation
 {$R *.fmx}
 
 uses
-  Lb.Logger,
-  Lb.VirtualTrade;
+  Lb.Logger;
+
 
 const
   {todo: лист вывести в настройки}
-  API_KEY    = 'UAbp8xH59wGkdCtP8N';
-  API_SECRET = 'RUVaS6CDSoRI2Mpck23pNwLfwlsdyPLIhaBW';
+  API_KEY    = 'V3yApfAKyszSN1bQVV';
+  API_SECRET = 'Zkxlw9NYM3GPm5wdygkKt0fV9KciZbFLge7X';
 
 { TOrderFrame }
 
@@ -129,50 +140,64 @@ begin
   inherited Create(AOwner);
   OrderResponse := TOrderResponse.Create;
 
-  QtyValueFrame := TValueFrame.Create(nil);
-  QtyValueFrame.Parent := LayoutPrice;
-  QtyValueFrame.Align := TAlignLayout.Client;
-  QtyValueFrame.MaxValue := 100;
-  QtyValueFrame.MinValue := 0;
-  QtyValueFrame.Step := STEP_QUANTITY;
+  LineEditFrame1 := _GetCreateLineEditFrame('Уровень: 1',Layout1);
+  LineEditFrame2 := _GetCreateLineEditFrame('Уровень: 2',Layout2);
+  LineEditFrame3 := _GetCreateLineEditFrame('Уровень: 3',Layout3);
+  LineEditFrame4 := _GetCreateLineEditFrame('Уровень: 4',Layout4);
+  LineEditFrame5 := _GetCreateLineEditFrame('Уровень: 5',Layout5);
+  LineEditFrame6 := _GetCreateLineEditFrame('Уровень: 6',Layout6);
+  LineEditFrameClose := _GetCreateLineEditFrame('Закрытие',LayoutClose);
 
-  LongLineEditFrame := _GetCreateLineEditFrame('Длинное значение',LayoutLongRSI);
-  MediumLineEditFrame := _GetCreateLineEditFrame('Средние значение',LayoutMediumRSI);
-  ShortLineEditFrame := _GetCreateLineEditFrame('Короткое значение',LayoutShortSRI);
 end;
 
 destructor TOrderFrame.Destroy;
 begin
-  FreeAndNil(ShortLineEditFrame);
-  FreeAndNil(MediumLineEditFrame);
-  FreeAndNil(LongLineEditFrame);
+  FreeAndNil(LineEditFrameClose);
+  FreeAndNil(LineEditFrame6);
+  FreeAndNil(LineEditFrame5);
+  FreeAndNil(LineEditFrame4);
+  FreeAndNil(LineEditFrame3);
+  FreeAndNil(LineEditFrame2);
+  FreeAndNil(LineEditFrame1);
 
-  FreeAndNil(QtyValueFrame);
   FreeAndNil(OrderResponse);
   inherited;
 end;
 
 procedure TOrderFrame.SetLoad;
 begin
-  LongLineEditFrame.SetLoad;
-  MediumLineEditFrame.SetLoad;
-  ShortLineEditFrame.SetLoad;
+  LineEditFrame1.SetLoad;
+  LineEditFrame2.SetLoad;
+  LineEditFrame3.SetLoad;
+  LineEditFrame4.SetLoad;
+  LineEditFrame5.SetLoad;
+  LineEditFrame6.SetLoad;
+  LineEditFrameClose.SetLoad;
 end;
 
 procedure TOrderFrame.SetSave;
 begin
-  LongLineEditFrame.SetSave;
-  MediumLineEditFrame.SetSave;
-  ShortLineEditFrame.SetSave;
+  LineEditFrame1.SetSave;
+  LineEditFrame2.SetSave;
+  LineEditFrame3.SetSave;
+  LineEditFrame4.SetSave;
+  LineEditFrame5.SetSave;
+  LineEditFrame6.SetSave;
+  LineEditFrameClose.SetSave;
 end;
 
-
-procedure TOrderFrame.EventOperationTrade(Sender: TObject);
+procedure TOrderFrame.EventOperationTrade(Sender: TObject; ASide: TTypeSide; AQty: Double);
 begin
-  SetOperationTrade;
+  if LineEditFrame1 = Sender then SetOperationTrade(ASide, AQty, TTypeLine.tlLine1,TTypeStr(FSide));
+  if LineEditFrame2 = Sender then SetOperationTrade(ASide, AQty, TTypeLine.tlLine2,TTypeStr(FSide));
+  if LineEditFrame3 = Sender then SetOperationTrade(ASide, AQty, TTypeLine.tlLine3,TTypeStr(FSide));
+  if LineEditFrame4 = Sender then SetOperationTrade(ASide, AQty, TTypeLine.tlLine4,TTypeStr(FSide));
+  if LineEditFrame5 = Sender then SetOperationTrade(ASide, AQty, TTypeLine.tlLine5,TTypeStr(FSide));
+  if LineEditFrame6 = Sender then SetOperationTrade(ASide, AQty, TTypeLine.tlLine6,TTypeStr(FSide));
+  if LineEditFrameClose = Sender then SetOperationTrade(ASide, AQty, TTypeLine.tlCloseLine,TTypeStr(FSide));
 end;
 
-procedure TOrderFrame.SetOperationTrade;
+procedure TOrderFrame.SetOperationTrade(ASide: TTypeSide; AQty: Double; ATypeLine: TTypeLine; ATypeStr: TTypeStr);
 var
   xPlaceOrder: TParamOrder;
 begin
@@ -186,16 +211,22 @@ begin
       {todo: сохранение данных}
       xPlaceOrder.Category    := TTypeCategory.tcLinear;
       xPlaceOrder.Symbol      := FSymbol;
-      xPlaceOrder.Side        := FSide;
+      xPlaceOrder.Side        := ASide;
       xPlaceOrder.PositionIdx := 0;
       xPlaceOrder.OrderType   := TTypeOrder.Limit;
-      xPlaceOrder.Qty         := QtyValueFrame.Value;
+      xPlaceOrder.Qty         := AQty;
       xPlaceOrder.Price       := FPrice;
       xPlaceOrder.timeInForce := TTypeTimeInForce.GTC;
       xPlaceOrder.OrderLinkId := 'test' + Random(65000).ToString;
 
+      // Если сработал уровень то отправляем торговый приказ
       {$IFDEF VERTUAL_TRADE}
-      SetVirtualOrderSelectedOrder(xPlaceOrder,0,0,0);
+      SetVirtualOrderSelectedOrder(
+        xPlaceOrder,
+        FValueRSI,
+        ATypeLine,
+        ATypeStr
+      );
       {$ELSE}
       SelectedOrder(
           API_KEY,
@@ -219,11 +250,23 @@ end;
 
 
 procedure TOrderFrame.SetSide(const Value: TTypeSide);
+
+  procedure _NameSetting(ALineEditFrame: TLineEditFrame; AName: String);
+  begin
+    ALineEditFrame.NameSetting := AName;
+  end;
+
 begin
   FSide := Value;
-  LongLineEditFrame.NameSetting := 'long_' + GetStrToTypeSide(FSide);
-  MediumLineEditFrame.NameSetting := 'medium_' + GetStrToTypeSide(FSide);
-  ShortLineEditFrame.NameSetting := 'short' + GetStrToTypeSide(FSide);
+
+  _NameSetting(LineEditFrame1,'line_1' + GetStrToTypeSide(FSide));
+  _NameSetting(LineEditFrame2,'line_2' + GetStrToTypeSide(FSide));
+  _NameSetting(LineEditFrame3,'line_3' + GetStrToTypeSide(FSide));
+  _NameSetting(LineEditFrame4,'line_4' + GetStrToTypeSide(FSide));
+  _NameSetting(LineEditFrame5,'line_5' + GetStrToTypeSide(FSide));
+  _NameSetting(LineEditFrame6,'line_6' + GetStrToTypeSide(FSide));
+  _NameSetting(LineEditFrameClose,'line_close' + GetStrToTypeSide(FSide));
+
   case FSide of
     tsBuy: begin
       TextPrice.TextSettings.FontColor := TAlphaColorRec.Green;
@@ -238,16 +281,6 @@ procedure TOrderFrame.SetPrice(const Value: Double);
 begin
   FPrice := Value;
   TextPrice.Text := FSymbol + ':' + FloatToStr(Value);
-end;
-
-procedure TOrderFrame.SetStepQuantity(const Value: Double);
-begin
-  QtyValueFrame.Step := Value;
-end;
-
-procedure TOrderFrame.SetQuantity(const Value: Double);
-begin
-  QtyValueFrame.Value := Value;
 end;
 
 procedure TOrderFrame.SetSymbol(const Value: String);
@@ -265,18 +298,20 @@ begin
   TextPrice.Text := FSymbol + ':' + FPrice.ToString;
   FValueRSI := AValueRSI;
 
-  {$IFDEF DEBUG_TRADE}
-  LongLineEditFrame.SetUpData(FSide,AValueRSI);
-  {$ELSE}
-  LongLineEditFrame.SetUpData(FSide,AValueRSI);
-  MediumLineEditFrame.SetUpData(FSide,AValueRSI);
-  ShortLineEditFrame.SetUpData(FSide,AValueRSI);
-  {$ENDIF}
+  LineEditFrame1.SetUpData(FSide,AValueRSI);
+  LineEditFrame2.SetUpData(FSide,AValueRSI);
+  LineEditFrame3.SetUpData(FSide,AValueRSI);
+  LineEditFrame4.SetUpData(FSide,AValueRSI);
+  LineEditFrame5.SetUpData(FSide,AValueRSI);
+  LineEditFrame6.SetUpData(FSide,AValueRSI);
+  LineEditFrameClose.SetUpData(GetCrossTypeSide(FSide),AValueRSI);
 end;
 
 procedure TOrderFrame.ButtonOrderClick(Sender: TObject);
 begin
-  Self.SetOperationTrade;
+  Self.SetOperationTrade(FSide,0.01,TTypeLine.tlNull,FSide);
 end;
+
+
 
 end.

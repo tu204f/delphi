@@ -2,6 +2,8 @@ unit UnitLineEditFrame;
 
 interface
 
+{$I demo_bot.inc}
+
 uses
   System.SysUtils,
   System.Types,
@@ -21,6 +23,8 @@ uses
   Lb.Bybit.SysUtils;
 
 type
+  TNotifyEventLine = procedure(Sender: TObject; ASide: TTypeSide; AQty: Double) of object;
+
   TLineEditFrame = class(TFrame)
     LayoutCheckBox: TLayout;
     GridLayout: TGridPanelLayout;
@@ -30,12 +34,15 @@ type
     GridPanel: TGridPanelLayout;
     CheckBoxActive: TCheckBox;
     CheckBoxReActive: TCheckBox;
+    Rectangle: TRectangle;
+    LayoutQty: TLayout;
   private
     ActiveValueFrame: TValueFrame;
     ReActiveValueFrame: TValueFrame;
-    FOnOperationTrade: TNotifyEvent;
+    QtyValueFrame: TValueFrame;
+    FOnOperationTrade: TNotifyEventLine;
   protected
-    procedure DoOperationTrade;
+    procedure DoOperationTrade(ASide: TTypeSide; AQty: Double);
   public
     NameSetting: String;
     constructor Create(AOwner: TComponent); override;
@@ -43,7 +50,7 @@ type
     procedure SetSave;
     procedure SetLoad;
     procedure SetUpData(const ASide: TTypeSide; const AValueRSI: Double);
-    property OnOperationTrade: TNotifyEvent write FOnOperationTrade;
+    property OnOperationTrade: TNotifyEventLine write FOnOperationTrade;
   end;
 
 implementation
@@ -73,60 +80,77 @@ constructor TLineEditFrame.Create(AOwner: TComponent);
 
 begin
   inherited Create(AOwner);
-  ActiveValueFrame := _GetCreareValueFrame(LayoutActive);
+  ActiveValueFrame   := _GetCreareValueFrame(LayoutActive);
   ReActiveValueFrame := _GetCreareValueFrame(LayoutReActive);
+  QtyValueFrame      := _GetCreareValueFrame(LayoutQty);
+
+  with QtyValueFrame do
+  begin
+    MaxValue := 100;
+    MinValue := 0.01;
+    Step := 0.01;
+  end;
+
 end;
 
 destructor TLineEditFrame.Destroy;
 begin
+  FreeAndNil(QtyValueFrame);
   FreeAndNil(ActiveValueFrame);
   FreeAndNil(ReActiveValueFrame);
   inherited;
 end;
 
-procedure TLineEditFrame.DoOperationTrade;
+procedure TLineEditFrame.DoOperationTrade(ASide: TTypeSide; AQty: Double);
 begin
   if Assigned(FOnOperationTrade) then
-    FOnOperationTrade(Self);
+    FOnOperationTrade(Self, ASide, AQty);
 end;
 
 procedure TLineEditFrame.SetLoad;
 begin
   ActiveValueFrame.Value := TSetting.ReadInteger('config.' + NameSetting + '.act_value',50);
   ReActiveValueFrame.Value := TSetting.ReadInteger('config.' + NameSetting + '.re_act_value',50);
+  QtyValueFrame.Value := TSetting.ReadFloat('config.' + NameSetting + '.qty',0.01);
 end;
 
 procedure TLineEditFrame.SetSave;
 begin
   TSetting.WriteFloat('config.' + NameSetting + '.act_value',ActiveValueFrame.Value);
   TSetting.WriteFloat('config.' + NameSetting + '.re_act_value',ReActiveValueFrame.Value);
+  TSetting.WriteFloat('config.' + NameSetting + '.qty',QtyValueFrame.Value);
 end;
 
 procedure TLineEditFrame.SetUpData(const ASide: TTypeSide; const AValueRSI: Double);
 
   procedure _SetOrder(const AValueRSI: Double);
   begin
+    // Условия активайкии
     if not CheckBoxActive.IsChecked then
       Exit;
-
     {$IFDEF DEBUG_TRADE}
     TLogger.LogTree(0,'TLineEditFrame.SetUpData._SetOrder');
     {$ENDIF}
-
     if (AValueRSI > 0) then
     begin
       case ASide of
         tsBuy:
           if AValueRSI < ActiveValueFrame.Value then
           begin
-            DoOperationTrade;
+            DoOperationTrade(ASide,QtyValueFrame.Value);
             CheckBoxActive.IsChecked := False;
+            {$IFDEF DEBUG_TRADE}
+            TLogger.LogTreeText(0,'>> Усливие выпольнено');
+            {$ENDIF}
           end;
         tsSell:
           if AValueRSI > ActiveValueFrame.Value then
           begin
-            DoOperationTrade;
+            DoOperationTrade(ASide,QtyValueFrame.Value);
             CheckBoxActive.IsChecked := False;
+            {$IFDEF DEBUG_TRADE}
+            TLogger.LogTreeText(0,'>> Усливие выпольнено');
+            {$ENDIF}
           end;
       end;
     end;
@@ -144,11 +168,21 @@ procedure TLineEditFrame.SetUpData(const ASide: TTypeSide; const AValueRSI: Doub
       case ASide of
         tsBuy: begin
           if AValueRSI > ReActiveValueFrame.Value then
+          begin
             CheckBoxActive.IsChecked := True;
+            {$IFDEF DEBUG_TRADE}
+            TLogger.LogTreeText(0,'>> Усливие выпольнено');
+            {$ENDIF}
+          end;
         end;
         tsSell: begin
           if AValueRSI < ReActiveValueFrame.Value then
+          begin
             CheckBoxActive.IsChecked := True;
+            {$IFDEF DEBUG_TRADE}
+            TLogger.LogTreeText(0,'>> Усливие выпольнено');
+            {$ENDIF}
+          end;
         end;
       end;
     end;

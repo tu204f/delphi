@@ -2,10 +2,47 @@ object MainForm: TMainForm
   Left = 0
   Top = 0
   Caption = 'Form4'
-  ClientHeight = 480
-  ClientWidth = 640
+  ClientHeight = 866
+  ClientWidth = 706
   FormFactor.Width = 320
   FormFactor.Height = 480
   FormFactor.Devices = [Desktop]
+  OnClose = FormClose
   DesignerMasterStyle = 0
+  object ButtonStart: TButton
+    Position.X = 8.000000000000000000
+    Position.Y = 8.000000000000000000
+    TabOrder = 0
+    Text = 'ButtonStart'
+    OnClick = ButtonStartClick
+  end
+  object lbLog: TListBox
+    Anchors = [akLeft, akRight, akBottom]
+    Position.X = 8.000000000000000000
+    Position.Y = 36.000000000000000000
+    Size.Width = 691.000000000000000000
+    Size.Height = 818.000000000000000000
+    Size.PlatformDefault = False
+    TabOrder = 2
+    DisableFocusEffect = True
+    DefaultItemStyles.ItemStyle = ''
+    DefaultItemStyles.GroupHeaderStyle = ''
+    DefaultItemStyles.GroupFooterStyle = ''
+    Viewport.Width = 687.000000000000000000
+    Viewport.Height = 814.000000000000000000
+  end
+  object TimerCandel: TTimer
+    Enabled = False
+    Interval = 10
+    OnTimer = TimerCandelTimer
+    Left = 128
+    Top = 16
+  end
+  object Button1: TButton
+    Position.X = 92.000000000000000000
+    Position.Y = 8.000000000000000000
+    TabOrder = 5
+    Text = 'Button1'
+    OnClick = Button1Click
+  end
 end

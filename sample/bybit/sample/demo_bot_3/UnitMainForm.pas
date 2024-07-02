@@ -54,6 +54,7 @@ type
     ButtonStartTrade: TButton;
     GridPanelInfo: TGridPanelLayout;
     LayoutOrder: TLayout;
+    TextValueRSI: TText;
     procedure ButtonStartUpDataClick(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure TimerTimer(Sender: TObject);
@@ -61,9 +62,7 @@ type
     procedure ButtonStartTradeClick(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
   private
-    FLongRSI: Double;
-    FMediumRSI: Double;
-    FShortSRI: Double;
+    FValueRSI: Double;
     FOperation: TTypeOperation;
   private
     FQuantity: Double;
@@ -84,9 +83,6 @@ type
     {$IFDEF VERTUAL_TRADE}
     OrdersFrame: TGridOrdersFrame;
     {$ENDIF}
-  protected {Лог операций}
-    procedure SetLog(S: String);
-    procedure SetLogText(S: String);
   public
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
@@ -209,10 +205,6 @@ end;
 
 procedure TMainForm.SetStart;
 begin
-
-  OrderBuyFrame.Quantity := 0.01;
-  OrderSellFrame.Quantity := 0.01;
-
   SetInitialization('','');
   ButtonStartUpData.Text := 'Стоп Об.';
   {$IFDEF HISTORY_INDICATOR}
@@ -254,9 +246,7 @@ end;
 
 procedure TMainForm.TimerTimer(Sender: TObject);
 begin
-  FLongRSI   := 0;
-  FMediumRSI := 0;
-  FShortSRI  := 0;
+  FValueRSI   := 0;
   // Запрашиваем данные
   MemoLog.Lines.Clear;
   FEventCount := 0;
@@ -268,37 +258,19 @@ begin
   {$ENDIF}
 end;
 
-
-procedure TMainForm.SetLog(S: String);
-var
-  xS: String;
-begin
-  xS := FormatDateTime('hh:mm:ss.zzz',Time) + ' || ' + S;
-  SetLogText(xS);
-end;
-
-procedure TMainForm.SetLogText(S: String);
-begin
-  MemoLog.Lines.Add(S);
-end;
-
 procedure TMainForm.EventResponse(ASander: TObject; ATypeObject: TTypeObject);
 begin
   Inc(FEventCount);
   case ATypeObject of
     tobNullObject: begin
-      SetLog('MainForm.EventResponse.NullObject [' + FEventCount.ToString + ']');
+
     end;
     tobHistoryIndicator: begin
-      SetLog('MainForm.EventResponse: tobHistoryIndicator');
       {$IFDEF HISTORY_INDICATOR}
-      FLongRSI   := HistoryIndicator.LongRSI.Current.AvgValue;
-      FMediumRSI := HistoryIndicator.MediumRSI.Current.AvgValue;
-      FShortSRI  := HistoryIndicator.ShortSRI.Current.AvgValue;
+      FValueRSI   := HistoryIndicator.RSI.Current.AvgValue;
       {$ENDIF}
     end;
     tobInstrumentPrice: begin
-      SetLog('MainForm.EventResponse: tobInstrumentPrice');
       {$IFDEF INSTRUMENT_PRICE}
 
       {$ENDIF}
@@ -306,38 +278,28 @@ begin
   end;
   if FEventCount = 2 then
     SetOperationTrade;
-  SetLog('  >>:' + FEventCount.ToString + ']');
 end;
 
 procedure TMainForm.SetOperationTrade;
 begin
-  {$IFDEF HISTORY_INDICATOR}
-  SetLog('Шаг обновление Candel.Count = ' + HistoryIndicator.Candels.Count.ToString);
-  {$ENDIF}
+  // Покупка
+  OrderBuyFrame.Symbol  := EditSymbol.Text;
+  OrderBuyFrame.Price   := InstrumentPrice.Ask;
 
-  SetLogText('  >> LongRSI  : ' + FLongRSI.ToString);
-  SetLogText('  >> MediumRSI: ' + FMediumRSI.ToString);
-  SetLogText('  >> ShortSRI : ' + FShortSRI.ToString);
-
-
-  OrderBuyFrame.Symbol := EditSymbol.Text;
-  //OrderBuyFrame.Side := TTypeSide.tsBuy;
-  {$IFDEF INSTRUMENT_PRICE}
-  SetLogText('  >> Ask : ' + InstrumentPrice.Ask.ToString);
-  OrderBuyFrame.Price := InstrumentPrice.Ask;
-  {$ENDIF}
+  // Продажа
   OrderSellFrame.Symbol := EditSymbol.Text;
-  //OrderSellFrame.Side := TTypeSide.tsSell;
-  {$IFDEF INSTRUMENT_PRICE}
-  SetLogText('  >> Bid : ' + InstrumentPrice.Bid.ToString);
-  OrderSellFrame.Price := InstrumentPrice.Bid;
-  {$ENDIF}
+  OrderSellFrame.Price  := InstrumentPrice.Bid;
 end;
 
 procedure TMainForm.TimerTradeUpdataTimer(Sender: TObject);
 begin
-  OrderBuyFrame.SetUpData(FMediumRSI);
-  OrderSellFrame.SetUpData(FMediumRSI);
+  {$IFDEF DB_LOG}
+  TLogger.LogTree(0,'TMainForm.TimerTradeUpdataTimer:');
+  TLogger.LogTree(3,'>> RSI: ' + FValueRSI.ToString);
+  {$ENDIF}
+  TextValueRSI.Text := FValueRSI.ToString;
+  OrderBuyFrame.SetUpData(FValueRSI);
+  OrderSellFrame.SetUpData(FValueRSI);
 end;
 
 end.

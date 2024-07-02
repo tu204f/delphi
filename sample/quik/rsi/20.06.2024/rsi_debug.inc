@@ -1,0 +1,3 @@
+{$IFDEF DEBUG}
+	{$DEFINE QTY_TAB}
+{$ENDIF}
