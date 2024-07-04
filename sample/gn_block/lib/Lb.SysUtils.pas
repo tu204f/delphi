@@ -240,6 +240,17 @@ begin
 end;
 
 procedure TTrader.SetUpDate(const AValueRSI: Double);
+
+  procedure _ActiveÑriterion(AÑriterion: TÑriterion);
+  begin
+    // Ïğîèçâîäèì àêòèâàöèş êğèòåğèÿ
+  end;
+
+  procedure _ReActiveÑriterion(AÑriterion: TÑriterion);
+  begin
+    // Ïğîèçâîäèì ğåàêòèâàöèş êğèòåğèÿ
+  end;
+
 var
   xÑriterion: TÑriterion;
   i, iCount: Integer;

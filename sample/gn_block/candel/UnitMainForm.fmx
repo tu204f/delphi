@@ -7,42 +7,32 @@ object MainForm: TMainForm
   FormFactor.Width = 320
   FormFactor.Height = 480
   FormFactor.Devices = [Desktop]
-  OnClose = FormClose
   DesignerMasterStyle = 0
   object ButtonStart: TButton
     Position.X = 8.000000000000000000
     Position.Y = 8.000000000000000000
-    TabOrder = 0
-    Text = 'ButtonStart'
+    TabOrder = 3
+    Text = #1057#1090#1072#1088#1090
     OnClick = ButtonStartClick
   end
-  object lbLog: TListBox
-    Anchors = [akLeft, akRight, akBottom]
+  object StringGrid: TStringGrid
+    Anchors = [akLeft, akTop, akRight, akBottom]
+    CanFocus = True
+    ClipChildren = True
     Position.X = 8.000000000000000000
     Position.Y = 36.000000000000000000
-    Size.Width = 691.000000000000000000
-    Size.Height = 818.000000000000000000
+    Size.Width = 689.000000000000000000
+    Size.Height = 821.000000000000000000
     Size.PlatformDefault = False
-    TabOrder = 2
-    DisableFocusEffect = True
-    DefaultItemStyles.ItemStyle = ''
-    DefaultItemStyles.GroupHeaderStyle = ''
-    DefaultItemStyles.GroupFooterStyle = ''
-    Viewport.Width = 687.000000000000000000
-    Viewport.Height = 814.000000000000000000
+    TabOrder = 5
+    Viewport.Width = 685.000000000000000000
+    Viewport.Height = 796.000000000000000000
   end
-  object TimerCandel: TTimer
-    Enabled = False
-    Interval = 10
-    OnTimer = TimerCandelTimer
-    Left = 128
-    Top = 16
-  end
-  object Button1: TButton
+  object Text1: TText
     Position.X = 92.000000000000000000
     Position.Y = 8.000000000000000000
-    TabOrder = 5
-    Text = 'Button1'
-    OnClick = Button1Click
+    Size.Width = 305.000000000000000000
+    Size.Height = 25.000000000000000000
+    Size.PlatformDefault = False
   end
 end
