@@ -3,7 +3,7 @@ object MainForm: TMainForm
   Top = 0
   BorderIcons = [biSystemMenu, biMinimize]
   Caption = 'MainForm'
-  ClientHeight = 119
+  ClientHeight = 322
   ClientWidth = 359
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
@@ -19,7 +19,7 @@ object MainForm: TMainForm
   OnShow = FormShow
   DesignSize = (
     359
-    119)
+    322)
   PixelsPerInch = 96
   TextHeight = 18
   object ButtonTolls: TButton
@@ -61,7 +61,7 @@ object MainForm: TMainForm
     Left = 1
     Top = 28
     Width = 356
-    Height = 90
+    Height = 293
     Anchors = [akLeft, akTop, akRight, akBottom]
     ColumnCollection = <
       item
@@ -92,23 +92,23 @@ object MainForm: TMainForm
         Value = 100.000000000000000000
       end>
     TabOrder = 3
-    ExplicitHeight = 321
+    ExplicitHeight = 90
     object PanelLeft: TPanel
       Left = 1
       Top = 1
       Width = 177
-      Height = 88
+      Height = 291
       Align = alClient
       BevelInner = bvLowered
       BevelKind = bkFlat
       BevelOuter = bvSpace
       TabOrder = 0
-      ExplicitHeight = 319
+      ExplicitHeight = 88
       inline UserOrderBuy: TUserOrderFrame
         Left = 2
         Top = 2
         Width = 169
-        Height = 80
+        Height = 283
         Align = alClient
         Font.Charset = DEFAULT_CHARSET
         Font.Color = clWindowText
@@ -120,7 +120,7 @@ object MainForm: TMainForm
         ExplicitLeft = 2
         ExplicitTop = 2
         ExplicitWidth = 169
-        ExplicitHeight = 311
+        ExplicitHeight = 80
         inherited ledValueRSI: TLabeledEdit
           Top = 42
           Height = 33
@@ -158,9 +158,11 @@ object MainForm: TMainForm
           ExplicitTop = 50
         end
         inherited UpDownValueActive1: TUpDown
-          Top = 43
+          Left = 132
+          Top = 42
           Height = 33
-          ExplicitTop = 43
+          ExplicitLeft = 132
+          ExplicitTop = 42
           ExplicitHeight = 33
         end
         inherited Edit1: TEdit
@@ -176,6 +178,7 @@ object MainForm: TMainForm
           EditLabel.Width = 135
           EditLabel.Height = 25
           EditLabel.ExplicitLeft = -110
+          EditLabel.ExplicitTop = 88
           EditLabel.ExplicitWidth = 135
           EditLabel.ExplicitHeight = 25
           ExplicitHeight = 33
@@ -197,6 +200,7 @@ object MainForm: TMainForm
           EditLabel.Width = 135
           EditLabel.Height = 25
           EditLabel.ExplicitLeft = -110
+          EditLabel.ExplicitTop = 125
           EditLabel.ExplicitWidth = 135
           EditLabel.ExplicitHeight = 25
           ExplicitHeight = 33
@@ -218,6 +222,7 @@ object MainForm: TMainForm
           EditLabel.Width = 135
           EditLabel.Height = 25
           EditLabel.ExplicitLeft = -110
+          EditLabel.ExplicitTop = 171
           EditLabel.ExplicitWidth = 135
           EditLabel.ExplicitHeight = 25
           ExplicitHeight = 33
@@ -239,6 +244,7 @@ object MainForm: TMainForm
           EditLabel.Width = 135
           EditLabel.Height = 25
           EditLabel.ExplicitLeft = -110
+          EditLabel.ExplicitTop = 211
           EditLabel.ExplicitWidth = 135
           EditLabel.ExplicitHeight = 25
           ExplicitHeight = 33
@@ -260,6 +266,7 @@ object MainForm: TMainForm
           EditLabel.Width = 135
           EditLabel.Height = 25
           EditLabel.ExplicitLeft = -110
+          EditLabel.ExplicitTop = 251
           EditLabel.ExplicitWidth = 135
           EditLabel.ExplicitHeight = 25
           ExplicitHeight = 33
@@ -282,18 +289,18 @@ object MainForm: TMainForm
       Left = 178
       Top = 1
       Width = 177
-      Height = 88
+      Height = 291
       Align = alClient
       BevelInner = bvLowered
       BevelKind = bkFlat
       BevelOuter = bvSpace
       TabOrder = 1
-      ExplicitHeight = 319
+      ExplicitHeight = 88
       inline UserOrderSell: TUserOrderFrame
         Left = 2
         Top = 2
         Width = 169
-        Height = 80
+        Height = 283
         Align = alClient
         Font.Charset = DEFAULT_CHARSET
         Font.Color = clWindowText
@@ -305,7 +312,7 @@ object MainForm: TMainForm
         ExplicitLeft = 2
         ExplicitTop = 2
         ExplicitWidth = 169
-        ExplicitHeight = 311
+        ExplicitHeight = 80
         inherited ledValueRSI: TLabeledEdit
           Top = 41
           Height = 33
@@ -343,9 +350,9 @@ object MainForm: TMainForm
           ExplicitTop = 51
         end
         inherited UpDownValueActive1: TUpDown
-          Top = 43
+          Top = 42
           Height = 33
-          ExplicitTop = 43
+          ExplicitTop = 42
           ExplicitHeight = 33
         end
         inherited Edit1: TEdit
@@ -359,6 +366,7 @@ object MainForm: TMainForm
           EditLabel.Width = 135
           EditLabel.Height = 25
           EditLabel.ExplicitLeft = -110
+          EditLabel.ExplicitTop = 88
           EditLabel.ExplicitWidth = 135
           EditLabel.ExplicitHeight = 25
           ExplicitHeight = 33
@@ -380,6 +388,7 @@ object MainForm: TMainForm
           EditLabel.Width = 135
           EditLabel.Height = 25
           EditLabel.ExplicitLeft = -110
+          EditLabel.ExplicitTop = 125
           EditLabel.ExplicitWidth = 135
           EditLabel.ExplicitHeight = 25
           ExplicitHeight = 33
@@ -401,6 +410,7 @@ object MainForm: TMainForm
           EditLabel.Width = 135
           EditLabel.Height = 25
           EditLabel.ExplicitLeft = -110
+          EditLabel.ExplicitTop = 171
           EditLabel.ExplicitWidth = 135
           EditLabel.ExplicitHeight = 25
           ExplicitHeight = 33
@@ -422,6 +432,7 @@ object MainForm: TMainForm
           EditLabel.Width = 135
           EditLabel.Height = 25
           EditLabel.ExplicitLeft = -110
+          EditLabel.ExplicitTop = 211
           EditLabel.ExplicitWidth = 135
           EditLabel.ExplicitHeight = 25
           ExplicitHeight = 33
@@ -443,6 +454,7 @@ object MainForm: TMainForm
           EditLabel.Width = 135
           EditLabel.Height = 25
           EditLabel.ExplicitLeft = -110
+          EditLabel.ExplicitTop = 251
           EditLabel.ExplicitWidth = 135
           EditLabel.ExplicitHeight = 25
           ExplicitHeight = 33

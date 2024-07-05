@@ -85,6 +85,7 @@ begin
   _AddColumn(StringGrid,'Close.Active.RSI');
   _AddColumn(StringGrid,'Profit');
   _AddColumn(StringGrid,'Progress');
+  _AddColumn(StringGrid,'Position');
 end;
 
 destructor TMainForm.Destroy;
@@ -99,7 +100,14 @@ var
 begin
   xTrader := TWorkTraderThread(Sander);
   StringGrid.Cells[0,xTrader.ID] := xTrader.ID.ToString;
+  StringGrid.Cells[1,xTrader.ID] := '';
+  StringGrid.Cells[2,xTrader.ID] := '';
+  StringGrid.Cells[3,xTrader.ID] := '';
+  StringGrid.Cells[4,xTrader.ID] := '';
+  StringGrid.Cells[5,xTrader.ID] := '';
+  StringGrid.Cells[6,xTrader.ID] := '';
   StringGrid.Cells[7,xTrader.ID] := 'Start';
+  StringGrid.Cells[8,xTrader.ID] := '';
 end;
 
 procedure TMainForm.localTraderOnEventProgress(Sander: TObject; AProgress: Integer);
@@ -125,7 +133,9 @@ begin
   StringGrid.Cells[5,xTrader.ID] := xTrader.CloseActiveRSI.ToString;
   StringGrid.Cells[6,xTrader.ID] := xTrader.Profit.ToString;
   StringGrid.Cells[7,xTrader.ID] := 'Stop';
-
+  StringGrid.Cells[8,xTrader.ID] :=
+    xTrader.Trader.PositivCountProfit.ToString + '/' +
+    xTrader.Trader.PositionTrades.Count.ToString;
 end;
 
 procedure TMainForm.ButtonStartClick(Sender: TObject);
@@ -134,7 +144,7 @@ var
   xTrader: TWorkTraderThread;
   i: Integer;
 begin
-  for i := 0 to 0 do
+  for i := 0 to 9 do
   begin
     xFileName := ExtractFilePath(ParamStr(0)) + 'data\';
     xFileName := xFileName + 'SPFB.SBRF_240301_240627.csv';

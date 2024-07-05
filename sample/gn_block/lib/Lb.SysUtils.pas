@@ -16,10 +16,22 @@ uses
   Lb.ReadPrice;
 
 type
+  ///<summary>
+  /// Òèï êàòåãîğèé
+  ///</summary>
   TTypeÑriterion = (tcOpen, tcClose);
+
+  ///<summary>
+  /// Òèï íàïğàâëåíèå
+  ///</summary>
   TTypeSide = (tsBuy,tsSell);
+
+  ///<summary>
+  /// Òèï ïîçèöèè
+  ///</summary>
   TTypePosition = (tpNull, tpOpen, tpClose);
 
+type
   TTrader = class;
   TPositionTrade = class;
 
@@ -134,6 +146,7 @@ type
     FActivePosition: TPositionTrade;
     FPositionTrades: TPositionTradeList;
     function GetProfit: Double;
+    function GetPositivCountProfit: Double;
   protected
     procedure DoEventOperationTrade(ATypeÑriterion: TTypeÑriterion; ASide: TTypeSide; AQty: Double); override;
   public
@@ -144,6 +157,9 @@ type
     property PositionTrades: TPositionTradeList read FPositionTrades;
     ///<summary>Ïîëó÷åííàÿ ïğèáûëü ïî çàêğûòûì ïîçèöèÿì</summary>
     property Profit: Double read GetProfit;
+  public
+    ///<summary>Êîëè÷åñòâî ïîçèòèâíûú ïîçèöèé</summary>
+    property PositivCountProfit: Double read GetPositivCountProfit;
   end;
   TWorkTraderList = TObjectList<TWorkTrader>;
 
@@ -162,6 +178,16 @@ begin
     tsBuy: Result := 'Buy';
     tsSell: Result := 'Sell';
   end;
+end;
+
+function GetUpRSI(const AValue, AParam: Double): Boolean;
+begin
+  Result := AParam < AValue;
+end;
+
+function GetDownRSI(const AValue, AParam: Double): Boolean;
+begin
+  Result := AParam > AValue;
 end;
 
 { TÑriterion }
@@ -244,55 +270,75 @@ procedure TTrader.SetUpDate(const AValueRSI: Double);
   procedure _ActiveÑriterion(AÑriterion: TÑriterion);
   begin
     // Ïğîèçâîäèì àêòèâàöèş êğèòåğèÿ
+    case FSide of
+      tsBuy: begin
+        case AÑriterion.TypeÑriterion of
+          tcOpen: if GetDownRSI(AValueRSI,AÑriterion.RSI) then
+          begin
+            DoOperationTrade(AÑriterion);
+            AÑriterion.IsActive := False;
+          end;
+          tcClose: if GetUpRSI(AValueRSI,AÑriterion.RSI) then
+          begin
+            DoOperationTrade(AÑriterion);
+            AÑriterion.IsActive := False;
+          end;
+        end;
+      end;
+      tsSell: begin
+        case AÑriterion.TypeÑriterion of
+          tcOpen: if GetUpRSI(AValueRSI, AÑriterion.RSI) then
+          begin
+            DoOperationTrade(AÑriterion);
+            AÑriterion.IsActive := False;
+          end;
+          tcClose: if GetDownRSI(AValueRSI, AÑriterion.RSI) then
+          begin
+            DoOperationTrade(AÑriterion);
+            AÑriterion.IsActive := False;
+          end;
+        end;
+      end;
+    end;
   end;
 
   procedure _ReActiveÑriterion(AÑriterion: TÑriterion);
   begin
     // Ïğîèçâîäèì ğåàêòèâàöèş êğèòåğèÿ
+    case FSide of
+      tsBuy: begin
+        case AÑriterion.TypeÑriterion of
+          tcOpen: if GetUpRSI(AValueRSI, AÑriterion.ReActiveRSI) then
+            AÑriterion.IsActive := True;
+          tcClose: if GetDownRSI(AValueRSI, AÑriterion.ReActiveRSI) then
+            AÑriterion.IsActive := True;
+        end;
+      end;
+      tsSell: begin
+        case AÑriterion.TypeÑriterion of
+          tcOpen: if GetDownRSI(AValueRSI, AÑriterion.ReActiveRSI) then
+            AÑriterion.IsActive := True;
+          tcClose: if AÑriterion.ReActiveRSI > AValueRSI then
+            AÑriterion.IsActive := True;
+        end;
+      end;
+    end;
   end;
 
 var
   xÑriterion: TÑriterion;
   i, iCount: Integer;
 begin
-  {$IFDEF DB_LOG}
-  Log('TTrader.SetUpDateCandel:');
-  {$ENDIF}
   iCount := FÑriterions.Count;
   if iCount > 0 then
-  begin
-    {$IFDEF DB_LOG}
-    Log(' >>' + iCount.ToString);
-    {$ENDIF}
     for i := 0 to iCount - 1 do
     begin
       xÑriterion := FÑriterions[i];
       if xÑriterion.IsActive then
-      begin
-        case FSide of
-          tsBuy: if xÑriterion.RSI > AValueRSI then
-          begin
-            xÑriterion.IsActive := False;
-            DoOperationTrade(xÑriterion);
-          end;
-          tsSell: if xÑriterion.RSI < AValueRSI then
-          begin
-            xÑriterion.IsActive := False;
-            DoOperationTrade(xÑriterion);
-          end;
-        end;
-      end
+        _ActiveÑriterion(xÑriterion)
       else
-      begin
-        case FSide of
-          tsBuy: if xÑriterion.ReActiveRSI < AValueRSI then
-            xÑriterion.IsActive := True;
-          tsSell: if xÑriterion.ReActiveRSI > AValueRSI then
-            xÑriterion.IsActive := True;
-        end;
-      end;
+        _ReActiveÑriterion(xÑriterion);
     end;
-  end;
 end;
 
 { TTrade }
@@ -384,7 +430,7 @@ procedure TPositionTrade.SetOpenTrade(ADate, ATime: TDateTime; APrice, AQty: Dou
 var
   xTrade: TTrade;
 begin
-  if FTrades.Count < 3 then
+  if FTrades.Count < 1 then
   begin
     with xTrade do
     begin
@@ -479,6 +525,25 @@ begin
       xSum := xSum + xPositionTrade.Profit;
     end;
   Result := xSum;
+end;
+
+
+function TWorkTrader.GetPositivCountProfit: Double;
+var
+  xCount: Integer;
+  i, iCount: Integer;
+  xPositionTrade: TPositionTrade;
+begin
+  xCount := 0;
+  iCount := FPositionTrades.Count;
+  if iCount > 0 then
+    for i := 0 to iCount - 1 do
+    begin
+      xPositionTrade := FPositionTrades[i];
+      if xPositionTrade.Profit > 0 then
+        xCount := xCount + 1;
+    end;
+  Result := xCount;
 end;
 
 end.

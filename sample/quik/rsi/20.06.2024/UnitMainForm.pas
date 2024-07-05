@@ -124,8 +124,6 @@ procedure TMainForm.TimerTimer(Sender: TObject);
       end;
     end;
 
-
-
   end;
 
 
@@ -174,7 +172,6 @@ begin
       EditSecurity.Text := xS;
 
       _SetQty;
-
 
       UserOrderBuy.SetValueRSI(xRSI);
       UserOrderSell.SetValueRSI(xRSI);

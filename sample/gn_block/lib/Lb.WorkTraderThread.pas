@@ -66,6 +66,7 @@ type
   public
     constructor Create;
     destructor Destroy; override;
+    property Trader: TWorkTrader read FTrader;
     property ID: Integer read FID write SetID;
     property PeriodRSI: Integer read FPeriodRSI write FPeriodRSI;
     property FileName: String read FFileName write FFileName;
@@ -309,10 +310,10 @@ var
 begin
   case FSide of
     tsBuy: begin
-      FOpenRSI        := 36; // Random(100);
-      FOpenActiveRSI  := 85; // FOpenRSI + Random(100);
-      FCloseRSI       := 4;  // Random(100);
-      FCloseActiveRSI := 0;  // FCloseRSI - Random(100);
+      FOpenRSI        := Random(100);
+      FOpenActiveRSI  := FOpenRSI + Random(100);
+      FCloseRSI       := Random(100);
+      FCloseActiveRSI := FCloseRSI - Random(100);
 
       if FOpenActiveRSI > 100 then
         FOpenActiveRSI := 100;
