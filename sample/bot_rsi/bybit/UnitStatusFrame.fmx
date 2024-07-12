@@ -1,0 +1,52 @@
+object StatusFrame: TStatusFrame
+  Size.Width = 535.000000000000000000
+  Size.Height = 35.000000000000000000
+  Size.PlatformDefault = False
+  object Rectangle1: TRectangle
+    Align = Client
+    Size.Width = 535.000000000000000000
+    Size.Height = 35.000000000000000000
+    Size.PlatformDefault = False
+    object EditValueRSI: TEdit
+      Touch.InteractiveGestures = [LongTap, DoubleTap]
+      Align = Client
+      TabOrder = 3
+      ReadOnly = True
+      Text = 'RSI:'
+      TextSettings.Font.Size = 16.000000000000000000
+      TextSettings.Font.StyleExt = {00070000000000000004000000}
+      Enabled = False
+      Margins.Left = 3.000000000000000000
+      Margins.Top = 3.000000000000000000
+      Margins.Bottom = 3.000000000000000000
+      Size.Width = 398.000000000000000000
+      Size.Height = 29.000000000000000000
+      Size.PlatformDefault = False
+      StyledSettings = [Family, FontColor]
+    end
+    object EditQty: TEdit
+      Touch.InteractiveGestures = [LongTap, DoubleTap]
+      Align = Right
+      TabOrder = 2
+      ReadOnly = True
+      TextSettings.Font.Size = 16.000000000000000000
+      TextSettings.Font.StyleExt = {00070000000000000004000000}
+      Position.X = 404.000000000000000000
+      Position.Y = 3.000000000000000000
+      Enabled = False
+      Margins.Left = 3.000000000000000000
+      Margins.Top = 3.000000000000000000
+      Margins.Bottom = 3.000000000000000000
+      Size.Width = 131.000000000000000000
+      Size.Height = 29.000000000000000000
+      Size.PlatformDefault = False
+      StyledSettings = [Family, FontColor]
+    end
+  end
+  object Timer: TTimer
+    Enabled = False
+    OnTimer = TimerTimer
+    Left = 232
+    Top = 4
+  end
+end

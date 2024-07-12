@@ -39,6 +39,7 @@ type
     Button2: TButton;
     Button3: TButton;
     ButtonServerTime: TButton;
+    Button4: TButton;
     procedure FormCreate(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure ButtonSelectedClick(Sender: TObject);
@@ -46,9 +47,12 @@ type
     procedure ButtonSelectedOnCryptClick(Sender: TObject);
     procedure ButtonServerTimeClick(Sender: TObject);
     procedure ButtonOrderBookClick(Sender: TObject);
+    procedure Button4Click(Sender: TObject);
   private
+    Position: TBybitPosition;
     BybitServerTime: TBybitServerTime;
     BybitObject: TBybitHttpClient;
+    procedure PositionOnEventEndLoading(Sender: TObject);
   protected
     procedure BybitServerTimeOnEventBeginLoading(Sender: TObject);
     procedure BybitServerTimeOnEventEndLoading(Sender: TObject);
@@ -80,14 +84,16 @@ end;
 
 procedure TMainForm.FormCreate(Sender: TObject);
 begin
+  Position := nil;
   BybitObject  := nil;
   Self.Caption := 'Запрос на сервер Bybit';
   BybitServerTime := TBybitServerTime.Create;
-  BybitServerTime.OnEventBeginLoading := BybitServerTimeOnEventBeginLoading;
-  BybitServerTime.OnEventEndLoading   := BybitServerTimeOnEventEndLoading;
-  BybitServerTime.OnEventMessage      := BybitServerTimeOnEventMessage;
-  BybitServerTime.OnEventException    := BybitServerTimeOnEventException;
+//  BybitServerTime.OnEventBeginLoading := BybitServerTimeOnEventBeginLoading;
+//  BybitServerTime.OnEventEndLoading   := BybitServerTimeOnEventEndLoading;
+//  BybitServerTime.OnEventMessage      := BybitServerTimeOnEventMessage;
+//  BybitServerTime.OnEventException    := BybitServerTimeOnEventException;
 end;
+
 
 procedure TMainForm.FormClose(Sender: TObject; var Action: TCloseAction);
 begin
@@ -169,19 +175,20 @@ begin
   try
     xEncryption.ApiKey    := 'IYokQRNi1KjdlQ34vT';
     xEncryption.ApiSecret := 'cRQVjujmbZOAc4yIeoPTR2izhTbQPlkPgsGN';
-    xEncryption.Timestamp := BybitServerTime.TimeSecond + '000';
+    xEncryption.Timestamp := GetNow.ToString;// BybitServerTime.TimeSecond + '000';
 
     with BybitModule do
     begin
       TypeHttp := TTypeHttp.thGet;
       Host := BYBIT_HOST;
-      Module := '/v5/market/time';
+      Module := '/v5/position/list';
+      //Module := '/v5/market/time';
 
       // Параметр
       with Params do
       begin
         SetParam('category',GetStrToTypeCategory(TTypeCategory.tcLinear));
-        SetParam('symbol','BTCUSDT');
+        SetParam('symbol','ETHUSDT');
       end;
       xEncryption.QueryBody := Query;
 
@@ -196,6 +203,7 @@ begin
       end;
     end;
 
+    xHttpClientAPI.BybitModule := BybitModule;
     xHttpClientAPI.Selected;
     xS :=
       xHttpClientAPI.StatusCode.ToString + ' ' +
@@ -209,16 +217,43 @@ begin
   end;
 end;
 
+
+
+procedure TMainForm.Button4Click(Sender: TObject);
+begin
+  if not Assigned(Position) then
+    Position := TBybitPosition.Create;
+
+  Position.Symbol := 'ETHUSDT';
+  Position.Category := TTypeCategory.tcLinear;
+  Position.SetEncryption('y6Fomg1KW8inrZ8iZJ','nUa8al2l6lykH0FlwwZfhO5KlsBjpENLSMVi');
+  Position.Selected;
+
+  Position.OnEventEndLoading := PositionOnEventEndLoading;
+end;
+
+procedure TMainForm.PositionOnEventEndLoading(Sender: TObject);
+begin
+  SetLog(TBybitHttpClient(Sender).ValueMessage);
+
+  SetLog(Position.PositionObjects.Count.ToString);
+end;
+
+
+
 procedure TMainForm.ButtonSelectedClick(Sender: TObject);
 var
   xEncryption: TEncryption;
 begin
+
+  BybitObject := TBybitHttpClient.Create;
+
   MemoResult.Lines.Add(BybitServerTime.TimeSecond + ' :: ' + BybitServerTime.TimeNano);
 
   xEncryption := TEncryption.Create;
 
-  xEncryption.ApiKey    := 'IYokQRNi1KjdlQ34vT';
-  xEncryption.ApiSecret := 'cRQVjujmbZOAc4yIeoPTR2izhTbQPlkPgsGN';
+  xEncryption.ApiKey    := 'y6Fomg1KW8inrZ8iZJ';
+  xEncryption.ApiSecret := 'nUa8al2l6lykH0FlwwZfhO5KlsBjpENLSMVi';
   xEncryption.Timestamp := BybitServerTime.TimeSecond + '000';
 
   if Assigned(BybitObject) then
@@ -233,7 +268,7 @@ begin
         SetParam('category',GetStrToTypeCategory(TTypeCategory.tcLinear));
         SetParam('symbol','BTCUSDT');
         // SetParam('interval',GetStrToTypeInterval(TTypeInterval.ti_5));
-        // SetParam('limit',IntToStr(1000));
+        SetParam('limit',IntToStr(10));
         // SetParam('status',GetStrToTypeStatus(TTypeStatus.tsTrading));
         // baseCoin
         // limit
@@ -251,10 +286,16 @@ begin
       end;
     end;
     BybitObject.Selected;
+
+    BybitObject.OnEventEndLoading := PositionOnEventEndLoading;
+
+
   end;
 
   FreeAndNil(xEncryption);
 end;
+
+
 
 procedure TMainForm.ButtonOrderBookClick(Sender: TObject);
 begin

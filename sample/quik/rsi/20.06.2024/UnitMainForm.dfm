@@ -92,7 +92,6 @@ object MainForm: TMainForm
         Value = 100.000000000000000000
       end>
     TabOrder = 3
-    ExplicitHeight = 90
     object PanelLeft: TPanel
       Left = 1
       Top = 1
@@ -103,7 +102,6 @@ object MainForm: TMainForm
       BevelKind = bkFlat
       BevelOuter = bvSpace
       TabOrder = 0
-      ExplicitHeight = 88
       inline UserOrderBuy: TUserOrderFrame
         Left = 2
         Top = 2
@@ -120,7 +118,7 @@ object MainForm: TMainForm
         ExplicitLeft = 2
         ExplicitTop = 2
         ExplicitWidth = 169
-        ExplicitHeight = 80
+        ExplicitHeight = 283
         inherited ledValueRSI: TLabeledEdit
           Top = 42
           Height = 33
@@ -295,7 +293,6 @@ object MainForm: TMainForm
       BevelKind = bkFlat
       BevelOuter = bvSpace
       TabOrder = 1
-      ExplicitHeight = 88
       inline UserOrderSell: TUserOrderFrame
         Left = 2
         Top = 2
@@ -312,7 +309,7 @@ object MainForm: TMainForm
         ExplicitLeft = 2
         ExplicitTop = 2
         ExplicitWidth = 169
-        ExplicitHeight = 80
+        ExplicitHeight = 283
         inherited ledValueRSI: TLabeledEdit
           Top = 41
           Height = 33

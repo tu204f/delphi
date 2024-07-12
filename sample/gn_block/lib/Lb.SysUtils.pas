@@ -136,6 +136,8 @@ type
     property Qty  : Double read GetQty;
     property Side : TTypeSide read GetSide;
     property Profit: Double read GetProfit;
+  public
+    function GetCurrentProfit(const APrice: Double): Double;
   end;
   TPositionTradeList = TObjectList<TPositionTrade>;
 
@@ -370,6 +372,7 @@ begin
     raise Exception.Create('Error Message: Ќет возможности определить направление позиции');
 end;
 
+
 function TPositionTrade.GetPrice: Double;
 begin
   Result := Self.Value/Self.Qty;
@@ -458,6 +461,29 @@ begin
       Side := ASide;
     end;
     FTypePosition := TTypePosition.tpClose;
+  end;
+end;
+
+function TPositionTrade.GetCurrentProfit(const APrice: Double): Double;
+
+  function _CurrentProfit(const ACurrentPrice: Double): Double;
+  begin
+    case Side of
+      tsBuy: Result :=  ;
+      tsSell: ;
+    end;
+  end;
+
+begin
+  // «начение текущий прибыли
+  Result := 0;
+  case FTypePosition of
+    tpOpen: begin
+
+    end;
+    tpClose: begin
+
+    end;
   end;
 end;
 

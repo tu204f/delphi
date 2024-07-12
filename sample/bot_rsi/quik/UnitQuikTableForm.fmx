@@ -1,0 +1,95 @@
+object QuikTableForm: TQuikTableForm
+  Left = 0
+  Top = 0
+  Caption = 'Form1'
+  ClientHeight = 387
+  ClientWidth = 793
+  FormFactor.Width = 320
+  FormFactor.Height = 480
+  FormFactor.Devices = [Desktop]
+  OnShow = FormShow
+  DesignerMasterStyle = 0
+  object LayoutTop: TLayout
+    Align = Top
+    Margins.Left = 3.000000000000000000
+    Margins.Top = 3.000000000000000000
+    Margins.Right = 3.000000000000000000
+    Position.X = 3.000000000000000000
+    Position.Y = 3.000000000000000000
+    Size.Width = 787.000000000000000000
+    Size.Height = 25.000000000000000000
+    Size.PlatformDefault = False
+    TabOrder = 0
+    object ComboBoxTable: TComboBox
+      Align = Left
+      Position.X = 193.000000000000000000
+      Size.Width = 152.000000000000000000
+      Size.Height = 25.000000000000000000
+      Size.PlatformDefault = False
+      TabOrder = 0
+      OnChange = ComboBoxTableChange
+    end
+    object TextTitle: TText
+      Align = Left
+      Size.Width = 193.000000000000000000
+      Size.Height = 25.000000000000000000
+      Size.PlatformDefault = False
+      Text = #1047#1072#1075#1088#1091#1078#1077#1085#1085#1086#1077' '#1090#1072#1073#1083#1080#1094#1072':'
+      TextSettings.HorzAlign = Leading
+    end
+    object ButtonUpData: TButton
+      Align = Right
+      Position.X = 672.000000000000000000
+      Size.Width = 115.000000000000000000
+      Size.Height = 25.000000000000000000
+      Size.PlatformDefault = False
+      TabOrder = 2
+      Text = #1054#1073#1085#1086#1074#1080#1090#1100
+      OnClick = ButtonUpDataClick
+    end
+  end
+  object LayoutClient: TLayout
+    Align = Client
+    Padding.Left = 3.000000000000000000
+    Padding.Top = 3.000000000000000000
+    Padding.Right = 3.000000000000000000
+    Padding.Bottom = 3.000000000000000000
+    Size.Width = 793.000000000000000000
+    Size.Height = 359.000000000000000000
+    Size.PlatformDefault = False
+    TabOrder = 1
+    object ListBoxFields: TListBox
+      Align = Left
+      Position.X = 3.000000000000000000
+      Position.Y = 3.000000000000000000
+      Size.Width = 200.000000000000000000
+      Size.Height = 353.000000000000000000
+      Size.PlatformDefault = False
+      TabOrder = 0
+      DisableFocusEffect = True
+      DefaultItemStyles.ItemStyle = ''
+      DefaultItemStyles.GroupHeaderStyle = ''
+      DefaultItemStyles.GroupFooterStyle = ''
+      Viewport.Width = 196.000000000000000000
+      Viewport.Height = 349.000000000000000000
+    end
+    object StringGridTable: TStringGrid
+      Align = Client
+      CanFocus = True
+      ClipChildren = True
+      Margins.Left = 3.000000000000000000
+      Size.Width = 584.000000000000000000
+      Size.Height = 353.000000000000000000
+      Size.PlatformDefault = False
+      TabOrder = 1
+      Viewport.Width = 580.000000000000000000
+      Viewport.Height = 328.000000000000000000
+    end
+  end
+  object Timer: TTimer
+    Enabled = False
+    OnTimer = TimerTimer
+    Left = 316
+    Top = 108
+  end
+end

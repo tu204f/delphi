@@ -1,0 +1,28 @@
+object CategoryFrame: TCategoryFrame
+  Size.Width = 366.000000000000000000
+  Size.Height = 119.000000000000000000
+  Size.PlatformDefault = False
+  object GridPanelLayout: TGridPanelLayout
+    Position.X = 4.000000000000000000
+    Position.Y = 8.000000000000000000
+    Size.Width = 357.000000000000000000
+    Size.Height = 61.000000000000000000
+    Size.PlatformDefault = False
+    TabOrder = 0
+    ColumnCollection = <
+      item
+        Value = 50.000000000000000000
+      end
+      item
+        Value = 50.000000000000000000
+      end>
+    ControlCollection = <>
+    RowCollection = <
+      item
+        Value = 50.000000000000000000
+      end
+      item
+        Value = 50.000000000000000000
+      end>
+  end
+end

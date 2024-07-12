@@ -281,7 +281,7 @@ begin
   leverageSysUpdatedTime := AObjectJson.Values['leverageSysUpdatedTime'].Value;
   createdTime            := AObjectJson.Values['createdTime'].Value;
   updatedTime            := AObjectJson.Values['updatedTime'].Value;
-  seq                    := AObjectJson.Values['seq'].Value.ToInteger;
+  seq                    := AObjectJson.Values['seq'].Value.ToInt64;
 end;
 
 end.

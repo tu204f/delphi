@@ -17,7 +17,7 @@ uses
   Lb.Bybit.Encryption;
 
 const
-//{$DEFINE TEST}
+{$DEFINE TEST}
   BYBIT_HOST =
 {$IFDEF TEST}
   // Тесторый сервер: https://testnet.bybit.com
@@ -36,7 +36,7 @@ type
   TValueList = TList<Double>;
 
   TTypeCategory = (
-    tcSpot,
+    tcSpot = 0,
     tcLinear,  // Бессрочный USDT и контракт USDC, включая USDC perp, фьючерсы USDC
     tcInverse, // Обратный контракт, включая обратного преступника, обратные фьючерсы
     tcOption
@@ -126,7 +126,8 @@ type
   );
 
   TTypeInterval = (
-    ti_1, ti_3, ti_5, ti_15, ti_30, ti_60, ti_120, ti_240, ti_360, ti_720, //  minute
+    ti_1 = 0,
+    ti_3, ti_5, ti_15, ti_30, ti_60, ti_120, ti_240, ti_360, ti_720, //  minute
     ti_D, // day
     ti_W, // week
     ti_M  // month

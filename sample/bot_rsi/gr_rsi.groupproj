@@ -1,0 +1,48 @@
+﻿<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+    <PropertyGroup>
+        <ProjectGuid>{D93031BF-1297-4273-A5F3-7D55921B1EAD}</ProjectGuid>
+    </PropertyGroup>
+    <ItemGroup>
+        <Projects Include="quik\rsi_quik.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="bybit\rsi_bybit.dproj">
+            <Dependencies/>
+        </Projects>
+    </ItemGroup>
+    <ProjectExtensions>
+        <Borland.Personality>Default.Personality.12</Borland.Personality>
+        <Borland.ProjectType/>
+        <BorlandProject>
+            <Default.Personality/>
+        </BorlandProject>
+    </ProjectExtensions>
+    <Target Name="rsi_quik">
+        <MSBuild Projects="quik\rsi_quik.dproj"/>
+    </Target>
+    <Target Name="rsi_quik:Clean">
+        <MSBuild Projects="quik\rsi_quik.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="rsi_quik:Make">
+        <MSBuild Projects="quik\rsi_quik.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="rsi_bybit">
+        <MSBuild Projects="bybit\rsi_bybit.dproj"/>
+    </Target>
+    <Target Name="rsi_bybit:Clean">
+        <MSBuild Projects="bybit\rsi_bybit.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="rsi_bybit:Make">
+        <MSBuild Projects="bybit\rsi_bybit.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="Build">
+        <CallTarget Targets="rsi_quik;rsi_bybit"/>
+    </Target>
+    <Target Name="Clean">
+        <CallTarget Targets="rsi_quik:Clean;rsi_bybit:Clean"/>
+    </Target>
+    <Target Name="Make">
+        <CallTarget Targets="rsi_quik:Make;rsi_bybit:Make"/>
+    </Target>
+    <Import Project="$(BDS)\Bin\CodeGear.Group.Targets" Condition="Exists('$(BDS)\Bin\CodeGear.Group.Targets')"/>
+</Project>
