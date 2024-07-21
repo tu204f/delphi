@@ -111,12 +111,7 @@ end;
 
 procedure TMainClientFrame.EventSendTarde(Sender: TObject; ATradeParam: TTradeParam);
 begin
-  StatusFrame.SetOperationTrade(
-    ATradeParam.Side,
-    ATradeParam.Price,
-    ATradeParam.Qty,
-    ATradeParam.TypeLine
-  );
+  StatusFrame.SetOperationTrade(ATradeParam.Side,ATradeParam.Price,ATradeParam.Qty);
 end;
 
 end.

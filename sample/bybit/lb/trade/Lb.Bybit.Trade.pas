@@ -29,6 +29,7 @@ type
     FSide: TTypeSide;
     FQty: Double;
     FPrice: Double;
+    FOrderLinkID: String;
     FParams: TParamList;
     procedure AddParam(const AKye, AValue: String);
     function GetValue: String;
@@ -84,7 +85,7 @@ type
     property OrderLv: String write SetOrderLv;
     property TimeInForce: TTypeTimeInForce write SetTimeInForce;
     property PositionIdx: Integer write SetPositionIdx;
-    property OrderLinkID: String write SetOrderLinkID;
+    property OrderLinkID: String read FOrderLinkID write SetOrderLinkID;
     property TakeProfit: Double write SetTakeProfit;
     property StopLoss: Double write SetStopLoss;
     property TP_TriggerBy: TTypeTriggerBy write SetTP_TriggerBy;
@@ -410,6 +411,7 @@ end;
 
 procedure TParamOrder.SetOrderLinkId(const Value: String);
 begin
+  FOrderLinkID := Value;
   // Идентификатор заказа, настраиваемый пользователем.
   // Максимум 36 символов. Поддерживаются комбинации цифр,
   // букв (прописных и строчных), тире и подчеркиваний.

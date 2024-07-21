@@ -21,8 +21,7 @@ uses
   Lb.SysUtils,
   Lb.ApplicationVersion,
   UnitMainClientFrame,
-  UnitSettingFrame,
-  UnitTableFrame;
+  UnitSettingFrame;
 
 type
   TMainForm = class(TForm, IMainApp)
@@ -34,11 +33,9 @@ type
     TabItemSetting: TTabItem;
     TabItemMain: TTabItem;
     ButtonStartStop: TButton;
-    TabItemTable: TTabItem;
     procedure ButtonSettingClick(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure ButtonStartStopClick(Sender: TObject);
-    procedure ButtonTableClick(Sender: TObject);
   private
 
   protected
@@ -47,7 +44,6 @@ type
   public
     SettingFrame: TSettingFrame;
     MainClientFrame: TMainClientFrame;
-    TableFrame: TTableFrame;
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
   end;
@@ -71,7 +67,6 @@ destructor TMainForm.Destroy;
 begin
   FreeAndNil(MainClientFrame);
   FreeAndNil(SettingFrame);
-  FreeAndNil(TableFrame);
   inherited;
 end;
 
@@ -100,20 +95,9 @@ procedure TMainForm.InitFrame;
     MainClientFrame.Align := TAlignLayout.Client;
   end;
 
-  procedure _InitTableFrame;
-  begin
-    TableFrame := TTableFrame.Create(nil);
-    TableFrame.Parent := TabItemTable;
-    TableFrame.Align := TAlignLayout.Client;
-    TableFrame.MainApp := Self;
-  end;
-
 begin
   _InitSetting;
   _InitMainClientFrame;
-  _InitTableFrame;
-
-  TabControl.ActiveTab := TabItemMain;
 end;
 
 procedure TMainForm.EventCloseTabControl;
@@ -140,12 +124,6 @@ begin
     ButtonStartStop.Text := 'Стоп';
     MainClientFrame.StatusFrame.Start;
   end;
-end;
-
-procedure TMainForm.ButtonTableClick(Sender: TObject);
-begin
-  // Показывать результат работы программы
-  TabControl.ActiveTab := TabItemTable;
 end;
 
 end.

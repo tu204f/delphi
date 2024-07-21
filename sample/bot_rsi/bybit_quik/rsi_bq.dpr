@@ -1,6 +1,10 @@
-program rsi_bybit;
+program rsi_bq;
 
-{$i bybit.inc}
+{$I bybit_quik.inc}
+
+(******************************************************************************)
+(* Совеместная работа - Quik и Bybit                                          *)
+(******************************************************************************)
 
 uses
   System.StartUpCopy,
@@ -9,6 +13,7 @@ uses
   UnitOrderCategoryFrame in 'UnitOrderCategoryFrame.pas' {OrderCategoryFrame: TFrame},
   UnitMainClientFrame in 'UnitMainClientFrame.pas' {MainClientFrame: TFrame},
   UnitCategoryFrame in 'UnitCategoryFrame.pas' {CategoryFrame: TFrame},
+
   Lb.Bybit.SysUtils in '..\..\bybit\lb\Lb.Bybit.SysUtils.pas',
   Lb.Bybit.Encryption in '..\..\bybit\lb\Lb.Bybit.Encryption.pas',
   Lb.Bybit.RealTime in '..\..\bybit\lb\trade\Lb.Bybit.RealTime.pas',
@@ -18,17 +23,19 @@ uses
   Lb.Bybit.OrderBook in '..\..\bybit\lb\market\Lb.Bybit.OrderBook.pas',
   Lb.Bybit.RecentTrade in '..\..\bybit\lb\market\Lb.Bybit.RecentTrade.pas',
   Lb.Bybit.ServerTime in '..\..\bybit\lb\market\Lb.Bybit.ServerTime.pas',
+  Lb.Bybit.Position in '..\..\bybit\lb\position\Lb.Bybit.Position.pas',
+
+  Quik.Manager.DDE in '..\..\..\library\trade\quik\Quik.Manager.DDE.pas',
+  Quik.SysUtils in '..\..\..\library\trade\quik\Quik.SysUtils.pas',
+  Quik.ValueTable in '..\..\..\library\trade\quik\Quik.ValueTable.pas',
+
   Lb.Indicator in '..\..\bybit\lb\indicator\Lb.Indicator.pas',
   Lb.Logger in '..\..\..\library\Lb.Logger.pas',
   Lb.HistoryIndicator in 'lib\Lb.HistoryIndicator.pas',
   UnitSettingFrame in 'UnitSettingFrame.pas' {SettingFrame: TFrame},
   Lb.SysUtils in 'lib\Lb.SysUtils.pas',
   UnitStatusFrame in 'UnitStatusFrame.pas' {StatusFrame: TFrame},
-  Lb.ApplicationVersion in '..\..\..\library\Lb.ApplicationVersion.pas',
-  Lb.Bybit.Position in '..\..\bybit\lb\position\Lb.Bybit.Position.pas',
-  Lb.VirtualTrade in 'lib\Lb.VirtualTrade.pas',
-  UnitTableFrame in 'UnitTableFrame.pas' {TableFrame: TFrame},
-  UnitTableVirtualTrade in 'UnitTableVirtualTrade.pas' {TableVirtualTradeFrame: TFrame};
+  Lb.ApplicationVersion in '..\..\..\library\Lb.ApplicationVersion.pas';
 
 {$R *.res}
 

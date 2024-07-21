@@ -126,14 +126,11 @@ type
   TOnEventSendTarde = procedure(Sender: TObject; ATradeParam: TTradeParam) of object;
 
 function ParamApplication: TParamApplication;
-function GetStrToTypeLine(ALine: TTypeLine): String;
-
 
 implementation
 
 var
   localParamApplication: TParamApplication = nil;
-
 
 function ParamApplication: TParamApplication;
 begin
@@ -143,19 +140,6 @@ begin
     localParamApplication.Load;
   end;
   Result := localParamApplication;
-end;
-
-function GetStrToTypeLine(ALine: TTypeLine): String;
-begin
-  Result := '';
-  case ALine of
-    tlOpen1: Result := 'Open1';
-    tlOpen2: Result := 'Open2';
-    tlOpen3: Result := 'Open3';
-    tlOpen4: Result := 'Open4';
-    tlClose: Result := 'Close';
-  end;
-
 end;
 
 { TParamApplication }

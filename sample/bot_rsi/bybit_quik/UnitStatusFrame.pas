@@ -2,8 +2,6 @@ unit UnitStatusFrame;
 
 interface
 
-{$i bybit.inc}
-
 uses
   System.SysUtils,
   System.Types,
@@ -56,6 +54,9 @@ type
     property HistoryIndicator: THistoryIndicator read FHistoryIndicator;
     property InstrumentPrice: TInstrumentPrice read FInstrumentPrice;
   public
+    SumVal: Double;
+    SumQty: Double;
+  public
     ValueRSI: Double;
     Bid, Ask: Double;
     Qty: Double;
@@ -64,7 +65,7 @@ type
     destructor Destroy; override;
     procedure Start;
     procedure Stop;
-    procedure SetOperationTrade(ASide: TTypeSide; APrice: Double; AQty: Double; ALine: TTypeLine);
+    procedure SetOperationTrade(ASide: TTypeSide; APrice: Double; AQty: Double);
     property IsActive: Boolean read GetIsActive;
     property OnParams: TNotifyEvent write FOnParams;
   end;
@@ -73,12 +74,8 @@ implementation
 
 {$R *.fmx}
 
-{$IFDEF VIR_TRADE}
-uses
-  Lb.VirtualTrade;
-{$ENDIF}
-
 { TStatusFrame }
+
 
 constructor TStatusFrame.Create(AOwner: TComponent);
 begin
@@ -105,7 +102,11 @@ procedure TStatusFrame.Start;
 begin
   if not Timer.Enabled then
   begin
+    SumVal := 0;
+    SumQty := 0;
+
     Timer.Enabled := True;
+
     HistoryIndicator.Symbol   := ParamApplication.Symble;
     HistoryIndicator.Category := ParamApplication.Category;
     HistoryIndicator.Interval := ParamApplication.Interval;
@@ -139,13 +140,10 @@ begin
 end;
 
 procedure TStatusFrame.EventBybitPositionEndLoading(Sender: TObject);
-{$IFDEF REAL_TRADE}
 var
   xF: TFormatSettings;
   xS: String;
-{$ENDIF}
 begin
-{$IFDEF REAL_TRADE}
   Qty := 0;
   if FBybitPosition.PositionObjects.Count > 0 then
   begin
@@ -163,7 +161,6 @@ begin
     EditQty.Text := '(' + GetStrToTypeSide(Side) + ')' + FloatToStr(Qty)
   else
     EditQty.Text := '';
-{$ENDIF}
 end;
 
 procedure TStatusFrame.EventResponse(ASander: TObject; ATypeObject: TTypeObject);
@@ -196,27 +193,11 @@ begin
     FOnParams(Self);
 end;
 
-procedure TStatusFrame.SetOperationTrade(ASide: TTypeSide; APrice: Double; AQty: Double; ALine: TTypeLine);
-
-  function _CreateOrderLinkId(ASide: TTypeSide; ALine: TTypeLine): String;
-  var
-    xS: String;
-  begin
-    xS :=
-      GetStrToTypeLine(ALine) + '_' +
-      GetStrToTypeSide(ASide) + '_' +
-      Random(65000).ToString;
-    Result := xS;
-  end;
-
+procedure TStatusFrame.SetOperationTrade(ASide: TTypeSide; APrice: Double; AQty: Double);
 var
   xPlaceOrder: TParamOrder;
-{$IFDEF REAL_TRADE}
-var
   xResponse: TOrderResponse;
-{$ENDIF}
 begin
-
   try
     // Инструмент отслеживания
     // Передача ключей программе
@@ -233,8 +214,8 @@ begin
       xPlaceOrder.Qty         := AQty;
       xPlaceOrder.Price       := APrice;
       xPlaceOrder.timeInForce := TTypeTimeInForce.GTC;
-      xPlaceOrder.OrderLinkId := _CreateOrderLinkId(ASide,ALine);
-{$IFDEF REAL_TRADE}
+      xPlaceOrder.OrderLinkId := 'test' + Random(65000).ToString;
+
       xResponse := TOrderResponse.Create;
       try
         SelectedOrder(
@@ -243,26 +224,11 @@ begin
            xPlaceOrder,
            xResponse // Возрат сообщение ос делке
         );
-{$ENDIF}
-{$IFDEF VIR_TRADE}
-      EditMsgOrder.Text :=
-        Virtual_SelectedOrder(
-           ParamApplication.ApiKey,
-           ParamApplication.ApiSecret,
-           xPlaceOrder,
-           nil // Возрат сообщение ос делке
-        );
-
-      Qty  := GetVirtualTrades.Qty;
-      Side := GetVirtualTrades.Side;
-
-{$ENDIF}
-{$IFDEF REAL_TRADE}
         EditMsgOrder.Text := xResponse.RetMsg;
       finally
         FreeAndNil(xResponse);
       end;
-{$ENDIF}
+
     finally
       FreeAndNil(xPlaceOrder);
     end;
@@ -274,12 +240,12 @@ end;
 
 procedure TStatusFrame.ButtonBuyClick(Sender: TObject);
 begin
-  SetOperationTrade(TTypeSide.tsBuy,Ask,0.01,TTypeLine.tlOpen1);
+  SetOperationTrade(TTypeSide.tsBuy,Ask,0.01);
 end;
 
 procedure TStatusFrame.ButtonSellClick(Sender: TObject);
 begin
-  SetOperationTrade(TTypeSide.tsSell,Bid,0.01,TTypeLine.tlOpen1);
+  SetOperationTrade(TTypeSide.tsSell,Bid,0.01);
 end;
 
 end.

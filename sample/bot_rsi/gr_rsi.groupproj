@@ -6,6 +6,9 @@
         <Projects Include="quik\rsi_quik.dproj">
             <Dependencies/>
         </Projects>
+        <Projects Include="bybit_quik\rsi_bq.dproj">
+            <Dependencies/>
+        </Projects>
         <Projects Include="bybit\rsi_bybit.dproj">
             <Dependencies/>
         </Projects>
@@ -26,6 +29,15 @@
     <Target Name="rsi_quik:Make">
         <MSBuild Projects="quik\rsi_quik.dproj" Targets="Make"/>
     </Target>
+    <Target Name="rsi_bq">
+        <MSBuild Projects="bybit_quik\rsi_bq.dproj"/>
+    </Target>
+    <Target Name="rsi_bq:Clean">
+        <MSBuild Projects="bybit_quik\rsi_bq.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="rsi_bq:Make">
+        <MSBuild Projects="bybit_quik\rsi_bq.dproj" Targets="Make"/>
+    </Target>
     <Target Name="rsi_bybit">
         <MSBuild Projects="bybit\rsi_bybit.dproj"/>
     </Target>
@@ -36,13 +48,13 @@
         <MSBuild Projects="bybit\rsi_bybit.dproj" Targets="Make"/>
     </Target>
     <Target Name="Build">
-        <CallTarget Targets="rsi_quik;rsi_bybit"/>
+        <CallTarget Targets="rsi_quik;rsi_bq;rsi_bybit"/>
     </Target>
     <Target Name="Clean">
-        <CallTarget Targets="rsi_quik:Clean;rsi_bybit:Clean"/>
+        <CallTarget Targets="rsi_quik:Clean;rsi_bq:Clean;rsi_bybit:Clean"/>
     </Target>
     <Target Name="Make">
-        <CallTarget Targets="rsi_quik:Make;rsi_bybit:Make"/>
+        <CallTarget Targets="rsi_quik:Make;rsi_bq:Make;rsi_bybit:Make"/>
     </Target>
     <Import Project="$(BDS)\Bin\CodeGear.Group.Targets" Condition="Exists('$(BDS)\Bin\CodeGear.Group.Targets')"/>
 </Project>

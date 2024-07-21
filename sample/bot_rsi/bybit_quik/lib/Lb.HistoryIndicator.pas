@@ -8,7 +8,6 @@ uses
   System.UITypes,
   System.Classes,
   System.Variants,
-  System.Generics.Collections,
   Lb.Bybit.SysUtils,
   Lb.Bybit.Kline,
   Lb.Bybit.OrderBook,
@@ -115,77 +114,21 @@ type
 
   ///<summary>В ведем историю изменение, сохраняем знамение свечей</summary>
   TLoadHistory = class(TObject)
-  public type
-
-    ///<summary>
-    /// Запись в файл
-    ///</summary>
-    TItem = packed record
-      startTime: UInt64;
-      Date     : TDateTime;
-      Time     : TDateTime;
-      Open     : Double;
-      High     : Double;
-      Low      : Double;
-      Close    : Double;
-      Vol      : Double;
-      // Резерный буфер
-      Buffer   : array [0..128] of Byte;
-    end;
-
-    ///<summary>
-    /// Запись
-    ///</summary>
-    TItemList = TList<TItem>;
-
   private
     FSymbol: String;
     FFileName: String;
     FValues: TStrings;
     FStartTime: String;
-    FItems: TItemList;
     procedure SetSymbol(const Value: String);
-    procedure SetFileName(const Value: String);
-  protected
-    ///<summary>
-    /// Размер записи
-    ///</summary>
-    function GetSizeItem: Integer;
-    ///<summary>
-    /// Прочитать последние 10 строк
-    ///</summary>
-    procedure SetLoadLast;
   public
     constructor Create; virtual;
     destructor Destroy; override;
     ///<summary>Наименование</summary>
     property Symbol: String read FSymbol write SetSymbol;
-    ///<summary>Путь архива</summary>
-    property FileName: String read FFileName write SetFileName;
     procedure SetCurrentCandel(const ACandel: TCandelObject);
   end;
 
 implementation
-
-uses
-  Lb.DataModuleDB;
-
-var
-  localDataModuleDB: TDataModuleDB = nil;
-
-function GetDB: TDataModuleDB;
-const
-  CREATE_TABLE_HISTORY = '';
-
-begin
-  if not Assigned(localDataModuleDB) then
-  begin
-    localDataModuleDB := TDataModuleDB.Create(nil);
-    localDataModuleDB.DefaultConnection('history.db');
-    localDataModuleDB.GetExecSQL(CREATE_TABLE_HISTORY);
-  end;
-  Result := localDataModuleDB;
-end;
 
 { TBasicObjectStrategy }
 
@@ -233,7 +176,7 @@ begin
 
   FSymbol := '';
   FCategory := TTypeCategory.tcLinear;
-  FInterval := TTypeInterval.ti_1;
+  FInterval := TTypeInterval.ti_5;
 
   FCurrentCandel := nil;
 
@@ -264,9 +207,6 @@ begin
   if iCount > 0 then
   begin
     FValueRSI.SetCandels(FBybitKline.CandelObjects);
-
-
-
     FCurrentCandel := FBybitKline.CandelObjects[0];
   end
   else
@@ -338,26 +278,12 @@ constructor TLoadHistory.Create;
 begin
   FValues := TStringList.Create;
   FStartTime := '';
-  FItems := TItemList.Create;
 end;
 
 destructor TLoadHistory.Destroy;
 begin
-  FreeAndNil(FItems);
   FreeAndNil(FValues);
   inherited;
-end;
-
-function TLoadHistory.GetSizeItem: Integer;
-begin
-  Result := SizeOf(TLoadHistory.TItem);
-end;
-
-procedure TLoadHistory.SetLoadLast;
-const
-  SIZE_ITEM = 10;
-begin
-
 end;
 
 procedure TLoadHistory.SetSymbol(const Value: String);
@@ -380,12 +306,5 @@ begin
   end;
   FValues.SaveToFile(FFileName);
 end;
-
-procedure TLoadHistory.SetFileName(const Value: String);
-begin
-  FFileName := Value;
-  SetLoadLast;
-end;
-
 
 end.
