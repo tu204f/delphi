@@ -24,6 +24,8 @@ uses
   UnitSettingFrame,
   UnitTableFrame;
 
+  // тест
+
 type
   TMainForm = class(TForm, IMainApp)
     LayoutMenu: TLayout;

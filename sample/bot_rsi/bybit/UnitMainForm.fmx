@@ -131,6 +131,8 @@ object MainForm: TMainForm
         StyleLookup = ''
         TabOrder = 0
         Text = 'TabItemTable'
+        ExplicitSize.cx = 8.000000000000000000
+        ExplicitSize.cy = 8.000000000000000000
       end
     end
   end
