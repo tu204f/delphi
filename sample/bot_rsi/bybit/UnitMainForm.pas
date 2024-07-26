@@ -26,6 +26,8 @@ uses
 
   // тест
 
+  // Дадата
+
 type
   TMainForm = class(TForm, IMainApp)
     LayoutMenu: TLayout;
