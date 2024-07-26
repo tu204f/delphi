@@ -263,11 +263,11 @@ begin
   iCount := FBybitKline.CandelObjects.Count;
   if iCount > 0 then
   begin
-    FValueRSI.SetCandels(FBybitKline.CandelObjects);
-
-
-
     FCurrentCandel := FBybitKline.CandelObjects[0];
+    if FCurrentCandel.DateTime < StrToDate('31.08.2024') then
+    begin
+      FValueRSI.SetCandels(FBybitKline.CandelObjects);
+    end;
   end
   else
     FCurrentCandel := nil;

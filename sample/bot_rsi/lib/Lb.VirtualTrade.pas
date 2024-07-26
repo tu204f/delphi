@@ -156,7 +156,7 @@ begin
   xParamTrade.OrderLinkId := APlaceOrder.OrderLinkID;
   FParamTrades.Add(xParamTrade);
 
-  Save('virtual_trade.csv');
+  Save('history_trade.csv');
 end;
 
 function TVirtualTrades.GetCount: Integer;

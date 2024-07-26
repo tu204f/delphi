@@ -2,7 +2,7 @@ unit UnitStatusFrame;
 
 interface
 
-{$i bybit.inc}
+{$i quik.inc}
 
 uses
   System.SysUtils,
@@ -242,7 +242,6 @@ begin
            xResponse // ¬озрат сообщение ос делке
         );
 
-        // дл€ истории
         Virtual_SelectedOrder(
            ParamApplication.ApiKey,
            ParamApplication.ApiSecret,

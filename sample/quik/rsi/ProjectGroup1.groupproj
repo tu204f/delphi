@@ -1,0 +1,48 @@
+﻿<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+    <PropertyGroup>
+        <ProjectGuid>{A9B5419A-1A01-4906-B16A-FEDACA74C4DF}</ProjectGuid>
+    </PropertyGroup>
+    <ItemGroup>
+        <Projects Include="20.06.2024\rsi.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="win_trade\win_trade.dproj">
+            <Dependencies/>
+        </Projects>
+    </ItemGroup>
+    <ProjectExtensions>
+        <Borland.Personality>Default.Personality.12</Borland.Personality>
+        <Borland.ProjectType/>
+        <BorlandProject>
+            <Default.Personality/>
+        </BorlandProject>
+    </ProjectExtensions>
+    <Target Name="rsi">
+        <MSBuild Projects="20.06.2024\rsi.dproj"/>
+    </Target>
+    <Target Name="rsi:Clean">
+        <MSBuild Projects="20.06.2024\rsi.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="rsi:Make">
+        <MSBuild Projects="20.06.2024\rsi.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="win_trade">
+        <MSBuild Projects="win_trade\win_trade.dproj"/>
+    </Target>
+    <Target Name="win_trade:Clean">
+        <MSBuild Projects="win_trade\win_trade.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="win_trade:Make">
+        <MSBuild Projects="win_trade\win_trade.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="Build">
+        <CallTarget Targets="rsi;win_trade"/>
+    </Target>
+    <Target Name="Clean">
+        <CallTarget Targets="rsi:Clean;win_trade:Clean"/>
+    </Target>
+    <Target Name="Make">
+        <CallTarget Targets="rsi:Make;win_trade:Make"/>
+    </Target>
+    <Import Project="$(BDS)\Bin\CodeGear.Group.Targets" Condition="Exists('$(BDS)\Bin\CodeGear.Group.Targets')"/>
+</Project>

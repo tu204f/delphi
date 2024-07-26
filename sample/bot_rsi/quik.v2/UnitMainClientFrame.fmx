@@ -1,0 +1,66 @@
+object MainClientFrame: TMainClientFrame
+  Size.Width = 511.000000000000000000
+  Size.Height = 393.000000000000000000
+  Size.PlatformDefault = False
+  object GridPanel: TGridPanelLayout
+    Align = Client
+    Size.Width = 511.000000000000000000
+    Size.Height = 393.000000000000000000
+    Size.PlatformDefault = False
+    TabOrder = 0
+    ColumnCollection = <
+      item
+        Value = 100.000000000000000000
+      end>
+    ControlCollection = <
+      item
+        Column = 0
+        Control = LayoutSell
+        Row = 0
+      end
+      item
+        Column = 0
+        Control = LayoutInfo
+        Row = 1
+      end
+      item
+        Column = 0
+        Control = LayoutBuy
+        Row = 2
+      end>
+    RowCollection = <
+      item
+        Value = 50.000000000000000000
+      end
+      item
+        SizeStyle = Absolute
+        Value = 65.000000000000000000
+      end
+      item
+        Value = 50.000000000000000000
+      end>
+    object LayoutSell: TLayout
+      Align = Client
+      Size.Width = 511.000000000000000000
+      Size.Height = 164.000000000000000000
+      Size.PlatformDefault = False
+      TabOrder = 1
+    end
+    object LayoutInfo: TLayout
+      Align = Client
+      Margins.Top = 3.000000000000000000
+      Margins.Bottom = 3.000000000000000000
+      Size.Width = 511.000000000000000000
+      Size.Height = 59.000000000000000000
+      Size.PlatformDefault = False
+      TabOrder = 0
+    end
+    object LayoutBuy: TLayout
+      Align = Client
+      Size.Width = 511.000000000000000000
+      Size.Height = 164.000000000000000000
+      Size.PlatformDefault = False
+      TabOrder = 2
+    end
+  end
+end

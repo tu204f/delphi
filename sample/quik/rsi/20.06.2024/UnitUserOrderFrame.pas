@@ -2,6 +2,8 @@ unit UnitUserOrderFrame;
 
 interface
 
+{$I rsi_debug.inc}
+
 uses
   Winapi.Windows,
   Winapi.Messages,
@@ -95,7 +97,8 @@ implementation
 {$R *.dfm}
 
 uses
-  Lb.Setting, Lb.Logger;
+  Lb.Setting,
+  Lb.Logger;
 
 function GetTimeCountSec(const ATime: TDateTime): Integer;
 var
@@ -298,13 +301,16 @@ begin
 
   SyncOrder.GetNewOrder(
     _GetPrice,
-
     _GetQtyTotalNet,
-
     FBuySell,
     xMsg
   );
 
+  if TSetting.ReadBool('config.sys.is_log_trade',True) then
+  begin
+    TLogger.Log('Отравляем торговый приказ: QUIK');
+    TLogger.LogText(xMsg);
+  end;
 end;
 
 

@@ -1,9 +1,6 @@
-program rsi_bybit;
+program rsi_quik.v2;
 
-{$i bybit.inc}
-
-
-
+{$i quik.inc}
 {$R 'db.res' '..\lib\history\db.rc'}
 
 uses

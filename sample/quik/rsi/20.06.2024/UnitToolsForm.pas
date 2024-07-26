@@ -17,6 +17,7 @@ type
     LabeledEdit1: TLabeledEdit;
     Button1: TButton;
     OpenDialog1: TOpenDialog;
+    CheckBoxLogTrade: TCheckBox;
     procedure FormShow(Sender: TObject);
     procedure ButtonCancelClick(Sender: TObject);
     procedure ButtonOKClick(Sender: TObject);
@@ -49,6 +50,7 @@ begin
   ledSecCode.Text        := TSetting.ReadString('config.sys.sec_code','');
   ledTrdaccID.Text       := TSetting.ReadString('config.sys.trdacc_id','');
   LabeledEdit1.Text      := TSetting.ReadString('config.sys.path_quik','');
+  CheckBoxLogTrade.Checked := TSetting.ReadBool('config.sys.is_log_trade',True);
 end;
 
 procedure TToolsForm.Button1Click(Sender: TObject);
@@ -75,6 +77,7 @@ begin
   TSetting.WriteString('config.sys.sec_code',ledSecCode.Text);
   TSetting.WriteString('config.sys.trdacc_id',ledTrdaccID.Text);
   TSetting.WriteString('config.sys.path_quik',LabeledEdit1.Text);
+  TSetting.WriteBool('config.sys.is_log_trade',CheckBoxLogTrade.Checked);
 
   Self.ModalResult := mrOk;
 end;
