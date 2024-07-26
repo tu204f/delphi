@@ -25,6 +25,7 @@ uses
   UnitTableFrame;
 
   // тест
+  // text @
 
 type
   TMainForm = class(TForm, IMainApp)
