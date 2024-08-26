@@ -17,7 +17,8 @@ uses
   UnitAddOrderForm in 'UnitAddOrderForm.pas' {AddOrderForm},
   Lb.SysUtils in 'Lb.SysUtils.pas',
   UnitUserOrderFrame in 'UnitUserOrderFrame.pas' {UserOrderFrame: TFrame},
-  Lb.Trade.RSI in 'Lb.Trade.RSI.pas';
+  Lb.Trade.RSI in 'Lb.Trade.RSI.pas',
+  Lb.Level in 'Lb.Level.pas';
 
 {$R *.res}
 

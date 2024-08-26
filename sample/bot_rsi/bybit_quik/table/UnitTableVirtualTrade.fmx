@@ -1,0 +1,16 @@
+object TableVirtualTradeFrame: TTableVirtualTradeFrame
+  Size.Width = 553.000000000000000000
+  Size.Height = 281.000000000000000000
+  Size.PlatformDefault = False
+  object TableGrid: TStringGrid
+    Align = Client
+    CanFocus = True
+    ClipChildren = True
+    Size.Width = 553.000000000000000000
+    Size.Height = 281.000000000000000000
+    Size.PlatformDefault = False
+    TabOrder = 0
+    Viewport.Width = 549.000000000000000000
+    Viewport.Height = 256.000000000000000000
+  end
+end

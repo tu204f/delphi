@@ -2,6 +2,8 @@ unit UnitCategoryFrame;
 
 interface
 
+{$I debug.inc}
+
 uses
   System.SysUtils,
   System.Types,
@@ -21,6 +23,7 @@ uses
   FMX.Layouts,
   FMX.Objects,
   Lb.SysUtils,
+  Lb.Level,
   Lb.Bybit.SysUtils;
 
 type
@@ -44,11 +47,19 @@ type
     procedure SpinBoxQtyChange(Sender: TObject);
     procedure CheckBoxActiveChange(Sender: TObject);
   private
+    FIsBoxActive: Boolean;
+    function GetActiveValueRSI(const ADeltaSize: Integer = 3): Double;
+  private
     FSide: TTypeSide;
     FTypeTrade: TTypeTrade;
     FTypeLine: TTypeLine;
     FOnEventSendTarde: TOnEventSendTarde;
+    procedure SetColor(const Value: TAlphaColor);
   protected
+    ActiveLevel: TOneEventLevel;
+    ReActiveLevel: TOneEventLevel;
+    procedure ActiveIntersectionLevel(Sender: TObject);
+    procedure ReActiveIntersectionLevel(Sender: TObject);
     procedure DoSendTrade(const AParam: TTradeParam);
   public
     constructor Create(AOwner: TComponent); override;
@@ -59,23 +70,35 @@ type
     property TypeTrade: TTypeTrade read FTypeTrade write FTypeTrade;
     property TypeLine: TTypeLine read FTypeLine write FTypeLine;
     property OnEventSendTarde: TOnEventSendTarde write FOnEventSendTarde;
+    property Color: TAlphaColor write SetColor;
   end;
 
 implementation
 
 {$R *.fmx}
 
+uses
+  Lb.Logger;
+
 { TCategoryFrame }
 
 constructor TCategoryFrame.Create(AOwner: TComponent);
 begin
   inherited;
+  ActiveLevel := TOneEventLevel.Create;
+  ActiveLevel.IsRepeat := False;
+  ActiveLevel.OnIntersectionLevel := ActiveIntersectionLevel;
+
+  ReActiveLevel := TOneEventLevel.Create;
+  ReActiveLevel.IsRepeat := False;
+  ReActiveLevel.OnIntersectionLevel := ReActiveIntersectionLevel;
 
 end;
 
 destructor TCategoryFrame.Destroy;
 begin
-
+  FreeAndNil(ReActiveLevel);
+  FreeAndNil(ActiveLevel);
   inherited;
 end;
 
@@ -96,6 +119,7 @@ end;
 
 procedure TCategoryFrame.SpinBoxActiveRSIChange(Sender: TObject);
 begin
+  ActiveLevel.Value := SpinBoxActiveRSI.Value;
   ParamApplication.ActiveRSI[TypeTrade,TypeLine] := SpinBoxActiveRSI.Value;
 end;
 
@@ -106,12 +130,18 @@ end;
 
 procedure TCategoryFrame.SpinBoxReActiveRSIChange(Sender: TObject);
 begin
+  ReActiveLevel.Value := SpinBoxReActiveRSI.Value;
   ParamApplication.ReActiveRSI[TypeTrade,TypeLine] := SpinBoxReActiveRSI.Value;
 end;
 
 procedure TCategoryFrame.SpinBoxQtyChange(Sender: TObject);
 begin
   ParamApplication.Qty[TypeTrade,TypeLine] := SpinBoxQty.Value;
+end;
+
+procedure TCategoryFrame.SetColor(const Value: TAlphaColor);
+begin
+  Rectangle.Fill.Color := Value;
 end;
 
 procedure TCategoryFrame.SetValueParam(AParam: TSituationParam);
@@ -127,11 +157,17 @@ procedure TCategoryFrame.SetValueParam(AParam: TSituationParam);
 var
   xParam: TTradeParam;
 begin
+
   case FSide of
+
     tsBuy: begin
       if CheckBoxActive.IsChecked then
       begin
-        if AParam.ValueRSI < SpinBoxActiveRSI.Value then
+
+        if not FIsBoxActive then
+          FIsBoxActive := AParam.ValueRSI < GetActiveValueRSI;
+
+        if FIsBoxActive and (AParam.ValueRSI > SpinBoxActiveRSI.Value) then
         begin
           xParam.Price := AParam.Ask;
           xParam.Qty   := _Qty(AParam);
@@ -147,14 +183,21 @@ begin
         if CheckBoxReActive.IsChecked then
         begin
           if AParam.ValueRSI > SpinBoxReActiveRSI.Value then
+          begin
+            FIsBoxActive := False;
             CheckBoxActive.IsChecked := True;
+          end;
         end;
       end;
     end;
+
     tsSell: begin
       if CheckBoxActive.IsChecked then
       begin
-        if AParam.ValueRSI > SpinBoxActiveRSI.Value then
+        if not FIsBoxActive then
+          FIsBoxActive := AParam.ValueRSI > GetActiveValueRSI;
+
+        if FIsBoxActive and (AParam.ValueRSI < SpinBoxActiveRSI.Value) then
         begin
           xParam.Price := AParam.Ask;
           xParam.Qty   := _Qty(AParam);
@@ -170,10 +213,14 @@ begin
         if CheckBoxReActive.IsChecked then
         begin
           if AParam.ValueRSI < SpinBoxReActiveRSI.Value then
+          begin
             CheckBoxActive.IsChecked := True;
+            FIsBoxActive := False;
+          end;
         end;
       end;
     end;
+
   end;
 end;
 
@@ -183,5 +230,24 @@ begin
     FOnEventSendTarde(Self,AParam);
 end;
 
+function TCategoryFrame.GetActiveValueRSI(const ADeltaSize: Integer): Double;
+begin
+  case FSide of
+    tsBuy: Result := SpinBoxActiveRSI.Value - ADeltaSize;
+    tsSell: Result := SpinBoxActiveRSI.Value - ADeltaSize;
+  else
+    Result := SpinBoxActiveRSI.Value;
+  end;
+end;
+
+procedure TCategoryFrame.ActiveIntersectionLevel(Sender: TObject);
+begin
+
+end;
+
+procedure TCategoryFrame.ReActiveIntersectionLevel(Sender: TObject);
+begin
+
+end;
 
 end.

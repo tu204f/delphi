@@ -74,8 +74,8 @@ object StatusFrame: TStatusFrame
   object Timer: TTimer
     Enabled = False
     OnTimer = TimerTimer
-    Left = 232
-    Top = 4
+    Left = 292
+    Top = 8
   end
   object EditMsgOrder: TEdit
     Touch.InteractiveGestures = [LongTap, DoubleTap]

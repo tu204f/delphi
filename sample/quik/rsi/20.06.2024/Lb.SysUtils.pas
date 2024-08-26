@@ -42,10 +42,22 @@ function GetStrToBuySell(const ABuySell: TTypeBuySell): String;
 function GetStrToMktLmt(const AMktLmt: TTypeMktLmt): String;
 function GetStrToDirection(const ADirection: TTypeDirection): String;
 
+type
+  TOrderTrade = record
+    Price: Double;
+    Qty: Integer;
+    BuySell: Char;
+  end;
+  TOrderTradeList = TList<TOrderTrade>;
+
+procedure SetAddOrder(APrice: Double; AQty: Integer; ABuySell: Char);
+function GetProfit(APrice: Double): Double;
+
 implementation
 
 var
   localUserOrders: TUserOrderList = nil;
+  localOrderTrades: TOrderTradeList = nil;
 
 function GetUserOrders: TUserOrderList;
 begin
@@ -91,11 +103,30 @@ begin
   end;
 end;
 
+procedure SetAddOrder(APrice: Double; AQty: Integer; ABuySell: Char);
+var
+  xOrderTrade: TOrderTrade;
+begin
+  xOrderTrade.Price := APrice;
+  xOrderTrade.Qty := AQty;
+  xOrderTrade.BuySell := ABuySell;
+  localOrderTrades.Add(xOrderTrade);
+end;
+
+function GetProfit(APrice: Double): Double;
+begin
+  Result := 0;
+end;
+
 initialization
   if not Assigned(localUserOrders) then
     localUserOrders := TUserOrderList.Create;
 
+  if not Assigned(localOrderTrades) then
+    localOrderTrades := TOrderTradeList.Create;
+
 finalization
   FreeAndNil(localUserOrders);
+  FreeAndNil(localOrderTrades);
 
 end.

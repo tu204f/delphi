@@ -2,6 +2,8 @@ unit Lb.SysUtils;
 
 interface
 
+{$i platform.inc}
+
 uses
   System.Classes,
   System.SysUtils,
@@ -11,11 +13,41 @@ uses
   System.SyncObjs,
   System.Generics.Collections,
   System.Generics.Defaults,
+{$IFDEF QUIK}
+{$IFDEF BYBIT}
   System.IniFiles,
   Lb.Bybit.SysUtils;
+{$ELSE}
+  System.IniFiles;
+{$ENDIF}
+{$ENDIF}
+
+{$IFDEF QUIK}
+{$IFDEF BYBIT}
+type
+  ///<summary>
+  /// Направления торговых операций
+  ///</summary>
+  TQBTypeSide = Lb.Bybit.SysUtils.TTypeSide;
+{$ELSE}
+type
+  ///<summary>
+  /// Направления торговых операций
+  ///</summary>
+  TQBTypeSide = (
+    tsBuy,
+    tsSell
+  );
+{$ENDIF}
+{$ENDIF}
 
 
 type
+  ///<summary>
+  /// Платформа
+  ///</summary>
+  TTypePlatform = (tpBybit = 0, tpQuik);
+
   ///<summary>Тип ордера</summary>
   TTypeTrade = (toLong, toShort);
 
@@ -28,6 +60,11 @@ type
     /// Событие закрытие TabControl, открываем Main
     ///</summary>
     procedure EventCloseTabControl;
+
+    ///<summary>
+    /// Наименование главной формы
+    ///</summary>
+    procedure SetHeaderCaption(const ACaption: String);
   end;
 
   ///<summary>
@@ -35,28 +72,62 @@ type
   ///</summary>
   TParamApplication = class(TObject)
   public const
-    SECTION_PARAM    = 'param';
+    SECTION_PARAM        = 'param';
+{$IFDEF QUIK}
+    IDENT_QUIK_TABLE_RSI = 'quik_table_rsi';
+    IDENT_CLASS_CODE     = 'class_code';
+    IDENT_SEC_CODE       = 'sec_code';
+    IDENT_TRDACC_ID      = 'trdacc_id';
+    IDENT_PATH_QUIK      = 'path_quik';
 
-    IDENT_SYMBLE     = 'symble';
-    IDENT_API_KEY    = 'api_key';
-    IDENT_API_SECRET = 'api_secret';
-    IDENT_CATEGORY   = 'category';
-    IDENT_INTERVAL   = 'interval';
-
-    SECTION_PARAM_LIEN = 'line_%d_%d';
-
-    IDENT_ACTIVE        = 'active';
-    IDENT_RE_ACTIVE     = 're_active';
-    IDENT_ACTIVE_RSI    = 'active_rsi';
-    IDENT_RE_ACTIVE_RSI = 're_active_rsi';
-    IDENT_QTY           = 'qty';
-
+    IDENT_TIME_BEGIN     = 'time_begin';
+    IDENT_TIME_END       = 'time_end';
+    IDENT_GLOBAL_TK      = 'global_tk';
+    IDENT_GLOBAL_SL      = 'global_sl';
+{$ENDIF}
+{$IFDEF BYBIT}
+    IDENT_SYMBLE         = 'symble';
+    IDENT_API_KEY        = 'api_key';
+    IDENT_API_SECRET     = 'api_secret';
+    IDENT_CATEGORY       = 'category';
+    IDENT_INTERVAL       = 'interval';
+{$ENDIF}
+    IDENT_IS_LOG_TRADE   = 'is_log_trade';
+    IDENT_VIRTUAL        = 'is_virtual_checked';
+    IDENT_PLATFORM       = 'platform';
+    IDENT_IS_TREND       = 'is_trend';
+  public const
+    SECTION_PARAM_LIEN   = 'line_%d_%d';
+    IDENT_ACTIVE         = 'active';
+    IDENT_RE_ACTIVE      = 're_active';
+    IDENT_ACTIVE_RSI     = 'active_rsi';
+    IDENT_RE_ACTIVE_RSI  = 're_active_rsi';
+    IDENT_QTY            = 'qty';
+    IDENT_REVERS_QTY     = 'revers_qry';
   private
+{$IFDEF QUIK}
+    FQuikTableRSI: String;
+    FClassCode: String;
+    FSecCode: String;
+    FTrdaccID: String;
+    FPathQuik: String;
+    FIsLogTrade: Boolean;
+    FTimeBegin: TDateTime;
+    FTimeEnd: TDateTime;
+    FGlobal_TK: Double;
+    FGlobal_SL: Double;
+{$ENDIF}
+
+{$IFDEF BYBIT}
     FSymble: String;
     FApiKey: String;
     FApiSecret: String;
     FCategory: TTypeCategory;
     FInterval: TTypeInterval;
+{$ENDIF}
+    FTypePlatform: TTypePlatform;
+    FIsVirtualChecked: Boolean;
+    FIsTrend: Boolean;
   private
     function GetSectionParamLINE(ATrade: TTypeTrade; ALine: TTypeLine): String;
 
@@ -70,6 +141,9 @@ type
     procedure SetQty(ATrade: TTypeTrade; ALine: TTypeLine; const Value: Double);
     procedure SetReActive(ATrade: TTypeTrade; ALine: TTypeLine; const Value: Boolean);
     procedure SetReActiveRSI(ATrade: TTypeTrade; ALine: TTypeLine; const Value: Double);
+    function GetReversQty(ATrade: TTypeTrade; ALine: TTypeLine): Boolean;
+    procedure SetReversQty(ATrade: TTypeTrade; ALine: TTypeLine;
+      const Value: Boolean);
   protected
     FIniFile: TIniFile;
     function GetFileName: String;
@@ -79,6 +153,8 @@ type
     procedure Load;
     procedure Save;
   public
+    property TypePlatform: TTypePlatform read FTypePlatform write FTypePlatform;
+{$IFDEF BYBIT}
     ///<summary>
     /// Торгуемый символ
     ///</summary>
@@ -99,27 +175,47 @@ type
     /// Интервал — размер свечи загружаемой
     ///</summary>
     property Interval: TTypeInterval read FInterval write FInterval;
+{$ENDIF}
+{$IFDEF QUIK}
+    property QuikTableRSI: String read FQuikTableRSI write FQuikTableRSI;
+    property ClassCode: String read FClassCode write FClassCode;
+    property SecCode: String read FSecCode write FSecCode;
+    property TrdaccID: String read FTrdaccID write FTrdaccID;
+    property PathQuik: String read FPathQuik write FPathQuik;
+    property IsLogTrade: Boolean read FIsLogTrade write FIsLogTrade;
+//    property TimeBegin: TDateTime;
+//    property TimeEnd: TDateTime;
+//    property Global_TK: Double;
+//    property Global_SL: Double;
+{$ENDIF}
+    ///<summary>
+    /// Совершать торговые операции — в виртуальной виде
+    ///</summary>
+    property IsVirtualChecked: Boolean read FIsVirtualChecked write FIsVirtualChecked;
+    property IsTrend: Boolean read FIsTrend write FIsTrend;
   public
     property Active[ATrade: TTypeTrade; ALine: TTypeLine]: Boolean     read GetActive      write SetActive;
     property ReActive[ATrade: TTypeTrade; ALine: TTypeLine]: Boolean   read GetReActive    write SetReActive;
     property ActiveRSI[ATrade: TTypeTrade; ALine: TTypeLine]: Double   read GetActiveRSI   write SetActiveRSI;
     property ReActiveRSI[ATrade: TTypeTrade; ALine: TTypeLine]: Double read GetReActiveRSI write SetReActiveRSI;
     property Qty[ATrade: TTypeTrade; ALine: TTypeLine]: Double         read GetQty         write SetQty;
+    property ReversQty[ATrade: TTypeTrade; ALine: TTypeLine]: Boolean  read GetReversQty   write SetReversQty;
   end;
 
   ///<summary>Параметр состояние рынка, и есть ли открытая позиция</summary>
   TSituationParam = record
-    ValueRSI: Double;  // Состояние рынка
+    FastRSI: Double;   // Быстрая RSI
+    SlowRSI: Double;   // Медленная RSI
     Bid, Ask: Double;  // Лучьшие цены
     Qty: Double;       // Отрыта позиция
-    Side: TTypeSide;   // Напровления позиции
+    Side: TQBTypeSide; // Напровления позиции
   end;
 
   ///<summary>Параметр сделки</sammry>
   TTradeParam = record
     Price: Double;
     Qty: Double;
-    Side: TTypeSide;
+    Side: TQBTypeSide;
     TypeTrade: TTypeTrade;
     TypeLine: TTypeLine;
   end;
@@ -127,13 +223,17 @@ type
 
 function ParamApplication: TParamApplication;
 function GetStrToTypeLine(ALine: TTypeLine): String;
+function GetStrToTypeTrade(ATrade: TTypeTrade): String;
+function GetStrToTypePlatform(APlatform: TTypePlatform): String;
 
+{$IFDEF QUIK}
+function GetStrToTypeSide(const ASide: TQBTypeSide): String;
+{$ENDIF}
 
 implementation
 
 var
   localParamApplication: TParamApplication = nil;
-
 
 function ParamApplication: TParamApplication;
 begin
@@ -147,15 +247,61 @@ end;
 
 function GetStrToTypeLine(ALine: TTypeLine): String;
 begin
-  Result := '';
   case ALine of
     tlOpen1: Result := 'Open1';
     tlOpen2: Result := 'Open2';
     tlOpen3: Result := 'Open3';
     tlOpen4: Result := 'Open4';
     tlClose: Result := 'Close';
+  else
+    Result := 'not_type_line';
   end;
+end;
 
+function GetStrToTypeTrade(ATrade: TTypeTrade): String;
+begin
+  case ATrade of
+    toLong : Result := 'long';
+    toShort: Result := 'short';
+  else
+    Result := 'non_type_trade';
+  end;
+end;
+
+function GetStrToTypePlatform(APlatform: TTypePlatform): String;
+begin
+  case APlatform of
+    tpBybit: Result := 'bybit';
+    tpQuik: Result := 'quik';
+  else
+    Result := 'non_type_platform';
+  end;
+end;
+
+
+function IsCheckPlatforma: Boolean;
+var
+  xCnt: Integer;
+begin
+  // Проверяем на какой платформе работает программа
+  xCnt := 0;
+{$IFDEF QUIK}
+  Inc(xCnt);
+{$ENDIF}
+{$IFDEF BYBIT}
+  Inc(xCnt);
+{$ENDIF}
+  Result := xCnt = 1;
+end;
+
+function GetStrToTypeSide(const ASide: TQBTypeSide): String;
+begin
+  case ASide of
+    tsBuy : Result := 'Buy';
+    tsSell: Result := 'Sell';
+  else
+    Result := 'Nun';
+  end;
 end;
 
 { TParamApplication }
@@ -182,20 +328,55 @@ end;
 
 procedure TParamApplication.Load;
 begin
+  FTypePlatform := TTypePlatform(FIniFile.ReadInteger(SECTION_PARAM,IDENT_PLATFORM,0));
+{$IFDEF QUIK}
+  FQuikTableRSI := FIniFile.ReadString(SECTION_PARAM,IDENT_QUIK_TABLE_RSI,'');
+  FClassCode    := FIniFile.ReadString(SECTION_PARAM,IDENT_CLASS_CODE,'');
+  FSecCode      := FIniFile.ReadString(SECTION_PARAM,IDENT_SEC_CODE,'');
+  FTrdaccID     := FIniFile.ReadString(SECTION_PARAM,IDENT_TRDACC_ID,'');
+  FPathQuik     := FIniFile.ReadString(SECTION_PARAM,IDENT_PATH_QUIK,'');
+
+  //FTimeBegin: TDateTime;
+  //FTimeEnd: TDateTime;
+  //FGlobal_TK: Double;
+  //FGlobal_SL: Double;
+{$ENDIF}
+{$IFDEF BYBIT}
   FSymble    := FIniFile.ReadString(SECTION_PARAM,IDENT_SYMBLE,'');
   FApiKey    := FIniFile.ReadString(SECTION_PARAM,IDENT_API_KEY,'');
   FApiSecret := FIniFile.ReadString(SECTION_PARAM,IDENT_API_SECRET,'');
   FCategory  := TTypeCategory(FIniFile.ReadInteger(SECTION_PARAM,IDENT_CATEGORY,1));
-  FInterval  := TTypeInterval(FIniFile.ReadInteger(SECTION_PARAM,IDENT_INTERVAL,1));
+  FInterval  := TTypeInterval(FIniFile.ReadInteger(SECTION_PARAM,IDENT_INTERVAL,3));
+{$ENDIF}
+  FIsLogTrade       := FIniFile.ReadBool(SECTION_PARAM,IDENT_IS_LOG_TRADE,False);
+  FIsVirtualChecked := FIniFile.ReadBool(SECTION_PARAM,IDENT_VIRTUAL,False);
+  FIsTrend          := FIniFile.ReadBool(SECTION_PARAM,IDENT_IS_TREND,False);
 end;
 
 procedure TParamApplication.Save;
 begin
+  FIniFile.WriteInteger(SECTION_PARAM,IDENT_PLATFORM,Integer(FTypePlatform));
+{$IFDEF QUIK}
+  FIniFile.WriteString(SECTION_PARAM,IDENT_QUIK_TABLE_RSI,FQuikTableRSI);
+  FIniFile.WriteString(SECTION_PARAM,IDENT_CLASS_CODE,FClassCode);
+  FIniFile.WriteString(SECTION_PARAM,IDENT_SEC_CODE,FSecCode);
+  FIniFile.WriteString(SECTION_PARAM,IDENT_TRDACC_ID,FTrdaccID);
+  FIniFile.WriteString(SECTION_PARAM,IDENT_PATH_QUIK,FPathQuik);
+  //FTimeBegin: TDateTime;
+  //FTimeEnd: TDateTime;
+  //FGlobal_TK: Double;
+  //FGlobal_SL: Double;
+{$ENDIF}
+{$IFDEF BYBIT}
   FIniFile.WriteString(SECTION_PARAM,IDENT_SYMBLE,FSymble);
   FIniFile.WriteString(SECTION_PARAM,IDENT_API_KEY,FApiKey);
   FIniFile.WriteString(SECTION_PARAM,IDENT_API_SECRET,FApiSecret);
   FIniFile.WriteInteger(SECTION_PARAM,IDENT_CATEGORY,Integer(FCategory));
   FIniFile.WriteInteger(SECTION_PARAM,IDENT_INTERVAL,Integer(FInterval));
+{$ENDIF}
+  FIniFile.WriteBool(SECTION_PARAM,IDENT_IS_LOG_TRADE,FIsLogTrade);
+  FIniFile.WriteBool(SECTION_PARAM,IDENT_VIRTUAL,FIsVirtualChecked);
+  FIniFile.WriteBool(SECTION_PARAM,IDENT_IS_TREND,FIsTrend);
   FIniFile.UpdateFile;
 end;
 
@@ -273,6 +454,19 @@ procedure TParamApplication.SetReActiveRSI(ATrade: TTypeTrade; ALine: TTypeLine;
 begin
   var xS := GetSectionParamLINE(ATrade,ALine);
   FIniFile.WriteFloat(xS,IDENT_RE_ACTIVE_RSI,Value);
+  FIniFile.UpdateFile;
+end;
+
+function TParamApplication.GetReversQty(ATrade: TTypeTrade; ALine: TTypeLine): Boolean;
+begin
+  var xS := GetSectionParamLINE(ATrade,ALine);
+  Result := FIniFile.ReadBool(xS,IDENT_REVERS_QTY,False);
+end;
+
+procedure TParamApplication.SetReversQty(ATrade: TTypeTrade; ALine: TTypeLine; const Value: Boolean);
+begin
+  var xS := GetSectionParamLINE(ATrade,ALine);
+  FIniFile.WriteBool(xS,IDENT_REVERS_QTY,Value);
   FIniFile.UpdateFile;
 end;
 

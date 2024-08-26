@@ -71,19 +71,12 @@ object StatusFrame: TStatusFrame
       OnClick = ButtonBuyClick
     end
   end
-  object Timer: TTimer
-    Enabled = False
-    OnTimer = TimerTimer
-    Left = 232
-    Top = 4
-  end
   object EditMsgOrder: TEdit
     Touch.InteractiveGestures = [LongTap, DoubleTap]
     Align = Bottom
     TabOrder = 1
     ReadOnly = True
     Position.Y = 47.000000000000000000
-    Enabled = False
     Size.Width = 535.000000000000000000
     Size.Height = 22.000000000000000000
     Size.PlatformDefault = False

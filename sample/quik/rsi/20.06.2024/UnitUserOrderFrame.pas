@@ -27,7 +27,8 @@ uses
   QuikTrans2QuikAPI,
   QuikTransOrder,
 
-  Lb.Trade.RSI;
+  Lb.Trade.RSI,
+  Lb.Level;
 
 const
   STEP_PRICE = 5;
@@ -257,6 +258,8 @@ procedure TUserOrderFrame.SetOperationTrade;
     xPrice: Double;
     xStepPrice: Double;
   begin
+    // ------------------------------------------------------------------------
+    // Определяем цену открытие позиции
     xPrice := 0;
     xStepPrice := Security.AsDouble('SEC_PRICE_STEP'); // AsByIndexDouble(109); // SEC_PRICE_STEP
     case FBuySell of
@@ -276,17 +279,35 @@ procedure TUserOrderFrame.SetOperationTrade;
 
   function _GetQtyTotalNet: Integer;
   begin
+    // ------------------------------------------------------------------------
+    // Количество закрытие позиции
     Result := 1;
     if (QtyTotalNet <> 0) and CheckBoxQty.Checked then
       Result := Abs(QtyTotalNet);
   end;
 
+  function IsTrade: Boolean;
+  var
+    xBeginTime, xEndTime, xCurrnetTime: TDateTime;
+  begin
+    xBeginTime := TSetting.ReadTime('config.sys.time_begin',StrToTime('10:00:00'));
+    xEndTime := TSetting.ReadTime('config.sys.time_end',StrToTime('18:00:00'));
+    xCurrnetTime := Time;
+    Result := (xBeginTime < xCurrnetTime) and (xCurrnetTime < xEndTime);
+
+
+
+  end;
+
 var
   xMsg: String;
   xPath: String;
+
+  xPrice: Double;
+  xQty: Integer;
 begin
-  xPath := TSetting.ReadString('config.sys.path_quik','');
-  GetConnectQUIK(xPath);
+  if not IsTrade then
+    Exit;
 
   // Операция
   SyncOrder.SecCode   := TSetting.ReadString('config.sys.sec_code','');
@@ -299,12 +320,21 @@ begin
   );
 
 
+  xPath := TSetting.ReadString('config.sys.path_quik','');
+  GetConnectQUIK(xPath);
+
+  xPrice := _GetPrice;
+  xQty := _GetQtyTotalNet;
+
   SyncOrder.GetNewOrder(
-    _GetPrice,
-    _GetQtyTotalNet,
+    xPrice,
+    xQty,
     FBuySell,
     xMsg
   );
+
+
+
 
   if TSetting.ReadBool('config.sys.is_log_trade',True) then
   begin

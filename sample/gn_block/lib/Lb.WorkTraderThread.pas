@@ -66,7 +66,9 @@ type
   public
     constructor Create;
     destructor Destroy; override;
+
     property Trader: TWorkTrader read FTrader;
+
     property ID: Integer read FID write SetID;
     property PeriodRSI: Integer read FPeriodRSI write FPeriodRSI;
     property FileName: String read FFileName write FFileName;

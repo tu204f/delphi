@@ -10,8 +10,10 @@ object CategoryFrame: TCategoryFrame
     Stroke.Color = claNull
     object GridPanel: TGridPanelLayout
       Align = Client
+      Margins.Top = 3.000000000000000000
+      Margins.Bottom = 3.000000000000000000
       Size.Width = 450.000000000000000000
-      Size.Height = 28.000000000000000000
+      Size.Height = 22.000000000000000000
       Size.PlatformDefault = False
       TabOrder = 0
       ColumnCollection = <
@@ -65,7 +67,7 @@ object CategoryFrame: TCategoryFrame
       object Layout1: TLayout
         Align = Client
         Size.Width = 30.000000000000000000
-        Size.Height = 28.000000000000000000
+        Size.Height = 22.000000000000000000
         Size.PlatformDefault = False
         TabOrder = 4
         object CheckBoxActive: TCheckBox
@@ -82,7 +84,7 @@ object CategoryFrame: TCategoryFrame
         Margins.Left = 3.000000000000000000
         Margins.Right = 3.000000000000000000
         Size.Width = 124.000000000000000000
-        Size.Height = 28.000000000000000000
+        Size.Height = 22.000000000000000000
         Size.PlatformDefault = False
         TabOrder = 3
         object SpinBoxActiveRSI: TSpinBox
@@ -91,6 +93,7 @@ object CategoryFrame: TCategoryFrame
           TabOrder = 0
           Cursor = crIBeam
           Value = 30.000000000000000000
+          Position.Y = -3.000000000000000000
           Size.Width = 124.000000000000000000
           Size.Height = 28.000000000000000000
           Size.PlatformDefault = False
@@ -100,7 +103,7 @@ object CategoryFrame: TCategoryFrame
       object Layout3: TLayout
         Align = Client
         Size.Width = 30.000000000000000000
-        Size.Height = 28.000000000000000000
+        Size.Height = 22.000000000000000000
         Size.PlatformDefault = False
         TabOrder = 2
         object CheckBoxReActive: TCheckBox
@@ -115,7 +118,7 @@ object CategoryFrame: TCategoryFrame
       object Layout4: TLayout
         Align = Client
         Size.Width = 130.000000000000000000
-        Size.Height = 28.000000000000000000
+        Size.Height = 22.000000000000000000
         Size.PlatformDefault = False
         TabOrder = 1
         object SpinBoxReActiveRSI: TSpinBox
@@ -125,6 +128,7 @@ object CategoryFrame: TCategoryFrame
           Cursor = crIBeam
           Value = 20.000000000000000000
           Position.X = 3.000000000000000000
+          Position.Y = -3.000000000000000000
           Margins.Left = 3.000000000000000000
           Margins.Right = 3.000000000000000000
           Size.Width = 124.000000000000000000
@@ -136,7 +140,7 @@ object CategoryFrame: TCategoryFrame
       object Layout5: TLayout
         Align = Client
         Size.Width = 130.000000000000000000
-        Size.Height = 28.000000000000000000
+        Size.Height = 22.000000000000000000
         Size.PlatformDefault = False
         TabOrder = 0
         object SpinBoxQty: TSpinBox
@@ -148,6 +152,7 @@ object CategoryFrame: TCategoryFrame
           ValueType = Float
           Increment = 0.009999999776482582
           Position.X = 3.000000000000000000
+          Position.Y = -3.000000000000000000
           Margins.Left = 3.000000000000000000
           Margins.Right = 3.000000000000000000
           Size.Width = 124.000000000000000000

@@ -1,0 +1,52 @@
+object QuikExportFrame: TQuikExportFrame
+  Size.Width = 586.000000000000000000
+  Size.Height = 265.000000000000000000
+  Size.PlatformDefault = False
+  object LayoutMenu: TLayout
+    Align = Top
+    Size.Width = 586.000000000000000000
+    Size.Height = 37.000000000000000000
+    Size.PlatformDefault = False
+    TabOrder = 0
+    object Text1: TText
+      Position.X = 4.000000000000000000
+      Position.Y = 8.000000000000000000
+      Size.Width = 205.000000000000000000
+      Size.Height = 22.000000000000000000
+      Size.PlatformDefault = False
+      Text = #1057#1087#1080#1089#1086#1082' '#1101#1082#1089#1087#1086#1088#1090#1080#1088#1091#1077#1084#1099#1093' '#1090#1072#1073#1083#1080#1094' '
+      TextSettings.HorzAlign = Leading
+    end
+    object ComboBoxTable: TComboBox
+      Position.X = 212.000000000000000000
+      Position.Y = 8.000000000000000000
+      Size.Width = 217.000000000000000000
+      Size.Height = 22.000000000000000000
+      Size.PlatformDefault = False
+      TabOrder = 0
+      OnChange = ComboBoxTableChange
+    end
+    object ButtonUpData: TButton
+      Anchors = [akTop, akRight]
+      Position.X = 500.000000000000000000
+      Position.Y = 8.000000000000000000
+      Size.Width = 88.000000000000000000
+      Size.Height = 22.000000000000000000
+      Size.PlatformDefault = False
+      TabOrder = 2
+      Text = #1054#1073#1085#1086#1074#1083#1077#1085#1080#1077
+      OnClick = ButtonUpDataClick
+    end
+  end
+  object TableGrid: TStringGrid
+    Align = Client
+    CanFocus = True
+    ClipChildren = True
+    Size.Width = 586.000000000000000000
+    Size.Height = 228.000000000000000000
+    Size.PlatformDefault = False
+    TabOrder = 1
+    Viewport.Width = 586.000000000000000000
+    Viewport.Height = 228.000000000000000000
+  end
+end

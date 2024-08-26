@@ -1,6 +1,6 @@
 ﻿<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
     <PropertyGroup>
-        <ProjectGuid>{8908B4A3-755B-4AC6-83D5-48B243A7EFAA}</ProjectGuid>
+        <ProjectGuid>{3600F10F-ED34-4E73-BD6F-0DCA22C6C651}</ProjectGuid>
         <ProjectVersion>19.1</ProjectVersion>
         <FrameworkType>FMX</FrameworkType>
         <Base>True</Base>
@@ -140,9 +140,10 @@
         <Manifest_File>$(BDS)\bin\default_app.manifest</Manifest_File>
         <UWP_DelphiLogo44>$(BDS)\bin\Artwork\Windows\UWP\delphi_UwpDefault_44.png</UWP_DelphiLogo44>
         <UWP_DelphiLogo150>$(BDS)\bin\Artwork\Windows\UWP\delphi_UwpDefault_150.png</UWP_DelphiLogo150>
-        <DCC_ExeOutput>.\bin</DCC_ExeOutput>
-        <DCC_DcuOutput>.\dcu</DCC_DcuOutput>
+        <DCC_ExeOutput>.\app\bin</DCC_ExeOutput>
+        <DCC_DcuOutput>.\app\dcu</DCC_DcuOutput>
         <VerInfo_AutoIncVersion>true</VerInfo_AutoIncVersion>
+        <DCC_Define>FMX;$(DCC_Define)</DCC_Define>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Base_Win64)'!=''">
         <DCC_UsePackage>DBXSqliteDriver;RESTComponents;fmxase;DBXDb2Driver;DBXInterBaseDriver;vclactnband;vclFireDAC;bindcompvclsmp;emsclientfiredac;tethering;DataSnapFireDAC;FireDACADSDriver;DBXMSSQLDriver;DatasnapConnectorsFreePascal;FireDACMSSQLDriver;vcltouch;vcldb;bindcompfmx;DBXOracleDriver;inetdb;VirtualTreesDR;FmxTeeUI;emsedge;fmx;FireDACIBDriver;fmxdae;vcledge;vclib;FireDACDBXDriver;dbexpress;IndyCore;vclx;dsnap;emsclient;DataSnapCommon;FireDACCommon;RESTBackendComponents;DataSnapConnectors;VCLRESTComponents;soapserver;vclie;IcsCommonD104Run;bindengine;DBXMySQLDriver;CloudService;FireDACOracleDriver;FireDACMySQLDriver;DBXFirebirdDriver;FireDACCommonODBC;FireDACCommonDriver;DataSnapClient;inet;IndyIPCommon;bindcompdbx;vcl;IndyIPServer;DBXSybaseASEDriver;sgcWebSocketsD10_4;IndySystem;FireDACDb2Driver;dsnapcon;FireDACMSAccDriver;fmxFireDAC;FireDACInfxDriver;vclimg;IcsFmxD104Run;TeeDB;FireDAC;emshosting;FireDACSqliteDriver;FireDACPgDriver;ibmonitor;FireDACASADriver;OverbyteIcsD104Run;DBXOdbcDriver;FireDACTDataDriver;FMXTee;soaprtl;DbxCommonDriver;ibxpress;Tee;DataSnapServer;xmlrtl;soapmidas;DataSnapNativeClient;fmxobj;vclwinx;FireDACDSDriver;rtl;emsserverresource;DbxClientDriver;ibxbindings;DBXSybaseASADriver;CustomIPTransport;vcldsnap;bindcomp;appanalytics;DBXInformixDriver;IndyIPClient;bindcompvcl;SynEdit_R;TeeUI;dbxcds;VclSmp;adortl;FireDACODBCDriver;DataSnapIndy10ServerTransport;dsnapxml;DataSnapProviderClient;dbrtl;IndyProtocols;inetdbxpress;FireDACMongoDBDriver;DataSnapServerMidas;$(DCC_UsePackage)</DCC_UsePackage>
@@ -169,8 +170,9 @@
         <AppDPIAwarenessMode>PerMonitorV2</AppDPIAwarenessMode>
         <VerInfo_IncludeVerInfo>true</VerInfo_IncludeVerInfo>
         <VerInfo_Locale>1033</VerInfo_Locale>
-        <VerInfo_Build>5</VerInfo_Build>
-        <VerInfo_Keys>CompanyName=;FileDescription=$(MSBuildProjectName);FileVersion=1.0.0.5;InternalName=;LegalCopyright=;LegalTrademarks=;OriginalFilename=;ProgramID=com.embarcadero.$(MSBuildProjectName);ProductName=$(MSBuildProjectName);ProductVersion=1.0.0.0;Comments=</VerInfo_Keys>
+        <VerInfo_Build>22</VerInfo_Build>
+        <VerInfo_Keys>CompanyName=;FileDescription=$(MSBuildProjectName);FileVersion=1.0.0.22;InternalName=;LegalCopyright=;LegalTrademarks=;OriginalFilename=;ProgramID=com.embarcadero.$(MSBuildProjectName);ProductName=$(MSBuildProjectName);ProductVersion=1.0.0.0;Comments=</VerInfo_Keys>
+        <VerInfo_AutoIncVersion>true</VerInfo_AutoIncVersion>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Cfg_1_Win64)'!=''">
         <AppEnableRuntimeThemes>true</AppEnableRuntimeThemes>
@@ -185,6 +187,8 @@
     <PropertyGroup Condition="'$(Cfg_2_Win32)'!=''">
         <AppEnableRuntimeThemes>true</AppEnableRuntimeThemes>
         <AppDPIAwarenessMode>PerMonitorV2</AppDPIAwarenessMode>
+        <VerInfo_Build>1</VerInfo_Build>
+        <VerInfo_Keys>CompanyName=;FileDescription=$(MSBuildProjectName);FileVersion=1.0.0.1;InternalName=;LegalCopyright=;LegalTrademarks=;OriginalFilename=;ProgramID=com.embarcadero.$(MSBuildProjectName);ProductName=$(MSBuildProjectName);ProductVersion=1.0.0.0;Comments=</VerInfo_Keys>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Cfg_2_Win64)'!=''">
         <AppEnableRuntimeThemes>true</AppEnableRuntimeThemes>
@@ -194,6 +198,9 @@
         <DelphiCompile Include="$(MainSource)">
             <MainSource>MainSource</MainSource>
         </DelphiCompile>
+        <RcCompile Include="..\lib\history\db.rc">
+            <Form>db.res</Form>
+        </RcCompile>
         <DCCReference Include="UnitMainForm.pas">
             <Form>MainForm</Form>
         </DCCReference>
@@ -209,33 +216,75 @@
             <Form>CategoryFrame</Form>
             <DesignClass>TFrame</DesignClass>
         </DCCReference>
-        <DCCReference Include="..\..\bybit\lb\Lb.Bybit.SysUtils.pas"/>
-        <DCCReference Include="..\..\bybit\lb\Lb.Bybit.Encryption.pas"/>
-        <DCCReference Include="..\..\bybit\lb\trade\Lb.Bybit.RealTime.pas"/>
-        <DCCReference Include="..\..\bybit\lb\trade\Lb.Bybit.Trade.pas"/>
-        <DCCReference Include="..\..\bybit\lb\market\Lb.Bybit.InstrumentsInfo.pas"/>
-        <DCCReference Include="..\..\bybit\lb\market\Lb.Bybit.Kline.pas"/>
-        <DCCReference Include="..\..\bybit\lb\market\Lb.Bybit.OrderBook.pas"/>
-        <DCCReference Include="..\..\bybit\lb\market\Lb.Bybit.RecentTrade.pas"/>
-        <DCCReference Include="..\..\bybit\lb\market\Lb.Bybit.ServerTime.pas"/>
-        <DCCReference Include="..\..\bybit\lb\position\Lb.Bybit.Position.pas"/>
-        <DCCReference Include="..\..\..\library\trade\quik\Quik.Manager.DDE.pas"/>
-        <DCCReference Include="..\..\..\library\trade\quik\Quik.SysUtils.pas"/>
-        <DCCReference Include="..\..\..\library\trade\quik\Quik.ValueTable.pas"/>
-        <DCCReference Include="..\..\bybit\lb\indicator\Lb.Indicator.pas"/>
         <DCCReference Include="..\..\..\library\Lb.Logger.pas"/>
-        <DCCReference Include="lib\Lb.HistoryIndicator.pas"/>
-        <DCCReference Include="UnitSettingFrame.pas">
+        <DCCReference Include="setting\UnitSettingFrame.pas">
             <Form>SettingFrame</Form>
             <DesignClass>TFrame</DesignClass>
         </DCCReference>
-        <DCCReference Include="lib\Lb.SysUtils.pas"/>
         <DCCReference Include="UnitStatusFrame.pas">
             <Form>StatusFrame</Form>
             <DesignClass>TFrame</DesignClass>
         </DCCReference>
         <DCCReference Include="..\..\..\library\Lb.ApplicationVersion.pas"/>
-        <None Include="bybit_quik.inc"/>
+        <DCCReference Include="..\..\..\library\db\Lb.DataModuleDB.pas">
+            <Form>DataModuleDB</Form>
+            <FormType>dfm</FormType>
+            <DesignClass>TDataModule</DesignClass>
+        </DCCReference>
+        <DCCReference Include="..\..\..\library\Lb.Resource.Script.pas"/>
+        <DCCReference Include="..\lib\Lb.History.DB.pas"/>
+        <DCCReference Include="..\lib\Lb.SysUtils.pas"/>
+        <DCCReference Include="..\lib\Lb.VirtualTrade.pas"/>
+        <DCCReference Include="..\..\..\library\trade\quik\Quik.Manager.DDE.pas"/>
+        <DCCReference Include="..\..\..\library\trade\quik\Quik.SysUtils.pas"/>
+        <DCCReference Include="..\..\..\library\trade\quik\Quik.ValueTable.pas"/>
+        <DCCReference Include="setting\UnitSettingBybitFrame.pas">
+            <Form>SettingBybitFrame</Form>
+            <FormType>fmx</FormType>
+            <DesignClass>TFrame</DesignClass>
+        </DCCReference>
+        <DCCReference Include="setting\UnitSettingQuikFrame.pas">
+            <Form>SettingQuikFrame</Form>
+            <FormType>fmx</FormType>
+            <DesignClass>TFrame</DesignClass>
+        </DCCReference>
+        <DCCReference Include="table\UnitTableFrame.pas">
+            <Form>TableFrame</Form>
+            <FormType>fmx</FormType>
+            <DesignClass>TFrame</DesignClass>
+        </DCCReference>
+        <DCCReference Include="table\UnitTableVirtualTrade.pas">
+            <Form>TableVirtualTradeFrame</Form>
+            <FormType>fmx</FormType>
+            <DesignClass>TFrame</DesignClass>
+        </DCCReference>
+        <DCCReference Include="table\UnitQuikExportFrame.pas">
+            <Form>QuikExportFrame</Form>
+            <FormType>fmx</FormType>
+            <DesignClass>TFrame</DesignClass>
+        </DCCReference>
+        <DCCReference Include="..\..\..\library\trade\libquik\BTMemoryModule.pas"/>
+        <DCCReference Include="..\..\..\library\trade\libquik\QuikTrans2Order.pas"/>
+        <DCCReference Include="..\..\..\library\trade\libquik\QuikTrans2QuikAPI.pas"/>
+        <DCCReference Include="..\..\..\library\trade\libquik\QuikTransOrder.pas"/>
+        <DCCReference Include="..\lib\Lb.Level.pas"/>
+        <DCCReference Include="..\..\bybit\lb\Lb.Bybit.Encryption.pas"/>
+        <DCCReference Include="..\..\bybit\lb\Lb.Bybit.SysUtils.pas"/>
+        <DCCReference Include="..\..\bybit\lb\trade\Lb.Bybit.RealTime.pas"/>
+        <DCCReference Include="..\..\bybit\lb\trade\Lb.Bybit.Trade.pas"/>
+        <DCCReference Include="..\..\bybit\lb\position\Lb.Bybit.Position.pas"/>
+        <DCCReference Include="..\..\bybit\lb\market\Lb.Bybit.InstrumentsInfo.pas"/>
+        <DCCReference Include="..\..\bybit\lb\market\Lb.Bybit.Kline.pas"/>
+        <DCCReference Include="..\..\bybit\lb\market\Lb.Bybit.OrderBook.pas"/>
+        <DCCReference Include="..\..\bybit\lb\market\Lb.Bybit.RecentTrade.pas"/>
+        <DCCReference Include="..\..\bybit\lb\market\Lb.Bybit.ServerTime.pas"/>
+        <DCCReference Include="..\..\bybit\lb\indicator\Lb.Indicator.pas"/>
+        <DCCReference Include="status\Lb.Status.Quik.pas"/>
+        <DCCReference Include="status\Lb.Status.Bybit.pas"/>
+        <DCCReference Include="status\Lb.Status.pas"/>
+        <DCCReference Include="..\lib\Lb.HistoryIndicator.pas"/>
+        <None Include="platform.inc"/>
+        <None Include="..\lib\history\db.sql"/>
         <None Include="..\..\..\library\trade\quik\quik_connect.inc"/>
         <BuildConfiguration Include="Release">
             <Key>Cfg_2</Key>
@@ -270,6 +319,24 @@
                         <Overwrite>true</Overwrite>
                     </Platform>
                 </DeployFile>
+                <DeployFile LocalName="app\bin\rsi_bq.exe" Configuration="Debug" Class="ProjectOutput">
+                    <Platform Name="Win32">
+                        <RemoteName>rsi_bq.exe</RemoteName>
+                        <Overwrite>true</Overwrite>
+                    </Platform>
+                </DeployFile>
+                <DeployFile LocalName="..\..\..\library\trade\quik\quik_connect.inc" Configuration="Debug" Class="ProjectFile">
+                    <Platform Name="Win32">
+                        <RemoteDir>.\</RemoteDir>
+                        <Overwrite>true</Overwrite>
+                    </Platform>
+                </DeployFile>
+                <DeployFile LocalName="..\lib\history\db.sql" Configuration="Debug" Class="ProjectFile">
+                    <Platform Name="Win32">
+                        <RemoteDir>.\</RemoteDir>
+                        <Overwrite>true</Overwrite>
+                    </Platform>
+                </DeployFile>
                 <DeployFile LocalName="$(BDS)\Redist\iossimulator\libcgunwind.1.0.dylib" Class="DependencyModule">
                     <Platform Name="iOSSimulator">
                         <Overwrite>true</Overwrite>
@@ -280,19 +347,7 @@
                         <Overwrite>true</Overwrite>
                     </Platform>
                 </DeployFile>
-                <DeployFile LocalName="bin\rsi_bq.exe" Configuration="Debug" Class="ProjectOutput">
-                    <Platform Name="Win32">
-                        <RemoteName>rsi_bq.exe</RemoteName>
-                        <Overwrite>true</Overwrite>
-                    </Platform>
-                </DeployFile>
-                <DeployFile LocalName="bybit_quik.inc" Configuration="Debug" Class="ProjectFile">
-                    <Platform Name="Win32">
-                        <RemoteDir>.\</RemoteDir>
-                        <Overwrite>true</Overwrite>
-                    </Platform>
-                </DeployFile>
-                <DeployFile LocalName="..\..\..\library\trade\quik\quik_connect.inc" Configuration="Debug" Class="ProjectFile">
+                <DeployFile LocalName="platform.inc" Configuration="Debug" Class="ProjectFile">
                     <Platform Name="Win32">
                         <RemoteDir>.\</RemoteDir>
                         <Overwrite>true</Overwrite>

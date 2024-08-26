@@ -25,8 +25,8 @@ object MainForm: TMainForm
     Size.Height = 821.000000000000000000
     Size.PlatformDefault = False
     TabOrder = 5
-    Viewport.Width = 685.000000000000000000
-    Viewport.Height = 796.000000000000000000
+    Viewport.Width = 689.000000000000000000
+    Viewport.Height = 821.000000000000000000
   end
   object Text1: TText
     Position.X = 92.000000000000000000

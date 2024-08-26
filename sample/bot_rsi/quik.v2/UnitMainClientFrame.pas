@@ -2,6 +2,8 @@ unit UnitMainClientFrame;
 
 interface
 
+{$i platform.inc}
+
 uses
   System.SysUtils,
   System.Types,
@@ -18,8 +20,8 @@ uses
   UnitStatusFrame,
   UnitOrderCategoryFrame,
   FMX.Objects,
-  Lb.SysUtils,
-  Lb.Bybit.SysUtils;
+  Lb.SysUtils;
+
 
 type
   TMainClientFrame = class(TFrame)
@@ -84,11 +86,11 @@ procedure TMainClientFrame.InitOrderCategoryFrame;
 
 begin
   OrderCategoryBuy  := _InitOrderCategoryFrame(LayoutBuy);
-  OrderCategoryBuy.Side := TTypeSide.tsBuy;
+  OrderCategoryBuy.Side := TQBTypeSide.tsBuy;
   OrderCategoryBuy.OnEventSendTarde := EventSendTarde;
 
   OrderCategorySell := _InitOrderCategoryFrame(LayoutSell);
-  OrderCategorySell.Side := TTypeSide.tsSell;
+  OrderCategorySell.Side := TQBTypeSide.tsSell;
   OrderCategorySell.OnEventSendTarde := EventSendTarde;
 
   StatusFrame := _InitStatusFrame;

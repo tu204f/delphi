@@ -48,6 +48,7 @@ object MainForm: TMainForm
       Text = #1058#1072#1073#1083#1080#1094#1099
       TextSettings.Font.Size = 16.000000000000000000
       TextSettings.Font.StyleExt = {00070000000000000004000000}
+      OnClick = ButtonTableClick
     end
     object ButtonStartStop: TButton
       Align = Left
@@ -81,10 +82,12 @@ object MainForm: TMainForm
       Size.Width = 476.000000000000000000
       Size.Height = 319.000000000000000000
       Size.PlatformDefault = False
-      TabIndex = 1
+      TabIndex = 2
       TabOrder = 0
       TabPosition = None
       Sizes = (
+        476s
+        319s
         476s
         319s
         476s
@@ -107,13 +110,27 @@ object MainForm: TMainForm
         CustomIcon = <
           item
           end>
-        IsSelected = True
+        IsSelected = False
         Size.Width = 8.000000000000000000
         Size.Height = 8.000000000000000000
         Size.PlatformDefault = False
         StyleLookup = ''
         TabOrder = 0
         Text = 'TabItemMain'
+        ExplicitSize.cx = 8.000000000000000000
+        ExplicitSize.cy = 8.000000000000000000
+      end
+      object TabItemTable: TTabItem
+        CustomIcon = <
+          item
+          end>
+        IsSelected = True
+        Size.Width = 8.000000000000000000
+        Size.Height = 8.000000000000000000
+        Size.PlatformDefault = False
+        StyleLookup = ''
+        TabOrder = 0
+        Text = 'TabItemTable'
         ExplicitSize.cx = 8.000000000000000000
         ExplicitSize.cy = 8.000000000000000000
       end

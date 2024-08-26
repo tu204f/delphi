@@ -1,6 +1,6 @@
 program rsi_bybit;
 
-{$i bybit.inc}
+{$i debug.inc}
 
 
 
@@ -28,15 +28,16 @@ uses
   UnitStatusFrame in 'UnitStatusFrame.pas' {StatusFrame: TFrame},
   Lb.ApplicationVersion in '..\..\..\library\Lb.ApplicationVersion.pas',
   Lb.Bybit.Position in '..\..\bybit\lb\position\Lb.Bybit.Position.pas',
-  UnitTableFrame in 'UnitTableFrame.pas' {TableFrame: TFrame},
-  UnitTableVirtualTrade in 'UnitTableVirtualTrade.pas' {TableVirtualTradeFrame: TFrame},
+  UnitWorkTableFrame in 'UnitWorkTableFrame.pas' {WorkTableFrame: TFrame},
+  UnitTableTradeFrame in 'UnitTableTradeFrame.pas' {TableTradeFrame: TFrame},
   Lb.DataModuleDB in '..\..\..\library\db\Lb.DataModuleDB.pas' {DataModuleDB: TDataModule},
   Lb.Resource.Script in '..\..\..\library\Lb.Resource.Script.pas',
   Lb.History.DB in '..\lib\Lb.History.DB.pas',
   Lb.HistoryIndicator in '..\lib\Lb.HistoryIndicator.pas',
   Lb.SysUtils in '..\lib\Lb.SysUtils.pas',
   Lb.Trader in '..\lib\Lb.Trader.pas',
-  Lb.VirtualTrade in '..\lib\Lb.VirtualTrade.pas';
+  Lb.VirtualTrade in '..\lib\Lb.VirtualTrade.pas',
+  Lb.Level in '..\lib\Lb.Level.pas';
 
 {$R *.res}
 

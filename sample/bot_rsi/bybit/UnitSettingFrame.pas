@@ -31,6 +31,7 @@ type
     Text2: TText;
     Text3: TText;
     EditApiSecret: TEdit;
+    CheckBoxVirtualTrade: TCheckBox;
     procedure ButtonCloseClick(Sender: TObject);
     procedure ButtonApplyClick(Sender: TObject);
   private
@@ -67,6 +68,7 @@ begin
   EditSymble.Text    := ParamApplication.Symble;
   EditApiKey.Text    := ParamApplication.ApiKey;
   EditApiSecret.Text := ParamApplication.ApiSecret;
+  CheckBoxVirtualTrade.IsChecked := ParamApplication.IsVirtualChecked;
 end;
 
 procedure TSettingFrame.SaveSetting;
@@ -74,6 +76,7 @@ begin
   ParamApplication.Symble    := EditSymble.Text;
   ParamApplication.ApiKey    := EditApiKey.Text;
   ParamApplication.ApiSecret := EditApiSecret.Text;
+  ParamApplication.IsVirtualChecked := CheckBoxVirtualTrade.IsChecked;
   ParamApplication.Save;
 end;
 

@@ -2,7 +2,7 @@ unit UnitStatusFrame;
 
 interface
 
-{$i quik.inc}
+{$i platform.inc}
 
 uses
   System.SysUtils,
@@ -19,11 +19,12 @@ uses
   FMX.Objects,
   FMX.Controls.Presentation,
   FMX.Edit,
+
   Lb.SysUtils,
-  Lb.Bybit.Trade,
-  Lb.Bybit.SysUtils,
-  Lb.HistoryIndicator,
-  Lb.Bybit.Position;
+  Quik.Manager.DDE,
+  Quik.SysUtils,
+  Quik.ValueTable,
+  QuikTransOrder;
 
 type
   ///<summary>
@@ -43,28 +44,28 @@ type
     procedure TimerTimer(Sender: TObject);
     procedure ButtonBuyClick(Sender: TObject);
     procedure ButtonSellClick(Sender: TObject);
+    procedure TimerDemoTimer(Sender: TObject);
   private
     FOnParams: TNotifyEvent;
-    FHistoryIndicator: THistoryIndicator;
-    FInstrumentPrice: TInstrumentPrice;
-    FBybitPosition: TBybitPosition;
-    procedure EventResponse(ASander: TObject; ATypeObject: TTypeObject);
-    procedure EventBybitPositionEndLoading(Sender: TObject);
+    FRSIQuikTable: TQuikTable;
+    FSecurityTable: TQuikTable;
+    FQtyTable: TQuikTable;
     function GetIsActive: Boolean;
+  private
+    Status: Integer;
   protected
     procedure DoParams;
-    property HistoryIndicator: THistoryIndicator read FHistoryIndicator;
-    property InstrumentPrice: TInstrumentPrice read FInstrumentPrice;
   public
     ValueRSI: Double;
     Bid, Ask: Double;
     Qty: Double;
-    Side: TTypeSide;
+    Side: TQBTypeSide;
+    MinStep: Double;
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
     procedure Start;
     procedure Stop;
-    procedure SetOperationTrade(ASide: TTypeSide; APrice: Double; AQty: Double; ALine: TTypeLine);
+    procedure SetOperationTrade(ASide: TQBTypeSide; APrice: Double; AQty: Double; ALine: TTypeLine);
     property IsActive: Boolean read GetIsActive;
     property OnParams: TNotifyEvent write FOnParams;
   end;
@@ -81,49 +82,30 @@ uses
 constructor TStatusFrame.Create(AOwner: TComponent);
 begin
   inherited;
-  FHistoryIndicator := THistoryIndicator.Create;
-  FHistoryIndicator.OnResponse := EventResponse;
-
-  FInstrumentPrice := TInstrumentPrice.Create;
-  FInstrumentPrice.OnResponse := EventResponse;
-
-  FBybitPosition := TBybitPosition.Create;
-  FBybitPosition.OnEventEndLoading := EventBybitPositionEndLoading;
+  Status := 1;
 end;
 
 destructor TStatusFrame.Destroy;
 begin
-  FreeAndNil(FBybitPosition);
-  FreeAndNil(FInstrumentPrice);
-  FreeAndNil(FHistoryIndicator);
+
   inherited;
 end;
 
 procedure TStatusFrame.Start;
 begin
+  // Запускаенм таймер для получение данных
   if not Timer.Enabled then
   begin
     Timer.Enabled := True;
-    HistoryIndicator.Symbol   := ParamApplication.Symble;
-    HistoryIndicator.Category := ParamApplication.Category;
-    HistoryIndicator.Interval := ParamApplication.Interval;
-    HistoryIndicator.UpDate;
-
-    InstrumentPrice.Symbol   := ParamApplication.Symble;
-    InstrumentPrice.Category := ParamApplication.Category;
-    InstrumentPrice.Limit    := 10;
-
-    FBybitPosition.Symbol := ParamApplication.Symble;
-    FBybitPosition.Category := ParamApplication.Category;
-    FBybitPosition.SetEncryption(
-      ParamApplication.ApiKey,
-      ParamApplication.ApiSecret
-    );
+    FRSIQuikTable  := QuikManagerTable.Tables.GetTableName(ParamApplication.QuikTableRSI);
+    FSecurityTable := QuikManagerTable.Tables.GetTableName('security');
+    FQtyTable      := QuikManagerTable.Tables.GetTableName('qty');
   end;
 end;
 
 procedure TStatusFrame.Stop;
 begin
+  // Остановить таймер запросов
   if Timer.Enabled then
     Timer.Enabled := False;
 end;
@@ -131,56 +113,41 @@ end;
 
 procedure TStatusFrame.TimerTimer(Sender: TObject);
 begin
-  HistoryIndicator.UpDate;
-  InstrumentPrice.UpDate;
-  FBybitPosition.Selected;
-end;
+  try
 
-procedure TStatusFrame.EventBybitPositionEndLoading(Sender: TObject);
-{$IFDEF REAL_TRADE}
-var
-  xF: TFormatSettings;
-  xS: String;
-{$ENDIF}
-begin
-{$IFDEF REAL_TRADE}
-  Qty := 0;
-  if FBybitPosition.PositionObjects.Count > 0 then
-  begin
-    xS := FBybitPosition.PositionObjects[0].Size;
-    if not xS.IsEmpty then
+    MinStep := 0;
+
+    FRSIQuikTable.Fisrt;
+    ValueRSI := FRSIQuikTable.IndexName[8].AsDouble;
+
+    if GetSecCodeToTable(ParamApplication.SecCode,'CODE',FSecurityTable) then
     begin
-      xF := FormatSettings;
-      xF.DecimalSeparator := '.';
-      Qty := StrToFloatDef(xS,0,xF);
+      Bid := FSecurityTable.ByName['BID'].AsDouble;
+      Ask := FSecurityTable.ByName['OFFER'].AsDouble;
+      MinStep := FSecurityTable.ByName['SEC_PRICE_STEP'].AsDouble;
+    end;
+    EditValueRSI.Text := 'RSI:' + FloatToStr(ValueRSI) +
+    ' Price: ' + FloatToStr(Ask) + '/' + FloatToStr(Bid);
+
+    // Размер позиции
+    if GetSecCodeToTable(ParamApplication.SecCode,'SECCODE',FQtyTable) then
+    begin
+      Qty := FQtyTable.ByName['TOTAL_NET'].AsDouble;
     end;
     if Qty > 0 then
-      Side := GetTypeSideToStr(FBybitPosition.PositionObjects[0].Side);
-  end;
-  if Qty > 0 then
-    EditQty.Text := '(' + GetStrToTypeSide(Side) + ')' + FloatToStr(Qty)
-  else
-    EditQty.Text := '';
-{$ENDIF}
-end;
-
-procedure TStatusFrame.EventResponse(ASander: TObject; ATypeObject: TTypeObject);
-begin
-  case ATypeObject of
-    tobHistoryIndicator: begin
-      ValueRSI := HistoryIndicator.RSI.Current.AvgValue;
-    end;
-    tobInstrumentPrice: begin
-      Bid := InstrumentPrice.Bid;
-      Ask := InstrumentPrice.Ask;
-    end;
-  end;
-
-  EditValueRSI.Text := 'RSI:' + FloatToStr(ValueRSI) +
-  ' Price: ' + FloatToStr(Ask) + '/' + FloatToStr(Bid);
-
-  if (ValueRSI > 0) and (Ask > 0) and (Bid > 0) then
+      EditQty.Text := 'Buy (' + Qty.ToString + ')'
+    else if Qty < 0 then
+      EditQty.Text := 'Sell (' + Qty.ToString + ')'
+    else
+      EditQty.Text := '';
     DoParams;
+  except
+    on E:Exception do
+    begin
+      EditMsgOrder.Text := E.Message;
+      Stop;
+    end;
+  end;
 end;
 
 function TStatusFrame.GetIsActive: Boolean;
@@ -194,98 +161,78 @@ begin
     FOnParams(Self);
 end;
 
-procedure TStatusFrame.SetOperationTrade(ASide: TTypeSide; APrice: Double; AQty: Double; ALine: TTypeLine);
+procedure TStatusFrame.SetOperationTrade(ASide: TQBTypeSide; APrice: Double; AQty: Double; ALine: TTypeLine);
 
-  function _CreateOrderLinkId(ASide: TTypeSide; ALine: TTypeLine): String;
-  var
-    xS: String;
+  function _BuySellToSide(const ASide: TQBTypeSide): Char;
   begin
-    xS :=
-      GetStrToTypeLine(ALine) + '_' +
-      GetStrToTypeSide(ASide) + '_' +
-      Random(65000).ToString;
-    Result := xS;
+    case ASide of
+      tsBuy: Result := 'B';
+      tsSell: Result := 'S';
+    else
+      Result := #0;
+    end;
   end;
 
 var
-  xPlaceOrder: TParamOrder;
-{$IFDEF REAL_TRADE}
-var
-  xResponse: TOrderResponse;
-{$ENDIF}
+  xMsg: String;
+  xBuySell: Char;
+  xSyncOrder: TCustomSyncOrder;
 begin
-
-  try
-    // Инструмент отслеживания
-    // Передача ключей программе
-    xPlaceOrder := TParamOrder.Create;
+  GetConnectQUIK(ParamApplication.PathQuik);
+  xBuySell := _BuySellToSide(ASide);
+  if CharInSet(xBuySell,['B','S']) then
+  begin
+    xSyncOrder := TCustomSyncOrder.Create;
     try
-      xPlaceOrder.TypeProc    := TParamOrder.TTypeProc.Place;
+      xSyncOrder.SecCode   := ParamApplication.SecCode;
+      xSyncOrder.ClassCode := ParamApplication.ClassCode;
+      xSyncOrder.TrdaccID  := ParamApplication.TrdaccID;
 
-      {todo: сохранение данных}
-      xPlaceOrder.Category    := TTypeCategory.tcLinear;
-      xPlaceOrder.Symbol      := ParamApplication.Symble;
-      xPlaceOrder.Side        := ASide;
-      xPlaceOrder.PositionIdx := 0;
-      xPlaceOrder.OrderType   := TTypeOrder.Limit;
-      xPlaceOrder.Qty         := AQty;
-      xPlaceOrder.Price       := APrice;
-      xPlaceOrder.timeInForce := TTypeTimeInForce.GTC;
-      xPlaceOrder.OrderLinkId := _CreateOrderLinkId(ASide,ALine);
-{$IFDEF REAL_TRADE}
-      xResponse := TOrderResponse.Create;
-      try
-        SelectedOrder(
-           ParamApplication.ApiKey,
-           ParamApplication.ApiSecret,
-           xPlaceOrder,
-           xResponse // Возрат сообщение ос делке
-        );
-
-        Virtual_SelectedOrder(
-           ParamApplication.ApiKey,
-           ParamApplication.ApiSecret,
-           xPlaceOrder,
-           nil // Возрат сообщение ос делке
-        );
-
-{$ENDIF}
-{$IFDEF VIR_TRADE}
-      EditMsgOrder.Text :=
-        Virtual_SelectedOrder(
-           ParamApplication.ApiKey,
-           ParamApplication.ApiSecret,
-           xPlaceOrder,
-           nil // Возрат сообщение ос делке
-        );
-
-      Qty  := GetVirtualTrades.Qty;
-      Side := GetVirtualTrades.Side;
-
-{$ENDIF}
-{$IFDEF REAL_TRADE}
-        EditMsgOrder.Text := xResponse.RetMsg;
-      finally
-        FreeAndNil(xResponse);
-      end;
-{$ENDIF}
+      xSyncOrder.GetNewOrder(
+        APrice,
+        Trunc(AQty),
+        xBuySell,
+        xMsg
+      );
+      EditMsgOrder.Text := xMsg;
     finally
-      FreeAndNil(xPlaceOrder);
+      FreeAndNil(xSyncOrder);
     end;
-  except
-    on E: Exception do
-      raise Exception.Create('Error Message:' + E.Message);
   end;
 end;
 
+
 procedure TStatusFrame.ButtonBuyClick(Sender: TObject);
 begin
-  SetOperationTrade(TTypeSide.tsBuy,Ask + 100,0.01,TTypeLine.tlOpen1);
+  SetOperationTrade(TQBTypeSide.tsBuy,Ask + MinStep * 2,1,TTypeLine.tlOpen1);
 end;
 
 procedure TStatusFrame.ButtonSellClick(Sender: TObject);
 begin
-  SetOperationTrade(TTypeSide.tsSell,Bid - 100,0.01,TTypeLine.tlOpen1);
+  SetOperationTrade(TQBTypeSide.tsSell,Bid - MinStep * 2,1,TTypeLine.tlOpen1);
+end;
+
+procedure TStatusFrame.TimerDemoTimer(Sender: TObject);
+begin
+  case Status of
+    1: begin
+      ValueRSI := ValueRSI + 1;
+    end;
+    2: begin
+      ValueRSI := ValueRSI - 1;
+    end;
+  end;
+
+  if ValueRSI >= 55 then
+  begin
+    ValueRSI := 55;
+    Status := 2;
+  end else if ValueRSI <= 45 then
+  begin
+    ValueRSI := 45;
+    Status := 1;
+  end;
+
 end;
 
 end.

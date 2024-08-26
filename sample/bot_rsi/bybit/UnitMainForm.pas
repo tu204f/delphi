@@ -22,12 +22,7 @@ uses
   Lb.ApplicationVersion,
   UnitMainClientFrame,
   UnitSettingFrame,
-  UnitTableFrame;
-
-  // тест
-  // text @
-
-  // Дадата
+  UnitWorkTableFrame;
 
 type
   TMainForm = class(TForm, IMainApp)
@@ -52,7 +47,7 @@ type
   public
     SettingFrame: TSettingFrame;
     MainClientFrame: TMainClientFrame;
-    TableFrame: TTableFrame;
+    WorkTableFrame: TWorkTableFrame;
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
   end;
@@ -76,7 +71,7 @@ destructor TMainForm.Destroy;
 begin
   FreeAndNil(MainClientFrame);
   FreeAndNil(SettingFrame);
-  FreeAndNil(TableFrame);
+  FreeAndNil(WorkTableFrame);
   inherited;
 end;
 
@@ -107,10 +102,10 @@ procedure TMainForm.InitFrame;
 
   procedure _InitTableFrame;
   begin
-    TableFrame := TTableFrame.Create(nil);
-    TableFrame.Parent := TabItemTable;
-    TableFrame.Align := TAlignLayout.Client;
-    TableFrame.MainApp := Self;
+    WorkTableFrame := TWorkTableFrame.Create(nil);
+    WorkTableFrame.Parent := TabItemTable;
+    WorkTableFrame.Align := TAlignLayout.Client;
+    WorkTableFrame.MainApp := Self;
   end;
 
 begin

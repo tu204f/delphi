@@ -33,6 +33,7 @@ type
     FSide: TTypeSide;
     procedure InitCategoryFrame;
     procedure SetSide(const Value: TTypeSide);
+    procedure SetColor(const Value: TAlphaColor);
   protected
     Category1: TCategoryFrame;
     Category2: TCategoryFrame;
@@ -46,6 +47,7 @@ type
     procedure SetParams(const AParam: TSituationParam);
     property Side: TTypeSide read FSide write SetSide;
     property OnEventSendTarde: TOnEventSendTarde write FOnEventSendTarde;
+    property Color: TAlphaColor write SetColor;
   end;
 
 implementation
@@ -130,6 +132,15 @@ begin
     end;
   end;
 
+end;
+
+procedure TOrderCategoryFrame.SetColor(const Value: TAlphaColor);
+begin
+  Category1.Color := Value;
+  Category2.Color := Value;
+  Category3.Color := Value;
+  Category4.Color := Value;
+  Category5.Color := Value;
 end;
 
 procedure TOrderCategoryFrame.SetParams(const AParam: TSituationParam);

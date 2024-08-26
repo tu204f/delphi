@@ -51,6 +51,7 @@ type
   THistoryIndicator = class(TBasicObjectStrategy)
   private
     FValueRSI: TRSI;
+    FTrandRSI: TRSI;
     FCurrentCandel: TCandelObject;
     FBybitKline: TBybitKline;
     procedure BybitKlineOnEventEndLoading(Sender: TObject);
@@ -66,7 +67,8 @@ type
     ///<summary>Обновление данных</summary>
     function UpDate: Boolean; override;
   public
-    property RSI: TRSI read FValueRSI;
+    property FastRSI: TRSI read FValueRSI;
+    property SlowRSI: TRSI read FTrandRSI;
     property Candels: TCandelObjectList read GetCandels;
     property CurrentCandel: TCandelObject read FCurrentCandel write FCurrentCandel;
   public
@@ -237,8 +239,9 @@ begin
 
   FCurrentCandel := nil;
 
-  FLimit := 150;
-  FValueRSI := _GetRSI(7,3);
+  FLimit := 1000;
+  FValueRSI := _GetRSI(14,3);
+  FTrandRSI := _GetRSI(200,3);
 
   FBybitKline := TBybitKline.Create;
   FBybitKline.OnEventEndLoading := BybitKlineOnEventEndLoading;
@@ -248,6 +251,7 @@ destructor THistoryIndicator.Destroy;
 begin
   FreeAndNil(FBybitKline);
   FreeAndNil(FValueRSI);
+  FreeAndNil(FTrandRSI);
   inherited Destroy;
 end;
 
@@ -264,10 +268,8 @@ begin
   if iCount > 0 then
   begin
     FCurrentCandel := FBybitKline.CandelObjects[0];
-    if FCurrentCandel.DateTime < StrToDate('31.08.2024') then
-    begin
-      FValueRSI.SetCandels(FBybitKline.CandelObjects);
-    end;
+    FValueRSI.SetCandels(FBybitKline.CandelObjects);
+    FTrandRSI.SetCandels(FBybitKline.CandelObjects);
   end
   else
     FCurrentCandel := nil;

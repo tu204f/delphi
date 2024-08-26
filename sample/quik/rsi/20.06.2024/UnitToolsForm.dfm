@@ -4,7 +4,7 @@ object ToolsForm: TToolsForm
   BorderIcons = [biSystemMenu]
   BorderStyle = bsSingle
   Caption = 'ToolsForm'
-  ClientHeight = 201
+  ClientHeight = 317
   ClientWidth = 377
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
@@ -18,6 +18,20 @@ object ToolsForm: TToolsForm
   OnShow = FormShow
   PixelsPerInch = 96
   TextHeight = 13
+  object Label1: TLabel
+    Left = 8
+    Top = 172
+    Width = 69
+    Height = 13
+    Caption = #1042#1088#1077#1084#1103' '#1085#1072#1095#1072#1083#1086
+  end
+  object Label2: TLabel
+    Left = 139
+    Top = 172
+    Width = 94
+    Height = 13
+    Caption = #1042#1088#1077#1084#1103' '#1079#1072#1074#1077#1088#1096#1077#1085#1080#1103
+  end
   object ledQuickTableName: TLabeledEdit
     Left = 8
     Top = 20
@@ -30,7 +44,7 @@ object ToolsForm: TToolsForm
   end
   object ButtonCancel: TButton
     Left = 213
-    Top = 171
+    Top = 287
     Width = 75
     Height = 25
     Caption = #1054#1090#1084#1077#1085#1072
@@ -39,7 +53,7 @@ object ToolsForm: TToolsForm
   end
   object ButtonOK: TButton
     Left = 294
-    Top = 171
+    Top = 287
     Width = 75
     Height = 25
     Caption = #1055#1088#1080#1085#1103#1090#1100
@@ -102,6 +116,55 @@ object ToolsForm: TToolsForm
     Height = 17
     Caption = #1042#1082#1083#1102#1095#1080#1090#1100' '#1083#1086#1075#1080#1088#1086#1074#1072#1085#1080#1077' '#1090#1086#1088#1075#1086#1074#1099#1093' '#1087#1088#1080#1082#1072#1079#1086#1074
     TabOrder = 8
+  end
+  object TimePickerBegin: TTimePicker
+    Left = 8
+    Top = 191
+    Width = 121
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clWindowText
+    Font.Height = -16
+    Font.Name = 'Segoe UI'
+    Font.Style = []
+    TabOrder = 9
+    Time = 0.416666666666666700
+    TimeFormat = 'h:mm'
+  end
+  object TimePickerEnd: TTimePicker
+    Left = 135
+    Top = 191
+    Width = 121
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clWindowText
+    Font.Height = -16
+    Font.Name = 'Segoe UI'
+    Font.Style = []
+    TabOrder = 10
+    Time = 0.750000000000000000
+    TimeFormat = 'h:mm'
+  end
+  object LabeledEditTakeProfit: TLabeledEdit
+    Left = 8
+    Top = 256
+    Width = 121
+    Height = 21
+    EditLabel.Width = 45
+    EditLabel.Height = 13
+    EditLabel.Caption = #1055#1088#1080#1073#1099#1083#1100
+    Enabled = False
+    HideSelection = False
+    TabOrder = 11
+  end
+  object LabeledEditStopLoss: TLabeledEdit
+    Left = 135
+    Top = 256
+    Width = 121
+    Height = 21
+    EditLabel.Width = 39
+    EditLabel.Height = 13
+    EditLabel.Caption = #1059#1073#1099#1090#1082#1072
+    Enabled = False
+    TabOrder = 12
   end
   object OpenDialog1: TOpenDialog
     Left = 104

@@ -2,7 +2,7 @@ unit UnitStatusFrame;
 
 interface
 
-{$i bybit.inc}
+{$i debug.inc}
 
 uses
   System.SysUtils,
@@ -23,7 +23,9 @@ uses
   Lb.Bybit.Trade,
   Lb.Bybit.SysUtils,
   Lb.HistoryIndicator,
-  Lb.Bybit.Position;
+  Lb.Bybit.Position,
+  FMX.EditBox,
+  FMX.SpinBox;
 
 type
   ///<summary>
@@ -101,12 +103,13 @@ end;
 
 procedure TStatusFrame.Start;
 begin
+  ParamApplication.Interval := TTypeInterval.ti_5;
   if not Timer.Enabled then
   begin
     Timer.Enabled := True;
     HistoryIndicator.Symbol   := ParamApplication.Symble;
     HistoryIndicator.Category := ParamApplication.Category;
-    HistoryIndicator.Interval := ParamApplication.Interval;
+    //HistoryIndicator.Interval := ParamApplication.Interval;
     HistoryIndicator.UpDate;
 
     InstrumentPrice.Symbol   := ParamApplication.Symble;
@@ -207,6 +210,19 @@ procedure TStatusFrame.SetOperationTrade(ASide: TTypeSide; APrice: Double; AQty:
     Result := xS;
   end;
 
+  function _Qty(const AQty: Double): Double;
+  begin
+    if ParamApplication.IsVirtualChecked then
+    begin
+      if AQty = 0 then
+        Result := GetVirtualTrades.Qty
+      else
+        Result := AQty;
+    end
+    else
+      Result := AQty;
+  end;
+
 var
   xPlaceOrder: TParamOrder;
 {$IFDEF REAL_TRADE}
@@ -228,21 +244,14 @@ begin
       xPlaceOrder.Side        := ASide;
       xPlaceOrder.PositionIdx := 0;
       xPlaceOrder.OrderType   := TTypeOrder.Limit;
-      xPlaceOrder.Qty         := AQty;
+      xPlaceOrder.Qty         := _Qty(AQty);
       xPlaceOrder.Price       := APrice;
       xPlaceOrder.timeInForce := TTypeTimeInForce.GTC;
       xPlaceOrder.OrderLinkId := _CreateOrderLinkId(ASide,ALine);
 {$IFDEF REAL_TRADE}
       xResponse := TOrderResponse.Create;
       try
-        SelectedOrder(
-           ParamApplication.ApiKey,
-           ParamApplication.ApiSecret,
-           xPlaceOrder,
-           xResponse // Возрат сообщение ос делке
-        );
-
-        // для истории
+        // Фиксация вертуальных оперций
         Virtual_SelectedOrder(
            ParamApplication.ApiKey,
            ParamApplication.ApiSecret,
@@ -250,6 +259,16 @@ begin
            nil // Возрат сообщение ос делке
         );
 
+        if not ParamApplication.IsVirtualChecked then
+        begin
+          // Реальные торговые операции
+          SelectedOrder(
+             ParamApplication.ApiKey,
+             ParamApplication.ApiSecret,
+             xPlaceOrder,
+             xResponse // Возрат сообщение ос делке
+          );
+        end;
 {$ENDIF}
 {$IFDEF VIR_TRADE}
       EditMsgOrder.Text :=
@@ -262,7 +281,6 @@ begin
 
       Qty  := GetVirtualTrades.Qty;
       Side := GetVirtualTrades.Side;
-
 {$ENDIF}
 {$IFDEF REAL_TRADE}
         EditMsgOrder.Text := xResponse.RetMsg;

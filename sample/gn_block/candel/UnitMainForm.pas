@@ -146,8 +146,11 @@ var
 begin
   for i := 0 to 9 do
   begin
+
     xFileName := ExtractFilePath(ParamStr(0)) + 'data\';
     xFileName := xFileName + 'SPFB.SBRF_240301_240627.csv';
+
+
     xTrader := TWorkTraderThread.Create;
     xTrader.ID := i;
     xTrader.FileName := xFileName;
@@ -158,6 +161,7 @@ begin
     xTrader.OnEventStop := localTraderOnEventStop;
     xTrader.OnEventProgress := localTraderOnEventProgress;
     xTrader.Start;
+
   end;
 end;
 

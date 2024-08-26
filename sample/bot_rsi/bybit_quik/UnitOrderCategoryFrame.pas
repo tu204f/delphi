@@ -2,6 +2,8 @@ unit UnitOrderCategoryFrame;
 
 interface
 
+{$i platform.inc}
+
 uses
   System.SysUtils,
   System.Types,
@@ -16,8 +18,15 @@ uses
   FMX.StdCtrls,
   FMX.Layouts,
   UnitCategoryFrame,
-  Lb.Bybit.SysUtils,
+{$IFDEF QUIK}
+{$IFDEF BYBIT}
+  Lb.SysUtils,
+  Lb.Bybit.SysUtils;
+{$ELSE}
   Lb.SysUtils;
+{$ENDIF}
+{$ENDIF}
+
 
 type
   ///<summary>Заявка</summary>

@@ -21,7 +21,8 @@ uses
   Lb.SysUtils,
   Lb.ApplicationVersion,
   UnitMainClientFrame,
-  UnitSettingFrame;
+  UnitSettingFrame,
+  UnitTableFrame;
 
 type
   TMainForm = class(TForm, IMainApp)
@@ -33,17 +34,21 @@ type
     TabItemSetting: TTabItem;
     TabItemMain: TTabItem;
     ButtonStartStop: TButton;
+    TabItemTable: TTabItem;
     procedure ButtonSettingClick(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure ButtonStartStopClick(Sender: TObject);
+    procedure ButtonTableClick(Sender: TObject);
   private
 
   protected
     procedure InitFrame;
     procedure EventCloseTabControl;
+    procedure SetHeaderCaption(const ACaption: String);
   public
     SettingFrame: TSettingFrame;
     MainClientFrame: TMainClientFrame;
+    TableFrame: TTableFrame;
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
   end;
@@ -67,12 +72,13 @@ destructor TMainForm.Destroy;
 begin
   FreeAndNil(MainClientFrame);
   FreeAndNil(SettingFrame);
+  FreeAndNil(TableFrame);
   inherited;
 end;
 
 procedure TMainForm.FormShow(Sender: TObject);
 begin
-  Self.Caption := 'xBot - bybit [' + GetApplicationVersion + '] ';
+  Self.Caption := 'xBot - ' + GetStrToTypePlatform(ParamApplication.TypePlatform) + ' [' + GetApplicationVersion + '] ';
 {$IFDEF DEBUG}
   Self.Caption := Self.Caption + ' debug';
 {$ENDIF}
@@ -95,9 +101,25 @@ procedure TMainForm.InitFrame;
     MainClientFrame.Align := TAlignLayout.Client;
   end;
 
+  procedure _InitTableFrame;
+  begin
+    TableFrame := TTableFrame.Create(nil);
+    TableFrame.Parent := TabItemTable;
+    TableFrame.Align := TAlignLayout.Client;
+    TableFrame.MainApp := Self;
+  end;
+
 begin
   _InitSetting;
   _InitMainClientFrame;
+  _InitTableFrame;
+  SettingFrame.LoadSetting;
+  TabControl.ActiveTab := TabItemMain;
+end;
+
+procedure TMainForm.SetHeaderCaption(const ACaption: String);
+begin
+  Self.Caption := ACaption;
 end;
 
 procedure TMainForm.EventCloseTabControl;
@@ -107,23 +129,28 @@ end;
 
 procedure TMainForm.ButtonSettingClick(Sender: TObject);
 begin
-  SettingFrame.LoadSetting;
   TabControl.ActiveTab := TabItemSetting;
 end;
 
 procedure TMainForm.ButtonStartStopClick(Sender: TObject);
 begin
   // Запускам или остановливаем торговую стратегию
-  if MainClientFrame.StatusFrame.IsActive then
+  if MainClientFrame.StatusFrame.Status.IsActive then
   begin
     ButtonStartStop.Text := 'Старт';
-    MainClientFrame.StatusFrame.Stop;
+    MainClientFrame.StatusFrame.Status.Stop;
   end
   else
   begin
     ButtonStartStop.Text := 'Стоп';
-    MainClientFrame.StatusFrame.Start;
+    MainClientFrame.StatusFrame.Status.Start;
   end;
+end;
+
+procedure TMainForm.ButtonTableClick(Sender: TObject);
+begin
+  // Показывать результат работы программы
+  TabControl.ActiveTab := TabItemTable;
 end;
 
 end.

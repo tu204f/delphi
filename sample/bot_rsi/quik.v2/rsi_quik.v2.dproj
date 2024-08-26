@@ -170,8 +170,8 @@
         <AppDPIAwarenessMode>PerMonitorV2</AppDPIAwarenessMode>
         <VerInfo_IncludeVerInfo>true</VerInfo_IncludeVerInfo>
         <VerInfo_Locale>1033</VerInfo_Locale>
-        <VerInfo_Build>12</VerInfo_Build>
-        <VerInfo_Keys>CompanyName=;FileDescription=$(MSBuildProjectName);FileVersion=1.0.0.12;InternalName=;LegalCopyright=;LegalTrademarks=;OriginalFilename=;ProgramID=com.embarcadero.$(MSBuildProjectName);ProductName=$(MSBuildProjectName);ProductVersion=1.0.0.0;Comments=</VerInfo_Keys>
+        <VerInfo_Build>16</VerInfo_Build>
+        <VerInfo_Keys>CompanyName=;FileDescription=$(MSBuildProjectName);FileVersion=1.0.0.16;InternalName=;LegalCopyright=;LegalTrademarks=;OriginalFilename=;ProgramID=com.embarcadero.$(MSBuildProjectName);ProductName=$(MSBuildProjectName);ProductVersion=1.0.0.0;Comments=</VerInfo_Keys>
         <VerInfo_AutoIncVersion>true</VerInfo_AutoIncVersion>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Cfg_1_Win64)'!=''">
@@ -214,18 +214,8 @@
             <Form>CategoryFrame</Form>
             <DesignClass>TFrame</DesignClass>
         </DCCReference>
-        <DCCReference Include="..\..\bybit\lb\Lb.Bybit.SysUtils.pas"/>
-        <DCCReference Include="..\..\bybit\lb\Lb.Bybit.Encryption.pas"/>
-        <DCCReference Include="..\..\bybit\lb\trade\Lb.Bybit.RealTime.pas"/>
-        <DCCReference Include="..\..\bybit\lb\trade\Lb.Bybit.Trade.pas"/>
-        <DCCReference Include="..\..\bybit\lb\market\Lb.Bybit.InstrumentsInfo.pas"/>
-        <DCCReference Include="..\..\bybit\lb\market\Lb.Bybit.Kline.pas"/>
-        <DCCReference Include="..\..\bybit\lb\market\Lb.Bybit.OrderBook.pas"/>
-        <DCCReference Include="..\..\bybit\lb\market\Lb.Bybit.RecentTrade.pas"/>
-        <DCCReference Include="..\..\bybit\lb\market\Lb.Bybit.ServerTime.pas"/>
-        <DCCReference Include="..\..\bybit\lb\indicator\Lb.Indicator.pas"/>
         <DCCReference Include="..\..\..\library\Lb.Logger.pas"/>
-        <DCCReference Include="UnitSettingFrame.pas">
+        <DCCReference Include="setting\UnitSettingFrame.pas">
             <Form>SettingFrame</Form>
             <DesignClass>TFrame</DesignClass>
         </DCCReference>
@@ -234,17 +224,6 @@
             <DesignClass>TFrame</DesignClass>
         </DCCReference>
         <DCCReference Include="..\..\..\library\Lb.ApplicationVersion.pas"/>
-        <DCCReference Include="..\..\bybit\lb\position\Lb.Bybit.Position.pas"/>
-        <DCCReference Include="UnitTableFrame.pas">
-            <Form>TableFrame</Form>
-            <FormType>fmx</FormType>
-            <DesignClass>TFrame</DesignClass>
-        </DCCReference>
-        <DCCReference Include="UnitTableVirtualTrade.pas">
-            <Form>TableVirtualTradeFrame</Form>
-            <FormType>fmx</FormType>
-            <DesignClass>TFrame</DesignClass>
-        </DCCReference>
         <DCCReference Include="..\..\..\library\db\Lb.DataModuleDB.pas">
             <Form>DataModuleDB</Form>
             <FormType>dfm</FormType>
@@ -252,12 +231,44 @@
         </DCCReference>
         <DCCReference Include="..\..\..\library\Lb.Resource.Script.pas"/>
         <DCCReference Include="..\lib\Lb.History.DB.pas"/>
-        <DCCReference Include="..\lib\Lb.HistoryIndicator.pas"/>
         <DCCReference Include="..\lib\Lb.SysUtils.pas"/>
-        <DCCReference Include="..\lib\Lb.Trader.pas"/>
         <DCCReference Include="..\lib\Lb.VirtualTrade.pas"/>
-        <None Include="quik.inc"/>
+        <DCCReference Include="..\..\..\library\trade\quik\Quik.Manager.DDE.pas"/>
+        <DCCReference Include="..\..\..\library\trade\quik\Quik.SysUtils.pas"/>
+        <DCCReference Include="..\..\..\library\trade\quik\Quik.ValueTable.pas"/>
+        <DCCReference Include="setting\UnitSettingBybitFrame.pas">
+            <Form>SettingBybitFrame</Form>
+            <FormType>fmx</FormType>
+            <DesignClass>TFrame</DesignClass>
+        </DCCReference>
+        <DCCReference Include="setting\UnitSettingQuikFrame.pas">
+            <Form>SettingQuikFrame</Form>
+            <FormType>fmx</FormType>
+            <DesignClass>TFrame</DesignClass>
+        </DCCReference>
+        <DCCReference Include="table\UnitTableFrame.pas">
+            <Form>TableFrame</Form>
+            <FormType>fmx</FormType>
+            <DesignClass>TFrame</DesignClass>
+        </DCCReference>
+        <DCCReference Include="table\UnitTableVirtualTrade.pas">
+            <Form>TableVirtualTradeFrame</Form>
+            <FormType>fmx</FormType>
+            <DesignClass>TFrame</DesignClass>
+        </DCCReference>
+        <DCCReference Include="table\UnitQuikExportFrame.pas">
+            <Form>QuikExportFrame</Form>
+            <FormType>fmx</FormType>
+            <DesignClass>TFrame</DesignClass>
+        </DCCReference>
+        <DCCReference Include="..\..\..\library\trade\libquik\BTMemoryModule.pas"/>
+        <DCCReference Include="..\..\..\library\trade\libquik\QuikTrans2Order.pas"/>
+        <DCCReference Include="..\..\..\library\trade\libquik\QuikTrans2QuikAPI.pas"/>
+        <DCCReference Include="..\..\..\library\trade\libquik\QuikTransOrder.pas"/>
+        <DCCReference Include="..\lib\Lb.Level.pas"/>
+        <None Include="platform.inc"/>
         <None Include="..\lib\history\db.sql"/>
+        <None Include="..\..\..\library\trade\quik\quik_connect.inc"/>
         <BuildConfiguration Include="Release">
             <Key>Cfg_2</Key>
             <CfgParent>Base</CfgParent>
@@ -286,7 +297,7 @@
                 </Excluded_Packages>
             </Delphi.Personality>
             <Deployment Version="3">
-                <DeployFile LocalName="bybit.inc" Configuration="Debug" Class="ProjectFile">
+                <DeployFile LocalName="platform.inc" Configuration="Debug" Class="ProjectFile">
                     <Platform Name="Win32">
                         <RemoteDir>.\</RemoteDir>
                         <Overwrite>true</Overwrite>
@@ -297,6 +308,18 @@
                         <Overwrite>true</Overwrite>
                     </Platform>
                 </DeployFile>
+                <DeployFile LocalName="..\lib\history\db.sql" Configuration="Debug" Class="ProjectFile">
+                    <Platform Name="Win32">
+                        <RemoteDir>.\</RemoteDir>
+                        <Overwrite>true</Overwrite>
+                    </Platform>
+                </DeployFile>
+                <DeployFile LocalName="..\..\..\library\trade\quik\quik_connect.inc" Configuration="Debug" Class="ProjectFile">
+                    <Platform Name="Win32">
+                        <RemoteDir>.\</RemoteDir>
+                        <Overwrite>true</Overwrite>
+                    </Platform>
+                </DeployFile>
                 <DeployFile LocalName="$(BDS)\Redist\iossimulator\libcgunwind.1.0.dylib" Class="DependencyModule">
                     <Platform Name="iOSSimulator">
                         <Overwrite>true</Overwrite>
@@ -304,12 +327,6 @@
                 </DeployFile>
                 <DeployFile LocalName="$(BDS)\Redist\iossimulator\libpcre.dylib" Class="DependencyModule">
                     <Platform Name="iOSSimulator">
-                        <Overwrite>true</Overwrite>
-                    </Platform>
-                </DeployFile>
-                <DeployFile LocalName="..\lib\history\db.sql" Configuration="Debug" Class="ProjectFile">
-                    <Platform Name="Win32">
-                        <RemoteDir>.\</RemoteDir>
                         <Overwrite>true</Overwrite>
                     </Platform>
                 </DeployFile>

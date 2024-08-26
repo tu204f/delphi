@@ -2,6 +2,8 @@ unit UnitCategoryFrame;
 
 interface
 
+{$i platform.inc}
+
 uses
   System.SysUtils,
   System.Types,
@@ -21,7 +23,7 @@ uses
   FMX.Layouts,
   FMX.Objects,
   Lb.SysUtils,
-  Lb.Bybit.SysUtils;
+  Lb.Level;
 
 type
   ///<summary>Категория совершение торговых операций</summary>
@@ -38,24 +40,41 @@ type
     SpinBoxActiveRSI: TSpinBox;
     SpinBoxReActiveRSI: TSpinBox;
     SpinBoxQty: TSpinBox;
+    Layout6: TLayout;
+    CheckBoxReversQty: TCheckBox;
     procedure SpinBoxActiveRSIChange(Sender: TObject);
     procedure CheckBoxReActiveChange(Sender: TObject);
     procedure SpinBoxReActiveRSIChange(Sender: TObject);
     procedure SpinBoxQtyChange(Sender: TObject);
     procedure CheckBoxActiveChange(Sender: TObject);
+    procedure CheckBoxReversQtyChange(Sender: TObject);
   private
-    FSide: TTypeSide;
+    FSituationParam: TSituationParam;
+  private
+    FSide: TQBTypeSide;
     FTypeTrade: TTypeTrade;
     FTypeLine: TTypeLine;
     FOnEventSendTarde: TOnEventSendTarde;
+    procedure SetSide(const Value: TQBTypeSide);
   protected
+    ActiveLevel: TOneEventLevel;
+    ReActiveLevel: TOneEventLevel;
+    procedure ActiveLevelOnIntersection(Sender: TObject);
+    procedure ReActiveLevelOnIntersection(Sender: TObject);
     procedure DoSendTrade(const AParam: TTradeParam);
+    procedure SetActiveLevelSide;
   public
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
     procedure Load;
     procedure SetValueParam(AParam: TSituationParam);
-    property Side: TTypeSide read FSide write FSide;
+    ///<summary>
+    /// Напровление котегори
+    ///</summary>
+    property Side: TQBTypeSide read FSide write SetSide;
+    ///<summary>
+    /// Направление работы категориями: Long, Short
+    ///</summary>
     property TypeTrade: TTypeTrade read FTypeTrade write FTypeTrade;
     property TypeLine: TTypeLine read FTypeLine write FTypeLine;
     property OnEventSendTarde: TOnEventSendTarde write FOnEventSendTarde;
@@ -65,28 +84,40 @@ implementation
 
 {$R *.fmx}
 
+uses
+  Lb.Logger;
+
 { TCategoryFrame }
 
 constructor TCategoryFrame.Create(AOwner: TComponent);
 begin
   inherited;
+  ActiveLevel   := TOneEventLevel.Create;
+  ActiveLevel.OnIntersectionLevel := ActiveLevelOnIntersection;
 
+  ReActiveLevel := TOneEventLevel.Create;
+  ReActiveLevel.OnIntersectionLevel := ReActiveLevelOnIntersection;
 end;
 
 destructor TCategoryFrame.Destroy;
 begin
-
+  FreeAndNil(ReActiveLevel);
+  FreeAndNil(ActiveLevel);
   inherited;
 end;
 
 
 procedure TCategoryFrame.Load;
 begin
-  CheckBoxActive.IsChecked   := ParamApplication.Active[TypeTrade,TypeLine];
-  CheckBoxReActive.IsChecked := ParamApplication.ReActive[TypeTrade,TypeLine];
-  SpinBoxActiveRSI.Value     := ParamApplication.ActiveRSI[TypeTrade,TypeLine];
-  SpinBoxReActiveRSI.Value   := ParamApplication.ReActiveRSI[TypeTrade,TypeLine];
-  SpinBoxQty.Value           := ParamApplication.Qty[TypeTrade,TypeLine];
+  CheckBoxActive.IsChecked    := ParamApplication.Active[TypeTrade,TypeLine];
+  CheckBoxReActive.IsChecked  := ParamApplication.ReActive[TypeTrade,TypeLine];
+  SpinBoxActiveRSI.Value      := ParamApplication.ActiveRSI[TypeTrade,TypeLine];
+  SpinBoxReActiveRSI.Value    := ParamApplication.ReActiveRSI[TypeTrade,TypeLine];
+  SpinBoxQty.Value            := ParamApplication.Qty[TypeTrade,TypeLine];
+  CheckBoxReversQty.IsChecked := ParamApplication.ReversQty[TypeTrade,TypeLine];
+
+  ActiveLevel.Value := SpinBoxActiveRSI.Value;
+  ReActiveLevel.Value := SpinBoxReActiveRSI.Value;
 end;
 
 procedure TCategoryFrame.CheckBoxActiveChange(Sender: TObject);
@@ -96,6 +127,7 @@ end;
 
 procedure TCategoryFrame.SpinBoxActiveRSIChange(Sender: TObject);
 begin
+  ActiveLevel.Value := SpinBoxActiveRSI.Value;
   ParamApplication.ActiveRSI[TypeTrade,TypeLine] := SpinBoxActiveRSI.Value;
 end;
 
@@ -104,8 +136,14 @@ begin
   ParamApplication.ReActive[TypeTrade,TypeLine] := CheckBoxReActive.IsChecked;
 end;
 
+procedure TCategoryFrame.CheckBoxReversQtyChange(Sender: TObject);
+begin
+  ParamApplication.ReversQty[TypeTrade,TypeLine] := CheckBoxReversQty.IsChecked;
+end;
+
 procedure TCategoryFrame.SpinBoxReActiveRSIChange(Sender: TObject);
 begin
+  ReActiveLevel.Value := SpinBoxReActiveRSI.Value;
   ParamApplication.ReActiveRSI[TypeTrade,TypeLine] := SpinBoxReActiveRSI.Value;
 end;
 
@@ -114,66 +152,127 @@ begin
   ParamApplication.Qty[TypeTrade,TypeLine] := SpinBoxQty.Value;
 end;
 
-procedure TCategoryFrame.SetValueParam(AParam: TSituationParam);
+procedure TCategoryFrame.ActiveLevelOnIntersection(Sender: TObject);
 
-  function _Qty(AParam: TSituationParam): Double;
+  function _Qty: Double;
   begin
-    if SpinBoxQty.Value > 0 then
-      Result := SpinBoxQty.Value
+    if FSituationParam.Qty = 0 then
+    begin
+      Result := SpinBoxQty.Value;
+    end
+    else if CheckBoxReversQty.IsChecked then
+    begin
+      if FSituationParam.Side = FSide then
+        Result := SpinBoxQty.Value
+      else
+        Result := FSituationParam.Qty + SpinBoxQty.Value;
+    end
     else
-      Result := AParam.Qty;
+    begin
+      Result := FSituationParam.Qty;
+    end;
   end;
 
 var
   xParam: TTradeParam;
 begin
+{$IFDEF DBG_TRADE}
+  TLogger.LogTree(0,'TCategoryFrame.ActiveLevelOnIntersection:');
+  TLogger.LogTreeText(3,'>> SituationParam.Qty:' + FSituationParam.Qty.ToString);
+  TLogger.LogTreeText(3,'>> SituationParam.Side:' + GetStrToTypeSide(FSituationParam.Side));
+{$ENDIF}
+  // Событие пересечение выставить торговый операцию
+  if CheckBoxActive.IsChecked then
+  begin
+    case FSide of
+      TQBTypeSide.tsBuy: xParam.Price := FSituationParam.Ask;
+      TQBTypeSide.tsSell: xParam.Price := FSituationParam.Bid;
+    end;
+    xParam.Qty := _Qty;
+    xParam.Side:= FSide;
+    xParam.TypeTrade := FTypeTrade;
+    xParam.TypeLine := FTypeLine;
+{$IFDEF DBG_TRADE}
+    TLogger.LogText('*',40);
+    TLogger.LogTreeText(3,'>> Price:' + xParam.Price.ToString);
+    TLogger.LogTreeText(3,'>> Qty:' + xParam.Qty.ToString);
+    TLogger.LogTreeText(3,'>> Side:' + GetStrToTypeSide(xParam.Side));
+    TLogger.LogTreeText(3,'>> TypeTrade:' + GetStrToTypeTrade(xParam.TypeTrade));
+    TLogger.LogTreeText(3,'>> TypeLine:' + GetStrToTypeLine(xParam.TypeLine));
+{$ENDIF}
+    DoSendTrade(xParam);
+    CheckBoxActive.IsChecked := False;
+  end;
+end;
+
+procedure TCategoryFrame.ReActiveLevelOnIntersection(Sender: TObject);
+begin
+  // Событие пересечение, актировать заявки
+  if CheckBoxReActive.IsChecked then
+  begin
+    CheckBoxActive.IsChecked := True;
+    SetActiveLevelSide;
+  end;
+end;
+
+procedure TCategoryFrame.SetActiveLevelSide;
+begin
   case FSide of
-    tsBuy: begin
-      if CheckBoxActive.IsChecked then
-      begin
-        if AParam.ValueRSI < SpinBoxActiveRSI.Value then
-        begin
-          xParam.Price := AParam.Ask;
-          xParam.Qty   := _Qty(AParam);
-          xParam.Side  := FSide;
-          xParam.TypeLine := FTypeLine;
-          xParam.TypeTrade := FTypeTrade;
-          DoSendTrade(xParam);
-          CheckBoxActive.IsChecked := False;
-        end;
-      end
-      else
-      begin
-        if CheckBoxReActive.IsChecked then
-        begin
-          if AParam.ValueRSI > SpinBoxReActiveRSI.Value then
-            CheckBoxActive.IsChecked := True;
-        end;
+    TQBTypeSide.tsBuy: begin
+      ActiveLevel.IsRepeat := False;
+      ActiveLevel.WorkLevel := TIntersectionLevel.tlDownUp;
+      ReActiveLevel.IsRepeat := False;
+      ReActiveLevel.WorkLevel := TIntersectionLevel.tlUpDown;
+    end;
+    TQBTypeSide.tsSell: begin
+      ActiveLevel.IsRepeat := False;
+      ActiveLevel.WorkLevel := TIntersectionLevel.tlUpDown;
+      ReActiveLevel.IsRepeat := False;
+      ReActiveLevel.WorkLevel := TIntersectionLevel.tlDownUp;
+    end;
+  end;
+end;
+
+procedure TCategoryFrame.SetSide(const Value: TQBTypeSide);
+begin
+  FSide := Value;
+  case FSide of
+    TQBTypeSide.tsBuy : begin
+      Self.SetActiveLevelSide;
+      Rectangle.Fill.Color := TAlphaColorRec.Green;
+    end;
+    TQBTypeSide.tsSell: begin
+      Self.SetActiveLevelSide;
+      Rectangle.Fill.Color := TAlphaColorRec.Red;
+    end;
+  else
+    Rectangle.Fill.Color := TAlphaColorRec.Null;
+  end;
+end;
+
+procedure TCategoryFrame.SetValueParam(AParam: TSituationParam);
+begin
+  FSituationParam := AParam;
+  if ParamApplication.IsTrend then
+  begin
+    case FSide of
+      // Покупаем если рынок растет
+      TQBTypeSide.tsBuy: begin
+        if AParam.SlowRSI > 50 then
+          ActiveLevel.SetUpDate(AParam.FastRSI);
+      end;
+      // Продаем если рынок падает
+      TQBTypeSide.tsSell: begin
+        if AParam.SlowRSI < 50 then
+          ActiveLevel.SetUpDate(AParam.FastRSI);
       end;
     end;
-    tsSell: begin
-      if CheckBoxActive.IsChecked then
-      begin
-        if AParam.ValueRSI > SpinBoxActiveRSI.Value then
-        begin
-          xParam.Price := AParam.Ask;
-          xParam.Qty   := _Qty(AParam);
-          xParam.Side  := FSide;
-          xParam.TypeLine := FTypeLine;
-          xParam.TypeTrade := FTypeTrade;
-          DoSendTrade(xParam);
-          CheckBoxActive.IsChecked := False;
-        end;
-      end
-      else
-      begin
-        if CheckBoxReActive.IsChecked then
-        begin
-          if AParam.ValueRSI < SpinBoxReActiveRSI.Value then
-            CheckBoxActive.IsChecked := True;
-        end;
-      end;
-    end;
+    ReActiveLevel.SetUpDate(AParam.FastRSI);
+  end
+  else
+  begin
+    ActiveLevel.SetUpDate(AParam.FastRSI);
+    ReActiveLevel.SetUpDate(AParam.FastRSI);
   end;
 end;
 

@@ -44,6 +44,7 @@ type
   protected
     procedure InitFrame;
     procedure EventCloseTabControl;
+    procedure SetHeaderCaption(const ACaption: String);
   public
     SettingFrame: TSettingFrame;
     MainClientFrame: TMainClientFrame;
@@ -114,6 +115,11 @@ begin
   _InitTableFrame;
 
   TabControl.ActiveTab := TabItemMain;
+end;
+
+procedure TMainForm.SetHeaderCaption(const ACaption: String);
+begin
+
 end;
 
 procedure TMainForm.EventCloseTabControl;

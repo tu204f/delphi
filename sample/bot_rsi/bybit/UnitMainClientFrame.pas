@@ -2,6 +2,8 @@ unit UnitMainClientFrame;
 
 interface
 
+{$I debug.inc}
+
 uses
   System.SysUtils,
   System.Types,
@@ -19,7 +21,8 @@ uses
   UnitOrderCategoryFrame,
   FMX.Objects,
   Lb.SysUtils,
-  Lb.Bybit.SysUtils;
+  Lb.Bybit.SysUtils, FMX.Controls.Presentation, FMX.Edit, FMX.EditBox,
+  FMX.SpinBox;
 
 type
   TMainClientFrame = class(TFrame)
@@ -28,6 +31,7 @@ type
     LayoutInfo: TLayout;
     LayoutBuy: TLayout;
   private
+    FParam: TSituationParam;
     procedure InitOrderCategoryFrame;
   protected
     OrderCategoryBuy: TOrderCategoryFrame;
@@ -81,32 +85,31 @@ procedure TMainClientFrame.InitOrderCategoryFrame;
     Result := xFrame;
   end;
 
-
 begin
   OrderCategoryBuy  := _InitOrderCategoryFrame(LayoutBuy);
   OrderCategoryBuy.Side := TTypeSide.tsBuy;
   OrderCategoryBuy.OnEventSendTarde := EventSendTarde;
+  OrderCategoryBuy.Color := TAlphaColorRec.Green;
 
   OrderCategorySell := _InitOrderCategoryFrame(LayoutSell);
   OrderCategorySell.Side := TTypeSide.tsSell;
   OrderCategorySell.OnEventSendTarde := EventSendTarde;
+  OrderCategorySell.Color := TAlphaColorRec.Red;
 
   StatusFrame := _InitStatusFrame;
   StatusFrame.OnParams := StatusFrameOnParams;
 end;
 
 procedure TMainClientFrame.StatusFrameOnParams(Sender: TObject);
-var
-  xParam: TSituationParam;
 begin
-  xParam.ValueRSI := StatusFrame.ValueRSI;
-  xParam.Bid      := StatusFrame.Bid;
-  xParam.Ask      := StatusFrame.Ask;
-  xParam.Qty      := StatusFrame.Qty;
-  xParam.Side     := StatusFrame.Side;
+  FParam.ValueRSI := StatusFrame.ValueRSI;
+  FParam.Bid      := StatusFrame.Bid;
+  FParam.Ask      := StatusFrame.Ask;
+  FParam.Qty      := StatusFrame.Qty;
+  FParam.Side     := StatusFrame.Side;
 
-  OrderCategoryBuy.SetParams(xParam);
-  OrderCategorySell.SetParams(xParam);
+  OrderCategoryBuy.SetParams(FParam);
+  OrderCategorySell.SetParams(FParam);
 end;
 
 procedure TMainClientFrame.EventSendTarde(Sender: TObject; ATradeParam: TTradeParam);

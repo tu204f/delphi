@@ -6,6 +6,9 @@
         <Projects Include="candel\candel.dproj">
             <Dependencies/>
         </Projects>
+        <Projects Include="trader\trader.dproj">
+            <Dependencies/>
+        </Projects>
     </ItemGroup>
     <ProjectExtensions>
         <Borland.Personality>Default.Personality.12</Borland.Personality>
@@ -23,14 +26,23 @@
     <Target Name="candel:Make">
         <MSBuild Projects="candel\candel.dproj" Targets="Make"/>
     </Target>
+    <Target Name="trader">
+        <MSBuild Projects="trader\trader.dproj"/>
+    </Target>
+    <Target Name="trader:Clean">
+        <MSBuild Projects="trader\trader.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="trader:Make">
+        <MSBuild Projects="trader\trader.dproj" Targets="Make"/>
+    </Target>
     <Target Name="Build">
-        <CallTarget Targets="candel"/>
+        <CallTarget Targets="candel;trader"/>
     </Target>
     <Target Name="Clean">
-        <CallTarget Targets="candel:Clean"/>
+        <CallTarget Targets="candel:Clean;trader:Clean"/>
     </Target>
     <Target Name="Make">
-        <CallTarget Targets="candel:Make"/>
+        <CallTarget Targets="candel:Make;trader:Make"/>
     </Target>
     <Import Project="$(BDS)\Bin\CodeGear.Group.Targets" Condition="Exists('$(BDS)\Bin\CodeGear.Group.Targets')"/>
 </Project>

@@ -1,0 +1,40 @@
+object MainForm: TMainForm
+  Left = 0
+  Top = 0
+  Caption = 'Form4'
+  ClientHeight = 480
+  ClientWidth = 640
+  FormFactor.Width = 320
+  FormFactor.Height = 480
+  FormFactor.Devices = [Desktop]
+  OnShow = FormShow
+  DesignerMasterStyle = 0
+  object ButtonAdd: TButton
+    Position.X = 4.000000000000000000
+    Position.Y = 4.000000000000000000
+    TabOrder = 0
+    Text = #1044#1086#1073#1072#1074#1080#1090#1100
+    OnClick = ButtonAddClick
+  end
+  object ButtonDeleted: TButton
+    Position.X = 88.000000000000000000
+    Position.Y = 4.000000000000000000
+    TabOrder = 1
+    Text = #1059#1076#1072#1083#1080#1090#1100
+    OnClick = ButtonDeletedClick
+  end
+  object ButtonClear: TButton
+    Position.X = 172.000000000000000000
+    Position.Y = 4.000000000000000000
+    TabOrder = 2
+    Text = #1054#1095#1080#1089#1090#1086#1082
+    OnClick = ButtonClearClick
+  end
+  object Rectangle: TRectangle
+    Position.X = 4.000000000000000000
+    Position.Y = 32.000000000000000000
+    Size.Width = 633.000000000000000000
+    Size.Height = 445.000000000000000000
+    Size.PlatformDefault = False
+  end
+end

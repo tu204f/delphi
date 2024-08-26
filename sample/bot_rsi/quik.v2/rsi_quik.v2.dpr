@@ -1,6 +1,6 @@
 program rsi_quik.v2;
 
-{$i quik.inc}
+{$i platform.inc}
 {$R 'db.res' '..\lib\history\db.rc'}
 
 uses
@@ -10,30 +10,28 @@ uses
   UnitOrderCategoryFrame in 'UnitOrderCategoryFrame.pas' {OrderCategoryFrame: TFrame},
   UnitMainClientFrame in 'UnitMainClientFrame.pas' {MainClientFrame: TFrame},
   UnitCategoryFrame in 'UnitCategoryFrame.pas' {CategoryFrame: TFrame},
-  Lb.Bybit.SysUtils in '..\..\bybit\lb\Lb.Bybit.SysUtils.pas',
-  Lb.Bybit.Encryption in '..\..\bybit\lb\Lb.Bybit.Encryption.pas',
-  Lb.Bybit.RealTime in '..\..\bybit\lb\trade\Lb.Bybit.RealTime.pas',
-  Lb.Bybit.Trade in '..\..\bybit\lb\trade\Lb.Bybit.Trade.pas',
-  Lb.Bybit.InstrumentsInfo in '..\..\bybit\lb\market\Lb.Bybit.InstrumentsInfo.pas',
-  Lb.Bybit.Kline in '..\..\bybit\lb\market\Lb.Bybit.Kline.pas',
-  Lb.Bybit.OrderBook in '..\..\bybit\lb\market\Lb.Bybit.OrderBook.pas',
-  Lb.Bybit.RecentTrade in '..\..\bybit\lb\market\Lb.Bybit.RecentTrade.pas',
-  Lb.Bybit.ServerTime in '..\..\bybit\lb\market\Lb.Bybit.ServerTime.pas',
-  Lb.Indicator in '..\..\bybit\lb\indicator\Lb.Indicator.pas',
   Lb.Logger in '..\..\..\library\Lb.Logger.pas',
-  UnitSettingFrame in 'UnitSettingFrame.pas' {SettingFrame: TFrame},
+  UnitSettingFrame in 'setting\UnitSettingFrame.pas' {SettingFrame: TFrame},
   UnitStatusFrame in 'UnitStatusFrame.pas' {StatusFrame: TFrame},
   Lb.ApplicationVersion in '..\..\..\library\Lb.ApplicationVersion.pas',
-  Lb.Bybit.Position in '..\..\bybit\lb\position\Lb.Bybit.Position.pas',
-  UnitTableFrame in 'UnitTableFrame.pas' {TableFrame: TFrame},
-  UnitTableVirtualTrade in 'UnitTableVirtualTrade.pas' {TableVirtualTradeFrame: TFrame},
   Lb.DataModuleDB in '..\..\..\library\db\Lb.DataModuleDB.pas' {DataModuleDB: TDataModule},
   Lb.Resource.Script in '..\..\..\library\Lb.Resource.Script.pas',
   Lb.History.DB in '..\lib\Lb.History.DB.pas',
-  Lb.HistoryIndicator in '..\lib\Lb.HistoryIndicator.pas',
   Lb.SysUtils in '..\lib\Lb.SysUtils.pas',
-  Lb.Trader in '..\lib\Lb.Trader.pas',
-  Lb.VirtualTrade in '..\lib\Lb.VirtualTrade.pas';
+  Lb.VirtualTrade in '..\lib\Lb.VirtualTrade.pas',
+  Quik.Manager.DDE in '..\..\..\library\trade\quik\Quik.Manager.DDE.pas',
+  Quik.SysUtils in '..\..\..\library\trade\quik\Quik.SysUtils.pas',
+  Quik.ValueTable in '..\..\..\library\trade\quik\Quik.ValueTable.pas',
+  UnitSettingBybitFrame in 'setting\UnitSettingBybitFrame.pas' {SettingBybitFrame: TFrame},
+  UnitSettingQuikFrame in 'setting\UnitSettingQuikFrame.pas' {SettingQuikFrame: TFrame},
+  UnitTableFrame in 'table\UnitTableFrame.pas' {TableFrame: TFrame},
+  UnitTableVirtualTrade in 'table\UnitTableVirtualTrade.pas' {TableVirtualTradeFrame: TFrame},
+  UnitQuikExportFrame in 'table\UnitQuikExportFrame.pas' {QuikExportFrame: TFrame},
+  BTMemoryModule in '..\..\..\library\trade\libquik\BTMemoryModule.pas',
+  QuikTrans2Order in '..\..\..\library\trade\libquik\QuikTrans2Order.pas',
+  QuikTrans2QuikAPI in '..\..\..\library\trade\libquik\QuikTrans2QuikAPI.pas',
+  QuikTransOrder in '..\..\..\library\trade\libquik\QuikTransOrder.pas',
+  Lb.Level in '..\lib\Lb.Level.pas';
 
 {$R *.res}
 

@@ -2,6 +2,8 @@ unit UnitOrderCategoryFrame;
 
 interface
 
+{$i platform.inc}
+
 uses
   System.SysUtils,
   System.Types,
@@ -16,8 +18,13 @@ uses
   FMX.StdCtrls,
   FMX.Layouts,
   UnitCategoryFrame,
+{$IFDEF QUIK}
+  Lb.SysUtils;
+{$ENDIF}
+{$IFDEF BYBIT}
   Lb.Bybit.SysUtils,
   Lb.SysUtils;
+{$ENDIF}
 
 type
   ///<summary>Заявка</summary>
@@ -30,9 +37,9 @@ type
     Layout5: TLayout;
   private
     FOnEventSendTarde: TOnEventSendTarde;
-    FSide: TTypeSide;
+    FSide: TQBTypeSide;
     procedure InitCategoryFrame;
-    procedure SetSide(const Value: TTypeSide);
+    procedure SetSide(const Value: TQBTypeSide);
   protected
     Category1: TCategoryFrame;
     Category2: TCategoryFrame;
@@ -44,7 +51,7 @@ type
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
     procedure SetParams(const AParam: TSituationParam);
-    property Side: TTypeSide read FSide write SetSide;
+    property Side: TQBTypeSide read FSide write SetSide;
     property OnEventSendTarde: TOnEventSendTarde write FOnEventSendTarde;
   end;
 
@@ -92,18 +99,18 @@ begin
   Category5 := _InitCategoryFrame(Layout5);
 end;
 
-procedure TOrderCategoryFrame.SetSide(const Value: TTypeSide);
+procedure TOrderCategoryFrame.SetSide(const Value: TQBTypeSide);
 
-  function _CrossSide(ASide: TTypeSide): TTypeSide;
+  function _CrossSide(ASide: TQBTypeSide): TQBTypeSide;
   begin
-    if ASide = TTypeSide.tsBuy then
-      Result := TTypeSide.tsSell
+    if ASide = TQBTypeSide.tsBuy then
+      Result := TQBTypeSide.tsSell
     else
-      Result := TTypeSide.tsBuy;
+      Result := TQBTypeSide.tsBuy;
   end;
 
   procedure _CategoryFrame(ACategory: TCategoryFrame; ATypeTrade: TTypeTrade;
-    ATypeLine: TTypeLine; ASide: TTypeSide);
+    ATypeLine: TTypeLine; ASide: TQBTypeSide);
   begin
     ACategory.TypeTrade := ATypeTrade;
     ACategory.TypeLine  := ATypeLine;

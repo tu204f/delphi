@@ -4,7 +4,7 @@
         <ProjectVersion>19.1</ProjectVersion>
         <FrameworkType>VCL</FrameworkType>
         <Base>True</Base>
-        <Config Condition="'$(Config)'==''">Debug</Config>
+        <Config Condition="'$(Config)'==''">Release</Config>
         <Platform Condition="'$(Platform)'==''">Win32</Platform>
         <TargetedPlatforms>1</TargetedPlatforms>
         <AppType>Application</AppType>
@@ -135,6 +135,7 @@
             <DesignClass>TFrame</DesignClass>
         </DCCReference>
         <DCCReference Include="Lb.Trade.RSI.pas"/>
+        <DCCReference Include="Lb.Level.pas"/>
         <None Include="..\..\..\..\library\trade\quik\quik_connect.inc"/>
         <None Include="rsi_debug.inc"/>
         <BuildConfiguration Include="Release">
@@ -189,7 +190,7 @@
                         <Overwrite>true</Overwrite>
                     </Platform>
                 </DeployFile>
-                <DeployFile LocalName="debug.inc" Configuration="Release" Class="ProjectFile">
+                <DeployFile LocalName="rsi_debug.inc" Configuration="Release" Class="ProjectFile">
                     <Platform Name="Win32">
                         <RemoteDir>.\</RemoteDir>
                         <Overwrite>true</Overwrite>

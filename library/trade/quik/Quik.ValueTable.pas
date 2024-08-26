@@ -66,7 +66,9 @@ type
     function GetCellByName(const ANameField: String; const ARow: Integer): TCell;
   private
     function GetByName(const ANameField: String): TCell;
+    function GetIndexName(const AIndex: Integer): TCell;
   private
+    FOnChange: TNotifyEvent;
     function GetCount: Integer;
   protected
     procedure SetClear;
@@ -80,6 +82,7 @@ type
     property Cells[Col, Row: Integer]: TCell read GetCells;
     property CellByName[const ANameField: String; const ARow: Integer]: TCell read GetCellByName;
     property ByName[const ANameField: String]: TCell read GetByName;
+    property IndexName[const AIndex: Integer]: TCell read GetIndexName;
     property Values[Col, Row: Integer]: TValue read GetValues;
     property ColCount: Integer read GetColCount;
     property RowCount: Integer read GetRowCount;
@@ -121,8 +124,17 @@ type
     /// Получить список всех полей
     /// </summary>
     procedure SetNameFields(const AStrings: TStrings);
+    /// <summary>
+    /// Событие обновление данных
+    /// </summary>
+    property OnChange: TNotifyEvent write FOnChange;
   end;
-  TQuikTableList = TObjectList<TQuikTable>;
+
+  TQuikTableList = class(TObjectList<TQuikTable>)
+  public
+    function IndexOfTableName(const ATableName: String): Integer;
+    function GetTableName(const ATableName: String): TQuikTable;
+  end;
 
   TPointCells = record
     Col1, Row1: Integer;
@@ -164,6 +176,9 @@ type
 
 procedure SetStringToQuikTable(AQuikTable: TQuikTable; AStrings: TStrings);
 
+
+function GetSecCodeToTable(const ASecCode, ANameTable: String; const ATable: TQuikTable): Boolean;
+
 implementation
 
 {$IFDEF DEBUG}
@@ -192,6 +207,29 @@ begin
   end;
 end;
 
+function GetSecCodeToTable(const ASecCode, ANameTable: String; const ATable: TQuikTable): Boolean;
+var
+  xSecCode: String;
+  i, iCount: Integer;
+begin
+  Result := False;
+  iCount := ATable.RowCount;
+  if iCount > 0 then
+  begin
+    ATable.Fisrt;
+    for i := 0 to iCount - 1 do
+    begin
+      xSecCode := ATable.ByName[ANameTable].AsString;
+      if SameText(ASecCode,xSecCode) then
+      begin
+        Result := True;
+        Break;
+      end;
+      ATable.Next;
+    end;
+  end;
+end;
+
 { TCell }
 
 function TCell.GetAsDouble: Double;
@@ -201,7 +239,7 @@ begin
   begin
     case FValue.TypeValue of
       TTypeData.tdtFloat: Result := FValue.AsDouble;
-      TTypeData.tdtString: Result := StrToIntDef(Self.AsString,0);
+      TTypeData.tdtString: Result := StrToFloatDef(Self.AsString,0);
       TTypeData.tdtInteger: Result := FValue.AsInteger;
     end;
   end;
@@ -388,6 +426,8 @@ begin
         end;
       end;
     end;
+    if Assigned(FOnChange) then
+      FOnChange(Self);
   end;
 end;
 
@@ -432,6 +472,10 @@ begin
   Result := GetCellByName(ANameField,Self.RowID);
 end;
 
+function TQuikTable.GetIndexName(const AIndex: Integer): TCell;
+begin
+  Result := Self.Cells[AIndex,Self.RowID];
+end;
 
 function TQuikTable.GetCells(Col, Row: Integer): TCell;
 var
@@ -666,6 +710,40 @@ begin
   end;
 end;
 
+{ TQuikTableList }
+
+function TQuikTableList.IndexOfTableName(const ATableName: String): Integer;
+var
+  xTable: TQuikTable;
+  i, iCount: Integer;
+begin
+  Result := -1;
+  iCount := Self.Count;
+  if iCount > 0 then
+    for i := 0 to iCount - 1 do
+    begin
+      xTable := Self.Items[i];
+      if SameText(ATableName,xTable.Name) then
+      begin
+        Result := i;
+        Break;
+      end;
+    end;
+end;
+
+function TQuikTableList.GetTableName(const ATableName: String): TQuikTable;
+var
+  xIndex: Integer;
+begin
+  xIndex := IndexOfTableName(ATableName);
+  if xIndex >= 0 then
+  begin
+    Result := Items[xIndex];
+  end
+  else
+    raise Exception.Create('Error Message: Таблица не найдена');
+end;
+
 { TPointCells }
 
 constructor TPointCells.Create(const ACol1, ARow1, ACol2, ARow2: Integer);
@@ -788,6 +866,7 @@ begin
     FreeAndNil(xBlocks);
   end;
 end;
+
 
 
 end.

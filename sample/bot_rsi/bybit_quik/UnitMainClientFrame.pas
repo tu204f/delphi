@@ -2,6 +2,8 @@ unit UnitMainClientFrame;
 
 interface
 
+{$i platform.inc}
+
 uses
   System.SysUtils,
   System.Types,
@@ -19,7 +21,10 @@ uses
   UnitOrderCategoryFrame,
   FMX.Objects,
   Lb.SysUtils,
-  Lb.Bybit.SysUtils;
+  Lb.Status,
+  Lb.Status.Quik,
+  Lb.Status.Bybit;
+
 
 type
   TMainClientFrame = class(TFrame)
@@ -43,6 +48,9 @@ type
 implementation
 
 {$R *.fmx}
+
+uses
+  Lb.Logger;
 
 { TMainClientFrame }
 
@@ -84,26 +92,27 @@ procedure TMainClientFrame.InitOrderCategoryFrame;
 
 begin
   OrderCategoryBuy  := _InitOrderCategoryFrame(LayoutBuy);
-  OrderCategoryBuy.Side := TTypeSide.tsBuy;
+  OrderCategoryBuy.Side := TQBTypeSide.tsBuy;
   OrderCategoryBuy.OnEventSendTarde := EventSendTarde;
 
   OrderCategorySell := _InitOrderCategoryFrame(LayoutSell);
-  OrderCategorySell.Side := TTypeSide.tsSell;
+  OrderCategorySell.Side := TQBTypeSide.tsSell;
   OrderCategorySell.OnEventSendTarde := EventSendTarde;
 
   StatusFrame := _InitStatusFrame;
-  StatusFrame.OnParams := StatusFrameOnParams;
+  StatusFrame.Status.OnParams := StatusFrameOnParams;
 end;
 
 procedure TMainClientFrame.StatusFrameOnParams(Sender: TObject);
 var
   xParam: TSituationParam;
 begin
-  xParam.ValueRSI := StatusFrame.ValueRSI;
-  xParam.Bid      := StatusFrame.Bid;
-  xParam.Ask      := StatusFrame.Ask;
-  xParam.Qty      := StatusFrame.Qty;
-  xParam.Side     := StatusFrame.Side;
+  xParam.FastRSI  := StatusFrame.Status.FastRSI;
+  xParam.SlowRSI  := StatusFrame.Status.SlowRSI;
+  xParam.Bid      := StatusFrame.Status.Bid;
+  xParam.Ask      := StatusFrame.Status.Ask;
+  xParam.Qty      := StatusFrame.Status.Qty;
+  xParam.Side     := StatusFrame.Status.Side;
 
   OrderCategoryBuy.SetParams(xParam);
   OrderCategorySell.SetParams(xParam);
@@ -111,7 +120,12 @@ end;
 
 procedure TMainClientFrame.EventSendTarde(Sender: TObject; ATradeParam: TTradeParam);
 begin
-  StatusFrame.SetOperationTrade(ATradeParam.Side,ATradeParam.Price,ATradeParam.Qty);
+  StatusFrame.Status.GetOperationTrade(
+    ATradeParam.Side,
+    ATradeParam.Price,
+    ATradeParam.Qty,
+    ATradeParam.TypeLine
+  );
 end;
 
 end.

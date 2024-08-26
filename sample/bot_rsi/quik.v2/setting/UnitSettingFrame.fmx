@@ -1,0 +1,35 @@
+object SettingFrame: TSettingFrame
+  Size.Width = 405.000000000000000000
+  Size.Height = 211.000000000000000000
+  Size.PlatformDefault = False
+  object Rectangle: TRectangle
+    Align = Client
+    Size.Width = 405.000000000000000000
+    Size.Height = 211.000000000000000000
+    Size.PlatformDefault = False
+  end
+  object ButtonApply: TButton
+    Anchors = [akRight, akBottom]
+    Position.X = 236.000000000000000000
+    Position.Y = 180.000000000000000000
+    TabOrder = 1
+    Text = #1055#1088#1080#1084#1077#1085#1080#1090#1100
+    OnClick = ButtonApplyClick
+  end
+  object ButtonClose: TButton
+    Anchors = [akRight, akBottom]
+    Position.X = 320.000000000000000000
+    Position.Y = 180.000000000000000000
+    TabOrder = 2
+    Text = #1047#1072#1082#1088#1099#1090#1100
+    OnClick = ButtonCloseClick
+  end
+  object Layout: TLayout
+    Anchors = [akLeft, akTop, akRight, akBottom]
+    Position.X = 4.000000000000000000
+    Size.Width = 397.000000000000000000
+    Size.Height = 177.000000000000000000
+    Size.PlatformDefault = False
+    TabOrder = 3
+  end
+end

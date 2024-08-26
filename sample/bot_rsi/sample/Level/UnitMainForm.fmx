@@ -1,0 +1,61 @@
+object MainForm: TMainForm
+  Left = 0
+  Top = 0
+  Caption = 'Form4'
+  ClientHeight = 279
+  ClientWidth = 470
+  FormFactor.Width = 320
+  FormFactor.Height = 480
+  FormFactor.Devices = [Desktop]
+  DesignerMasterStyle = 0
+  object ButtonStart: TButton
+    Position.X = 4.000000000000000000
+    Position.Y = 4.000000000000000000
+    TabOrder = 1
+    Text = #1057#1090#1072#1088#1090
+    OnClick = ButtonStartClick
+  end
+  object EditValueRSI: TEdit
+    Touch.InteractiveGestures = [LongTap, DoubleTap]
+    TabOrder = 2
+    ReadOnly = True
+    Position.X = 88.000000000000000000
+    Position.Y = 4.000000000000000000
+  end
+  object Memo: TMemo
+    Touch.InteractiveGestures = [Pan, LongTap, DoubleTap]
+    DataDetectorTypes = []
+    Position.X = 4.000000000000000000
+    Position.Y = 32.000000000000000000
+    Size.Width = 461.000000000000000000
+    Size.Height = 241.000000000000000000
+    Size.PlatformDefault = False
+    TabOrder = 4
+    Viewport.Width = 457.000000000000000000
+    Viewport.Height = 237.000000000000000000
+  end
+  object Timer: TTimer
+    Enabled = False
+    Interval = 50
+    OnTimer = TimerTimer
+    Left = 32
+    Top = 44
+  end
+  object EditStatusLevel: TEdit
+    Touch.InteractiveGestures = [LongTap, DoubleTap]
+    TabOrder = 7
+    ReadOnly = True
+    Position.X = 192.000000000000000000
+    Position.Y = 4.000000000000000000
+  end
+  object EditUpDown: TEdit
+    Touch.InteractiveGestures = [LongTap, DoubleTap]
+    TabOrder = 6
+    ReadOnly = True
+    Position.X = 296.000000000000000000
+    Position.Y = 4.000000000000000000
+    Size.Width = 169.000000000000000000
+    Size.Height = 22.000000000000000000
+    Size.PlatformDefault = False
+  end
+end
