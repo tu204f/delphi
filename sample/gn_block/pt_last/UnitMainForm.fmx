@@ -1,0 +1,86 @@
+object MainForm: TMainForm
+  Left = 0
+  Top = 0
+  Caption = 'Form5'
+  ClientHeight = 780
+  ClientWidth = 734
+  FormFactor.Width = 320
+  FormFactor.Height = 480
+  FormFactor.Devices = [Desktop]
+  DesignerMasterStyle = 0
+  object ButtonLoad: TButton
+    Position.X = 4.000000000000000000
+    Position.Y = 4.000000000000000000
+    Size.Width = 80.000000000000000000
+    Size.Height = 29.000000000000000000
+    Size.PlatformDefault = False
+    TabOrder = 0
+    Text = #1047#1072#1075#1088#1091#1079#1080#1090#1100
+    OnClick = ButtonLoadClick
+  end
+  object RectangleTiketCount: TRectangle
+    Position.X = 88.000000000000000000
+    Position.Y = 4.000000000000000000
+    Size.Width = 201.000000000000000000
+    Size.Height = 29.000000000000000000
+    Size.PlatformDefault = False
+    object TextTiketCount: TText
+      Align = Client
+      Margins.Left = 5.000000000000000000
+      Margins.Top = 5.000000000000000000
+      Margins.Bottom = 5.000000000000000000
+      Size.Width = 196.000000000000000000
+      Size.Height = 19.000000000000000000
+      Size.PlatformDefault = False
+      TextSettings.HorzAlign = Leading
+    end
+  end
+  object RectangleTiket: TRectangle
+    Anchors = [akLeft, akTop, akRight]
+    Position.X = 376.000000000000000000
+    Position.Y = 4.000000000000000000
+    Size.Width = 353.000000000000000000
+    Size.Height = 29.000000000000000000
+    Size.PlatformDefault = False
+    object TextTiket: TText
+      Align = Client
+      Margins.Left = 5.000000000000000000
+      Margins.Top = 5.000000000000000000
+      Margins.Bottom = 5.000000000000000000
+      Size.Width = 348.000000000000000000
+      Size.Height = 19.000000000000000000
+      Size.PlatformDefault = False
+      TextSettings.HorzAlign = Leading
+    end
+  end
+  object ButtonStart: TButton
+    Position.X = 292.000000000000000000
+    Position.Y = 4.000000000000000000
+    Size.Width = 80.000000000000000000
+    Size.Height = 29.000000000000000000
+    Size.PlatformDefault = False
+    TabOrder = 3
+    Text = #1057#1090#1072#1088#1090
+    OnClick = ButtonStartClick
+  end
+  object Memo: TMemo
+    Touch.InteractiveGestures = [Pan, LongTap, DoubleTap]
+    DataDetectorTypes = []
+    Anchors = [akLeft, akTop, akRight, akBottom]
+    Position.X = 4.000000000000000000
+    Position.Y = 40.000000000000000000
+    Size.Width = 725.000000000000000000
+    Size.Height = 733.000000000000000000
+    Size.PlatformDefault = False
+    TabOrder = 5
+    Viewport.Width = 721.000000000000000000
+    Viewport.Height = 729.000000000000000000
+  end
+  object Timer: TTimer
+    Enabled = False
+    Interval = 100
+    OnTimer = TimerTimer
+    Left = 160
+    Top = 120
+  end
+end

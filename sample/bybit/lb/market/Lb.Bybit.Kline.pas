@@ -76,6 +76,7 @@ type
     function GetLow: Double;
     function GetOpen: Double;
     function GetVol: Double;
+    function GetDelta: Double;
   protected
     function GetFloatToStr(const AValue: String): Double;
   public
@@ -87,6 +88,8 @@ type
     property Low: Double read GetLow;
     property Close: Double read GetClose;
     property Vol: Double read GetVol;
+  public
+    property Delta: Double read GetDelta;
   end;
 
 procedure SetLinearObjects(AListJson: TJSONArray; ACandelObjects: TCandelObjectList);
@@ -259,6 +262,11 @@ end;
 function TCandelObject.GetVol: Double;
 begin
   Result := GetFloatToStr(volume);
+end;
+
+function TCandelObject.GetDelta: Double;
+begin
+  Result := Self.Close - Self.Open;
 end;
 
 end.

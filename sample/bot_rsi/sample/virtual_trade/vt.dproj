@@ -198,6 +198,7 @@
         </DCCReference>
         <DCCReference Include="..\..\lib\Lb.VirtualTrade.pas"/>
         <DCCReference Include="..\..\..\..\library\Lb.Logger.pas"/>
+        <DCCReference Include="..\..\lib\Lb.VirtualTrade.V2.pas"/>
         <None Include="platform.inc"/>
         <BuildConfiguration Include="Release">
             <Key>Cfg_2</Key>

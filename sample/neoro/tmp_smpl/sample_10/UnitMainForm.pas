@@ -58,33 +58,32 @@ end;
 
 procedure TForm5.Button1Click(Sender: TObject);
 begin
-  //
-  NeuronNet.AddLayer(1);
-  //NeuronNet.AddLayer(5);
-  //NeuronNet.AddLayer(3);
-  NeuronNet.OutputLayer(2);
+  NeuronNet.Clear;
+  NeuronNet.AddLayer(2);
+  NeuronNet.AddLayer(5);
+  NeuronNet.AddLayer(3);
+  NeuronNet.OutputLayer(1);
 end;
 
-procedure neuroXOR(const A: Double);
+procedure neuroXOR(const A, B: Byte);
 var
-  xB, xC: Double;
+  xC: Double;
   xIn, xPut: TDoubleList;
 begin
   xIn := TDoubleList.Create;
   xPut:= TDoubleList.Create;
   try
-    xIn.GetArrayValue([A]);
+    xIn.GetArrayValue([A,B]);
     NeuronNet.Calc(xIn,xPut);
-    xB := xPut[0];
-    xC := xPut[1];
+    xC := xPut[0];
   finally
     FreeAndNil(xPut);
     FreeAndNil(xIn);
   end;
-  Form5.Memo.Lines.Add('A = ' + A.ToString + '; Result = [' + xB.ToString + ';' + xC.ToString + ']');
+  Form5.Memo.Lines.Add('A = ' + A.ToString + ' B = ' + B.ToString + '; Result = ' + xC.ToString + ']');
 end;
 
-procedure neuroLearnXOR(const A, B, C: Double);
+procedure neuroLearnXOR(const A, B, C: Byte);
 var
   xStandard, xIn, xPut: TDoubleList;
 begin
@@ -92,9 +91,9 @@ begin
   xIn  := TDoubleList.Create;
   xPut := TDoubleList.Create;
   try
-    xIn.GetArrayValue([A]);
+    xIn.GetArrayValue([A,B]);
     NeuronNet.Calc(xIn,xPut);
-    xStandard.GetArrayValue([B,C]);
+    xStandard.GetArrayValue([C]);
     NeuronNet.CalcLearn(xStandard,xPut,0.1);
   finally
     FreeAndNil(xStandard);
@@ -117,10 +116,11 @@ end;
 
 procedure TForm5.Button2Click(Sender: TObject);
 begin
-  neuroXOR(0.6093);
-  neuroXOR(0.4465);
-  neuroXOR(GetValue(0));
-  neuroXOR(GetValue(1));
+  Memo.Lines.Add('***********************************');
+  neuroXOR(0,0);
+  neuroXOR(0,1);
+  neuroXOR(1,0);
+  neuroXOR(1,1);
 end;
 
 procedure TForm5.Button3Click(Sender: TObject);
@@ -128,11 +128,15 @@ begin
   Memo.Lines.Add('***********************************');
   for var i := 0 to 10000 do
   begin
-    neuroLearnXOR(GetValue(0),0,1);
-    neuroLearnXOR(GetValue(1),1,0);
+    neuroLearnXOR(0,0,0);
+    neuroLearnXOR(0,1,1);
+    neuroLearnXOR(1,0,1);
+    neuroLearnXOR(1,1,0);
   end;
-  neuroXOR(GetValue(0));
-  neuroXOR(GetValue(1));
+  neuroXOR(0,0);
+  neuroXOR(0,1);
+  neuroXOR(1,0);
+  neuroXOR(1,1);
 end;
 
 procedure TForm5.Button4Click(Sender: TObject);

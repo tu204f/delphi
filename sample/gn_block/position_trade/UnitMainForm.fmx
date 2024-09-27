@@ -1,0 +1,71 @@
+object MainForm: TMainForm
+  Left = 0
+  Top = 0
+  Caption = 'Form5'
+  ClientHeight = 553
+  ClientWidth = 850
+  FormFactor.Width = 320
+  FormFactor.Height = 480
+  FormFactor.Devices = [Desktop]
+  DesignerMasterStyle = 0
+  object ButtonStart: TButton
+    Position.X = 4.000000000000000000
+    Position.Y = 8.000000000000000000
+    Size.Width = 121.000000000000000000
+    Size.Height = 22.000000000000000000
+    Size.PlatformDefault = False
+    TabOrder = 0
+    Text = #1057#1090#1072#1088#1090
+    OnClick = ButtonStartClick
+  end
+  object ButtonStop: TButton
+    Position.X = 128.000000000000000000
+    Position.Y = 8.000000000000000000
+    TabOrder = 4
+    Text = #1057#1090#1086#1087
+    OnClick = ButtonStopClick
+  end
+  object ProgressBar: TProgressBar
+    Orientation = Horizontal
+    Position.X = 212.000000000000000000
+    Position.Y = 8.000000000000000000
+    Size.Width = 349.000000000000000000
+    Size.Height = 20.000000000000000000
+    Size.PlatformDefault = False
+  end
+  object StrGrid: TStringGrid
+    Anchors = [akLeft, akTop, akRight, akBottom]
+    CanFocus = True
+    ClipChildren = True
+    Position.X = 4.000000000000000000
+    Position.Y = 36.000000000000000000
+    Size.Width = 841.000000000000000000
+    Size.Height = 513.000000000000000000
+    Size.PlatformDefault = False
+    TabOrder = 6
+    Viewport.Width = 837.000000000000000000
+    Viewport.Height = 488.000000000000000000
+  end
+  object Text1: TText
+    Position.X = 564.000000000000000000
+    Position.Y = 8.000000000000000000
+    Size.Width = 105.000000000000000000
+    Size.Height = 21.000000000000000000
+    Size.PlatformDefault = False
+    TextSettings.HorzAlign = Leading
+  end
+  object Text2: TText
+    Position.X = 672.000000000000000000
+    Position.Y = 8.000000000000000000
+    Size.Width = 141.000000000000000000
+    Size.Height = 21.000000000000000000
+    Size.PlatformDefault = False
+  end
+  object Timer: TTimer
+    Enabled = False
+    Interval = 50
+    OnTimer = TimerTimer
+    Left = 148
+    Top = 104
+  end
+end

@@ -10,10 +10,12 @@ object TableFrame: TTableFrame
     Size.Width = 562.000000000000000000
     Size.Height = 316.000000000000000000
     Size.PlatformDefault = False
-    TabIndex = 1
+    TabIndex = 0
     TabOrder = 0
     TabPosition = Top
     Sizes = (
+      562s
+      290s
       562s
       290s
       562s
@@ -22,7 +24,7 @@ object TableFrame: TTableFrame
       CustomIcon = <
         item
         end>
-      IsSelected = False
+      IsSelected = True
       Size.Width = 128.000000000000000000
       Size.Height = 26.000000000000000000
       Size.PlatformDefault = False
@@ -36,13 +38,27 @@ object TableFrame: TTableFrame
       CustomIcon = <
         item
         end>
-      IsSelected = True
+      IsSelected = False
       Size.Width = 109.000000000000000000
       Size.Height = 26.000000000000000000
       Size.PlatformDefault = False
       StyleLookup = ''
       TabOrder = 0
       Text = #1058#1072#1073#1083#1080#1094#1072' '#171'QUIK'#187
+      ExplicitSize.cx = 109.000000000000000000
+      ExplicitSize.cy = 26.000000000000000000
+    end
+    object TabItemBybitTable: TTabItem
+      CustomIcon = <
+        item
+        end>
+      IsSelected = False
+      Size.Width = 109.000000000000000000
+      Size.Height = 26.000000000000000000
+      Size.PlatformDefault = False
+      StyleLookup = ''
+      TabOrder = 0
+      Text = #1058#1072#1073#1083#1080#1094#1072' '#171'Bybit'#187
       ExplicitSize.cx = 109.000000000000000000
       ExplicitSize.cy = 26.000000000000000000
     end

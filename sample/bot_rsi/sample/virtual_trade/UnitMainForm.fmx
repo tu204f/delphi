@@ -27,8 +27,8 @@ object MainForm: TMainForm
     TabOrder = 13
     Cursor = crIBeam
     Min = 1000.000000000000000000
-    Max = 2000.000000000000000000
-    Value = 1000.000000000000000000
+    Max = 10000.000000000000000000
+    Value = 5000.000000000000000000
     ValueType = Float
     Increment = 0.100000001490116100
     Position.X = 188.000000000000000000
@@ -60,19 +60,6 @@ object MainForm: TMainForm
     Size.PlatformDefault = False
     Text = #1050#1086#1083#1080#1095#1077#1089#1090#1074#1086
     TextSettings.HorzAlign = Leading
-  end
-  object Memo1: TMemo
-    Touch.InteractiveGestures = [Pan, LongTap, DoubleTap]
-    DataDetectorTypes = []
-    Anchors = [akLeft, akTop, akRight, akBottom]
-    Position.X = 12.000000000000000000
-    Position.Y = 64.000000000000000000
-    Size.Width = 617.000000000000000000
-    Size.Height = 405.000000000000000000
-    Size.PlatformDefault = False
-    TabOrder = 16
-    Viewport.Width = 613.000000000000000000
-    Viewport.Height = 401.000000000000000000
   end
   object Button1: TButton
     Position.X = 292.000000000000000000
@@ -173,5 +160,16 @@ object MainForm: TMainForm
     TabOrder = 2
     Text = '0,05'
     OnClick = ButtonSellQtyClick
+  end
+  object TreeView: TTreeView
+    Anchors = [akLeft, akTop, akRight, akBottom]
+    Position.X = 12.000000000000000000
+    Position.Y = 72.000000000000000000
+    Size.Width = 617.000000000000000000
+    Size.Height = 397.000000000000000000
+    Size.PlatformDefault = False
+    TabOrder = 16
+    Viewport.Width = 613.000000000000000000
+    Viewport.Height = 393.000000000000000000
   end
 end

@@ -42,8 +42,8 @@ type
     tcOption
   );
 
-
   TTypeSide = (
+    tsNull, {добавлено новое значение}
     tsBuy,
     tsSell
   );

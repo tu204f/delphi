@@ -30,14 +30,15 @@ type
   TMainClientFrame = class(TFrame)
     GridPanel: TGridPanelLayout;
     LayoutSell: TLayout;
-    LayoutInfo: TLayout;
     LayoutBuy: TLayout;
+    LayoutInfo: TLayout;
   private
     procedure InitOrderCategoryFrame;
   protected
     OrderCategoryBuy: TOrderCategoryFrame;
     OrderCategorySell: TOrderCategoryFrame;
     procedure StatusFrameOnParams(Sender: TObject);
+    procedure StatusFrameOnNewCandel(Sender: TObject);
     procedure EventSendTarde(Sender: TObject; ATradeParam: TTradeParam);
   public
     StatusFrame: TStatusFrame;
@@ -50,6 +51,7 @@ implementation
 {$R *.fmx}
 
 uses
+  UnitLogForm,
   Lb.Logger;
 
 { TMainClientFrame }
@@ -101,30 +103,66 @@ begin
 
   StatusFrame := _InitStatusFrame;
   StatusFrame.Status.OnParams := StatusFrameOnParams;
+  StatusFrame.Status.OnNewCandel := StatusFrameOnNewCandel;
+end;
+
+procedure TMainClientFrame.StatusFrameOnNewCandel(Sender: TObject);
+begin
+{$IFDEF DBG_TRD}
+  TLogger.LogTree(0,'procedure TMainClientFrame.StatusFrameOnNewCandel');
+{$ENDIF}
 end;
 
 procedure TMainClientFrame.StatusFrameOnParams(Sender: TObject);
 var
   xParam: TSituationParam;
 begin
-  xParam.FastRSI  := StatusFrame.Status.FastRSI;
-  xParam.SlowRSI  := StatusFrame.Status.SlowRSI;
-  xParam.Bid      := StatusFrame.Status.Bid;
-  xParam.Ask      := StatusFrame.Status.Ask;
-  xParam.Qty      := StatusFrame.Status.Qty;
-  xParam.Side     := StatusFrame.Status.Side;
-
-  OrderCategoryBuy.SetParams(xParam);
-  OrderCategorySell.SetParams(xParam);
+  xParam.FastRSI     := StatusFrame.Status.FastRSI;
+  xParam.SlowRSI     := StatusFrame.Status.SlowRSI;
+  xParam.Bid         := StatusFrame.Status.Bid;
+  xParam.Ask         := StatusFrame.Status.Ask;
+  xParam.Qty         := StatusFrame.Status.Position.Qty;
+  xParam.Side        := StatusFrame.Status.Position.Side;
+  xParam.IsNewCandel := StatusFrame.Status.IsNewCandel;
+{$IFDEF DBG_TRD}
+  TLogger.LogTree(0,'procedure TMainClientFrame.StatusFrameOnParams');
+  TLogger.LogTreeText(3,'>> FastRSI = ' + xParam.FastRSI.ToString);
+  TLogger.LogTreeText(3,'>> SlowRSI = ' + xParam.SlowRSI.ToString);
+  TLogger.LogTreeText(3,'>> Bid = ' + xParam.Bid.ToString);
+  TLogger.LogTreeText(3,'>> Ask = ' + xParam.Ask.ToString);
+  TLogger.LogTreeText(3,'>> Qty = ' + xParam.Qty.ToString);
+  TLogger.LogTreeText(3,'>> Side = ' + GetStrToTypeSide(xParam.Side));
+  if xParam.IsNewCandel then
+    TLogger.LogTreeText(3,'>> IsNewCandel = True')
+  else
+    TLogger.LogTreeText(3,'>> IsNewCandel = False');
+{$ENDIF}
+  // -------------------------------------------------------------------------
+  // Проверяем новая свечу
+  if ParamApplication.IsNewCandel then
+  begin
+    if xParam.IsNewCandel then
+    begin
+      OrderCategoryBuy.SetParams(xParam);
+      OrderCategorySell.SetParams(xParam);
+    end;
+  end
+  else
+  begin
+    OrderCategoryBuy.SetParams(xParam);
+    OrderCategorySell.SetParams(xParam);
+  end;
 end;
 
 procedure TMainClientFrame.EventSendTarde(Sender: TObject; ATradeParam: TTradeParam);
 begin
   StatusFrame.Status.GetOperationTrade(
-    ATradeParam.Side,
-    ATradeParam.Price,
-    ATradeParam.Qty,
-    ATradeParam.TypeLine
+    TParamStatus.Create(
+      ATradeParam.Side,
+      ATradeParam.Price,
+      ATradeParam.Qty,
+      ATradeParam.TypeLine
+    )
   );
 end;
 

@@ -11,6 +11,9 @@ object MainForm: TMainForm
   object ButtonReadPrice: TButton
     Position.X = 4.000000000000000000
     Position.Y = 8.000000000000000000
+    Size.Width = 257.000000000000000000
+    Size.Height = 22.000000000000000000
+    Size.PlatformDefault = False
     TabOrder = 0
     Text = #1057#1090#1072#1088#1090
     OnClick = ButtonReadPriceClick
@@ -27,37 +30,23 @@ object MainForm: TMainForm
     DefaultItemStyles.ItemStyle = ''
     DefaultItemStyles.GroupHeaderStyle = ''
     DefaultItemStyles.GroupFooterStyle = ''
-    Viewport.Width = 253.000000000000000000
-    Viewport.Height = 433.000000000000000000
-  end
-  object Text1: TText
-    Position.X = 88.000000000000000000
-    Position.Y = 8.000000000000000000
-    Size.Width = 837.000000000000000000
-    Size.Height = 21.000000000000000000
-    Size.PlatformDefault = False
-    Text = 'sdfasf'
-    TextSettings.HorzAlign = Leading
+    Viewport.Width = 257.000000000000000000
+    Viewport.Height = 437.000000000000000000
   end
   object Timer: TTimer
     Enabled = False
-    Interval = 60
+    Interval = 500
     OnTimer = TimerTimer
     Left = 92
     Top = 56
   end
-  object StrGrid: TStringGrid
+  object Layout: TLayout
     Anchors = [akLeft, akTop, akRight, akBottom]
-    CanFocus = True
-    ClipChildren = True
-    Position.X = 264.000000000000000000
-    Position.Y = 36.000000000000000000
-    Size.Width = 665.000000000000000000
-    Size.Height = 437.000000000000000000
+    Position.X = 268.000000000000000000
+    Position.Y = 8.000000000000000000
+    Size.Width = 661.000000000000000000
+    Size.Height = 465.000000000000000000
     Size.PlatformDefault = False
-    TabOrder = 6
-    Options = [Editing, ColumnResize, ColumnMove, ColLines, RowLines, RowSelect, Tabs, Header, HeaderClick, AutoDisplacement]
-    Viewport.Width = 661.000000000000000000
-    Viewport.Height = 412.000000000000000000
+    TabOrder = 7
   end
 end

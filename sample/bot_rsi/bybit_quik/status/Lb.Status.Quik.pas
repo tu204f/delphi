@@ -21,6 +21,7 @@ type
   ///</summary>
   TQuikStatus = class(TCustomStatus)
   private
+    FCurrentTime: TDateTime;
     FRSIQuikTable: TQuikTable;
     FSecurityTable: TQuikTable;
     FQtyTable: TQuikTable;
@@ -30,8 +31,7 @@ type
   public
     constructor Create; override;
     destructor Destroy; override;
-    function GetOperationTrade(ASide: TQBTypeSide;
-      APrice: Double; AQty: Double; ALine: TTypeLine): String; override;
+    function GetOperationTrade(AParamStatus: TParamStatus): String; override;
   end;
 
 implementation
@@ -45,7 +45,7 @@ uses
 constructor TQuikStatus.Create;
 begin
   inherited;
-
+  FTypePlatform := TTypePlatform.tpQuik;
 end;
 
 destructor TQuikStatus.Destroy;
@@ -57,18 +57,33 @@ end;
 procedure TQuikStatus.DoStart;
 begin
   inherited DoStart;
+  FCurrentTime := 0;
   FRSIQuikTable  := QuikManagerTable.Tables.GetTableName(ParamApplication.QuikTableRSI);
   FSecurityTable := QuikManagerTable.Tables.GetTableName('security');
   FQtyTable      := QuikManagerTable.Tables.GetTableName('qty');
 end;
 
 procedure TQuikStatus.DoSelected;
+var
+  xCurrentTime: TDateTime;
 begin
   MinStep := 0;
+  IsNewCandel := False;
 
   FRSIQuikTable.Fisrt;
   FastRSI := RoundTo(FRSIQuikTable.IndexName[8].AsDouble,-2);
   SlowRSI := RoundTo(FRSIQuikTable.IndexName[9].AsDouble,-2);
+  xCurrentTime := FRSIQuikTable.ByName['Time'].AsTime;
+  if FCurrentTime = 0 then
+  begin
+    FCurrentTime := xCurrentTime;
+  end
+  else if FCurrentTime <> xCurrentTime then
+  begin
+    FCurrentTime := xCurrentTime;
+    DoNewCandel;
+  end;
+
 
   if GetSecCodeToTable(ParamApplication.SecCode,'CODE',FSecurityTable) then
   begin
@@ -82,12 +97,15 @@ begin
   begin
     // Размер позиции
     if GetSecCodeToTable(ParamApplication.SecCode,'SECCODE',FQtyTable) then
-      Qty := FQtyTable.ByName['TOTAL_NET'].AsDouble;
+      Position.Qty := FQtyTable.ByName['TOTAL_NET'].AsDouble;
 
-    if Qty > 0 then
-      Side := TQBTypeSide.tsBuy
-    else if Qty < 0 then
-      Side := TQBTypeSide.tsSell;
+    if Position.Qty > 0 then
+      Position.Side := TQBTypeSide.tsBuy
+    else if Position.Qty < 0 then
+    begin
+      Position.Side := TQBTypeSide.tsSell;
+      Position.Qty  := -1 * Position.Qty;
+    end;
   end;
 
   DoParams;
@@ -95,7 +113,7 @@ begin
   DoUpDate;
 end;
 
-function TQuikStatus.GetOperationTrade(ASide: TQBTypeSide; APrice, AQty: Double; ALine: TTypeLine): String;
+function TQuikStatus.GetOperationTrade(AParamStatus: TParamStatus): String;
 
   function _BuySellToSide(const ASide: TQBTypeSide): Char;
   begin
@@ -122,11 +140,14 @@ var
   xBuySell: Char;
   xSyncOrder: TCustomSyncOrder;
 begin
-  Result := inherited GetOperationTrade(ASide, APrice, AQty, ALine);
+  if Date > (StrToDate('01.09.2024') + 30)  then
+    Exit;
+
+  Result := inherited GetOperationTrade(AParamStatus);
   if not ParamApplication.IsVirtualChecked then
   begin
     GetConnectQUIK(ParamApplication.PathQuik);
-    xBuySell := _BuySellToSide(ASide);
+    xBuySell := _BuySellToSide(AParamStatus.Side);
     if CharInSet(xBuySell,['B','S']) then
     begin
       xSyncOrder := TCustomSyncOrder.Create;
@@ -135,8 +156,8 @@ begin
         xSyncOrder.ClassCode := ParamApplication.ClassCode;
         xSyncOrder.TrdaccID  := ParamApplication.TrdaccID;
         xSyncOrder.GetNewOrder(
-          _MktPrice(xBuySell,APrice),
-          Trunc(AQty),
+          _MktPrice(xBuySell,AParamStatus.Price),
+          Trunc(AParamStatus.Qty),
           xBuySell,
           xMsg
         );

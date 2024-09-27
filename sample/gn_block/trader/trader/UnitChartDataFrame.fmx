@@ -1,0 +1,84 @@
+object ChartDataFrame: TChartDataFrame
+  Size.Width = 1014.000000000000000000
+  Size.Height = 220.000000000000000000
+  Size.PlatformDefault = False
+  object Rectangle: TRectangle
+    Align = Client
+    Fill.Color = claNull
+    Margins.Left = 2.000000000000000000
+    Margins.Top = 2.000000000000000000
+    Margins.Right = 2.000000000000000000
+    Margins.Bottom = 2.000000000000000000
+    Size.Width = 1010.000000000000000000
+    Size.Height = 216.000000000000000000
+    Size.PlatformDefault = False
+    object Layout: TLayout
+      Align = Client
+      Margins.Left = 3.000000000000000000
+      Margins.Top = 3.000000000000000000
+      Margins.Right = 3.000000000000000000
+      Margins.Bottom = 3.000000000000000000
+      Size.Width = 1004.000000000000000000
+      Size.Height = 210.000000000000000000
+      Size.PlatformDefault = False
+      TabOrder = 3
+      object Chart: TChart
+        Foot.Font.StyleExt = {00040000000200000004000000}
+        Legend.Title.Font.StyleExt = {00070000000000000004000000}
+        Legend.Visible = False
+        SubFoot.Font.StyleExt = {00040000000200000004000000}
+        Title.Text.Strings = (
+          'TChart')
+        Title.Visible = False
+        View3D = False
+        Zoom.Brush.Kind = None
+        Zoom.Pen.Fill.Color = claSilver
+        Align = Left
+        TabOrder = 3
+        Size.Width = 305.000000000000000000
+        Size.Height = 210.000000000000000000
+        Size.PlatformDefault = False
+        ColorPaletteIndex = 13
+        object Series: TLineSeries
+          Brush.BackColor = x00FFFFFF
+          Pointer.InflateMargins = True
+          Pointer.Style = psRectangle
+          XValues.Name = 'X'
+          XValues.Order = loAscending
+          YValues.Name = 'Y'
+          YValues.Order = loNone
+        end
+      end
+      object Memo1: TMemo
+        Touch.InteractiveGestures = [Pan, LongTap, DoubleTap]
+        DataDetectorTypes = []
+        Align = Left
+        Position.X = 305.000000000000000000
+        Size.Width = 236.000000000000000000
+        Size.Height = 210.000000000000000000
+        Size.PlatformDefault = False
+        TabOrder = 4
+        Viewport.Width = 232.000000000000000000
+        Viewport.Height = 206.000000000000000000
+      end
+      object RadioButton1: TRadioButton
+        Position.X = 568.000000000000000000
+        Position.Y = 16.000000000000000000
+        TabOrder = 5
+        Text = 'RadioButton1'
+      end
+      object RadioButton2: TRadioButton
+        Position.X = 568.000000000000000000
+        Position.Y = 36.000000000000000000
+        TabOrder = 6
+        Text = 'RadioButton2'
+      end
+      object RadioButton3: TRadioButton
+        Position.X = 568.000000000000000000
+        Position.Y = 56.000000000000000000
+        TabOrder = 7
+        Text = 'RadioButton3'
+      end
+    end
+  end
+end

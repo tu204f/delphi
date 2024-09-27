@@ -170,8 +170,8 @@
         <AppDPIAwarenessMode>PerMonitorV2</AppDPIAwarenessMode>
         <VerInfo_IncludeVerInfo>true</VerInfo_IncludeVerInfo>
         <VerInfo_Locale>1033</VerInfo_Locale>
-        <VerInfo_Build>22</VerInfo_Build>
-        <VerInfo_Keys>CompanyName=;FileDescription=$(MSBuildProjectName);FileVersion=1.0.0.22;InternalName=;LegalCopyright=;LegalTrademarks=;OriginalFilename=;ProgramID=com.embarcadero.$(MSBuildProjectName);ProductName=$(MSBuildProjectName);ProductVersion=1.0.0.0;Comments=</VerInfo_Keys>
+        <VerInfo_Build>31</VerInfo_Build>
+        <VerInfo_Keys>CompanyName=;FileDescription=$(MSBuildProjectName);FileVersion=1.0.0.31;InternalName=;LegalCopyright=;LegalTrademarks=;OriginalFilename=;ProgramID=com.embarcadero.$(MSBuildProjectName);ProductName=$(MSBuildProjectName);ProductVersion=1.0.0.0;Comments=</VerInfo_Keys>
         <VerInfo_AutoIncVersion>true</VerInfo_AutoIncVersion>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Cfg_1_Win64)'!=''">
@@ -187,8 +187,8 @@
     <PropertyGroup Condition="'$(Cfg_2_Win32)'!=''">
         <AppEnableRuntimeThemes>true</AppEnableRuntimeThemes>
         <AppDPIAwarenessMode>PerMonitorV2</AppDPIAwarenessMode>
-        <VerInfo_Build>1</VerInfo_Build>
-        <VerInfo_Keys>CompanyName=;FileDescription=$(MSBuildProjectName);FileVersion=1.0.0.1;InternalName=;LegalCopyright=;LegalTrademarks=;OriginalFilename=;ProgramID=com.embarcadero.$(MSBuildProjectName);ProductName=$(MSBuildProjectName);ProductVersion=1.0.0.0;Comments=</VerInfo_Keys>
+        <VerInfo_Build>9</VerInfo_Build>
+        <VerInfo_Keys>CompanyName=;FileDescription=$(MSBuildProjectName);FileVersion=1.0.0.9;InternalName=;LegalCopyright=;LegalTrademarks=;OriginalFilename=;ProgramID=com.embarcadero.$(MSBuildProjectName);ProductName=$(MSBuildProjectName);ProductVersion=1.0.0.0;Comments=</VerInfo_Keys>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Cfg_2_Win64)'!=''">
         <AppEnableRuntimeThemes>true</AppEnableRuntimeThemes>
@@ -217,8 +217,8 @@
             <DesignClass>TFrame</DesignClass>
         </DCCReference>
         <DCCReference Include="..\..\..\library\Lb.Logger.pas"/>
-        <DCCReference Include="setting\UnitSettingFrame.pas">
-            <Form>SettingFrame</Form>
+        <DCCReference Include="setting\UnitPlatformSettingFrame.pas">
+            <Form>PlatformSettingFrame</Form>
             <DesignClass>TFrame</DesignClass>
         </DCCReference>
         <DCCReference Include="UnitStatusFrame.pas">
@@ -234,7 +234,6 @@
         <DCCReference Include="..\..\..\library\Lb.Resource.Script.pas"/>
         <DCCReference Include="..\lib\Lb.History.DB.pas"/>
         <DCCReference Include="..\lib\Lb.SysUtils.pas"/>
-        <DCCReference Include="..\lib\Lb.VirtualTrade.pas"/>
         <DCCReference Include="..\..\..\library\trade\quik\Quik.Manager.DDE.pas"/>
         <DCCReference Include="..\..\..\library\trade\quik\Quik.SysUtils.pas"/>
         <DCCReference Include="..\..\..\library\trade\quik\Quik.ValueTable.pas"/>
@@ -283,6 +282,31 @@
         <DCCReference Include="status\Lb.Status.Bybit.pas"/>
         <DCCReference Include="status\Lb.Status.pas"/>
         <DCCReference Include="..\lib\Lb.HistoryIndicator.pas"/>
+        <DCCReference Include="setting\UnitSettingFrame.pas">
+            <Form>SettingFrame</Form>
+            <FormType>fmx</FormType>
+            <DesignClass>TFrame</DesignClass>
+        </DCCReference>
+        <DCCReference Include="setting\UnitSettingLevelFrame.pas">
+            <Form>SettingLevelFrame</Form>
+            <FormType>fmx</FormType>
+            <DesignClass>TFrame</DesignClass>
+        </DCCReference>
+        <DCCReference Include="log\UnitLogForm.pas">
+            <Form>LogForm</Form>
+            <FormType>fmx</FormType>
+        </DCCReference>
+        <DCCReference Include="table\UnitBybitExportFrame.pas">
+            <Form>BybitExportFrame</Form>
+            <FormType>fmx</FormType>
+            <DesignClass>TFrame</DesignClass>
+        </DCCReference>
+        <DCCReference Include="setting\UnitSettingTacticsFrame.pas">
+            <Form>SettingTacticsFrame</Form>
+            <FormType>fmx</FormType>
+            <DesignClass>TFrame</DesignClass>
+        </DCCReference>
+        <DCCReference Include="..\lib\Lb.VirtualTrade.V2.pas"/>
         <None Include="platform.inc"/>
         <None Include="..\lib\history\db.sql"/>
         <None Include="..\..\..\library\trade\quik\quik_connect.inc"/>
@@ -325,13 +349,13 @@
                         <Overwrite>true</Overwrite>
                     </Platform>
                 </DeployFile>
-                <DeployFile LocalName="..\..\..\library\trade\quik\quik_connect.inc" Configuration="Debug" Class="ProjectFile">
+                <DeployFile LocalName="..\lib\history\db.sql" Configuration="Debug" Class="ProjectFile">
                     <Platform Name="Win32">
                         <RemoteDir>.\</RemoteDir>
                         <Overwrite>true</Overwrite>
                     </Platform>
                 </DeployFile>
-                <DeployFile LocalName="..\lib\history\db.sql" Configuration="Debug" Class="ProjectFile">
+                <DeployFile LocalName="..\..\..\library\trade\quik\quik_connect.inc" Configuration="Debug" Class="ProjectFile">
                     <Platform Name="Win32">
                         <RemoteDir>.\</RemoteDir>
                         <Overwrite>true</Overwrite>

@@ -5,7 +5,8 @@ uses
   FMX.Forms,
   UnitMainForm in 'UnitMainForm.pas' {MainForm},
   Lb.VirtualTrade in '..\..\lib\Lb.VirtualTrade.pas',
-  Lb.Logger in '..\..\..\..\library\Lb.Logger.pas';
+  Lb.Logger in '..\..\..\..\library\Lb.Logger.pas',
+  Lb.VirtualTrade.V2 in '..\..\lib\Lb.VirtualTrade.V2.pas';
 
 {$R *.res}
 

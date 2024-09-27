@@ -2,8 +2,6 @@ unit UnitSettingFrame;
 
 interface
 
-{$i platform.inc}
-
 uses
   System.SysUtils,
   System.Types,
@@ -17,47 +15,43 @@ uses
   FMX.Dialogs,
   FMX.StdCtrls,
   FMX.Objects,
-  FMX.Layouts,
-  FMX.Controls.Presentation,
-  FMX.Edit,
-  UnitSettingBybitFrame,
-  UnitSettingQuikFrame,
-  Lb.SysUtils,
   FMX.ListBox,
-  FMX.TabControl;
+  FMX.Controls.Presentation,
+  FMX.Layouts,
+  FMX.TabControl,
+  Lb.SysUtils,
+  UnitPlatformSettingFrame;
 
 type
   TSettingFrame = class(TFrame)
     Rectangle: TRectangle;
+    LayoutButton: TLayout;
     ButtonApply: TButton;
     ButtonClose: TButton;
     Layout: TLayout;
-    ComboBoxPlatform: TComboBox;
-    LayoutButton: TLayout;
-    Text1: TText;
     TabControl: TTabControl;
-    TabItemBybit: TTabItem;
-    TabItemQuik: TTabItem;
-    procedure ButtonCloseClick(Sender: TObject);
+    TabItemPlatformSetting: TTabItem;
+    LayoutPlatform: TLayout;
+    ComboBoxPlatform: TComboBox;
+    Text1: TText;
     procedure ButtonApplyClick(Sender: TObject);
+    procedure ButtonCloseClick(Sender: TObject);
+    procedure TabControlChange(Sender: TObject);
     procedure ComboBoxPlatformChange(Sender: TObject);
   private
-    FSettingBybit: TSettingBybitFrame;
-    FSettingQuik : TSettingQuikFrame;
     FMainApp: IMainApp;
-    procedure SetHeaderCaption;
+    procedure SetMainApp(const Value: IMainApp);
+  protected
+    FPlatformSetting: TPlatformSettingFrame;
+    procedure SetIsLayoutPlatform;
   public
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
     procedure LoadSetting;
-    procedure SaveSetting;
-    property MainApp: IMainApp write FMainApp;
+    property MainApp: IMainApp write SetMainApp;
   end;
 
 implementation
-
-uses
-  Lb.ApplicationVersion;
 
 {$R *.fmx}
 
@@ -69,71 +63,57 @@ var
 begin
   xIndex := ComboBoxPlatform.ItemIndex;
   case xIndex of
-    0: begin
-      TabControl.ActiveTab := TabItemBybit;
-      ParamApplication.TypePlatform := TTypePlatform.tpBybit;
-    end;
-    1: begin
-      TabControl.ActiveTab := TabItemQuik;
-      ParamApplication.TypePlatform := TTypePlatform.tpQuik;
-    end;
+    0: ParamApplication.TypePlatform := TTypePlatform.tpBybit;
+    1: ParamApplication.TypePlatform := TTypePlatform.tpQuik;
   end;
-  SetHeaderCaption;
+  FPlatformSetting.SetHeaderCaption;
 end;
 
 constructor TSettingFrame.Create(AOwner: TComponent);
 begin
-  inherited Create(AOwner);
-
-  FSettingBybit := TSettingBybitFrame.Create(nil);
-  FSettingBybit.Parent := TabItemBybit;
-  FSettingBybit.Align := TAlignLayout.Client;
-
-  FSettingQuik  := TSettingQuikFrame.Create(nil);
-  FSettingQuik.Parent := TabItemQuik;
-  FSettingQuik.Align := TAlignLayout.Client;
+  inherited;
+  FPlatformSetting := TPlatformSettingFrame.Create(nil);
+  FPlatformSetting.Parent := TabItemPlatformSetting;
+  FPlatformSetting.Align := TAlignLayout.Client;
+  SetIsLayoutPlatform;
 end;
 
 destructor TSettingFrame.Destroy;
 begin
-
+  FreeAndNil(FPlatformSetting);
   inherited;
 end;
 
+
 procedure TSettingFrame.LoadSetting;
 begin
-  ParamApplication.Load;
-  FSettingBybit.Load;
-  FSettingQuik.Load;
-  ComboBoxPlatform.ItemIndex := Integer(ParamApplication.TypePlatform);
-  SetHeaderCaption;
-end;
-
-procedure TSettingFrame.SetHeaderCaption;
-var
-  xS: String;
-begin
-  xS := 'xBot - ' + GetStrToTypePlatform(ParamApplication.TypePlatform) + ' [' + GetApplicationVersion + '] ';
-{$IFDEF DEBUG}
-  xS := xS + ' debug';
-{$ENDIF}
-  FMainApp.SetHeaderCaption(xS);
-end;
-
-
-procedure TSettingFrame.SaveSetting;
-begin
   case ParamApplication.TypePlatform of
-    tpBybit: FSettingBybit.Save;
-    tpQuik: FSettingQuik.Save;
+    TTypePlatform.tpBybit: ComboBoxPlatform.ItemIndex := 0;
+    TTypePlatform.tpQuik: ComboBoxPlatform.ItemIndex := 1;
   end;
-  ParamApplication.Save;
+  FPlatformSetting.LoadSetting;
 end;
 
+procedure TSettingFrame.SetIsLayoutPlatform;
+begin
+  LayoutPlatform.Visible := (TabControl.ActiveTab = TabItemPlatformSetting);
+end;
+
+procedure TSettingFrame.SetMainApp(const Value: IMainApp);
+begin
+  FPlatformSetting.MainApp := Value;
+  FMainApp := Value;
+end;
+
+procedure TSettingFrame.TabControlChange(Sender: TObject);
+begin
+  SetIsLayoutPlatform;
+end;
 
 procedure TSettingFrame.ButtonApplyClick(Sender: TObject);
 begin
-  SaveSetting;
+  FPlatformSetting.SaveSetting;
+  ParamApplication.Save;
 end;
 
 procedure TSettingFrame.ButtonCloseClick(Sender: TObject);

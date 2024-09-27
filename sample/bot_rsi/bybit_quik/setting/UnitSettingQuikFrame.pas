@@ -16,7 +16,9 @@ uses
   FMX.StdCtrls,
   FMX.Objects,
   FMX.Controls.Presentation,
-  FMX.Edit;
+  FMX.Edit,
+  FMX.Layouts,
+  UnitSettingTacticsFrame;
 
 type
   TSettingQuikFrame = class(TFrame)
@@ -31,13 +33,11 @@ type
     EditQuikPath: TEdit;
     Text5: TText;
     ButtonPaht: TButton;
-    CheckBoxLogTrade: TCheckBox;
     OpenDialog: TOpenDialog;
-    CheckBoxVirtualTrade: TCheckBox;
-    CheckBoxIsTrend: TCheckBox;
+    LayoutTactics: TLayout;
     procedure ButtonPahtClick(Sender: TObject);
   private
-    { Private declarations }
+    SettingTactics: TSettingTacticsFrame;
   public
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
@@ -52,7 +52,7 @@ implementation
 uses
   Lb.SysUtils;
 
-{ TFrame1 }
+{ TSettingQuikFrame }
 
 procedure TSettingQuikFrame.ButtonPahtClick(Sender: TObject);
 var
@@ -68,12 +68,14 @@ end;
 constructor TSettingQuikFrame.Create(AOwner: TComponent);
 begin
   inherited;
-
+  SettingTactics := TSettingTacticsFrame.Create(nil);
+  SettingTactics.Parent := LayoutTactics;
+  SettingTactics.Align := TAlignLayout.Client;
 end;
 
 destructor TSettingQuikFrame.Destroy;
 begin
-
+  FreeAndNil(SettingTactics);
   inherited;
 end;
 
@@ -84,9 +86,7 @@ begin
   EditCode.Text := ParamApplication.SecCode;
   EditTrdaccID.Text := ParamApplication.TrdaccID;
   EditQuikPath.Text := ParamApplication.PathQuik;
-  CheckBoxLogTrade.IsChecked := ParamApplication.IsLogTrade;
-  CheckBoxVirtualTrade.IsChecked := ParamApplication.IsVirtualChecked;
-  CheckBoxIsTrend.IsChecked := ParamApplication.IsTrend;
+  SettingTactics.Load;
 end;
 
 procedure TSettingQuikFrame.Save;
@@ -96,9 +96,7 @@ begin
   ParamApplication.SecCode := EditCode.Text;
   ParamApplication.TrdaccID := EditTrdaccID.Text;
   ParamApplication.PathQuik := EditQuikPath.Text;
-  ParamApplication.IsLogTrade := CheckBoxLogTrade.IsChecked;
-  ParamApplication.IsVirtualChecked := CheckBoxVirtualTrade.IsChecked;
-  ParamApplication.IsTrend := CheckBoxIsTrend.IsChecked;
+  SettingTactics.Save;
 end;
 
 end.

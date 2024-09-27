@@ -1,0 +1,60 @@
+object PlatformSettingFrame: TPlatformSettingFrame
+  Size.Width = 405.000000000000000000
+  Size.Height = 256.000000000000000000
+  Size.PlatformDefault = False
+  object Rectangle: TRectangle
+    Align = Client
+    Size.Width = 405.000000000000000000
+    Size.Height = 256.000000000000000000
+    Size.PlatformDefault = False
+    object Layout: TLayout
+      Align = Client
+      Size.Width = 405.000000000000000000
+      Size.Height = 256.000000000000000000
+      Size.PlatformDefault = False
+      TabOrder = 2
+      object TabControl: TTabControl
+        Align = Client
+        Size.Width = 405.000000000000000000
+        Size.Height = 256.000000000000000000
+        Size.PlatformDefault = False
+        TabIndex = 0
+        TabOrder = 0
+        TabPosition = None
+        Sizes = (
+          405s
+          256s
+          405s
+          256s)
+        object TabItemBybit: TTabItem
+          CustomIcon = <
+            item
+            end>
+          IsSelected = True
+          Size.Width = 8.000000000000000000
+          Size.Height = 8.000000000000000000
+          Size.PlatformDefault = False
+          StyleLookup = ''
+          TabOrder = 0
+          Text = 'TabItemBybit'
+          ExplicitSize.cx = 8.000000000000000000
+          ExplicitSize.cy = 8.000000000000000000
+        end
+        object TabItemQuik: TTabItem
+          CustomIcon = <
+            item
+            end>
+          IsSelected = False
+          Size.Width = 8.000000000000000000
+          Size.Height = 8.000000000000000000
+          Size.PlatformDefault = False
+          StyleLookup = ''
+          TabOrder = 0
+          Text = 'TabItemQuik'
+          ExplicitSize.cx = 8.000000000000000000
+          ExplicitSize.cy = 8.000000000000000000
+        end
+      end
+    end
+  end
+end

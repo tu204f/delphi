@@ -60,6 +60,35 @@ type
     property Current: TCurrent read FCurrent;
   end;
 
+  TRSI_V2 = class(TCustomIndicator)
+  public type
+    TCurrent = class(TObject)
+      Value: Double;
+      AvgValue: Double;
+    end;
+  private
+    FAvgPeriod: Integer;
+    FUpValues: TValueList;
+    FDownValues: TValueList;
+    FAvgUpValues: TValueList;
+    FAvgDownValues: TValueList;
+  private
+    FValues: TValueList;
+    FAvgValues: TValueList;
+    FCandels: TCandelObjectList;
+  private
+    FCurrent: TCurrent;
+  public
+    constructor Create; override;
+    destructor Destroy; override;
+    procedure SetCandels(ACandelObjects: TCandelObjectList); override;
+    property AvgPeriod: Integer read FAvgPeriod write FAvgPeriod;
+    property Current: TCurrent read FCurrent;
+    property Values: TValueList read FValues;
+    property AvgValues: TValueList read FAvgValues;
+  end;
+
+
   ///<summary>средний дневной диапазон</summary>
   TADR = class(TCustomIndicator)
   private
@@ -183,6 +212,15 @@ begin
 end;
 
 function AvgValue(AIndex, APeriod: Integer; AValues: TValueList): Double;
+
+  function _GetValue(AIndex: Integer; AValues: TValueList): Double;
+  begin
+    if (AIndex >= 0) and (AIndex < AValues.Count) then
+      Result := AValues[AIndex]
+    else
+      Result := 0;
+  end;
+
 var
   xSum: Double;
   i: Integer;
@@ -192,7 +230,7 @@ begin
   begin
     xSum := 0;
     for i := 0 to APeriod - 1 do
-      xSum := xSum + AValues[AIndex + i];
+      xSum := xSum + _GetValue(AIndex + i,AValues);
     Result := xSum/APeriod;
   end;
 end;
@@ -208,18 +246,18 @@ begin
     begin
       AvgValues.Items[AIndex] := 0;
     end
-    else if (xEndIndex = (AValues.Count - 1)) then
+    else if (xEndIndex <= (AValues.Count - 1)) then
     begin
       var xValue := AvgValue(AIndex,APeriod,AValues);
       AvgValues.Items[AIndex] := GetRound(xValue);
-    end
-    else if (xEndIndex < (AValues.Count - 1)) then
-    begin
-      var xValue     := AvgValues.Items[AIndex + 1];
-      var xCurAValue := AValues.Items[AIndex];
-      var xAvgValue  := (xValue * (APeriod - 1) + xCurAValue)/APeriod;
-      AvgValues.Items[AIndex] := GetRound(xAvgValue);
     end;
+//    else if (xEndIndex < (AValues.Count - 1)) then
+//    begin
+//      var xValue     := AvgValues.Items[AIndex + 1];
+//      var xCurAValue := AValues.Items[AIndex];
+//      var xAvgValue  := (xValue * (APeriod - 1) + xCurAValue)/APeriod;
+//      AvgValues.Items[AIndex] := GetRound(xAvgValue);
+//    end;
   end;
 end;
 
@@ -325,8 +363,6 @@ procedure TRSI.SetCandels(ACandelObjects: TCandelObjectList);
     end;
   end;
 
-
-
   procedure _RS;
   var
     xG, xL: Double;
@@ -359,6 +395,50 @@ procedure TRSI.SetCandels(ACandelObjects: TCandelObjectList);
       end;
   end;
 
+  procedure _LogRSI;
+  var
+    xS: String;
+    xStr: TStrings;
+    xCandel: TCandelObject;
+    i, iCount, xInd: Integer;
+  begin
+    xStr := TStringList.Create;
+    try
+
+      iCount := ACandelObjects.Count;
+      if iCount > 0 then
+        for i := 0 to iCount - 1 do
+        begin
+
+          xInd := i;
+          xCandel := ACandelObjects.Items[xInd];
+
+          xS :=
+            DateTimeToStr(xCandel.DateTime)  + ';' +
+            xCandel.Open.ToString      + ';' +
+            xCandel.High.ToString      + ';' +
+            xCandel.Low.ToString       + ';' +
+            xCandel.Close.ToString     + ';' +
+            xCandel.Vol.ToString       + ';' +
+
+            FGainValues[xInd].ToString    + ';' +
+            FLosValues[xInd].ToString     + ';' +
+            FAvgGainValues[xInd].ToString + ';' +
+            FAvgLosValues[xInd].ToString  + ';' +
+            FRS[xInd].ToString            + ';' +
+            FRSI[xInd].ToString           + ';' +
+            FAvgRSI[xInd].ToString        + ';';
+
+          xStr.Add(xS);
+
+        end;
+      xStr.SaveToFile('cande_rsi.csv');
+    finally
+      FreeAndNil(xStr);
+    end;
+  end;
+
+
 begin
   inherited;
 
@@ -385,7 +465,184 @@ begin
     FCurrent.Value := FRSI[0];
     FCurrent.AvgValue := FAvgRSI[0];
   end;
+
+  _LogRSI;
+
 end;
+
+{ TRSI_V2 }
+
+constructor TRSI_V2.Create;
+begin
+  inherited;
+  FUpValues      := TValueList.Create;
+  FDownValues    := TValueList.Create;
+  FAvgUpValues   := TValueList.Create;
+  FAvgDownValues := TValueList.Create;
+  FValues        := TValueList.Create;
+  FAvgValues     := TValueList.Create;
+  FCurrent       := TCurrent.Create;
+end;
+
+destructor TRSI_V2.Destroy;
+begin
+  FreeAndNil(FDownValues);
+  FreeAndNil(FUpValues);
+  FreeAndNil(FAvgDownValues);
+  FreeAndNil(FAvgUpValues);
+  FreeAndNil(FValues);
+  FreeAndNil(FAvgValues);
+  FreeAndNil(FCurrent);
+  inherited;
+end;
+
+procedure TRSI_V2.SetCandels(ACandelObjects: TCandelObjectList);
+
+  procedure _SetUpDownCandels;
+  var
+    xDelta: Double;
+    i, iCount: Integer;
+    xCandel: TCandelObject;
+  begin
+    iCount := FCandels.Count;
+    if iCount > 0 then
+      for i := 0 to iCount - 1 do
+      begin
+        xCandel := FCandels[i];
+        xDelta  := xCandel.Delta;
+        if xDelta > 0 then
+        begin
+          FUpValues.Add(xDelta);
+          FDownValues.Add(0);
+        end
+        else
+        begin
+          FUpValues.Add(0);
+          FDownValues.Add(-1 * xDelta);
+        end;
+      end;
+  end;
+
+  procedure _SetAvgUpDownValues;
+  var
+    xUpValue: Double;
+    xDownValue: Double;
+    i, iCount: Integer;
+  begin
+    iCount := FCandels.Count;
+    if iCount > 0 then
+      for i := 0 to iCount - 1 do
+      begin
+        xUpValue   := AvgValue(i,FPeriod,FUpValues);
+        xDownValue := AvgValue(i,FPeriod,FDownValues);
+        FAvgUpValues.Add(xUpValue);
+        FAvgDownValues.Add(xDownValue);
+      end;
+  end;
+
+  procedure _SetValues;
+  var
+    xValue: Double;
+    xUpValue: Double;
+    xDownValue: Double;
+    i, iCount: Integer;
+  begin
+    iCount := FCandels.Count;
+    if iCount > 0 then
+      for i := 0 to iCount - 1 do
+      begin
+        xUpValue := FAvgUpValues[i];
+        xDownValue := FAvgDownValues[i];
+        if xDownValue > 0 then
+          xValue := 100 - 100/(1 + xUpValue/xDownValue)
+        else
+          xValue := 0;
+        FValues.Add(xValue);
+      end;
+  end;
+
+  procedure _SetAvgValues;
+  var
+    xValue: Double;
+    i, iCount: Integer;
+  begin
+    iCount := FCandels.Count;
+    if iCount > 0 then
+      for i := 0 to iCount - 1 do
+      begin
+        xValue := AvgValue(i,FPeriod,FValues);
+        FAvgValues.Add(xValue);
+      end;
+  end;
+
+  procedure _LogRSI;
+  var
+    xS: String;
+    xStr: TStrings;
+    xCandel: TCandelObject;
+    i, iCount: Integer;
+  begin
+    xStr := TStringList.Create;
+    try
+
+      iCount := ACandelObjects.Count;
+      if iCount > 0 then
+        for i := 0 to iCount - 1 do
+        begin
+          xCandel := ACandelObjects.Items[i];
+          xS :=
+            DateTimeToStr(xCandel.DateTime)  + ';' +
+            xCandel.Open.ToString      + ';' +
+            xCandel.High.ToString      + ';' +
+            xCandel.Low.ToString       + ';' +
+            xCandel.Close.ToString     + ';' +
+            xCandel.Vol.ToString       + ';' +
+
+            FUpValues[i].ToString    + ';' +
+            FDownValues[i].ToString     + ';' +
+            FAvgUpValues[i].ToString + ';' +
+            FAvgDownValues[i].ToString  + ';' +
+            FValues[i].ToString            + ';' +
+            FAvgValues[i].ToString           + ';';
+
+          xStr.Add(xS);
+
+        end;
+      xStr.SaveToFile('cande_rsi_v2.csv');
+    finally
+      FreeAndNil(xStr);
+    end;
+  end;
+
+begin
+  FCandels := ACandelObjects;
+
+  FUpValues.Clear;
+  FDownValues.Clear;
+  FAvgUpValues.Clear;
+  FAvgDownValues.Clear;
+  FValues.Clear;
+  FAvgValues.Clear;
+
+  _SetUpDownCandels;
+  _SetAvgUpDownValues;
+  _SetValues;
+  _SetAvgValues;
+
+  if (FValues.Count > 0) and (FAvgValues.Count > 0) then
+  begin
+    FCurrent.Value := GetRound(FValues[0]);
+    FCurrent.AvgValue := GetRound(FAvgValues[0]);
+  end
+  else
+  begin
+    FCurrent.Value := 0;
+    FCurrent.AvgValue := 0;
+  end;
+
+  _LogRSI;
+end;
+
 
 { TADR }
 
@@ -711,5 +968,6 @@ begin
     end;
   end;
 end;
+
 
 end.

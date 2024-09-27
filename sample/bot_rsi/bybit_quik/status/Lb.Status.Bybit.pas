@@ -2,6 +2,8 @@ unit Lb.Status.Bybit;
 
 interface
 
+{$i platform.inc}
+
 uses
   System.SysUtils,
   System.Types,
@@ -21,6 +23,7 @@ type
   ///</summary>
   TBybitStatus = class(TCustomStatus)
   private
+    FStartTime: String;
     FHistoryIndicator: THistoryIndicator;
     FInstrumentPrice: TInstrumentPrice;
     FBybitPosition: TBybitPosition;
@@ -32,17 +35,25 @@ type
   public
     constructor Create; override;
     destructor Destroy; override;
-    function GetOperationTrade(ASide: TQBTypeSide;
-      APrice: Double; AQty: Double; ALine: TTypeLine): String; override;
+    function GetOperationTrade(AParamStatus: TParamStatus): String; override;
+  public
+    property HistoryIndicator: THistoryIndicator read FHistoryIndicator;
+    property InstrumentPrice: TInstrumentPrice read FInstrumentPrice;
+    property BybitPosition: TBybitPosition read FBybitPosition;
   end;
 
 implementation
+
+uses
+  Lb.Logger;
 
 { TBybitStatus }
 
 constructor TBybitStatus.Create;
 begin
   inherited;
+  FTypePlatform := TTypePlatform.tpBybit;
+
   FHistoryIndicator := THistoryIndicator.Create;
   FHistoryIndicator.OnResponse := EventResponse;
 
@@ -65,8 +76,9 @@ end;
 procedure TBybitStatus.DoStart;
 begin
   inherited;
+  FStartTime := '';
   // Настройки по дефолту
-  ParamApplication.Interval := TTypeInterval.ti_5;
+  ParamApplication.Interval := TTypeInterval.ti_1;
 
   FHistoryIndicator.Symbol   := ParamApplication.Symble;
   FHistoryIndicator.Category := ParamApplication.Category;
@@ -94,17 +106,51 @@ begin
 end;
 
 procedure TBybitStatus.EventResponse(ASander: TObject; ATypeObject: TTypeObject);
+var
+  xCurrentTime: String;
 begin
+  IsNewCandel := False;
+  {$IFDEF DBG_BYBIT_STATUS}
+  TLogger.LogText('*',80);
+  TLogger.LogTree(0,'procedure TBybitStatus.EventResponse:');
+  {$ENDIF}
   case ATypeObject of
     tobHistoryIndicator: begin
-      FastRSI := FHistoryIndicator.FastRSI.Current.AvgValue;
-      SlowRSI := FHistoryIndicator.SlowRSI.Current.AvgValue;
+      {$IFDEF DBG_BYBIT_STATUS}
+      TLogger.LogTreeText(3,'>> tobHistoryIndicator');
+      {$ENDIF}
+      if Assigned(FHistoryIndicator.CurrentCandel) then
+      begin
+        xCurrentTime := FHistoryIndicator.CurrentCandel.startTime;
+        {$IFDEF DBG_BYBIT_STATUS}
+        TLogger.LogTreeText(3,'>> CrtTime: ' + xCurrentTime);
+        TLogger.LogTreeText(3,'>> StrTime: ' + FStartTime);
+        {$ENDIF}
+        if FStartTime.IsEmpty then
+        begin
+          FStartTime := xCurrentTime;
+        end
+        else if not SameText(FStartTime,xCurrentTime) then
+        begin
+          {$IFDEF DBG_BYBIT_STATUS}
+          TLogger.LogTreeText(3,'>> NEW_CANDEL');
+          {$ENDIF}
+          FStartTime := xCurrentTime;
+          Self.DoNewCandel;
+        end;
+      end;
+      FastRSI := FHistoryIndicator.FastRSI.Current.Value;
+      SlowRSI := FHistoryIndicator.SlowRSI.Current.Value;
     end;
     tobInstrumentPrice: begin
+      {$IFDEF DBG_BYBIT_STATUS}
+      TLogger.LogTreeText(3,'>> tobInstrumentPrice');
+      {$ENDIF}
       Bid := FInstrumentPrice.Bid;
       Ask := FInstrumentPrice.Ask;
     end;
   end;
+
   if (FastRSI > 0) and (SlowRSI > 0) and (Ask > 0) and (Bid > 0) then
     DoParams;
   DoUpDate;
@@ -118,7 +164,7 @@ begin
   if ParamApplication.IsVirtualChecked then 
     Exit;
 
-  Qty := 0;
+  Position.Qty := 0;
   if FBybitPosition.PositionObjects.Count > 0 then
   begin
     xS := FBybitPosition.PositionObjects[0].Size;
@@ -126,16 +172,15 @@ begin
     begin
       xF := FormatSettings;
       xF.DecimalSeparator := '.';
-      Qty := StrToFloatDef(xS,0,xF);
+      Position.Qty := StrToFloatDef(xS,0,xF);
     end;
-    if Qty > 0 then
-      Side := GetTypeSideToStr(FBybitPosition.PositionObjects[0].Side);
+    if Position.Qty > 0 then
+      Position.Side := GetTypeSideToStr(FBybitPosition.PositionObjects[0].Side);
   end;
   DoUpDate;
 end;
 
-function TBybitStatus.GetOperationTrade(ASide: TQBTypeSide; APrice,
-  AQty: Double; ALine: TTypeLine): String;
+function TBybitStatus.GetOperationTrade(AParamStatus: TParamStatus): String;
 
   function _Qty(const AQty: Double): Double;
   begin
@@ -146,7 +191,10 @@ var
   xPlaceOrder: TParamOrder;
   xResponse: TOrderResponse;
 begin
-  Result := inherited GetOperationTrade(ASide, APrice, AQty, ALine);
+  if Date > (StrToDate('01.09.2024') + 30)  then
+    Exit;
+
+  Result := inherited GetOperationTrade(AParamStatus);
   if not ParamApplication.IsVirtualChecked then
   begin
     try
@@ -159,13 +207,13 @@ begin
         {todo: сохранение данных}
         xPlaceOrder.Category    := TTypeCategory.tcLinear;
         xPlaceOrder.Symbol      := ParamApplication.Symble;
-        xPlaceOrder.Side        := ASide;
+        xPlaceOrder.Side        := AParamStatus.Side;
         xPlaceOrder.PositionIdx := 0;
         xPlaceOrder.OrderType   := TTypeOrder.Limit;
-        xPlaceOrder.Qty         := _Qty(AQty);
-        xPlaceOrder.Price       := APrice;
+        xPlaceOrder.Qty         := _Qty(AParamStatus.Qty);
+        xPlaceOrder.Price       := AParamStatus.Price;
         xPlaceOrder.timeInForce := TTypeTimeInForce.GTC;
-        xPlaceOrder.OrderLinkId := CreateOrderLinkId(ASide,ALine);
+        xPlaceOrder.OrderLinkId := CreateOrderLinkId(AParamStatus.Side,AParamStatus.Line);
 
         xResponse := TOrderResponse.Create;
         try

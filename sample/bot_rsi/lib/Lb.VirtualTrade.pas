@@ -48,8 +48,10 @@ type
     Profit: Double;        // Профит на прибаль
   private
     function GetToStr: String;
+    function GetValue: Double;
   public
     property ToStr: String read GetToStr;
+    property Value: Double read GetValue;
   end;
   TParamTradeList = TList<TParamTrade>;
 
@@ -63,6 +65,7 @@ type
     FSide: TQBTypeSide;
     FProfit: Double;
     FParamTrades: TParamTradeList;
+    FValueSum: Double;
   protected
     procedure AddParamTrade(const AParamTrade: TParamTrade);
   public
@@ -99,6 +102,7 @@ type
     constructor Create; virtual;
     destructor Destroy; override;
     procedure Clear;
+
     procedure AddOrder(
       ASymbol: String;     // Торговый символ
       ASide: TQBTypeSide;  // Напровление торгового оперций
@@ -106,6 +110,7 @@ type
       APrice: Double;      // Цена
       AOrderLinkId: String // Напровление объекта
     );
+
     property Items[Index: Integer]: TPostionTrade read GetItems;
     property Count: Integer read GetCount;
 
@@ -228,11 +233,17 @@ begin
   Result := xS;
 end;
 
+function TParamTrade.GetValue: Double;
+begin
+  Result := Self.Qty * Self.Price;
+end;
+
 { TPostionTrade }
 
 
 constructor TPostionTrade.Create;
 begin
+  FValueSum := 0;
   FProfit := 0;
   FQty := 0;
   FSide := TQBTypeSide.tsBuy;
@@ -246,6 +257,35 @@ begin
 end;
 
 procedure TPostionTrade.OpenTrade(const AParamTrade: TParamTrade);
+
+  procedure _OpenTradeValueSum;
+  var
+    i, iCount: Integer;
+    xQty: Double;
+    xValueSum: Double;
+    xParamTrade: TParamTrade;
+  begin
+    xQty := 0;
+    xValueSum := 0;
+    iCount := FParamTrades.Count;
+    if iCount > 0 then
+      for i := 0 to iCount - 1 do
+      begin
+        xParamTrade := FParamTrades[i];
+        case xParamTrade.Side of
+          TQBTypeSide.tsBuy: begin
+            xValueSum := xValueSum + xParamTrade.Value;
+            xQty := xQty + xParamTrade.Qty;
+          end;
+          TQBTypeSide.tsSell: begin
+            xValueSum := xValueSum - xParamTrade.Value;
+            xQty := xQty - xParamTrade.Qty;
+          end;
+        end;
+      end;
+
+  end;
+
 var
   xParamTrade: TParamTrade;
 begin
@@ -276,8 +316,12 @@ begin
     begin
       xParamTrade := FParamTrades[i];
       case xParamTrade.Side of
-        TQBTypeSide.tsBuy : FProfit := FProfit - xParamTrade.Price * xParamTrade.Qty;
-        TQBTypeSide.tsSell: FProfit := FProfit + xParamTrade.Price * xParamTrade.Qty;
+        TQBTypeSide.tsBuy : begin
+          FProfit := FProfit - xParamTrade.Price * xParamTrade.Qty;
+        end;
+        TQBTypeSide.tsSell: begin
+          FProfit := FProfit + xParamTrade.Price * xParamTrade.Qty;
+        end;
       end;
       if xParamTrade.TypeTrade = TTypeTrade.ttClose then
       begin
@@ -384,6 +428,16 @@ procedure TVirtualTrades.AddOrder(ASymbol: String; ASide: TQBTypeSide;
     end;
   end;
 
+  procedure _PostionTrade(APostionTrade: TPostionTrade; ATypeTrade: TTypeTrade;
+    ASymbol: String; ASide: TQBTypeSide; AQty: Double; APrice: Double;
+    AOrderLinkId: String);
+  begin
+    FPostionTrade := TPostionTrade.Create;
+    FPostionTrade.Number := FPostionTrades.Count;
+    _AddPostion(FPostionTrade,TTypeTrade.ttOpen,ASymbol,ASide,AQty,APrice,AOrderLinkId);
+    FPostionTrades.Add(FPostionTrade);
+  end;
+
 var
   xQty: Double;
 begin
@@ -394,13 +448,13 @@ begin
     case FPostionTrade.Side of
       TQBTypeSide.tsBuy: begin
         case ASide of
-          TQBTypeSide.tsBuy: xQty := FPostionTrade.Qty + AQty;
+          TQBTypeSide.tsBuy : xQty := FPostionTrade.Qty + AQty;
           TQBTypeSide.tsSell: xQty := FPostionTrade.Qty - AQty;
         end;
       end;
       TQBTypeSide.tsSell: begin
         case ASide of
-          TQBTypeSide.tsBuy: xQty := FPostionTrade.Qty - AQty;
+          TQBTypeSide.tsBuy : xQty := FPostionTrade.Qty - AQty;
           TQBTypeSide.tsSell: xQty := FPostionTrade.Qty + AQty;
         end;
       end;
@@ -411,22 +465,20 @@ begin
     begin
       _AddPostion(FPostionTrade,TTypeTrade.ttClose,ASymbol,ASide,FPostionTrade.Qty,APrice,AOrderLinkId);
       FPostionTrade := nil;
-    end else if xQty < 0 then
+    end
+    else if xQty < 0 then
     begin
       _AddPostion(FPostionTrade,TTypeTrade.ttClose,ASymbol,ASide,FPostionTrade.Qty,APrice,AOrderLinkId);
-      FPostionTrade := TPostionTrade.Create;
-      _AddPostion(FPostionTrade,TTypeTrade.ttOpen,ASymbol,ASide,Abs(xQty),APrice,AOrderLinkId);
-      FPostionTrades.Add(FPostionTrade);
-    end else
+      _PostionTrade(FPostionTrade,TTypeTrade.ttOpen,ASymbol,ASide,Abs(xQty),APrice,AOrderLinkId);
+    end
+    else
     begin
       _AddPostion(FPostionTrade,TTypeTrade.ttOpen,ASymbol,ASide,AQty,APrice,AOrderLinkId);
     end;
   end
   else
   begin
-    FPostionTrade := TPostionTrade.Create;
-    _AddPostion(FPostionTrade,TTypeTrade.ttOpen,ASymbol,ASide,AQty,APrice,AOrderLinkId);
-    FPostionTrades.Add(FPostionTrade);
+    _PostionTrade(FPostionTrade,TTypeTrade.ttOpen,ASymbol,ASide,Abs(xQty),APrice,AOrderLinkId);
   end;
   DoChange;
 end;

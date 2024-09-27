@@ -74,7 +74,7 @@ begin
     ValueRSI := 50;
     ButtonStart.Text := 'Стоп';
 
-    Level.Value := 40;
+    Level.Value := 50;
   end
   else
     ButtonStart.Text := 'Старт';
@@ -93,17 +93,29 @@ begin
       2: ValueRSI := ValueRSI - Increment;
     end;
 
-    if ValueRSI >= 100 then
+    if ValueRSI >= 60 then
+    begin
       Status := 2;
+      Memo.Lines.Clear;
+    end;
 
-    if ValueRSI <= 0 then
+    if ValueRSI <= 40 then
+    begin
       Status := 1;
+      Memo.Lines.Clear;
+    end;
 
     Level.SetUpDate(ValueRSI);
+
+    SetLog(
+      ValueRSI.ToString + ' :: ' +
+      StatusLevelToStr(Level.StatusLevel) + ' :: ' +
+      IntersectionLevelToStr(Level.IntersectionLevel)
+    );
+
+
     EditStatusLevel.Text := 'Level: ' + StatusLevelToStr(Level.StatusLevel);
     EditUpDown.Text := IntersectionLevelToStr(Level.IntersectionLevel);
-
-
     EditValueRSI.Text := ValueRSI.ToString;
   except
     SetCaptionButton;

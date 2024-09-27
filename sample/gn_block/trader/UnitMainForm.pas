@@ -16,31 +16,30 @@ uses
   FMX.Controls.Presentation,
   FMX.StdCtrls,
   Lb.ReadPrice,
-  Lb.Trade,
   FMX.Layouts,
   FMX.ListBox,
-  FMX.Objects, System.Rtti, FMX.Grid.Style, FMX.ScrollBox, FMX.Grid,
-  FMX.TreeView;
+  FMX.Objects,
+  System.Rtti,
+  FMX.Grid.Style,
+  FMX.ScrollBox,
+  FMX.Grid,
+  FMX.TreeView,
+  UnitTraderFrame;
 
 type
   TMainForm = class(TForm)
     ButtonReadPrice: TButton;
     Timer: TTimer;
     ListBox: TListBox;
-    Text1: TText;
-    StrGrid: TStringGrid;
+    Layout: TLayout;
     procedure ButtonReadPriceClick(Sender: TObject);
     procedure TimerTimer(Sender: TObject);
   private
-    ValueRSI: Double;
     CurrentDate: TDateTime;
     CandelIndex: Integer;
     CandelsSource: TCandelsSource;
-    Candels: TCandelList;
   private
-    FCurrentTrade: TTrade;
-    FDateTrade: TDateTrade;
-    FDateTrades: TDateTradeList;
+    TraderFrame: TTraderFrame;
   protected
     procedure SetPriceLog(const S: String);
     procedure SetStartCandel(ACandel: TCandel);
@@ -49,8 +48,6 @@ type
   public
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
-    procedure SetShowGrid;
-    procedure SetSaveFile;
   end;
 
 var
@@ -79,39 +76,19 @@ end;
 { TMainForm }
 
 constructor TMainForm.Create(AOwner: TComponent);
-
-  procedure _AddCol(AHeader: String; AGrid: TStringGrid);
-  var
-    xCol: TStringColumn;
-  begin
-    xCol := TStringColumn.Create(nil);
-    xCol.Header := AHeader;
-    xCol.Parent := AGrid;
-  end;
-
 begin
   inherited Create(AOwner);
+  TraderFrame := TTraderFrame.Create(nil);
+  TraderFrame.Parent := Layout;
+  TraderFrame.Align := TAlignLayout.Client;
 
-  _AddCol('Date', StrGrid);
-  _AddCol('Count', StrGrid);
-  _AddCol('Profit', StrGrid);
-  _AddCol('CountTakeProfit', StrGrid);
-  _AddCol('CountStopLoss', StrGrid);
-  _AddCol('CountNull', StrGrid);
-
-  FCurrentTrade := nil;
   CandelsSource := TCandelsSource.Create;
-  Candels := TCandelList.Create;
-
-  FDateTrade  := nil;
-  FDateTrades := TDateTradeList.Create;
 end;
 
 destructor TMainForm.Destroy;
 begin
-  FreeAndNil(Candels);
   FreeAndNil(CandelsSource);
-  FreeAndNil(FDateTrades);
+  FreeAndNil(TraderFrame);
   inherited;
 end;
 
@@ -126,7 +103,7 @@ begin
     CandelIndex := 1;
     ButtonReadPrice.Text := 'Стоп';
     xFileName := ExtractFilePath(ParamStr(0)) + 'data\';
-    xFileName := xFileName + 'GZU4.csv';
+    xFileName := xFileName + 'GAZP_240601_240804.csv';
     CandelsSource.LoadFromFile(xFileName);
     ListBox.Items.Clear;
   end
@@ -160,12 +137,10 @@ begin
     begin
       Timer.Enabled := False;
       ButtonReadPrice.Text := 'Старт';
-      SetSaveFile;
     end;
   except
     Timer.Enabled := False;
-    ButtonReadPrice.Text := 'Старт';
-    SetSaveFile;
+    ButtonReadPrice.Text := 'Старт.Error';
   end;
 end;
 
@@ -182,10 +157,6 @@ procedure TMainForm.SetStartCandel(ACandel: TCandel);
 var
   xS: String;
 begin
-  FDateTrade := TDateTrade.Create(ACandel.Date);
-  FDateTrades.Add(FDateTrade);
-
-
   SetPriceLog('start');
   xS :=
     '[' + GetIndexToStr(CandelIndex) + '] ' +
@@ -194,6 +165,8 @@ begin
     ACandel.Vol.ToString;
 
   SetPriceLog(xS);
+
+  TraderFrame.SetStart;
   SetAddCandel(ACandel);
 end;
 
@@ -209,123 +182,11 @@ begin
 
   SetPriceLog(xS);
   SetAddCandel(ACandel);
-
 end;
 
 procedure TMainForm.SetAddCandel(ACandel: TCandel);
-const
-  SIZE_RSI = 50;
-var
-  xInputParam: TInputParam;
 begin
-  if not Assigned(FDateTrade) then
-    Exit;
-
-  Candels.Add(ACandel);
-  if Candels.Count > SIZE_RSI then
-    Candels.Delete(0);
-
-  ValueRSI := GetRSI(Candels);
-  Text1.Text := 'Оценка состояние рынка: ' + ValueRSI.ToString;
-
-  if Candels.Count = SIZE_RSI then
-  begin
-
-    xInputParam.Date := ACandel.Date;
-    xInputParam.Time := ACandel.Time;
-    xInputParam.Price := ACandel.Close;
-
-    if ValueRSI > 50 then
-    begin
-      xInputParam.BuySell := 'B';
-      xInputParam.ValueRSI := ValueRSI;
-      // Покупаем
-      if not Assigned(FCurrentTrade) then
-      begin
-        FCurrentTrade := TTrade.Create(xInputParam);
-        FDateTrade.Trades.Add(FCurrentTrade);
-      end
-      else if FCurrentTrade.BuySell = 'S' then
-      begin
-        FCurrentTrade := TTrade.Create(xInputParam);
-        FDateTrade.Trades.Add(FCurrentTrade);
-      end;
-    end
-    else
-    begin
-      xInputParam.BuySell := 'S';
-      xInputParam.ValueRSI := ValueRSI;
-      // Продаем
-      if not Assigned(FCurrentTrade) then
-      begin
-        FCurrentTrade := TTrade.Create(xInputParam);
-        FDateTrade.Trades.Add(FCurrentTrade);
-      end
-      else if FCurrentTrade.BuySell = 'B' then
-      begin
-        FCurrentTrade := TTrade.Create(xInputParam);
-        FDateTrade.Trades.Add(FCurrentTrade);
-      end;
-    end;
-    if Assigned(FCurrentTrade) then
-      FCurrentTrade.SetUpDate(ACandel.High,ACandel.Low,ACandel.Close);
-
-    if Assigned(FDateTrade) then
-      FDateTrade.SetUpDateTrade;
-
-    SetShowGrid;
-  end;
+  TraderFrame.SetUpCandel(ACandel);
 end;
-
-procedure TMainForm.SetSaveFile;
-var
-  xStr: TStrings;
-  xTrade: TTrade;
-  xDateTrade: TDateTrade;
-  i, iCount: Integer;
-  j, jCount: Integer;
-begin
-  xStr := TStringList.Create;
-  try
-    jCount := FDateTrades.Count;
-    if jCount > 0 then
-      for j := 0 to jCount - 1 do
-      begin
-        xDateTrade := FDateTrades.Items[j];
-        xStr.Add('new_date_' + DateToStr(xDateTrade.Date));
-        iCount := xDateTrade.Trades.Count;
-        if iCount > 0 then
-          for i := 0 to iCount - 1 do
-          begin
-            xTrade := xDateTrade.Trades[i];
-            xStr.Add(xTrade.ToString);
-          end;
-      end;
-    xStr.SaveToFile('data.csv');
-  finally
-    FreeAndNil(xStr);
-  end;
-end;
-
-procedure TMainForm.SetShowGrid;
-var
-  xDateTrade: TDateTrade;
-  i, iCount: Integer;
-begin
-  iCount := FDateTrades.Count;
-  StrGrid.RowCount := iCount;
-  if iCount > 0 then
-    for i := 0 to iCount - 1 do
-    begin
-      xDateTrade := FDateTrades[i];
-      StrGrid.Cells[0,i] := DateToStr(xDateTrade.Date);
-      StrGrid.Cells[1,i] := xDateTrade.Trades.Count.ToString;
-      StrGrid.Cells[2,i] := xDateTrade.Profit.ToString;
-      StrGrid.Cells[3,i] := xDateTrade.CountTakeProfit.ToString;
-      StrGrid.Cells[4,i] := xDateTrade.CountStopLoss.ToString;
-      StrGrid.Cells[5,i] := xDateTrade.CountNull.ToString;
-    end;
-end;
-
 
 end.

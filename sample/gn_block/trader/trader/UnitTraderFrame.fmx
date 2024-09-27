@@ -1,0 +1,208 @@
+object TraderFrame: TTraderFrame
+  Size.Width = 879.000000000000000000
+  Size.Height = 695.000000000000000000
+  Size.PlatformDefault = False
+  object LayoutClient: TLayout
+    Align = Client
+    Margins.Left = 2.000000000000000000
+    Margins.Top = 2.000000000000000000
+    Margins.Right = 2.000000000000000000
+    Margins.Bottom = 2.000000000000000000
+    Size.Width = 875.000000000000000000
+    Size.Height = 691.000000000000000000
+    Size.PlatformDefault = False
+    TabOrder = 0
+    object LayoutPrice: TLayout
+      Align = Top
+      Margins.Top = 3.000000000000000000
+      Margins.Bottom = 1.500000000000000000
+      Position.Y = 3.000000000000000000
+      Size.Width = 875.000000000000000000
+      Size.Height = 27.000000000000000000
+      Size.PlatformDefault = False
+      TabOrder = 0
+      object TextDateTime: TText
+        Align = Left
+        Size.Width = 81.000000000000000000
+        Size.Height = 27.000000000000000000
+        Size.PlatformDefault = False
+        Text = #1044#1072#1090#1072'/'#1042#1088#1077#1084#1103':'
+        TextSettings.HorzAlign = Leading
+      end
+      object EditDateTime: TEdit
+        Touch.InteractiveGestures = [LongTap, DoubleTap]
+        Align = Left
+        TabOrder = 1
+        Position.X = 81.000000000000000000
+        Size.Width = 120.000000000000000000
+        Size.Height = 27.000000000000000000
+        Size.PlatformDefault = False
+      end
+      object TextPrice: TText
+        Align = Left
+        Position.X = 201.000000000000000000
+        Size.Width = 50.000000000000000000
+        Size.Height = 27.000000000000000000
+        Size.PlatformDefault = False
+        Text = #1062#1077#1085#1072':'
+      end
+      object EditOpen: TEdit
+        Touch.InteractiveGestures = [LongTap, DoubleTap]
+        Align = Left
+        TabOrder = 5
+        Position.X = 251.000000000000000000
+        Size.Width = 55.000000000000000000
+        Size.Height = 27.000000000000000000
+        Size.PlatformDefault = False
+      end
+      object EditClose: TEdit
+        Touch.InteractiveGestures = [LongTap, DoubleTap]
+        Align = Left
+        TabOrder = 4
+        Position.X = 425.000000000000000000
+        Margins.Left = 3.000000000000000000
+        Size.Width = 55.000000000000000000
+        Size.Height = 27.000000000000000000
+        Size.PlatformDefault = False
+      end
+      object EditLow: TEdit
+        Touch.InteractiveGestures = [LongTap, DoubleTap]
+        Align = Left
+        TabOrder = 3
+        Position.X = 367.000000000000000000
+        Margins.Left = 3.000000000000000000
+        Size.Width = 55.000000000000000000
+        Size.Height = 27.000000000000000000
+        Size.PlatformDefault = False
+      end
+      object EditHigh: TEdit
+        Touch.InteractiveGestures = [LongTap, DoubleTap]
+        Align = Left
+        TabOrder = 2
+        Position.X = 309.000000000000000000
+        Margins.Left = 3.000000000000000000
+        Size.Width = 55.000000000000000000
+        Size.Height = 27.000000000000000000
+        Size.PlatformDefault = False
+      end
+      object TextVol: TText
+        Align = Left
+        Position.X = 480.000000000000000000
+        Size.Width = 50.000000000000000000
+        Size.Height = 27.000000000000000000
+        Size.PlatformDefault = False
+        Text = #1054#1073#1098#1077#1084':'
+      end
+      object EditVol: TEdit
+        Touch.InteractiveGestures = [LongTap, DoubleTap]
+        Align = Left
+        TabOrder = 6
+        Position.X = 530.000000000000000000
+        Size.Width = 31.000000000000000000
+        Size.Height = 27.000000000000000000
+        Size.PlatformDefault = False
+      end
+    end
+    object LayoutParam: TLayout
+      Align = Top
+      Margins.Top = 1.500000000000000000
+      Margins.Bottom = 3.000000000000000000
+      Position.Y = 33.000000000000000000
+      Size.Width = 875.000000000000000000
+      Size.Height = 25.000000000000000000
+      Size.PlatformDefault = False
+      TabOrder = 1
+      object TextStatusMkt: TText
+        Align = Left
+        Size.Width = 109.000000000000000000
+        Size.Height = 25.000000000000000000
+        Size.PlatformDefault = False
+        Text = #1057#1086#1089#1090#1086#1103#1085#1080#1077' '#1088#1099#1085#1082#1072':'
+        TextSettings.HorzAlign = Leading
+      end
+      object EditStatusMkt: TEdit
+        Touch.InteractiveGestures = [LongTap, DoubleTap]
+        Align = Left
+        TabOrder = 8
+        Position.X = 109.000000000000000000
+        Size.Width = 70.000000000000000000
+        Size.Height = 25.000000000000000000
+        Size.PlatformDefault = False
+      end
+      object TextUp: TText
+        Align = Left
+        Margins.Left = 3.000000000000000000
+        Position.X = 245.000000000000000000
+        Size.Width = 45.000000000000000000
+        Size.Height = 25.000000000000000000
+        Size.PlatformDefault = False
+        Text = 'Fractal:'
+        TextSettings.HorzAlign = Leading
+      end
+      object EditUp: TEdit
+        Touch.InteractiveGestures = [LongTap, DoubleTap]
+        Align = Left
+        TabOrder = 7
+        Position.X = 290.000000000000000000
+        Size.Width = 55.000000000000000000
+        Size.Height = 25.000000000000000000
+        Size.PlatformDefault = False
+      end
+      object TextDown: TText
+        Align = Left
+        Margins.Left = 3.000000000000000000
+        Position.X = 348.000000000000000000
+        Size.Width = 17.000000000000000000
+        Size.Height = 25.000000000000000000
+        Size.PlatformDefault = False
+        Text = '//'
+      end
+      object EditDown: TEdit
+        Touch.InteractiveGestures = [LongTap, DoubleTap]
+        Align = Left
+        TabOrder = 6
+        Position.X = 365.000000000000000000
+        Size.Width = 55.000000000000000000
+        Size.Height = 25.000000000000000000
+        Size.PlatformDefault = False
+      end
+      object EditTrande: TEdit
+        Touch.InteractiveGestures = [LongTap, DoubleTap]
+        Align = Left
+        TabOrder = 5
+        Position.X = 182.000000000000000000
+        Margins.Left = 3.000000000000000000
+        Size.Width = 60.000000000000000000
+        Size.Height = 25.000000000000000000
+        Size.PlatformDefault = False
+      end
+    end
+    object Rectangle1: TRectangle
+      Align = Client
+      Fill.Color = claNull
+      Size.Width = 875.000000000000000000
+      Size.Height = 630.000000000000000000
+      Size.PlatformDefault = False
+      object ListBoxCharts: TListBox
+        Align = Client
+        Size.Width = 875.000000000000000000
+        Size.Height = 405.000000000000000000
+        Size.PlatformDefault = False
+        TabOrder = 3
+        DisableFocusEffect = True
+        DefaultItemStyles.ItemStyle = ''
+        DefaultItemStyles.GroupHeaderStyle = ''
+        DefaultItemStyles.GroupFooterStyle = ''
+        Viewport.Width = 871.000000000000000000
+        Viewport.Height = 401.000000000000000000
+      end
+      object LayoutChartFrame: TLayout
+        Align = Top
+        Size.Width = 875.000000000000000000
+        Size.Height = 225.000000000000000000
+        Size.PlatformDefault = False
+        TabOrder = 4
+      end
+    end
+  end
+end

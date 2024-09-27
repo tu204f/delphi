@@ -84,6 +84,8 @@ type
     property WorkLevel: TIntersectionLevel read FWorkLevel write FWorkLevel;
   end;
 
+
+
   ///<summary>
   /// Список одинарных уровние
   ///</summary>
@@ -172,7 +174,6 @@ begin
     end;
     FOldStatusLevel := FStatusLevel;
   end;
-
 end;
 
 { TOneEventLevel }

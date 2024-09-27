@@ -85,6 +85,7 @@ implementation
 {$R *.fmx}
 
 uses
+  UnitLogForm,
   Lb.Logger;
 
 { TCategoryFrame }
@@ -176,10 +177,10 @@ procedure TCategoryFrame.ActiveLevelOnIntersection(Sender: TObject);
 var
   xParam: TTradeParam;
 begin
-{$IFDEF DBG_TRADE}
-  TLogger.LogTree(0,'TCategoryFrame.ActiveLevelOnIntersection:');
-  TLogger.LogTreeText(3,'>> SituationParam.Qty:' + FSituationParam.Qty.ToString);
-  TLogger.LogTreeText(3,'>> SituationParam.Side:' + GetStrToTypeSide(FSituationParam.Side));
+{$IFDEF DBG_LEVEL_CATEGORY_PARAM}
+  TLogger.LogTree(0,'procedure TCategoryFrame.ActiveLevelOnIntersection:');
+  TLogger.LogTreeText(3,'>> Status:' + StatusLevelToStr(ActiveLevel.StatusLevel));
+  TLogger.LogTreeText(3,'>> Intersection:' + IntersectionLevelToStr(ActiveLevel.IntersectionLevel));
 {$ENDIF}
   // Событие пересечение выставить торговый операцию
   if CheckBoxActive.IsChecked then
@@ -192,14 +193,7 @@ begin
     xParam.Side:= FSide;
     xParam.TypeTrade := FTypeTrade;
     xParam.TypeLine := FTypeLine;
-{$IFDEF DBG_TRADE}
-    TLogger.LogText('*',40);
-    TLogger.LogTreeText(3,'>> Price:' + xParam.Price.ToString);
-    TLogger.LogTreeText(3,'>> Qty:' + xParam.Qty.ToString);
-    TLogger.LogTreeText(3,'>> Side:' + GetStrToTypeSide(xParam.Side));
-    TLogger.LogTreeText(3,'>> TypeTrade:' + GetStrToTypeTrade(xParam.TypeTrade));
-    TLogger.LogTreeText(3,'>> TypeLine:' + GetStrToTypeLine(xParam.TypeLine));
-{$ENDIF}
+
     DoSendTrade(xParam);
     CheckBoxActive.IsChecked := False;
   end;
@@ -207,6 +201,11 @@ end;
 
 procedure TCategoryFrame.ReActiveLevelOnIntersection(Sender: TObject);
 begin
+{$IFDEF DBG_LEVEL_CATEGORY_PARAM}
+  TLogger.LogTree(0,'procedure TCategoryFrame.ReActiveLevelOnIntersection');
+  TLogger.LogTreeText(3,'>> Status:' + StatusLevelToStr(ReActiveLevel.StatusLevel));
+  TLogger.LogTreeText(3,'>> Intersection:' + IntersectionLevelToStr(ReActiveLevel.IntersectionLevel));
+{$ENDIF}
   // Событие пересечение, актировать заявки
   if CheckBoxReActive.IsChecked then
   begin
@@ -221,12 +220,14 @@ begin
     TQBTypeSide.tsBuy: begin
       ActiveLevel.IsRepeat := False;
       ActiveLevel.WorkLevel := TIntersectionLevel.tlDownUp;
+
       ReActiveLevel.IsRepeat := False;
       ReActiveLevel.WorkLevel := TIntersectionLevel.tlUpDown;
     end;
     TQBTypeSide.tsSell: begin
       ActiveLevel.IsRepeat := False;
       ActiveLevel.WorkLevel := TIntersectionLevel.tlUpDown;
+
       ReActiveLevel.IsRepeat := False;
       ReActiveLevel.WorkLevel := TIntersectionLevel.tlDownUp;
     end;
@@ -251,29 +252,70 @@ begin
 end;
 
 procedure TCategoryFrame.SetValueParam(AParam: TSituationParam);
-begin
-  FSituationParam := AParam;
-  if ParamApplication.IsTrend then
+
+  procedure _ActiveLevelSetUpDate(const AValue: Double);
   begin
-    case FSide of
-      // Покупаем если рынок растет
-      TQBTypeSide.tsBuy: begin
-        if AParam.SlowRSI > 50 then
-          ActiveLevel.SetUpDate(AParam.FastRSI);
-      end;
-      // Продаем если рынок падает
-      TQBTypeSide.tsSell: begin
-        if AParam.SlowRSI < 50 then
-          ActiveLevel.SetUpDate(AParam.FastRSI);
-      end;
-    end;
-    ReActiveLevel.SetUpDate(AParam.FastRSI);
-  end
-  else
-  begin
-    ActiveLevel.SetUpDate(AParam.FastRSI);
-    ReActiveLevel.SetUpDate(AParam.FastRSI);
+{$IFDEF DBG_LEVEL_CATEGORY_PARAM}
+    TLogger.LogTree(0,'procedure TCategoryFrame.SetValueParam._ActiveLevelSetUpDate' +
+      'Current:' + AValue.ToString + ' ' +
+      'Value:' + ActiveLevel.Value.ToString
+    );
+{$ENDIF}
+    if CheckBoxActive.IsChecked then
+      ActiveLevel.SetUpDate(AValue);
   end;
+
+  procedure _ReActiveLevelSetUpDate(const AValue: Double);
+  begin
+{$IFDEF DBG_LEVEL_CATEGORY_PARAM}
+    TLogger.LogTree(0,'procedure TCategoryFrame.SetValueParam._ReActiveLevelSetUpDate' +
+      'Current:' + AValue.ToString + ' ' +
+      'Value:' + ReActiveLevel.Value.ToString
+    );
+{$ENDIF}
+    if not CheckBoxActive.IsChecked and CheckBoxReActive.IsChecked then
+      ReActiveLevel.SetUpDate(AValue);
+  end;
+
+  procedure _SetValueParam(AParam: TSituationParam);
+  begin
+{$IFDEF DBG_LEVEL_CATEGORY_PARAM}
+    TLogger.LogTree(0,'procedure TCategoryFrame.SetValueParam._SetValueParam');
+{$ENDIF}
+    if ParamApplication.IsTrend then
+    begin
+      case FSide of
+        // Покупаем если рынок растет
+        TQBTypeSide.tsBuy: begin
+          if AParam.SlowRSI > 50 then
+            _ActiveLevelSetUpDate(AParam.FastRSI);
+        end;
+        // Продаем если рынок падает
+        TQBTypeSide.tsSell: begin
+          if AParam.SlowRSI < 50 then
+            _ActiveLevelSetUpDate(AParam.FastRSI);
+        end;
+      end;
+      _ReActiveLevelSetUpDate(AParam.FastRSI);
+    end
+    else
+    begin
+      _ActiveLevelSetUpDate(AParam.FastRSI);
+      _ReActiveLevelSetUpDate(AParam.FastRSI);
+    end;
+  end;
+
+begin
+{$IFDEF DBG_LEVEL}
+  TLogger.LogTree(0,'TCategoryFrame.SetValueParam: Параметры уровня(' +
+    'Side :' + GetStrToTypeSide(FSide) + '; ' +
+    'Trade:' + GetStrToTypeTrade(FTypeTrade) + '; ' +
+    'Line :' + GetStrToTypeLine(FTypeLine)
+   + ')');
+  TLogger.LogTree(0,'>> CATEGORY_FRAME');
+{$ENDIF}
+  FSituationParam := AParam;
+  _SetValueParam(AParam);
 end;
 
 procedure TCategoryFrame.DoSendTrade(const AParam: TTradeParam);

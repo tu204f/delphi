@@ -1,0 +1,24 @@
+object LogForm: TLogForm
+  Left = 0
+  Top = 0
+  Caption = 'Form1'
+  ClientHeight = 170
+  ClientWidth = 481
+  FormFactor.Width = 320
+  FormFactor.Height = 480
+  FormFactor.Devices = [Desktop]
+  OnClose = FormClose
+  OnShow = FormShow
+  DesignerMasterStyle = 0
+  object Memo: TMemo
+    Touch.InteractiveGestures = [Pan, LongTap, DoubleTap]
+    DataDetectorTypes = []
+    Align = Client
+    Size.Width = 481.000000000000000000
+    Size.Height = 170.000000000000000000
+    Size.PlatformDefault = False
+    TabOrder = 0
+    Viewport.Width = 477.000000000000000000
+    Viewport.Height = 166.000000000000000000
+  end
+end

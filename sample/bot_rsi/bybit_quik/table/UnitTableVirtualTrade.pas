@@ -22,7 +22,7 @@ uses
   FMX.ScrollBox,
   FMX.Grid,
   Lb.SysUtils,
-  Lb.VirtualTrade;
+  Lb.VirtualTrade.V2;
 
 type
   TTableVirtualTradeFrame = class(TFrame)
@@ -35,6 +35,9 @@ type
   end;
 
 implementation
+
+uses
+  Lb.Status;
 
 {$R *.fmx}
 
@@ -55,6 +58,8 @@ constructor TTableVirtualTradeFrame.Create(AOwner: TComponent);
 begin
   inherited Create(AOwner);
   TableGrid.ClearColumns;
+
+  _AddColumn(TableGrid,'PosNumber');
   _AddColumn(TableGrid,'Time',120);
   _AddColumn(TableGrid,'Symbol');
   _AddColumn(TableGrid,'Side');
@@ -62,7 +67,7 @@ begin
   _AddColumn(TableGrid,'Price');
   _AddColumn(TableGrid,'OrderLinkId',120);
 
-  GetVirtualTrades.OnChange := VirtualTradesOnChange;
+  GetParamPositions.OnChangePosition := VirtualTradesOnChange;
 end;
 
 destructor TTableVirtualTradeFrame.Destroy;
@@ -77,21 +82,20 @@ var
 begin
   try
     iCount := 0;
-    for var i := 0 to GetVirtualTrades.Count - 1 do
+    for var i := 0 to GetParamPositions.Positions.Count - 1 do
     begin
-      var xPostionTrade := GetVirtualTrades.Items[i];
-      for var j := 0 to xPostionTrade.Items.Count - 1 do
+      var xPostionTrade := GetParamPositions.Positions[i];
+      for var j := 0 to xPostionTrade.HistoryTrades.Count - 1 do
       begin
-
-        var xParamTrade := xPostionTrade.Items[j];
+        var xParamTrade := xPostionTrade.HistoryTrades[j];
         TableGrid.RowCount := iCount + 1;
-        TableGrid.Cells[0,iCount] := DateTimeToStr(xParamTrade.Time);
-        TableGrid.Cells[1,iCount] := xParamTrade.Symbol;
-        TableGrid.Cells[2,iCount] := GetStrToTypeSide(xParamTrade.Side);
-        TableGrid.Cells[3,iCount] := FloatToStr(xParamTrade.Qty);
-        TableGrid.Cells[4,iCount] := FloatToStr(xParamTrade.Price);
-        TableGrid.Cells[5,iCount] := xParamTrade.OrderLinkId;
-
+        TableGrid.Cells[0,iCount] := TimeToStr(xParamTrade.Date);
+        TableGrid.Cells[1,iCount] := TimeToStr(xParamTrade.Time);
+        TableGrid.Cells[2,iCount] := xParamTrade.Symbol;
+        TableGrid.Cells[3,iCount] := GetStrToTypeSide(xParamTrade.Side);
+        TableGrid.Cells[4,iCount] := FloatToStr(xParamTrade.Qty);
+        TableGrid.Cells[5,iCount] := FloatToStr(xParamTrade.Price);
+        TableGrid.Cells[6,iCount] := xParamTrade.OrderLinkId;
         Inc(iCount);
       end;
     end;

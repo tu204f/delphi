@@ -27,10 +27,15 @@ type
     Low  : Double;
     Close: Double;
     Vol  : Double;
+    Text: String;
   public
     function ToStr: String;
   end;
-  TCandelList = TList<TCandel>;
+
+  TCandelList = class(TList<TCandel>)
+  public
+    procedure Copy(ACandels: TCandelList);
+  end;
 
   ///<summary>Источние данных</summary>
   TCandelsSource = class(TStringList)
@@ -42,6 +47,8 @@ type
 
 procedure SetCandels(const AIndex, ACount: Integer; ACandelsSource: TCandelsSource; ACandels: TCandelList);
 function GetRSI(ACandels: TCandelList): Double;
+function GetWilliamsR(ACandels: TCandelList): Double;
+procedure SetFractal(ACandels: TCandelList; var AFractalUp, AFractalDown: Double);
 
 implementation
 
@@ -63,6 +70,69 @@ begin
       begin
         xCandel := ACandelsSource.Candels[xInd];
         ACandels.Add(xCandel);
+      end;
+    end;
+  end;
+end;
+
+procedure SetFractal(ACandels: TCandelList; var AFractalUp, AFractalDown: Double);
+
+  function GetFractalUp(ACandels: TCandelList; AIndex: Integer): Boolean;
+  var
+    xC1, xC2, xC3, xC4, xC5: TCandel;
+  begin
+    xC1 := ACandels[AIndex + 2];
+    xC2 := ACandels[AIndex + 1];
+    xC3 := ACandels[AIndex];
+    xC4 := ACandels[AIndex - 1];
+    xC5 := ACandels[AIndex - 2];
+
+    Result :=
+      (xC3.High > xC2.High) and (xC2.High > xC1.High) and
+      (xC3.High > xC4.High) and (xC4.High > xC5.High);
+  end;
+
+  function GetFractalDown(ACandels: TCandelList; AIndex: Integer): Boolean;
+  var
+    xC1, xC2, xC3, xC4, xC5: TCandel;
+  begin
+    xC1 := ACandels[AIndex + 2];
+    xC2 := ACandels[AIndex + 1];
+    xC3 := ACandels[AIndex];
+    xC4 := ACandels[AIndex - 1];
+    xC5 := ACandels[AIndex - 2];
+
+    Result :=
+      (xC3.Low < xC2.Low) and (xC2.Low < xC1.Low) and
+      (xC3.Low < xC4.Low) and (xC4.Low < xC5.Low);
+  end;
+
+var
+  //xIndex: Integer;
+  i, iCount: Integer;
+  xFractalUp, xFractalDown: Boolean;
+begin
+  AFractalUp := 0;
+  AFractalDown := 0;
+
+  xFractalUp := False;
+  xFractalDown := False;
+
+  iCount := ACandels.Count;
+  if iCount > 5 then
+  begin
+    //xIndex := iCount - 3;
+    for i := iCount - 3 downto 3 do
+    begin
+      if not xFractalUp then
+      begin
+        xFractalUp := GetFractalUp(ACandels,i);
+        AFractalUp := ACandels[i].High;
+      end;
+      if not xFractalDown then
+      begin
+        xFractalDown := GetFractalDown(ACandels,i);
+        AFractalDown := ACandels[i].Low;
       end;
     end;
   end;
@@ -129,6 +199,44 @@ begin
 end;
 
 
+function GetWilliamsR(ACandels: TCandelList): Double;
+
+  procedure _MaxMinValue(ACandels: TCandelList; var AClose, AValueMax, AValueMin: Double);
+  var
+    xCandel: TCandel;
+    i, iCount: Integer;
+  begin
+    AValueMax := 0;
+    AValueMin := 0;
+    AClose    := 0;
+    iCount := ACandels.Count;
+    if iCount > 0 then
+    begin
+      xCandel := ACandels[0];
+      AValueMax := xCandel.High;
+      AValueMin := xCandel.Low;
+      for i := 1 to iCount - 1 do
+      begin
+        xCandel := ACandels[i];
+        if xCandel.High > AValueMax then
+          AValueMax := xCandel.High;
+        if xCandel.Low  < AValueMin then
+          AValueMin := xCandel.Low;
+      end;
+      AClose := ACandels[iCount - 1].Close;
+    end;
+  end;
+
+var
+  xClose, xValueMax, xValueMin: Double;
+begin
+  _MaxMinValue(ACandels, xClose, xValueMax, xValueMin);
+  if (xValueMax > 0) and (xValueMin > 0) and (xValueMax <> xValueMin) then
+    Result := ((xValueMax - xClose)/(xValueMax - xValueMin)) * 100;
+
+end;
+
+
 (*******************************************************************************
 // ѕарсим без даты и времени
 <DATE>;<TIME>;<OPEN>;<HIGH>;<LOW>;<CLOSE>;<VOL>
@@ -185,12 +293,24 @@ begin
     xCandel.Low   := StrToFloatDef(xSource[4],0);
     xCandel.Close := StrToFloatDef(xSource[5],0);
     xCandel.Vol   := StrToFloatDef(xSource[6],0);
+    xCandel.Text  := S;
 
     Result := xCandel;
     FormatSettings.DecimalSeparator := xOldChar;
   finally
     FreeAndNil(xSource);
   end;
+end;
+
+{ TCandelList }
+
+procedure TCandelList.Copy(ACandels: TCandelList);
+var
+  xCandel: TCandel;
+begin
+  Clear;
+  for xCandel in ACandels do
+    Self.Add(xCandel);
 end;
 
 { TCandel }
@@ -200,13 +320,13 @@ var
   xS: String;
 begin
   xS :=
-    DateToStr(Date) + ';' +
-    TimeToStr(Time) + ';' +
-    Open.ToString + ';' +
-    High.ToString + ';' +
-    Low.ToString  + ';' +
-    Close.ToString + ';' +
-    Vol.ToString + ';';
+    'Date: ' + DateToStr(Date) + '; ' +
+    'Time: ' + TimeToStr(Time) + '; ' +
+    'Open: ' + Open.ToString + '; ' +
+    'High: ' + High.ToString + '; ' +
+    'Low: ' + Low.ToString  + '; ' +
+    'Close: ' + Close.ToString + '; ' +
+    'Vol: ' + Vol.ToString + ';';
   Result := xS;
 end;
 
@@ -217,5 +337,7 @@ begin
   var xS := Self.Strings[Index];
   Result := GetCandelToStr(xS);
 end;
+
+
 
 end.

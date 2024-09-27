@@ -17,7 +17,8 @@ uses
   FMX.Controls.Presentation,
   FMX.Edit,
   FMX.Objects,
-  Lb.SysUtils;
+  FMX.Layouts,
+  UnitSettingTacticsFrame;
 
 type
   ///<summary>
@@ -30,11 +31,9 @@ type
     EditSymble: TEdit;
     EditApiSecret: TEdit;
     EditApiKey: TEdit;
-    CheckBoxVirtualTrade: TCheckBox;
-    CheckBoxLogTrade: TCheckBox;
-    CheckBoxIsTrend: TCheckBox;
+    LayoutTactics: TLayout;
   private
-    { Private declarations }
+    SettingTactics: TSettingTacticsFrame;
   public
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
@@ -46,17 +45,22 @@ implementation
 
 {$R *.fmx}
 
+uses
+  Lb.SysUtils;
+
 { TSettingBybitFrame }
 
 constructor TSettingBybitFrame.Create(AOwner: TComponent);
 begin
   inherited;
-
+  SettingTactics := TSettingTacticsFrame.Create(nil);
+  SettingTactics.Parent := LayoutTactics;
+  SettingTactics.Align := TAlignLayout.Client;
 end;
 
 destructor TSettingBybitFrame.Destroy;
 begin
-
+  FreeAndNil(SettingTactics);
   inherited;
 end;
 
@@ -65,9 +69,7 @@ begin
   EditSymble.Text    := ParamApplication.Symble;
   EditApiKey.Text    := ParamApplication.ApiKey;
   EditApiSecret.Text := ParamApplication.ApiSecret;
-  CheckBoxLogTrade.IsChecked := ParamApplication.IsLogTrade;
-  CheckBoxVirtualTrade.IsChecked := ParamApplication.IsVirtualChecked;
-  CheckBoxIsTrend.IsChecked := ParamApplication.IsTrend;
+  SettingTactics.Load;
 end;
 
 procedure TSettingBybitFrame.Save;
@@ -75,10 +77,7 @@ begin
   ParamApplication.Symble    := EditSymble.Text;
   ParamApplication.ApiKey    := EditApiKey.Text;
   ParamApplication.ApiSecret := EditApiSecret.Text;
-  ParamApplication.IsVirtualChecked := CheckBoxVirtualTrade.IsChecked;
-  ParamApplication.IsLogTrade := CheckBoxLogTrade.IsChecked;
-  ParamApplication.IsVirtualChecked := CheckBoxVirtualTrade.IsChecked;
-  ParamApplication.IsTrend := CheckBoxIsTrend.IsChecked;
+  SettingTactics.Save;
 end;
 
 end.

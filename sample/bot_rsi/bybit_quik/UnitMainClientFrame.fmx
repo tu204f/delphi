@@ -1,11 +1,11 @@
 object MainClientFrame: TMainClientFrame
-  Size.Width = 511.000000000000000000
-  Size.Height = 393.000000000000000000
+  Size.Width = 578.000000000000000000
+  Size.Height = 557.000000000000000000
   Size.PlatformDefault = False
   object GridPanel: TGridPanelLayout
     Align = Client
-    Size.Width = 511.000000000000000000
-    Size.Height = 393.000000000000000000
+    Size.Width = 578.000000000000000000
+    Size.Height = 557.000000000000000000
     Size.PlatformDefault = False
     TabOrder = 0
     ColumnCollection = <
@@ -20,13 +20,13 @@ object MainClientFrame: TMainClientFrame
       end
       item
         Column = 0
-        Control = LayoutInfo
-        Row = 1
+        Control = LayoutBuy
+        Row = 2
       end
       item
         Column = 0
-        Control = LayoutBuy
-        Row = 2
+        Control = LayoutInfo
+        Row = 1
       end>
     RowCollection = <
       item
@@ -41,8 +41,15 @@ object MainClientFrame: TMainClientFrame
       end>
     object LayoutSell: TLayout
       Align = Client
-      Size.Width = 511.000000000000000000
-      Size.Height = 164.000000000000000000
+      Size.Width = 578.000000000000000000
+      Size.Height = 246.000000000000000000
+      Size.PlatformDefault = False
+      TabOrder = 0
+    end
+    object LayoutBuy: TLayout
+      Align = Client
+      Size.Width = 578.000000000000000000
+      Size.Height = 246.000000000000000000
       Size.PlatformDefault = False
       TabOrder = 1
     end
@@ -50,15 +57,8 @@ object MainClientFrame: TMainClientFrame
       Align = Client
       Margins.Top = 3.000000000000000000
       Margins.Bottom = 3.000000000000000000
-      Size.Width = 511.000000000000000000
+      Size.Width = 578.000000000000000000
       Size.Height = 59.000000000000000000
-      Size.PlatformDefault = False
-      TabOrder = 0
-    end
-    object LayoutBuy: TLayout
-      Align = Client
-      Size.Width = 511.000000000000000000
-      Size.Height = 164.000000000000000000
       Size.PlatformDefault = False
       TabOrder = 2
     end

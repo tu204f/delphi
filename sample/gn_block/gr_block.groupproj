@@ -9,6 +9,18 @@
         <Projects Include="trader\trader.dproj">
             <Dependencies/>
         </Projects>
+        <Projects Include="position_trade\pr_v1.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="pt_last\pt_last.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="position_trade_v2\pr_v2.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="training\Training.dproj">
+            <Dependencies/>
+        </Projects>
     </ItemGroup>
     <ProjectExtensions>
         <Borland.Personality>Default.Personality.12</Borland.Personality>
@@ -35,14 +47,50 @@
     <Target Name="trader:Make">
         <MSBuild Projects="trader\trader.dproj" Targets="Make"/>
     </Target>
+    <Target Name="pr_v1">
+        <MSBuild Projects="position_trade\pr_v1.dproj"/>
+    </Target>
+    <Target Name="pr_v1:Clean">
+        <MSBuild Projects="position_trade\pr_v1.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="pr_v1:Make">
+        <MSBuild Projects="position_trade\pr_v1.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="pt_last">
+        <MSBuild Projects="pt_last\pt_last.dproj"/>
+    </Target>
+    <Target Name="pt_last:Clean">
+        <MSBuild Projects="pt_last\pt_last.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="pt_last:Make">
+        <MSBuild Projects="pt_last\pt_last.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="pr_v2">
+        <MSBuild Projects="position_trade_v2\pr_v2.dproj"/>
+    </Target>
+    <Target Name="pr_v2:Clean">
+        <MSBuild Projects="position_trade_v2\pr_v2.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="pr_v2:Make">
+        <MSBuild Projects="position_trade_v2\pr_v2.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="Training">
+        <MSBuild Projects="training\Training.dproj"/>
+    </Target>
+    <Target Name="Training:Clean">
+        <MSBuild Projects="training\Training.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="Training:Make">
+        <MSBuild Projects="training\Training.dproj" Targets="Make"/>
+    </Target>
     <Target Name="Build">
-        <CallTarget Targets="candel;trader"/>
+        <CallTarget Targets="candel;trader;pr_v1;pt_last;pr_v2;Training"/>
     </Target>
     <Target Name="Clean">
-        <CallTarget Targets="candel:Clean;trader:Clean"/>
+        <CallTarget Targets="candel:Clean;trader:Clean;pr_v1:Clean;pt_last:Clean;pr_v2:Clean;Training:Clean"/>
     </Target>
     <Target Name="Make">
-        <CallTarget Targets="candel:Make;trader:Make"/>
+        <CallTarget Targets="candel:Make;trader:Make;pr_v1:Make;pt_last:Make;pr_v2:Make;Training:Make"/>
     </Target>
     <Import Project="$(BDS)\Bin\CodeGear.Group.Targets" Condition="Exists('$(BDS)\Bin\CodeGear.Group.Targets')"/>
 </Project>

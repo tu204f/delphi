@@ -11,14 +11,13 @@ uses
   UnitMainClientFrame in 'UnitMainClientFrame.pas' {MainClientFrame: TFrame},
   UnitCategoryFrame in 'UnitCategoryFrame.pas' {CategoryFrame: TFrame},
   Lb.Logger in '..\..\..\library\Lb.Logger.pas',
-  UnitSettingFrame in 'setting\UnitSettingFrame.pas' {SettingFrame: TFrame},
+  UnitPlatformSettingFrame in 'setting\UnitPlatformSettingFrame.pas' {PlatformSettingFrame: TFrame},
   UnitStatusFrame in 'UnitStatusFrame.pas' {StatusFrame: TFrame},
   Lb.ApplicationVersion in '..\..\..\library\Lb.ApplicationVersion.pas',
   Lb.DataModuleDB in '..\..\..\library\db\Lb.DataModuleDB.pas' {DataModuleDB: TDataModule},
   Lb.Resource.Script in '..\..\..\library\Lb.Resource.Script.pas',
   Lb.History.DB in '..\lib\Lb.History.DB.pas',
   Lb.SysUtils in '..\lib\Lb.SysUtils.pas',
-  Lb.VirtualTrade in '..\lib\Lb.VirtualTrade.pas',
   Quik.Manager.DDE in '..\..\..\library\trade\quik\Quik.Manager.DDE.pas',
   Quik.SysUtils in '..\..\..\library\trade\quik\Quik.SysUtils.pas',
   Quik.ValueTable in '..\..\..\library\trade\quik\Quik.ValueTable.pas',
@@ -46,7 +45,13 @@ uses
   Lb.Status.Quik in 'status\Lb.Status.Quik.pas',
   Lb.Status.Bybit in 'status\Lb.Status.Bybit.pas',
   Lb.Status in 'status\Lb.Status.pas',
-  Lb.HistoryIndicator in '..\lib\Lb.HistoryIndicator.pas';
+  Lb.HistoryIndicator in '..\lib\Lb.HistoryIndicator.pas',
+  UnitSettingFrame in 'setting\UnitSettingFrame.pas' {SettingFrame: TFrame},
+  UnitSettingLevelFrame in 'setting\UnitSettingLevelFrame.pas' {SettingLevelFrame: TFrame},
+  UnitLogForm in 'log\UnitLogForm.pas' {LogForm},
+  UnitBybitExportFrame in 'table\UnitBybitExportFrame.pas' {BybitExportFrame: TFrame},
+  UnitSettingTacticsFrame in 'setting\UnitSettingTacticsFrame.pas' {SettingTacticsFrame: TFrame},
+  Lb.VirtualTrade.V2 in '..\lib\Lb.VirtualTrade.V2.pas';
 
 {$R *.res}
 

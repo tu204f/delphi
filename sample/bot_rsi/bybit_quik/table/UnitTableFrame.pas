@@ -19,7 +19,8 @@ uses
   FMX.Controls.Presentation,
   Lb.SysUtils,
   UnitTableVirtualTrade,
-  UnitQuikExportFrame;
+  UnitQuikExportFrame,
+  UnitBybitExportFrame;
 
 type
   TTableFrame = class(TFrame)
@@ -29,12 +30,14 @@ type
     ButtonApply: TButton;
     ButtonClose: TButton;
     TabItemQuikTable: TTabItem;
+    TabItemBybitTable: TTabItem;
     procedure ButtonApplyClick(Sender: TObject);
     procedure ButtonCloseClick(Sender: TObject);
   private
     FMainApp: IMainApp;
     FTableVirtualTradeFrame: TTableVirtualTradeFrame;
     FQuikExportFrame: TQuikExportFrame;
+    FBybitExportFrame: TBybitExportFrame;
     procedure InitFrame;
   protected
     property TableVirtualTradeFrame: TTableVirtualTradeFrame read FTableVirtualTradeFrame;
@@ -42,6 +45,8 @@ type
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
     property MainApp: IMainApp write FMainApp;
+  public
+    property BybitExportFrame: TBybitExportFrame read FBybitExportFrame;
   end;
 
 implementation
@@ -58,6 +63,7 @@ destructor TTableFrame.Destroy;
 begin
   FreeAndNil(FTableVirtualTradeFrame);
   FreeAndNil(FQuikExportFrame);
+  FreeAndNil(FBybitExportFrame);
   inherited;
 end;
 
@@ -71,6 +77,11 @@ begin
   FQuikExportFrame := TQuikExportFrame.Create(nil);
   FQuikExportFrame.Parent := TabItemQuikTable;
   FQuikExportFrame.Align := TAlignLayout.Client;
+
+  FBybitExportFrame := TBybitExportFrame.Create(nil);
+  FBybitExportFrame.Parent := TabItemBybitTable;
+  FBybitExportFrame.Align := TAlignLayout.Client;
+
 end;
 
 procedure TTableFrame.ButtonApplyClick(Sender: TObject);

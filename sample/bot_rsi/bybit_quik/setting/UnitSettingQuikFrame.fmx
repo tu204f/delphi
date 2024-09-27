@@ -1,6 +1,6 @@
 object SettingQuikFrame: TSettingQuikFrame
   Size.Width = 524.000000000000000000
-  Size.Height = 284.000000000000000000
+  Size.Height = 325.000000000000000000
   Size.PlatformDefault = False
   object EditNameTable: TEdit
     Touch.InteractiveGestures = [LongTap, DoubleTap]
@@ -108,36 +108,17 @@ object SettingQuikFrame: TSettingQuikFrame
     Text = '...'
     OnClick = ButtonPahtClick
   end
-  object CheckBoxLogTrade: TCheckBox
-    Position.X = 180.000000000000000000
-    Position.Y = 176.000000000000000000
-    Size.Width = 337.000000000000000000
-    Size.Height = 19.000000000000000000
-    Size.PlatformDefault = False
-    TabOrder = 8
-    Text = #1042#1082#1083#1102#1095#1080#1090#1100' '#1083#1086#1075#1080#1088#1086#1074#1072#1085#1080#1077' '#1090#1086#1088#1075#1086#1074#1099#1093' '#1087#1088#1080#1082#1072#1079#1086#1074
-  end
   object OpenDialog: TOpenDialog
     Left = 72
     Top = 192
   end
-  object CheckBoxVirtualTrade: TCheckBox
-    IsChecked = True
-    Position.X = 180.000000000000000000
-    Position.Y = 200.000000000000000000
-    Size.Width = 141.000000000000000000
-    Size.Height = 19.000000000000000000
-    Size.PlatformDefault = False
-    TabOrder = 6
-    Text = #1042#1080#1088#1090#1091#1072#1083#1100#1085#1072#1103' '#1089#1076#1077#1083#1082#1072
-  end
-  object CheckBoxIsTrend: TCheckBox
+  object LayoutTactics: TLayout
+    Anchors = [akLeft, akTop, akRight]
     Position.X = 180.000000000000000000
     Position.Y = 152.000000000000000000
     Size.Width = 337.000000000000000000
-    Size.Height = 19.000000000000000000
+    Size.Height = 100.000000000000000000
     Size.PlatformDefault = False
     TabOrder = 7
-    Text = #1059#1095#1080#1090#1099#1074#1072#1090#1100' '#1090#1088#1077#1085#1076#1086#1074#1099#1081' '#1087#1086#1082#1072#1079#1072#1090#1077#1083#1100
   end
 end

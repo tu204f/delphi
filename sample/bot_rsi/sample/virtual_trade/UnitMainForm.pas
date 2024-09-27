@@ -12,8 +12,21 @@ uses
   FMX.Controls,
   FMX.Forms,
   FMX.Graphics,
-  FMX.Dialogs, FMX.Controls.Presentation, FMX.StdCtrls, FMX.Objects, FMX.Edit,
-  FMX.EditBox, FMX.SpinBox, FMX.Memo.Types, FMX.ScrollBox, FMX.Memo;
+  FMX.Dialogs,
+  FMX.Controls.Presentation,
+  FMX.StdCtrls,
+  FMX.Objects,
+  FMX.Edit,
+  FMX.EditBox,
+  FMX.SpinBox,
+  FMX.Memo.Types,
+  FMX.ScrollBox,
+  FMX.Memo,
+  System.Rtti,
+  FMX.Grid.Style,
+  FMX.Grid,
+  FMX.Layouts,
+  FMX.TreeView;
 
 type
   TMainForm = class(TForm)
@@ -23,7 +36,6 @@ type
     SpinBoxQty: TSpinBox;
     Text1: TText;
     Text2: TText;
-    Memo1: TMemo;
     Button1: TButton;
     Button2: TButton;
     Button3: TButton;
@@ -34,6 +46,7 @@ type
     Button8: TButton;
     Button9: TButton;
     Button10: TButton;
+    TreeView: TTreeView;
     procedure ButtonBuyClick(Sender: TObject);
     procedure ButtonSellClick(Sender: TObject);
     procedure ButtonBuyQtyClick(Sender: TObject);
@@ -41,7 +54,8 @@ type
   private
     { Private declarations }
   public
-    { Public declarations }
+    constructor Create(AOwner: TComponent); override;
+    destructor Destroy; override;
     procedure SetLogics;
   end;
 
@@ -53,11 +67,81 @@ implementation
 {$R *.fmx}
 
 uses
-  Lb.VirtualTrade;
+  Lb.VirtualTrade.V2;
+
+var
+  localParamPositions: TParamPositions = nil;
+
+function Vir_SelectedOrder(
+  ASymbol: String;     // Торговый символ
+  ASide: TQBTypeSide;  // Напровление торгового оперций
+  AQty: Double;        // Количество
+  APrice: Double;      // Цена
+  AOrderLinkId: String // Напровление объекта
+): String;
+var
+  xParamTrade: TParamTrade;
+begin
+  if not Assigned(localParamPositions) then
+  begin
+    Result := 'Error.Ok';
+    Exit;
+  end;
+
+  try
+    xParamTrade.Date := Date;
+    xParamTrade.Time := Time;
+    xParamTrade.Symbol := ASymbol;
+    xParamTrade.Side := ASide;
+    xParamTrade.Qty := AQty;
+    xParamTrade.Price := APrice;
+    xParamTrade.OrderLinkId := AOrderLinkId;
+    localParamPositions.AddTrade(xParamTrade);
+    Result := 'OK.';
+  except
+    Result := 'Error.';
+  end;
+end;
+
+
+constructor TMainForm.Create(AOwner: TComponent);
+
+  procedure _AddCol(AGrid: TStringGrid; AHeader: String);
+  var
+    xCol: TStringColumn;
+  begin
+    xCol := TStringColumn.Create(AGrid);
+    xCol.Header := AHeader;
+    xCol.Parent := AGrid;
+  end;
+
+begin
+  inherited;
+
+  localParamPositions := TParamPositions.Create;
+
+//  StrGrid.ClearColumns;
+//  _AddCol(StrGrid,'Time');
+//  _AddCol(StrGrid,'Symbol');
+//  _AddCol(StrGrid,'Side');
+//  _AddCol(StrGrid,'Qty');
+//  _AddCol(StrGrid,'Price');
+//  _AddCol(StrGrid,'OrderLinkId');
+//  _AddCol(StrGrid,'TypeTrade');
+//  _AddCol(StrGrid,'Profit');
+
+  TreeView.ExpandAll;
+end;
+
+destructor TMainForm.Destroy;
+begin
+  FreeAndNil(localParamPositions);
+  inherited;
+end;
 
 procedure TMainForm.ButtonBuyClick(Sender: TObject);
 begin
-  Virtual_SelectedOrder(
+  Vir_SelectedOrder(
     'TEST_SYMBLE',      // Торговый символ
     TQBTypeSide.tsBuy,  // Напровление торгового оперций
     SpinBoxQty.Value,   // Количество
@@ -69,7 +153,8 @@ end;
 
 procedure TMainForm.ButtonBuyQtyClick(Sender: TObject);
 begin
-  Virtual_SelectedOrder(
+  SpinBoxPrice.Value := SpinBoxPrice.Value - 10;
+  Vir_SelectedOrder(
     'TEST_SYMBLE',      // Торговый символ
     TQBTypeSide.tsBuy,  // Напровление торгового оперций
     StrToFloatDef(TButton(Sender).Text,0),
@@ -81,7 +166,8 @@ end;
 
 procedure TMainForm.ButtonSellClick(Sender: TObject);
 begin
-  Virtual_SelectedOrder(
+
+  Vir_SelectedOrder(
     'TEST_SYMBLE',       // Торговый символ
     TQBTypeSide.tsSell,  // Напровление торгового оперций
     SpinBoxQty.Value,    // Количество
@@ -93,7 +179,8 @@ end;
 
 procedure TMainForm.ButtonSellQtyClick(Sender: TObject);
 begin
-  Virtual_SelectedOrder(
+  SpinBoxPrice.Value := SpinBoxPrice.Value + 10;
+  Vir_SelectedOrder(
     'TEST_SYMBLE',       // Торговый символ
     TQBTypeSide.tsSell,  // Напровление торгового оперций
     StrToFloatDef(TButton(Sender).Text,0),
@@ -103,54 +190,59 @@ begin
   SetLogics;
 end;
 
-
 procedure TMainForm.SetLogics;
 
-  procedure _Log(S: String);
+  procedure _ParamPosition(AItem: TTreeViewItem; AParamPosition: TParamPosition);
+  var
+    i, iCount: Integer;
+    xParamTrade: TParamTrade;
+    xItem: TTreeViewItem;
   begin
-    Memo1.Lines.Add(S);
+    iCount := AParamPosition.HistoryTrades.Count;
+    if iCount > 0 then
+      for i := 0 to iCount - 1 do
+      begin
+        xParamTrade := AParamPosition.HistoryTrades[i];
+        xItem := TTreeViewItem.Create(nil);
+        xItem.Text := xParamTrade.ToStr;
+        xItem.Parent := AItem;
+      end;
   end;
 
 var
   i, iCount: Integer;
-  j, jCount: Integer;
-  xVirtualTrades: TVirtualTrades;
-  xPostionTrade: TPostionTrade;
-  xParamTrade: TParamTrade;
+  xParamPosition: TParamPosition;
+  xItem: TTreeViewItem;
 begin
-  xVirtualTrades := GetVirtualTrades;
+  TreeView.BeginUpdate;
+  try
+    TreeView.Clear;
 
-  Memo1.Lines.Clear;
-  _Log('Количествое отрытых позиций' + xVirtualTrades.Count.ToString);
-
-  _Log('Размер позиции:' + xVirtualTrades.Qty.ToString);
-  _Log('Напровление позции:' + GetStrToTypeSide(xVirtualTrades.Side));
-
-
-  iCount := xVirtualTrades.Count;
-  if iCount > 0 then
-    for i := 0 to iCount - 1 do
-    begin
-      xPostionTrade := xVirtualTrades.Items[i];
-      _Log('PostionTrade: ' + i.ToString);
-
-      jCount := xPostionTrade.Items.Count;
-      if jCount > 0 then
-        for j := 0 to jCount - 1 do
+    iCount := localParamPositions.Count;
+    if iCount > 0 then
+      for i := 0 to iCount - 1 do
+      begin
+        xParamPosition := localParamPositions.Positions[i];
+        xItem := TTreeViewItem.Create(nil);
+        xItem.Parent := TreeView;
+        if xParamPosition.Qty > 0 then
         begin
-          xParamTrade := xPostionTrade.Items[j];
-          _Log('  >>trade_begin[' + j.ToString + ']');
-          _Log('    * Time = ' + DateTimeToStr(xParamTrade.Time));
-          _Log('    * Symbol = ' + xParamTrade.Symbol);
-          _Log('    * Side = ' + GetStrToTypeSide(xParamTrade.Side));
-          _Log('    * Qty = ' + xParamTrade.Qty.ToString);
-          _Log('    * Price = ' + xParamTrade.Price.ToString);
-          _Log('    * OrderLinkId = ' + xParamTrade.OrderLinkId);
-          _Log('    * TypeTrade = ' + GetStrToTypeTrade(xParamTrade.TypeTrade));
-          _Log('    * Profit = ' + xParamTrade.Profit.ToString);
-          _Log('  >>end');
+          xItem.Text := 'pos: ' +
+          GetStrToTypeSide(xParamPosition.Side) + ' ' +
+          xParamPosition.Qty.ToString + ' ' +
+          xParamPosition.Price.ToString;
+        end
+        else
+        begin
+          xItem.Text := 'pos: profit = ' +
+          xParamPosition.Profit.ToString;
         end;
-    end;
+        _ParamPosition(xItem,xParamPosition);
+      end;
+
+  finally
+    TreeView.EndUpdate;
+  end;
 end;
 
 end.

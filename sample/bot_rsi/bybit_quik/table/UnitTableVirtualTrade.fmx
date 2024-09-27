@@ -10,7 +10,7 @@ object TableVirtualTradeFrame: TTableVirtualTradeFrame
     Size.Height = 281.000000000000000000
     Size.PlatformDefault = False
     TabOrder = 0
-    Viewport.Width = 549.000000000000000000
-    Viewport.Height = 256.000000000000000000
+    Viewport.Width = 553.000000000000000000
+    Viewport.Height = 281.000000000000000000
   end
 end

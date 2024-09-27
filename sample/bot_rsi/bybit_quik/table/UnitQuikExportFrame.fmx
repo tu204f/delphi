@@ -28,7 +28,7 @@ object QuikExportFrame: TQuikExportFrame
     end
     object ButtonUpData: TButton
       Anchors = [akTop, akRight]
-      Position.X = 500.000000000000000000
+      Position.X = 492.000000000000000000
       Position.Y = 8.000000000000000000
       Size.Width = 88.000000000000000000
       Size.Height = 22.000000000000000000
@@ -46,7 +46,7 @@ object QuikExportFrame: TQuikExportFrame
     Size.Height = 228.000000000000000000
     Size.PlatformDefault = False
     TabOrder = 1
-    Viewport.Width = 586.000000000000000000
-    Viewport.Height = 228.000000000000000000
+    Viewport.Width = 582.000000000000000000
+    Viewport.Height = 203.000000000000000000
   end
 end

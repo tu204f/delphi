@@ -1,10 +1,10 @@
 object CategoryFrame: TCategoryFrame
-  Size.Width = 450.000000000000000000
+  Size.Width = 479.000000000000000000
   Size.Height = 28.000000000000000000
   Size.PlatformDefault = False
   object Rectangle: TRectangle
     Align = Client
-    Size.Width = 450.000000000000000000
+    Size.Width = 479.000000000000000000
     Size.Height = 28.000000000000000000
     Size.PlatformDefault = False
     Stroke.Color = claNull
@@ -12,7 +12,7 @@ object CategoryFrame: TCategoryFrame
       Align = Client
       Margins.Top = 3.000000000000000000
       Margins.Bottom = 3.000000000000000000
-      Size.Width = 450.000000000000000000
+      Size.Width = 479.000000000000000000
       Size.Height = 22.000000000000000000
       Size.PlatformDefault = False
       TabOrder = 0
@@ -92,7 +92,7 @@ object CategoryFrame: TCategoryFrame
         Align = Client
         Margins.Left = 3.000000000000000000
         Margins.Right = 3.000000000000000000
-        Size.Width = 117.333343505859400000
+        Size.Width = 127.000000000000000000
         Size.Height = 22.000000000000000000
         Size.PlatformDefault = False
         TabOrder = 3
@@ -103,7 +103,7 @@ object CategoryFrame: TCategoryFrame
           Cursor = crIBeam
           Value = 30.000000000000000000
           Position.Y = -3.000000000000000000
-          Size.Width = 117.333343505859400000
+          Size.Width = 127.000000000000000000
           Size.Height = 28.000000000000000000
           Size.PlatformDefault = False
           OnChange = SpinBoxActiveRSIChange
@@ -126,7 +126,7 @@ object CategoryFrame: TCategoryFrame
       end
       object Layout4: TLayout
         Align = Client
-        Size.Width = 123.333343505859400000
+        Size.Width = 133.000000000000000000
         Size.Height = 22.000000000000000000
         Size.PlatformDefault = False
         TabOrder = 1
@@ -140,7 +140,7 @@ object CategoryFrame: TCategoryFrame
           Position.Y = -3.000000000000000000
           Margins.Left = 3.000000000000000000
           Margins.Right = 3.000000000000000000
-          Size.Width = 117.333343505859400000
+          Size.Width = 127.000000000000000000
           Size.Height = 28.000000000000000000
           Size.PlatformDefault = False
           OnChange = SpinBoxReActiveRSIChange
@@ -148,7 +148,7 @@ object CategoryFrame: TCategoryFrame
       end
       object Layout5: TLayout
         Align = Client
-        Size.Width = 123.333343505859400000
+        Size.Width = 133.000000000000000000
         Size.Height = 22.000000000000000000
         Size.PlatformDefault = False
         TabOrder = 0
@@ -164,7 +164,7 @@ object CategoryFrame: TCategoryFrame
           Position.Y = -3.000000000000000000
           Margins.Left = 3.000000000000000000
           Margins.Right = 3.000000000000000000
-          Size.Width = 117.333343505859400000
+          Size.Width = 127.000000000000000000
           Size.Height = 28.000000000000000000
           Size.PlatformDefault = False
           OnChange = SpinBoxQtyChange

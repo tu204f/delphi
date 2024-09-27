@@ -35,6 +35,7 @@ type
   /// Направления торговых операций
   ///</summary>
   TQBTypeSide = (
+    tsNull,
     tsBuy,
     tsSell
   );
@@ -68,6 +69,16 @@ type
   end;
 
   ///<summary>
+  /// Логика операции
+  ///</summary>
+  IOrderLog = interface
+    procedure BeginOrder;
+
+    procedure EndOrder;
+  end;
+
+
+  ///<summary>
   /// Параметры работы программы
   ///</summary>
   TParamApplication = class(TObject)
@@ -79,11 +90,6 @@ type
     IDENT_SEC_CODE       = 'sec_code';
     IDENT_TRDACC_ID      = 'trdacc_id';
     IDENT_PATH_QUIK      = 'path_quik';
-
-    IDENT_TIME_BEGIN     = 'time_begin';
-    IDENT_TIME_END       = 'time_end';
-    IDENT_GLOBAL_TK      = 'global_tk';
-    IDENT_GLOBAL_SL      = 'global_sl';
 {$ENDIF}
 {$IFDEF BYBIT}
     IDENT_SYMBLE         = 'symble';
@@ -96,6 +102,12 @@ type
     IDENT_VIRTUAL        = 'is_virtual_checked';
     IDENT_PLATFORM       = 'platform';
     IDENT_IS_TREND       = 'is_trend';
+    IDENT_IS_NEW_CANDEL  = 'is_new_candel';
+
+    IDENT_TIME_BEGIN     = 'time_begin';
+    IDENT_TIME_END       = 'time_end';
+    IDENT_GLOBAL_TK      = 'global_tk';
+    IDENT_GLOBAL_SL      = 'global_sl';
   public const
     SECTION_PARAM_LIEN   = 'line_%d_%d';
     IDENT_ACTIVE         = 'active';
@@ -128,6 +140,7 @@ type
     FTypePlatform: TTypePlatform;
     FIsVirtualChecked: Boolean;
     FIsTrend: Boolean;
+    FIsNewCandel: Boolean;
   private
     function GetSectionParamLINE(ATrade: TTypeTrade; ALine: TTypeLine): String;
 
@@ -183,16 +196,17 @@ type
     property TrdaccID: String read FTrdaccID write FTrdaccID;
     property PathQuik: String read FPathQuik write FPathQuik;
     property IsLogTrade: Boolean read FIsLogTrade write FIsLogTrade;
-//    property TimeBegin: TDateTime;
-//    property TimeEnd: TDateTime;
-//    property Global_TK: Double;
-//    property Global_SL: Double;
+    property TimeBegin: TDateTime read FTimeBegin write FTimeBegin;
+    property TimeEnd: TDateTime read FTimeEnd write FTimeEnd;
+    property Global_TK: Double read FGlobal_TK write FGlobal_TK;
+    property Global_SL: Double read FGlobal_SL write FGlobal_SL;
 {$ENDIF}
     ///<summary>
     /// Совершать торговые операции — в виртуальной виде
     ///</summary>
     property IsVirtualChecked: Boolean read FIsVirtualChecked write FIsVirtualChecked;
     property IsTrend: Boolean read FIsTrend write FIsTrend;
+    property IsNewCandel: Boolean read FIsNewCandel write FIsNewCandel;
   public
     property Active[ATrade: TTypeTrade; ALine: TTypeLine]: Boolean     read GetActive      write SetActive;
     property ReActive[ATrade: TTypeTrade; ALine: TTypeLine]: Boolean   read GetReActive    write SetReActive;
@@ -204,11 +218,14 @@ type
 
   ///<summary>Параметр состояние рынка, и есть ли открытая позиция</summary>
   TSituationParam = record
-    FastRSI: Double;   // Быстрая RSI
-    SlowRSI: Double;   // Медленная RSI
-    Bid, Ask: Double;  // Лучьшие цены
-    Qty: Double;       // Отрыта позиция
-    Side: TQBTypeSide; // Напровления позиции
+    FastRSI: Double;      // Быстрая RSI
+    SlowRSI: Double;      // Медленная RSI
+    Bid, Ask: Double;     // Лучьшие цены
+    Qty: Double;          // Отрыта позиция
+    Side: TQBTypeSide;    // Напровления позиции
+    IsNewCandel: Boolean; // Признак новый свячи
+  public
+    function ToString: String;
   end;
 
   ///<summary>Параметр сделки</sammry>
@@ -308,6 +325,7 @@ end;
 
 constructor TParamApplication.Create;
 begin
+  FIsNewCandel := False;
   var xFN := GetFileName;
   FIniFile := TIniFile.Create(xFN);
 end;
@@ -335,22 +353,23 @@ begin
   FSecCode      := FIniFile.ReadString(SECTION_PARAM,IDENT_SEC_CODE,'');
   FTrdaccID     := FIniFile.ReadString(SECTION_PARAM,IDENT_TRDACC_ID,'');
   FPathQuik     := FIniFile.ReadString(SECTION_PARAM,IDENT_PATH_QUIK,'');
-
-  //FTimeBegin: TDateTime;
-  //FTimeEnd: TDateTime;
-  //FGlobal_TK: Double;
-  //FGlobal_SL: Double;
 {$ENDIF}
 {$IFDEF BYBIT}
-  FSymble    := FIniFile.ReadString(SECTION_PARAM,IDENT_SYMBLE,'');
-  FApiKey    := FIniFile.ReadString(SECTION_PARAM,IDENT_API_KEY,'');
-  FApiSecret := FIniFile.ReadString(SECTION_PARAM,IDENT_API_SECRET,'');
-  FCategory  := TTypeCategory(FIniFile.ReadInteger(SECTION_PARAM,IDENT_CATEGORY,1));
-  FInterval  := TTypeInterval(FIniFile.ReadInteger(SECTION_PARAM,IDENT_INTERVAL,3));
+  FSymble       := FIniFile.ReadString(SECTION_PARAM,IDENT_SYMBLE,'');
+  FApiKey       := FIniFile.ReadString(SECTION_PARAM,IDENT_API_KEY,'');
+  FApiSecret    := FIniFile.ReadString(SECTION_PARAM,IDENT_API_SECRET,'');
+  FCategory     := TTypeCategory(FIniFile.ReadInteger(SECTION_PARAM,IDENT_CATEGORY,1));
+  FInterval     := TTypeInterval(FIniFile.ReadInteger(SECTION_PARAM,IDENT_INTERVAL,3));
 {$ENDIF}
   FIsLogTrade       := FIniFile.ReadBool(SECTION_PARAM,IDENT_IS_LOG_TRADE,False);
   FIsVirtualChecked := FIniFile.ReadBool(SECTION_PARAM,IDENT_VIRTUAL,False);
   FIsTrend          := FIniFile.ReadBool(SECTION_PARAM,IDENT_IS_TREND,False);
+  FIsNewCandel      := FIniFile.ReadBool(SECTION_PARAM,IDENT_IS_NEW_CANDEL,False);
+
+  FTimeBegin    := FIniFile.ReadTime(SECTION_PARAM,IDENT_TIME_BEGIN,StrToTime('10:00:00'));
+  FTimeEnd      := FIniFile.ReadTime(SECTION_PARAM,IDENT_TIME_END,  StrToTime('15:00:00'));
+  FGlobal_TK    := FIniFile.ReadFloat(SECTION_PARAM,IDENT_GLOBAL_TK,0);
+  FGlobal_SL    := FIniFile.ReadFloat(SECTION_PARAM,IDENT_GLOBAL_SL,0);
 end;
 
 procedure TParamApplication.Save;
@@ -362,10 +381,6 @@ begin
   FIniFile.WriteString(SECTION_PARAM,IDENT_SEC_CODE,FSecCode);
   FIniFile.WriteString(SECTION_PARAM,IDENT_TRDACC_ID,FTrdaccID);
   FIniFile.WriteString(SECTION_PARAM,IDENT_PATH_QUIK,FPathQuik);
-  //FTimeBegin: TDateTime;
-  //FTimeEnd: TDateTime;
-  //FGlobal_TK: Double;
-  //FGlobal_SL: Double;
 {$ENDIF}
 {$IFDEF BYBIT}
   FIniFile.WriteString(SECTION_PARAM,IDENT_SYMBLE,FSymble);
@@ -377,6 +392,12 @@ begin
   FIniFile.WriteBool(SECTION_PARAM,IDENT_IS_LOG_TRADE,FIsLogTrade);
   FIniFile.WriteBool(SECTION_PARAM,IDENT_VIRTUAL,FIsVirtualChecked);
   FIniFile.WriteBool(SECTION_PARAM,IDENT_IS_TREND,FIsTrend);
+  FIniFile.WriteBool(SECTION_PARAM,IDENT_IS_NEW_CANDEL,FIsNewCandel);
+  FIniFile.WriteTime(SECTION_PARAM,IDENT_TIME_BEGIN,FTimeBegin);
+  FIniFile.WriteTime(SECTION_PARAM,IDENT_TIME_END,FTimeEnd);
+  FIniFile.WriteFloat(SECTION_PARAM,IDENT_GLOBAL_TK,FGlobal_TK);
+  FIniFile.WriteFloat(SECTION_PARAM,IDENT_GLOBAL_SL,FGlobal_SL);
+
   FIniFile.UpdateFile;
 end;
 
@@ -468,6 +489,25 @@ begin
   var xS := GetSectionParamLINE(ATrade,ALine);
   FIniFile.WriteBool(xS,IDENT_REVERS_QTY,Value);
   FIniFile.UpdateFile;
+end;
+
+{ TSituationParam }
+
+function TSituationParam.ToString: String;
+var
+  xS: String;
+begin
+  xS :=
+    FastRSI.ToString + '/' +
+    SlowRSI.ToString + '/' +
+    Bid.ToString + '/' +
+    Ask.ToString + '/' +
+    GetStrToTypeSide(Side) + '/';
+  if IsNewCandel then
+    xS := xS + 'true'
+  else
+    xS := xS + 'false';
+  Result := xS;
 end;
 
 initialization

@@ -22,7 +22,7 @@ uses
   Lb.ApplicationVersion,
   UnitMainClientFrame,
   UnitSettingFrame,
-  UnitTableFrame;
+  UnitTableFrame, FMX.Memo.Types, FMX.ScrollBox, FMX.Memo;
 
 type
   TMainForm = class(TForm, IMainApp)
@@ -35,10 +35,12 @@ type
     TabItemMain: TTabItem;
     ButtonStartStop: TButton;
     TabItemTable: TTabItem;
+    ButtonTactics: TButton;
     procedure ButtonSettingClick(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure ButtonStartStopClick(Sender: TObject);
     procedure ButtonTableClick(Sender: TObject);
+    procedure ButtonTacticsClick(Sender: TObject);
   private
 
   protected
@@ -78,7 +80,9 @@ end;
 
 procedure TMainForm.FormShow(Sender: TObject);
 begin
-  Self.Caption := 'xBot - ' + GetStrToTypePlatform(ParamApplication.TypePlatform) + ' [' + GetApplicationVersion + '] ';
+  Self.Caption :=
+    'xBot - ' + GetStrToTypePlatform(ParamApplication.TypePlatform) +
+    ' [' + GetApplicationVersion + '] ';
 {$IFDEF DEBUG}
   Self.Caption := Self.Caption + ' debug';
 {$ENDIF}
@@ -151,6 +155,11 @@ procedure TMainForm.ButtonTableClick(Sender: TObject);
 begin
   // Показывать результат работы программы
   TabControl.ActiveTab := TabItemTable;
+end;
+
+procedure TMainForm.ButtonTacticsClick(Sender: TObject);
+begin
+  //
 end;
 
 end.

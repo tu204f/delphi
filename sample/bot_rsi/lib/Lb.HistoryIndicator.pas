@@ -50,8 +50,8 @@ type
   ///</summary>
   THistoryIndicator = class(TBasicObjectStrategy)
   private
-    FValueRSI: TRSI;
-    FTrandRSI: TRSI;
+    FValueRSI: TRSI_V2;
+    FTrandRSI: TRSI_V2;
     FCurrentCandel: TCandelObject;
     FBybitKline: TBybitKline;
     procedure BybitKlineOnEventEndLoading(Sender: TObject);
@@ -67,8 +67,8 @@ type
     ///<summary>Обновление данных</summary>
     function UpDate: Boolean; override;
   public
-    property FastRSI: TRSI read FValueRSI;
-    property SlowRSI: TRSI read FTrandRSI;
+    property FastRSI: TRSI_V2 read FValueRSI;
+    property SlowRSI: TRSI_V2 read FTrandRSI;
     property Candels: TCandelObjectList read GetCandels;
     property CurrentCandel: TCandelObject read FCurrentCandel write FCurrentCandel;
   public
@@ -76,6 +76,8 @@ type
     property Category: TTypeCategory read FCategory write FCategory;
     property Interval: TTypeInterval read FInterval write FInterval;
   public
+    property ValueRSI: TRSI_V2 read FValueRSI;
+    property TrandRSI: TRSI_V2 read FTrandRSI;
     property BybitKline: TBybitKline read FBybitKline;
   end;
 
@@ -218,11 +220,11 @@ end;
 
 constructor THistoryIndicator.Create;
 
-  function _GetRSI(const APeriod, AvgPeriod: Integer): TRSI;
+  function _GetRSI(const APeriod, AvgPeriod: Integer): TRSI_V2;
   var
-    xRSI: TRSI;
+    xRSI: TRSI_V2;
   begin
-    xRSI := TRSI.Create;
+    xRSI := TRSI_V2.Create;
     xRSI.Period := APeriod;
     xRSI.AvgPeriod := AvgPeriod;
     Result := xRSI;

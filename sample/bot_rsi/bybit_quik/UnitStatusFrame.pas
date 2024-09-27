@@ -59,25 +59,30 @@ implementation
 { TStatusFrame }
 
 procedure TStatusFrame.ButtonBuyClick(Sender: TObject);
+var
+  xPrice: Double;
+  xParamStatus: TParamStatus;
 begin
   case ParamApplication.TypePlatform of
     TTypePlatform.tpBybit:
-      Status.GetOperationTrade(TQBTypeSide.tsBuy,Status.Ask + 100,0.01,TTypeLine.tlOpen1);
+      xParamStatus := TParamStatus.Create(TQBTypeSide.tsBuy,Status.Ask + 100,1,TTypeLine.tlOpen1);
     TTypePlatform.tpQuik:
-      Status.GetOperationTrade(TQBTypeSide.tsBuy,Status.Ask,1,TTypeLine.tlOpen1);
+      xParamStatus := TParamStatus.Create(TQBTypeSide.tsBuy,Status.Ask,1,TTypeLine.tlOpen1);
   end;
-
-
+  Status.GetOperationTrade(xParamStatus);
 end;
 
 procedure TStatusFrame.ButtonSellClick(Sender: TObject);
+var
+  xParamStatus: TParamStatus;
 begin
   case ParamApplication.TypePlatform of
     TTypePlatform.tpBybit:
-      Status.GetOperationTrade(TQBTypeSide.tsSell,Status.Bid,1,TTypeLine.tlOpen1);
+      xParamStatus := TParamStatus.Create(TQBTypeSide.tsSell,Status.Bid - 100,1,TTypeLine.tlOpen1);
     TTypePlatform.tpQuik:
-      Status.GetOperationTrade(TQBTypeSide.tsSell,Status.Bid,1,TTypeLine.tlOpen1);
+      xParamStatus := TParamStatus.Create(TQBTypeSide.tsSell,Status.Bid,1,TTypeLine.tlOpen1);
   end;
+  Status.GetOperationTrade(xParamStatus);
 end;
 
 constructor TStatusFrame.Create(AOwner: TComponent);
@@ -90,7 +95,6 @@ begin
   FBybitStatus:= TBybitStatus.Create;
   FBybitStatus.OnUpDate := QuikStatusOnUpDate;
   FBybitStatus.OnInfoMsg := QuikStatusOnInfoMsg;
-
 end;
 
 destructor TStatusFrame.Destroy;
@@ -119,8 +123,14 @@ begin
     ' Price: ' + FloatToStr(Status.Ask) +
     '/' + FloatToStr(Status.Bid);
 
-  if Status.Qty <> 0 then
-    EditQty.Text := '(' + GetStrToTypeSide(Status.Side) + ')' + FloatToStr(Status.Qty)
+  if Status.Position.Qty <> 0 then
+  begin
+    var xS :=
+      '(' + GetStrToTypeSide(Status.Position.Side) + ')' +
+      FloatToStr(Status.Position.Qty) + ' P:' +
+      FloatToStr(Status.Position.Profit);
+    EditQty.Text := xS;
+  end
   else
     EditQty.Text := '';
 end;

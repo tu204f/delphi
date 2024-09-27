@@ -59,6 +59,10 @@ type
 
 implementation
 
+uses
+  UnitLogForm,
+  Lb.Logger;
+
 {$R *.fmx}
 
 { TOrderCategoryFrame }
@@ -143,6 +147,11 @@ end;
 
 procedure TOrderCategoryFrame.SetParams(const AParam: TSituationParam);
 begin
+{$IFDEF DBG_TRD}
+  TLogger.LogText('*',80);
+  TLogger.LogTree(0,'procedure TOrderCategoryFrame.SetParams:');
+  TLogger.LogTreeText(3,'## ѕровер€ем параметрам открытие позиции ' + GetStrToTypeSide(FSide));
+{$ENDIF}
   Category1.SetValueParam(AParam);
   Category2.SetValueParam(AParam);
   Category3.SetValueParam(AParam);
