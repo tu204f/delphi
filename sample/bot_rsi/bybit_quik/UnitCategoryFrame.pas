@@ -110,12 +110,12 @@ end;
 
 procedure TCategoryFrame.Load;
 begin
-  CheckBoxActive.IsChecked    := ParamApplication.Active[TypeTrade,TypeLine];
-  CheckBoxReActive.IsChecked  := ParamApplication.ReActive[TypeTrade,TypeLine];
-  SpinBoxActiveRSI.Value      := ParamApplication.ActiveRSI[TypeTrade,TypeLine];
-  SpinBoxReActiveRSI.Value    := ParamApplication.ReActiveRSI[TypeTrade,TypeLine];
-  SpinBoxQty.Value            := ParamApplication.Qty[TypeTrade,TypeLine];
-  CheckBoxReversQty.IsChecked := ParamApplication.ReversQty[TypeTrade,TypeLine];
+  CheckBoxActive.IsChecked    := ParamPlatform.Active[TypeTrade,TypeLine];
+  CheckBoxReActive.IsChecked  := ParamPlatform.ReActive[TypeTrade,TypeLine];
+  SpinBoxActiveRSI.Value      := ParamPlatform.ActiveRSI[TypeTrade,TypeLine];
+  SpinBoxReActiveRSI.Value    := ParamPlatform.ReActiveRSI[TypeTrade,TypeLine];
+  SpinBoxQty.Value            := ParamPlatform.Qty[TypeTrade,TypeLine];
+  CheckBoxReversQty.IsChecked := ParamPlatform.ReversQty[TypeTrade,TypeLine];
 
   ActiveLevel.Value := SpinBoxActiveRSI.Value;
   ReActiveLevel.Value := SpinBoxReActiveRSI.Value;
@@ -123,34 +123,34 @@ end;
 
 procedure TCategoryFrame.CheckBoxActiveChange(Sender: TObject);
 begin
-  ParamApplication.Active[TypeTrade,TypeLine] := CheckBoxActive.IsChecked;
+  ParamPlatform.Active[TypeTrade,TypeLine] := CheckBoxActive.IsChecked;
 end;
 
 procedure TCategoryFrame.SpinBoxActiveRSIChange(Sender: TObject);
 begin
   ActiveLevel.Value := SpinBoxActiveRSI.Value;
-  ParamApplication.ActiveRSI[TypeTrade,TypeLine] := SpinBoxActiveRSI.Value;
+  ParamPlatform.ActiveRSI[TypeTrade,TypeLine] := SpinBoxActiveRSI.Value;
 end;
 
 procedure TCategoryFrame.CheckBoxReActiveChange(Sender: TObject);
 begin
-  ParamApplication.ReActive[TypeTrade,TypeLine] := CheckBoxReActive.IsChecked;
+  ParamPlatform.ReActive[TypeTrade,TypeLine] := CheckBoxReActive.IsChecked;
 end;
 
 procedure TCategoryFrame.CheckBoxReversQtyChange(Sender: TObject);
 begin
-  ParamApplication.ReversQty[TypeTrade,TypeLine] := CheckBoxReversQty.IsChecked;
+  ParamPlatform.ReversQty[TypeTrade,TypeLine] := CheckBoxReversQty.IsChecked;
 end;
 
 procedure TCategoryFrame.SpinBoxReActiveRSIChange(Sender: TObject);
 begin
   ReActiveLevel.Value := SpinBoxReActiveRSI.Value;
-  ParamApplication.ReActiveRSI[TypeTrade,TypeLine] := SpinBoxReActiveRSI.Value;
+  ParamPlatform.ReActiveRSI[TypeTrade,TypeLine] := SpinBoxReActiveRSI.Value;
 end;
 
 procedure TCategoryFrame.SpinBoxQtyChange(Sender: TObject);
 begin
-  ParamApplication.Qty[TypeTrade,TypeLine] := SpinBoxQty.Value;
+  ParamPlatform.Qty[TypeTrade,TypeLine] := SpinBoxQty.Value;
 end;
 
 procedure TCategoryFrame.ActiveLevelOnIntersection(Sender: TObject);
@@ -282,17 +282,17 @@ procedure TCategoryFrame.SetValueParam(AParam: TSituationParam);
 {$IFDEF DBG_LEVEL_CATEGORY_PARAM}
     TLogger.LogTree(0,'procedure TCategoryFrame.SetValueParam._SetValueParam');
 {$ENDIF}
-    if ParamApplication.IsTrend then
+    if ParamPlatform.IsTrend then
     begin
       case FSide of
         // Покупаем если рынок растет
         TQBTypeSide.tsBuy: begin
-          if AParam.SlowRSI > 50 then
+          if AParam.SlowRSI > VALUE_TRADE_RSI then
             _ActiveLevelSetUpDate(AParam.FastRSI);
         end;
         // Продаем если рынок падает
         TQBTypeSide.tsSell: begin
-          if AParam.SlowRSI < 50 then
+          if AParam.SlowRSI < VALUE_TRADE_RSI then
             _ActiveLevelSetUpDate(AParam.FastRSI);
         end;
       end;

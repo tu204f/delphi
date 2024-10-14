@@ -18,7 +18,9 @@ uses
   FMX.Edit,
   FMX.Objects,
   FMX.Layouts,
-  UnitSettingTacticsFrame;
+  UnitSettingTacticsFrame,
+  FMX.ListBox,
+  UnitSettingLimitTimeFrame;
 
 type
   ///<summary>
@@ -32,8 +34,12 @@ type
     EditApiSecret: TEdit;
     EditApiKey: TEdit;
     LayoutTactics: TLayout;
+    ComboBoxInterval: TComboBox;
+    Text4: TText;
+    LayoutTimeLimit: TLayout;
   private
     SettingTactics: TSettingTacticsFrame;
+    SettingLimitTime: TSettingLimitTimeFrame;
   public
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
@@ -46,6 +52,7 @@ implementation
 {$R *.fmx}
 
 uses
+  Lb.Bybit.SysUtils,
   Lb.SysUtils;
 
 { TSettingBybitFrame }
@@ -56,28 +63,60 @@ begin
   SettingTactics := TSettingTacticsFrame.Create(nil);
   SettingTactics.Parent := LayoutTactics;
   SettingTactics.Align := TAlignLayout.Client;
+
+  SettingLimitTime := TSettingLimitTimeFrame.Create(nil);
+  SettingLimitTime.Parent := LayoutTimeLimit;
+  SettingLimitTime.Align := TAlignLayout.Client;
 end;
 
 destructor TSettingBybitFrame.Destroy;
 begin
+  FreeAndNil(SettingLimitTime);
   FreeAndNil(SettingTactics);
   inherited;
 end;
 
 procedure TSettingBybitFrame.Load;
+
+  procedure _InitInterval;
+  begin
+    with ComboBoxInterval.Items do
+    begin
+      Clear;
+      Add('Минута');
+      Add('3 минуты');
+      Add('5 минут');
+      Add('15 минут');
+      Add('30 минут');
+      Add('час');
+      Add('2 часа');
+      Add('4 часа');
+      Add('6 часа');
+      Add('12 часа');
+      Add('День');
+      Add('Неделя');
+      Add('Месяц');
+    end;
+  end;
+
 begin
-  EditSymble.Text    := ParamApplication.Symble;
-  EditApiKey.Text    := ParamApplication.ApiKey;
-  EditApiSecret.Text := ParamApplication.ApiSecret;
+  _InitInterval;
+  EditSymble.Text    := ParamPlatform.Symble;
+  EditApiKey.Text    := ParamPlatform.ApiKey;
+  EditApiSecret.Text := ParamPlatform.ApiSecret;
+  ComboBoxInterval.ItemIndex := Integer(ParamPlatform.Interval);
   SettingTactics.Load;
+  SettingLimitTime.Load;
 end;
 
 procedure TSettingBybitFrame.Save;
 begin
-  ParamApplication.Symble    := EditSymble.Text;
-  ParamApplication.ApiKey    := EditApiKey.Text;
-  ParamApplication.ApiSecret := EditApiSecret.Text;
+  ParamPlatform.Interval  := TTypeInterval(ComboBoxInterval.ItemIndex);
+  ParamPlatform.Symble    := EditSymble.Text;
+  ParamPlatform.ApiKey    := EditApiKey.Text;
+  ParamPlatform.ApiSecret := EditApiSecret.Text;
   SettingTactics.Save;
+  SettingLimitTime.Save;
 end;
 
 end.

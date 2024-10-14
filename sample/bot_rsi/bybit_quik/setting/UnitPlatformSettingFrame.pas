@@ -76,7 +76,7 @@ end;
 
 procedure TPlatformSettingFrame.LoadSetting;
 begin
-  ParamApplication.Load;
+  ParamPlatform.Load;
   FSettingBybit.Load;
   FSettingQuik.Load;
   SetHeaderCaption;
@@ -86,12 +86,12 @@ procedure TPlatformSettingFrame.SetHeaderCaption;
 var
   xS: String;
 begin
-  xS := 'xBot - ' + GetStrToTypePlatform(ParamApplication.TypePlatform) + ' [' + GetApplicationVersion + '] ';
+  xS := 'xBot - ' + GetStrToTypePlatform(ParamPlatform.TypePlatform) + ' [' + GetApplicationVersion + '] ';
 {$IFDEF DEBUG}
   xS := xS + ' debug';
 {$ENDIF}
   FMainApp.SetHeaderCaption(xS);
-  case ParamApplication.TypePlatform of
+  case ParamPlatform.TypePlatform of
     TTypePlatform.tpBybit: TabControl.ActiveTab := TabItemBybit;
     TTypePlatform.tpQuik: TabControl.ActiveTab := TabItemQuik;
   end;
@@ -100,7 +100,7 @@ end;
 
 procedure TPlatformSettingFrame.SaveSetting;
 begin
-  case ParamApplication.TypePlatform of
+  case ParamPlatform.TypePlatform of
     tpBybit: FSettingBybit.Save;
     tpQuik: FSettingQuik.Save;
   end;

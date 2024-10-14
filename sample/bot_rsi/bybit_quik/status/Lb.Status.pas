@@ -67,6 +67,8 @@ type
     FOnUpDate: TNotifyEvent;
     FOnInfoMsg: TEventInfoMsg;
     FOnNewCandel: TNotifyEvent;
+    FOnStart: TNotifyEvent;
+    FOnStop: TNotifyEvent;
     function GetIsActive: Boolean;
     procedure TimerTimer(Sender: TObject);
   protected
@@ -92,6 +94,8 @@ type
     property OnUpDate: TNotifyEvent write FOnUpDate;
     property OnInfoMsg: TEventInfoMsg write FOnInfoMsg;
     property OnNewCandel: TNotifyEvent write FOnNewCandel;
+    property OnStart: TNotifyEvent write FOnStart;
+    property OnStop: TNotifyEvent write FOnStop;
     ///<summary>Позиция по бумагам</summary>
     property Position: TParamPosition read FPosition;
   public
@@ -111,10 +115,43 @@ function CreateOrderLinkId(ASide: TQBTypeSide; ALine: TTypeLine): String;
 
 function GetParamPositions: TParamPositions;
 
+///<summary>
+/// Доступ к рыночными данным, в зависемости от платформы
+///</summary>
+function Status: TCustomStatus;
+
 implementation
 
 uses
+  Lb.Status.Bybit,
+  Lb.Status.Quik,
   Lb.Logger;
+
+var
+  localStatus: TCustomStatus = nil;
+
+function Status: TCustomStatus;
+begin
+  if Assigned(localStatus) then
+  begin
+    if localStatus.TypePlatform <> ParamPlatform.TypePlatform then
+    begin
+      FreeAndNil(localStatus);
+      case ParamPlatform.TypePlatform of
+        TTypePlatform.tpBybit: localStatus := TBybitStatus.Create;
+        TTypePlatform.tpQuik : localStatus := TQuikStatus.Create;
+      end;
+    end;
+  end
+  else
+  begin
+    case ParamPlatform.TypePlatform of
+      TTypePlatform.tpBybit: localStatus := TBybitStatus.Create;
+      TTypePlatform.tpQuik : localStatus := TQuikStatus.Create;
+    end;
+  end;
+  Result := localStatus;
+end;
 
 function CreateOrderLinkId(ASide: TQBTypeSide; ALine: TTypeLine): String;
 var
@@ -276,7 +313,7 @@ procedure TCustomStatus.DoInfoMsg(const S: String);
 begin
   if Assigned(FOnInfoMsg) then
   begin
-    if ParamApplication.IsLogTrade then
+    if ParamPlatform.IsLogTrade then
       TLogger.Log(S);
     FOnInfoMsg(Self,S);
   end;
@@ -302,12 +339,14 @@ end;
 
 procedure TCustomStatus.DoStart;
 begin
-
+  if Assigned(FOnStart) then
+    FOnStart(Self);
 end;
 
 procedure TCustomStatus.DoStop;
 begin
-
+  if Assigned(FOnStop) then
+    FOnStop(Self);
 end;
 
 procedure TCustomStatus.DoUpDate;
@@ -320,9 +359,9 @@ function TCustomStatus.GetOperationTrade(AParamStatus: TParamStatus): String;
 
   function _Symble: String;
   begin
-    case ParamApplication.TypePlatform of
-      TTypePlatform.tpBybit: Result := ParamApplication.Symble;
-      TTypePlatform.tpQuik: Result := ParamApplication.SecCode;
+    case ParamPlatform.TypePlatform of
+      TTypePlatform.tpBybit: Result := ParamPlatform.Symble;
+      TTypePlatform.tpQuik: Result := ParamPlatform.SecCode;
     else
       Result := 'NonPlatfotm'
     end;
@@ -339,7 +378,7 @@ begin
   xOrderLinkId := CreateOrderLinkId(AParamStatus.Side,AParamStatus.Line);
   Result := xOrderLinkId;
 
-  if ParamApplication.IsLogTrade then
+  if ParamPlatform.IsLogTrade then
   begin
     Vir_SelectedOrder(
       _Symble,             // Торговый символ
@@ -350,7 +389,7 @@ begin
     );
   end;
 
-  if ParamApplication.IsVirtualChecked then
+  if ParamPlatform.IsVirtualChecked then
   begin
     if Assigned(localParamPositions.CurrentPosition) then
     begin
@@ -368,7 +407,10 @@ begin
 
 end;
 
+initialization
 
-
+finalization
+  if Assigned(localStatus) then
+    FreeAndNil(localStatus);
 
 end.

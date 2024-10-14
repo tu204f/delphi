@@ -2,17 +2,18 @@ object MainForm: TMainForm
   Left = 0
   Top = 0
   Caption = 'Form4'
-  ClientHeight = 768
-  ClientWidth = 629
+  ClientHeight = 464
+  ClientWidth = 726
   FormStyle = StayOnTop
   FormFactor.Width = 320
   FormFactor.Height = 480
   FormFactor.Devices = [Desktop]
+  OnClose = FormClose
   OnShow = FormShow
   DesignerMasterStyle = 0
   object LayoutMenu: TLayout
     Align = Top
-    Size.Width = 629.000000000000000000
+    Size.Width = 726.000000000000000000
     Size.Height = 29.000000000000000000
     Size.PlatformDefault = False
     TabOrder = 0
@@ -27,7 +28,7 @@ object MainForm: TMainForm
       Size.Width = 102.000000000000000000
       Size.Height = 23.000000000000000000
       Size.PlatformDefault = False
-      TabOrder = 2
+      TabOrder = 1
       Text = #1053#1072#1089#1090#1088#1086#1081#1082#1080
       TextSettings.Font.Size = 16.000000000000000000
       TextSettings.Font.StyleExt = {00070000000000000004000000}
@@ -39,12 +40,12 @@ object MainForm: TMainForm
       Margins.Top = 3.000000000000000000
       Margins.Right = 3.000000000000000000
       Margins.Bottom = 3.000000000000000000
-      Position.X = 529.000000000000000000
+      Position.X = 626.000000000000000000
       Position.Y = 3.000000000000000000
       Size.Width = 97.000000000000000000
       Size.Height = 23.000000000000000000
       Size.PlatformDefault = False
-      TabOrder = 3
+      TabOrder = 2
       Text = #1058#1072#1073#1083#1080#1094#1099
       TextSettings.Font.Size = 16.000000000000000000
       TextSettings.Font.StyleExt = {00070000000000000004000000}
@@ -61,34 +62,17 @@ object MainForm: TMainForm
       Size.Width = 102.000000000000000000
       Size.Height = 23.000000000000000000
       Size.PlatformDefault = False
-      TabOrder = 1
+      TabOrder = 0
       Text = #1057#1090#1072#1088#1090
       TextSettings.Font.Size = 16.000000000000000000
       TextSettings.Font.StyleExt = {00070000000000000004000000}
       OnClick = ButtonStartStopClick
     end
-    object ButtonTactics: TButton
-      Align = Left
-      StyledSettings = [Family, FontColor]
-      Margins.Left = 3.000000000000000000
-      Margins.Top = 3.000000000000000000
-      Margins.Bottom = 3.000000000000000000
-      Position.X = 213.000000000000000000
-      Position.Y = 3.000000000000000000
-      Size.Width = 102.000000000000000000
-      Size.Height = 23.000000000000000000
-      Size.PlatformDefault = False
-      TabOrder = 0
-      Text = #1058#1072#1082#1090#1080#1082#1072
-      TextSettings.Font.Size = 16.000000000000000000
-      TextSettings.Font.StyleExt = {00070000000000000004000000}
-      OnClick = ButtonTacticsClick
-    end
   end
   object LayoutClient: TLayout
     Align = Client
-    Size.Width = 629.000000000000000000
-    Size.Height = 739.000000000000000000
+    Size.Width = 726.000000000000000000
+    Size.Height = 435.000000000000000000
     Size.PlatformDefault = False
     TabOrder = 1
     object TabControl: TTabControl
@@ -96,19 +80,19 @@ object MainForm: TMainForm
       Margins.Left = 3.000000000000000000
       Margins.Right = 3.000000000000000000
       Margins.Bottom = 3.000000000000000000
-      Size.Width = 623.000000000000000000
-      Size.Height = 736.000000000000000000
+      Size.Width = 720.000000000000000000
+      Size.Height = 432.000000000000000000
       Size.PlatformDefault = False
       TabIndex = 2
       TabOrder = 0
       TabPosition = None
       Sizes = (
-        623s
-        736s
-        623s
-        736s
-        623s
-        736s)
+        720s
+        432s
+        720s
+        432s
+        720s
+        432s)
       object TabItemSetting: TTabItem
         CustomIcon = <
           item

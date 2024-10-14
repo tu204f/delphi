@@ -63,8 +63,8 @@ var
 begin
   xIndex := ComboBoxPlatform.ItemIndex;
   case xIndex of
-    0: ParamApplication.TypePlatform := TTypePlatform.tpBybit;
-    1: ParamApplication.TypePlatform := TTypePlatform.tpQuik;
+    0: ParamPlatform.TypePlatform := TTypePlatform.tpBybit;
+    1: ParamPlatform.TypePlatform := TTypePlatform.tpQuik;
   end;
   FPlatformSetting.SetHeaderCaption;
 end;
@@ -87,7 +87,7 @@ end;
 
 procedure TSettingFrame.LoadSetting;
 begin
-  case ParamApplication.TypePlatform of
+  case ParamPlatform.TypePlatform of
     TTypePlatform.tpBybit: ComboBoxPlatform.ItemIndex := 0;
     TTypePlatform.tpQuik: ComboBoxPlatform.ItemIndex := 1;
   end;
@@ -113,7 +113,7 @@ end;
 procedure TSettingFrame.ButtonApplyClick(Sender: TObject);
 begin
   FPlatformSetting.SaveSetting;
-  ParamApplication.Save;
+  ParamPlatform.Save;
 end;
 
 procedure TSettingFrame.ButtonCloseClick(Sender: TObject);

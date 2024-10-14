@@ -13,7 +13,7 @@ uses
   Lb.SysUtils,
   Lb.Bybit.Trade,
   Lb.Bybit.SysUtils,
-  Lb.HistoryIndicator,
+  Lb.HistoryIndicator.Bybit,
   Lb.Bybit.Position,
   Lb.Status;
 
@@ -78,22 +78,20 @@ begin
   inherited;
   FStartTime := '';
   // Настройки по дефолту
-  ParamApplication.Interval := TTypeInterval.ti_1;
-
-  FHistoryIndicator.Symbol   := ParamApplication.Symble;
-  FHistoryIndicator.Category := ParamApplication.Category;
-  FHistoryIndicator.Interval := ParamApplication.Interval;
+  FHistoryIndicator.Symbol   := ParamPlatform.Symble;
+  FHistoryIndicator.Category := ParamPlatform.Category;
+  FHistoryIndicator.Interval := ParamPlatform.Interval;
   FHistoryIndicator.UpDate;
 
-  FInstrumentPrice.Symbol   := ParamApplication.Symble;
-  FInstrumentPrice.Category := ParamApplication.Category;
-  FInstrumentPrice.Limit    := 10;
+  FInstrumentPrice.Symbol   := ParamPlatform.Symble;
+  FInstrumentPrice.Category := ParamPlatform.Category;
+  FInstrumentPrice.Limit    := 5;
 
-  FBybitPosition.Symbol := ParamApplication.Symble;
-  FBybitPosition.Category := ParamApplication.Category;
+  FBybitPosition.Symbol := ParamPlatform.Symble;
+  FBybitPosition.Category := ParamPlatform.Category;
   FBybitPosition.SetEncryption(
-    ParamApplication.ApiKey,
-    ParamApplication.ApiSecret
+    ParamPlatform.ApiKey,
+    ParamPlatform.ApiSecret
   );
 end;
 
@@ -161,7 +159,7 @@ var
   xF: TFormatSettings;
   xS: String;
 begin
-  if ParamApplication.IsVirtualChecked then 
+  if ParamPlatform.IsVirtualChecked then
     Exit;
 
   Position.Qty := 0;
@@ -191,11 +189,8 @@ var
   xPlaceOrder: TParamOrder;
   xResponse: TOrderResponse;
 begin
-  if Date > (StrToDate('01.09.2024') + 30)  then
-    Exit;
-
   Result := inherited GetOperationTrade(AParamStatus);
-  if not ParamApplication.IsVirtualChecked then
+  if not ParamPlatform.IsVirtualChecked then
   begin
     try
       // Инструмент отслеживания
@@ -206,7 +201,7 @@ begin
 
         {todo: сохранение данных}
         xPlaceOrder.Category    := TTypeCategory.tcLinear;
-        xPlaceOrder.Symbol      := ParamApplication.Symble;
+        xPlaceOrder.Symbol      := ParamPlatform.Symble;
         xPlaceOrder.Side        := AParamStatus.Side;
         xPlaceOrder.PositionIdx := 0;
         xPlaceOrder.OrderType   := TTypeOrder.Limit;
@@ -217,12 +212,12 @@ begin
 
         xResponse := TOrderResponse.Create;
         try
-          if not ParamApplication.IsVirtualChecked then
+          if not ParamPlatform.IsVirtualChecked then
           begin
             // Реальные торговые операции
             SelectedOrder(
-               ParamApplication.ApiKey,
-               ParamApplication.ApiSecret,
+               ParamPlatform.ApiKey,
+               ParamPlatform.ApiSecret,
                xPlaceOrder,
                xResponse // Возрат сообщение ос делке
             );

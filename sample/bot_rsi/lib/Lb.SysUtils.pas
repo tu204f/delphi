@@ -22,6 +22,12 @@ uses
 {$ENDIF}
 {$ENDIF}
 
+const
+  ///<summary>
+  /// «начение индикатора
+  ///</summary>
+  VALUE_TRADE_RSI = 50;
+
 {$IFDEF QUIK}
 {$IFDEF BYBIT}
 type
@@ -73,16 +79,37 @@ type
   ///</summary>
   IOrderLog = interface
     procedure BeginOrder;
-
     procedure EndOrder;
   end;
 
-
   ///<summary>
-  /// ѕараметры работы программы
+  /// ѕараметр приложение
   ///</summary>
   TParamApplication = class(TObject)
-  public const
+  private const
+    SECTION_SYS  = 'sys';
+    IDENT_HEIGHT = 'height';
+    IDENT_WIDTH  = 'width';
+  private
+    FHeight: Integer;
+    FWidth: Integer;
+  protected
+    FIniFile: TIniFile;
+    function GetFileName: String;
+  public
+    constructor Create; virtual;
+    destructor Destroy; override;
+    procedure Load;
+    procedure Save;
+    property Height: Integer read FHeight write FHeight;
+    property Width: Integer read FWidth write FWidth;
+  end;
+
+  ///<summary>
+  /// ѕараметры работы стратегии и платформы
+  ///</summary>
+  TParamPlatform = class(TObject)
+  private const
     SECTION_PARAM        = 'param';
 {$IFDEF QUIK}
     IDENT_QUIK_TABLE_RSI = 'quik_table_rsi';
@@ -108,7 +135,8 @@ type
     IDENT_TIME_END       = 'time_end';
     IDENT_GLOBAL_TK      = 'global_tk';
     IDENT_GLOBAL_SL      = 'global_sl';
-  public const
+    IDENT_IS_LINIT_TIME  = 'is_limit_time';
+  private const
     SECTION_PARAM_LIEN   = 'line_%d_%d';
     IDENT_ACTIVE         = 'active';
     IDENT_RE_ACTIVE      = 're_active';
@@ -124,12 +152,12 @@ type
     FTrdaccID: String;
     FPathQuik: String;
     FIsLogTrade: Boolean;
+{$ENDIF}
     FTimeBegin: TDateTime;
     FTimeEnd: TDateTime;
     FGlobal_TK: Double;
     FGlobal_SL: Double;
-{$ENDIF}
-
+    FIsLimitTime: Boolean;
 {$IFDEF BYBIT}
     FSymble: String;
     FApiKey: String;
@@ -141,6 +169,9 @@ type
     FIsVirtualChecked: Boolean;
     FIsTrend: Boolean;
     FIsNewCandel: Boolean;
+  private
+    FHeight: Integer;
+    FWidth: Integer;
   private
     function GetSectionParamLINE(ATrade: TTypeTrade; ALine: TTypeLine): String;
 
@@ -155,8 +186,7 @@ type
     procedure SetReActive(ATrade: TTypeTrade; ALine: TTypeLine; const Value: Boolean);
     procedure SetReActiveRSI(ATrade: TTypeTrade; ALine: TTypeLine; const Value: Double);
     function GetReversQty(ATrade: TTypeTrade; ALine: TTypeLine): Boolean;
-    procedure SetReversQty(ATrade: TTypeTrade; ALine: TTypeLine;
-      const Value: Boolean);
+    procedure SetReversQty(ATrade: TTypeTrade; ALine: TTypeLine; const Value: Boolean);
   protected
     FIniFile: TIniFile;
     function GetFileName: String;
@@ -196,10 +226,15 @@ type
     property TrdaccID: String read FTrdaccID write FTrdaccID;
     property PathQuik: String read FPathQuik write FPathQuik;
     property IsLogTrade: Boolean read FIsLogTrade write FIsLogTrade;
+
     property TimeBegin: TDateTime read FTimeBegin write FTimeBegin;
     property TimeEnd: TDateTime read FTimeEnd write FTimeEnd;
     property Global_TK: Double read FGlobal_TK write FGlobal_TK;
     property Global_SL: Double read FGlobal_SL write FGlobal_SL;
+    property IsLimitTime: Boolean read FIsLimitTime write FIsLimitTime;
+
+    property Height: Integer read FHeight write FHeight;
+    property Width: Integer read FWidth write FWidth;
 {$ENDIF}
     ///<summary>
     /// —овершать торговые операции Ч в виртуальной виде
@@ -215,6 +250,8 @@ type
     property Qty[ATrade: TTypeTrade; ALine: TTypeLine]: Double         read GetQty         write SetQty;
     property ReversQty[ATrade: TTypeTrade; ALine: TTypeLine]: Boolean  read GetReversQty   write SetReversQty;
   end;
+
+
 
   ///<summary>ѕараметр состо€ние рынка, и есть ли открыта€ позици€</summary>
   TSituationParam = record
@@ -238,7 +275,9 @@ type
   end;
   TOnEventSendTarde = procedure(Sender: TObject; ATradeParam: TTradeParam) of object;
 
+function ParamPlatform: TParamPlatform;
 function ParamApplication: TParamApplication;
+
 function GetStrToTypeLine(ALine: TTypeLine): String;
 function GetStrToTypeTrade(ATrade: TTypeTrade): String;
 function GetStrToTypePlatform(APlatform: TTypePlatform): String;
@@ -251,6 +290,17 @@ implementation
 
 var
   localParamApplication: TParamApplication = nil;
+  localParamPlatform: TParamPlatform = nil;
+
+function ParamPlatform: TParamPlatform;
+begin
+  if not Assigned(localParamPlatform) then
+  begin
+    localParamPlatform := TParamPlatform.Create;
+    localParamPlatform.Load;
+  end;
+  Result := localParamPlatform;
+end;
 
 function ParamApplication: TParamApplication;
 begin
@@ -325,7 +375,6 @@ end;
 
 constructor TParamApplication.Create;
 begin
-  FIsNewCandel := False;
   var xFN := GetFileName;
   FIniFile := TIniFile.Create(xFN);
 end;
@@ -337,6 +386,40 @@ begin
 end;
 
 function TParamApplication.GetFileName: String;
+begin
+  var xFileName := ExtractFilePath(ParamStr(0)) + 'config.ini';
+  Result := xFileName;
+end;
+
+procedure TParamApplication.Load;
+begin
+  FHeight := FIniFile.ReadInteger(SECTION_SYS,IDENT_HEIGHT,460);
+  FWidth  := FIniFile.ReadInteger(SECTION_SYS,IDENT_WIDTH,740);
+end;
+
+procedure TParamApplication.Save;
+begin
+  FIniFile.WriteInteger(SECTION_SYS,IDENT_HEIGHT,FHeight);
+  FIniFile.WriteInteger(SECTION_SYS,IDENT_WIDTH,FWidth);
+  FIniFile.UpdateFile;
+end;
+
+{ TParamPlatform }
+
+constructor TParamPlatform.Create;
+begin
+  FIsNewCandel := False;
+  var xFN := GetFileName;
+  FIniFile := TIniFile.Create(xFN);
+end;
+
+destructor TParamPlatform.Destroy;
+begin
+  FreeAndNil(FIniFile);
+  inherited;
+end;
+
+function TParamPlatform.GetFileName: String;
 var
   xFileName: String;
 begin
@@ -344,7 +427,7 @@ begin
   Result := xFileName;
 end;
 
-procedure TParamApplication.Load;
+procedure TParamPlatform.Load;
 begin
   FTypePlatform := TTypePlatform(FIniFile.ReadInteger(SECTION_PARAM,IDENT_PLATFORM,0));
 {$IFDEF QUIK}
@@ -370,9 +453,10 @@ begin
   FTimeEnd      := FIniFile.ReadTime(SECTION_PARAM,IDENT_TIME_END,  StrToTime('15:00:00'));
   FGlobal_TK    := FIniFile.ReadFloat(SECTION_PARAM,IDENT_GLOBAL_TK,0);
   FGlobal_SL    := FIniFile.ReadFloat(SECTION_PARAM,IDENT_GLOBAL_SL,0);
+  FIsLimitTime  := FIniFile.ReadBool(SECTION_PARAM,IDENT_IS_LINIT_TIME,False);
 end;
 
-procedure TParamApplication.Save;
+procedure TParamPlatform.Save;
 begin
   FIniFile.WriteInteger(SECTION_PARAM,IDENT_PLATFORM,Integer(FTypePlatform));
 {$IFDEF QUIK}
@@ -393,20 +477,22 @@ begin
   FIniFile.WriteBool(SECTION_PARAM,IDENT_VIRTUAL,FIsVirtualChecked);
   FIniFile.WriteBool(SECTION_PARAM,IDENT_IS_TREND,FIsTrend);
   FIniFile.WriteBool(SECTION_PARAM,IDENT_IS_NEW_CANDEL,FIsNewCandel);
+
   FIniFile.WriteTime(SECTION_PARAM,IDENT_TIME_BEGIN,FTimeBegin);
   FIniFile.WriteTime(SECTION_PARAM,IDENT_TIME_END,FTimeEnd);
   FIniFile.WriteFloat(SECTION_PARAM,IDENT_GLOBAL_TK,FGlobal_TK);
   FIniFile.WriteFloat(SECTION_PARAM,IDENT_GLOBAL_SL,FGlobal_SL);
+  FIniFile.WriteBool(SECTION_PARAM,IDENT_IS_LINIT_TIME,FIsLimitTime);
 
   FIniFile.UpdateFile;
 end;
 
-function TParamApplication.GetSectionParamLINE(ATrade: TTypeTrade; ALine: TTypeLine): String;
+function TParamPlatform.GetSectionParamLINE(ATrade: TTypeTrade; ALine: TTypeLine): String;
 begin
   Result := Format(SECTION_PARAM_LIEN,[Integer(ATrade),Integer(ALine)]);
 end;
 
-function TParamApplication.GetActive(ATrade: TTypeTrade; ALine: TTypeLine): Boolean;
+function TParamPlatform.GetActive(ATrade: TTypeTrade; ALine: TTypeLine): Boolean;
 var
   xS: String;
 begin
@@ -414,7 +500,7 @@ begin
   Result := FIniFile.ReadBool(xS,IDENT_ACTIVE,False);
 end;
 
-function TParamApplication.GetActiveRSI(ATrade: TTypeTrade; ALine: TTypeLine): Double;
+function TParamPlatform.GetActiveRSI(ATrade: TTypeTrade; ALine: TTypeLine): Double;
 var
   xS: String;
 begin
@@ -422,7 +508,7 @@ begin
   Result := FIniFile.ReadFloat(xS,IDENT_ACTIVE_RSI,0);
 end;
 
-function TParamApplication.GetQty(ATrade: TTypeTrade; ALine: TTypeLine): Double;
+function TParamPlatform.GetQty(ATrade: TTypeTrade; ALine: TTypeLine): Double;
 var
   xS: String;
 begin
@@ -430,61 +516,61 @@ begin
   Result := FIniFile.ReadFloat(xS,IDENT_QTY,0);
 end;
 
-function TParamApplication.GetReActive(ATrade: TTypeTrade; ALine: TTypeLine): Boolean;
+function TParamPlatform.GetReActive(ATrade: TTypeTrade; ALine: TTypeLine): Boolean;
 begin
   var xS := GetSectionParamLINE(ATrade,ALine);
   Result := FIniFile.ReadBool(xS,IDENT_RE_ACTIVE,False);
 end;
 
-function TParamApplication.GetReActiveRSI(ATrade: TTypeTrade; ALine: TTypeLine): Double;
+function TParamPlatform.GetReActiveRSI(ATrade: TTypeTrade; ALine: TTypeLine): Double;
 begin
   var xS := GetSectionParamLINE(ATrade,ALine);
   Result := FIniFile.ReadFloat(xS,IDENT_RE_ACTIVE_RSI,0);
 end;
 
 
-procedure TParamApplication.SetActive(ATrade: TTypeTrade; ALine: TTypeLine; const Value: Boolean);
+procedure TParamPlatform.SetActive(ATrade: TTypeTrade; ALine: TTypeLine; const Value: Boolean);
 begin
   var xS := GetSectionParamLINE(ATrade,ALine);
   FIniFile.WriteBool(xS,IDENT_ACTIVE,Value);
   FIniFile.UpdateFile;
 end;
 
-procedure TParamApplication.SetActiveRSI(ATrade: TTypeTrade; ALine: TTypeLine; const Value: Double);
+procedure TParamPlatform.SetActiveRSI(ATrade: TTypeTrade; ALine: TTypeLine; const Value: Double);
 begin
   var xS := GetSectionParamLINE(ATrade,ALine);
   FIniFile.WriteFloat(xS,IDENT_ACTIVE_RSI,Value);
   FIniFile.UpdateFile;
 end;
 
-procedure TParamApplication.SetQty(ATrade: TTypeTrade; ALine: TTypeLine; const Value: Double);
+procedure TParamPlatform.SetQty(ATrade: TTypeTrade; ALine: TTypeLine; const Value: Double);
 begin
   var xS := GetSectionParamLINE(ATrade,ALine);
   FIniFile.WriteFloat(xS,IDENT_QTY,Value);
   FIniFile.UpdateFile;
 end;
 
-procedure TParamApplication.SetReActive(ATrade: TTypeTrade; ALine: TTypeLine; const Value: Boolean);
+procedure TParamPlatform.SetReActive(ATrade: TTypeTrade; ALine: TTypeLine; const Value: Boolean);
 begin
   var xS := GetSectionParamLINE(ATrade,ALine);
   FIniFile.WriteBool(xS,IDENT_RE_ACTIVE,Value);
   FIniFile.UpdateFile;
 end;
 
-procedure TParamApplication.SetReActiveRSI(ATrade: TTypeTrade; ALine: TTypeLine; const Value: Double);
+procedure TParamPlatform.SetReActiveRSI(ATrade: TTypeTrade; ALine: TTypeLine; const Value: Double);
 begin
   var xS := GetSectionParamLINE(ATrade,ALine);
   FIniFile.WriteFloat(xS,IDENT_RE_ACTIVE_RSI,Value);
   FIniFile.UpdateFile;
 end;
 
-function TParamApplication.GetReversQty(ATrade: TTypeTrade; ALine: TTypeLine): Boolean;
+function TParamPlatform.GetReversQty(ATrade: TTypeTrade; ALine: TTypeLine): Boolean;
 begin
   var xS := GetSectionParamLINE(ATrade,ALine);
   Result := FIniFile.ReadBool(xS,IDENT_REVERS_QTY,False);
 end;
 
-procedure TParamApplication.SetReversQty(ATrade: TTypeTrade; ALine: TTypeLine; const Value: Boolean);
+procedure TParamPlatform.SetReversQty(ATrade: TTypeTrade; ALine: TTypeLine; const Value: Boolean);
 begin
   var xS := GetSectionParamLINE(ATrade,ALine);
   FIniFile.WriteBool(xS,IDENT_REVERS_QTY,Value);
@@ -513,7 +599,10 @@ end;
 initialization
 
 finalization
-  if Assigned(localParamApplication) then
-    FreeAndNil(localParamApplication);
+  if Assigned(localParamPlatform) then
+    FreeAndNil(localParamPlatform);
+
+  if Assigned(localParamPlatform) then
+    FreeAndNil(localParamPlatform);
 
 end.

@@ -59,18 +59,18 @@ end;
 
 procedure TSettingTacticsFrame.Load;
 begin
-  CheckBoxLogTrade.IsChecked := ParamApplication.IsLogTrade;
-  CheckBoxVirtualTrade.IsChecked := ParamApplication.IsVirtualChecked;
-  CheckBoxIsTrend.IsChecked := ParamApplication.IsTrend;
-  CheckBoxIsNewCandel.IsChecked := ParamApplication.IsNewCandel;
+  CheckBoxLogTrade.IsChecked := ParamPlatform.IsLogTrade;
+  CheckBoxVirtualTrade.IsChecked := ParamPlatform.IsVirtualChecked;
+  CheckBoxIsTrend.IsChecked := ParamPlatform.IsTrend;
+  CheckBoxIsNewCandel.IsChecked := ParamPlatform.IsNewCandel;
 end;
 
 procedure TSettingTacticsFrame.Save;
 begin
-  ParamApplication.IsLogTrade := CheckBoxLogTrade.IsChecked;
-  ParamApplication.IsVirtualChecked := CheckBoxVirtualTrade.IsChecked;
-  ParamApplication.IsTrend := CheckBoxIsTrend.IsChecked;
-  ParamApplication.IsNewCandel := CheckBoxIsNewCandel.IsChecked;
+  ParamPlatform.IsLogTrade := CheckBoxLogTrade.IsChecked;
+  ParamPlatform.IsVirtualChecked := CheckBoxVirtualTrade.IsChecked;
+  ParamPlatform.IsTrend := CheckBoxIsTrend.IsChecked;
+  ParamPlatform.IsNewCandel := CheckBoxIsNewCandel.IsChecked;
 end;
 
 end.

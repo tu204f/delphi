@@ -53,6 +53,10 @@ implementation
 
 {$R *.fmx}
 
+uses
+  Lb.Status.Bybit,
+  Lb.Status.Quik;
+
 constructor TTableFrame.Create(AOwner: TComponent);
 begin
   inherited;
@@ -81,7 +85,6 @@ begin
   FBybitExportFrame := TBybitExportFrame.Create(nil);
   FBybitExportFrame.Parent := TabItemBybitTable;
   FBybitExportFrame.Align := TAlignLayout.Client;
-
 end;
 
 procedure TTableFrame.ButtonApplyClick(Sender: TObject);

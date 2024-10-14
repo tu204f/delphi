@@ -27,6 +27,11 @@ object MainClientFrame: TMainClientFrame
         Column = 0
         Control = LayoutInfo
         Row = 1
+      end
+      item
+        Column = 0
+        Control = LayoutButtomBuySell
+        Row = 3
       end>
     RowCollection = <
       item
@@ -38,18 +43,22 @@ object MainClientFrame: TMainClientFrame
       end
       item
         Value = 50.000000000000000000
+      end
+      item
+        SizeStyle = Absolute
+        Value = 100.000000000000000000
       end>
     object LayoutSell: TLayout
       Align = Client
       Size.Width = 578.000000000000000000
-      Size.Height = 246.000000000000000000
+      Size.Height = 196.000000000000000000
       Size.PlatformDefault = False
       TabOrder = 0
     end
     object LayoutBuy: TLayout
       Align = Client
       Size.Width = 578.000000000000000000
-      Size.Height = 246.000000000000000000
+      Size.Height = 196.000000000000000000
       Size.PlatformDefault = False
       TabOrder = 1
     end
@@ -61,6 +70,14 @@ object MainClientFrame: TMainClientFrame
       Size.Height = 59.000000000000000000
       Size.PlatformDefault = False
       TabOrder = 2
+    end
+    object LayoutButtomBuySell: TLayout
+      Align = Client
+      Margins.Top = 3.000000000000000000
+      Size.Width = 578.000000000000000000
+      Size.Height = 97.000000000000000000
+      Size.PlatformDefault = False
+      TabOrder = 3
     end
   end
 end

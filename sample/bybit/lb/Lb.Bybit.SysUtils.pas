@@ -17,7 +17,7 @@ uses
   Lb.Bybit.Encryption;
 
 const
-//{$DEFINE TEST}
+{$DEFINE TEST}
   BYBIT_HOST =
 {$IFDEF TEST}
   // Тесторый сервер: https://testnet.bybit.com

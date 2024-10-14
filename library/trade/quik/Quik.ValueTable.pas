@@ -134,6 +134,7 @@ type
   public
     function IndexOfTableName(const ATableName: String): Integer;
     function GetTableName(const ATableName: String): TQuikTable;
+    function IsTableName(const ATableName: String): Boolean;
   end;
 
   TPointCells = record
@@ -735,13 +736,20 @@ function TQuikTableList.GetTableName(const ATableName: String): TQuikTable;
 var
   xIndex: Integer;
 begin
+  Result := nil;
   xIndex := IndexOfTableName(ATableName);
   if xIndex >= 0 then
-  begin
-    Result := Items[xIndex];
-  end
+    Result := Items[xIndex]
   else
     raise Exception.Create('Error Message: Таблица не найдена');
+end;
+
+function TQuikTableList.IsTableName(const ATableName: String): Boolean;
+var
+  xIndex: Integer;
+begin
+  xIndex := IndexOfTableName(ATableName);
+  Result := (xIndex >= 0);
 end;
 
 { TPointCells }

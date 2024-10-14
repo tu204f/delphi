@@ -254,7 +254,7 @@
         </DCCReference>
         <DCCReference Include="..\..\..\library\Lb.Resource.Script.pas"/>
         <DCCReference Include="..\lib\Lb.History.DB.pas"/>
-        <DCCReference Include="..\lib\Lb.HistoryIndicator.pas"/>
+        <DCCReference Include="..\lib\Lb.HistoryIndicator.Bybit.pas"/>
         <DCCReference Include="..\lib\Lb.SysUtils.pas"/>
         <DCCReference Include="..\lib\Lb.Trader.pas"/>
         <DCCReference Include="..\lib\Lb.VirtualTrade.pas"/>

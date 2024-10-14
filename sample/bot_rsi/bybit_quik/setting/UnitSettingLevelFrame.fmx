@@ -1,5 +1,0 @@
-object SettingLevelFrame: TSettingLevelFrame
-  Size.Width = 403.000000000000000000
-  Size.Height = 299.000000000000000000
-  Size.PlatformDefault = False
-end

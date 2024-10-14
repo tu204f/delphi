@@ -1,0 +1,64 @@
+object SettingLimitTimeFrame: TSettingLimitTimeFrame
+  Size.Width = 385.000000000000000000
+  Size.Height = 65.000000000000000000
+  Size.PlatformDefault = False
+  object Rectangle: TRectangle
+    Align = Client
+    Size.Width = 385.000000000000000000
+    Size.Height = 65.000000000000000000
+    Size.PlatformDefault = False
+    object TimeEditBegin: TTimeEdit
+      Time = 0.221392743055555600
+      Anchors = [akTop, akRight]
+      Position.X = 177.000000000000000000
+      Position.Y = 25.000000000000000000
+      Size.Width = 100.000000000000000000
+      Size.Height = 33.000000000000000000
+      Size.PlatformDefault = False
+      StyledSettings = [Family, Style, FontColor]
+      TextSettings.Font.Size = 20.000000000000000000
+      TextSettings.HorzAlign = Center
+      TabOrder = 1
+    end
+    object TimeEditEnd: TTimeEdit
+      Time = 0.221392743055555600
+      Anchors = [akTop, akRight]
+      Position.X = 281.000000000000000000
+      Position.Y = 25.000000000000000000
+      Size.Width = 100.000000000000000000
+      Size.Height = 33.000000000000000000
+      Size.PlatformDefault = False
+      StyledSettings = [Family, Style, FontColor]
+      TextSettings.Font.Size = 20.000000000000000000
+      TextSettings.HorzAlign = Center
+      TabOrder = 0
+    end
+    object LayoutTille: TLayout
+      Align = Top
+      Margins.Left = 3.000000000000000000
+      Position.X = 3.000000000000000000
+      Size.Width = 382.000000000000000000
+      Size.Height = 21.000000000000000000
+      Size.PlatformDefault = False
+      TabOrder = 2
+      object Text1: TText
+        Align = Client
+        Size.Width = 382.000000000000000000
+        Size.Height = 21.000000000000000000
+        Size.PlatformDefault = False
+        Text = #1048#1085#1090#1077#1088#1074#1072#1083' '#1074#1088#1077#1084#1077#1085#1080', '#1082#1086#1075#1076#1072' '#1084#1086#1078#1085#1086' '#1090#1086#1088#1075#1086#1074#1072#1090#1100
+        TextSettings.HorzAlign = Leading
+      end
+    end
+    object CheckBoxIsLimit: TCheckBox
+      Anchors = [akTop, akRight]
+      Position.X = 48.000000000000000000
+      Position.Y = 30.000000000000000000
+      Size.Width = 125.000000000000000000
+      Size.Height = 23.000000000000000000
+      Size.PlatformDefault = False
+      TabOrder = 3
+      Text = #1058#1086#1088#1075#1086#1074#1099#1081' '#1087#1077#1088#1080#1086#1076
+    end
+  end
+end

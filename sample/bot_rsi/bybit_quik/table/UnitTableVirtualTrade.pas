@@ -89,7 +89,7 @@ begin
       begin
         var xParamTrade := xPostionTrade.HistoryTrades[j];
         TableGrid.RowCount := iCount + 1;
-        TableGrid.Cells[0,iCount] := TimeToStr(xParamTrade.Date);
+        TableGrid.Cells[0,iCount] := DateToStr(xParamTrade.Date);
         TableGrid.Cells[1,iCount] := TimeToStr(xParamTrade.Time);
         TableGrid.Cells[2,iCount] := xParamTrade.Symbol;
         TableGrid.Cells[3,iCount] := GetStrToTypeSide(xParamTrade.Side);

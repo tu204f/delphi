@@ -105,6 +105,7 @@ end;
 procedure TMainForm.ButtonStartClick(Sender: TObject);
 begin
   {todo: передать параметры для запроса}
+
   InstrumentsInfo.IsSaveResponse := True;
   InstrumentsInfo.FileName := ExtractFilePath(ParamStr(0)) + 'instrument.json';
   InstrumentsInfo.Category := TTypeCategory.tcLinear;

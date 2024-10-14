@@ -22,8 +22,7 @@ uses
   FMX.Objects,
   Lb.SysUtils,
   Lb.Status,
-  Lb.Status.Quik,
-  Lb.Status.Bybit;
+  UnitOrderUsersFrame;
 
 
 type
@@ -32,6 +31,7 @@ type
     LayoutSell: TLayout;
     LayoutBuy: TLayout;
     LayoutInfo: TLayout;
+    LayoutButtomBuySell: TLayout;
   private
     procedure InitOrderCategoryFrame;
   protected
@@ -42,6 +42,7 @@ type
     procedure EventSendTarde(Sender: TObject; ATradeParam: TTradeParam);
   public
     StatusFrame: TStatusFrame;
+    OrderUsersFrame: TOrderUsersFrame;
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
   end;
@@ -60,10 +61,12 @@ constructor TMainClientFrame.Create(AOwner: TComponent);
 begin
   inherited;
   InitOrderCategoryFrame;
+
 end;
 
 destructor TMainClientFrame.Destroy;
 begin
+  FreeAndNil(OrderUsersFrame);
   FreeAndNil(OrderCategoryBuy);
   FreeAndNil(OrderCategorySell);
   inherited;
@@ -91,7 +94,6 @@ procedure TMainClientFrame.InitOrderCategoryFrame;
     Result := xFrame;
   end;
 
-
 begin
   OrderCategoryBuy  := _InitOrderCategoryFrame(LayoutBuy);
   OrderCategoryBuy.Side := TQBTypeSide.tsBuy;
@@ -101,9 +103,14 @@ begin
   OrderCategorySell.Side := TQBTypeSide.tsSell;
   OrderCategorySell.OnEventSendTarde := EventSendTarde;
 
+  OrderUsersFrame := TOrderUsersFrame.Create(nil);
+  OrderUsersFrame.OnEventSendTarde := EventSendTarde;
+  OrderUsersFrame.Align := TAlignLayout.Client;
+  OrderUsersFrame.Parent := LayoutButtomBuySell;
+
   StatusFrame := _InitStatusFrame;
-  StatusFrame.Status.OnParams := StatusFrameOnParams;
-  StatusFrame.Status.OnNewCandel := StatusFrameOnNewCandel;
+  Status.OnParams := StatusFrameOnParams;
+  Status.OnNewCandel := StatusFrameOnNewCandel;
 end;
 
 procedure TMainClientFrame.StatusFrameOnNewCandel(Sender: TObject);
@@ -117,13 +124,13 @@ procedure TMainClientFrame.StatusFrameOnParams(Sender: TObject);
 var
   xParam: TSituationParam;
 begin
-  xParam.FastRSI     := StatusFrame.Status.FastRSI;
-  xParam.SlowRSI     := StatusFrame.Status.SlowRSI;
-  xParam.Bid         := StatusFrame.Status.Bid;
-  xParam.Ask         := StatusFrame.Status.Ask;
-  xParam.Qty         := StatusFrame.Status.Position.Qty;
-  xParam.Side        := StatusFrame.Status.Position.Side;
-  xParam.IsNewCandel := StatusFrame.Status.IsNewCandel;
+  xParam.FastRSI     := Status.FastRSI;
+  xParam.SlowRSI     := Status.SlowRSI;
+  xParam.Bid         := Status.Bid;
+  xParam.Ask         := Status.Ask;
+  xParam.Qty         := Status.Position.Qty;
+  xParam.Side        := Status.Position.Side;
+  xParam.IsNewCandel := Status.IsNewCandel;
 {$IFDEF DBG_TRD}
   TLogger.LogTree(0,'procedure TMainClientFrame.StatusFrameOnParams');
   TLogger.LogTreeText(3,'>> FastRSI = ' + xParam.FastRSI.ToString);
@@ -139,7 +146,7 @@ begin
 {$ENDIF}
   // -------------------------------------------------------------------------
   // Проверяем новая свечу
-  if ParamApplication.IsNewCandel then
+  if ParamPlatform.IsNewCandel then
   begin
     if xParam.IsNewCandel then
     begin
@@ -152,11 +159,13 @@ begin
     OrderCategoryBuy.SetParams(xParam);
     OrderCategorySell.SetParams(xParam);
   end;
+
+  OrderUsersFrame.SetValueParam(xParam);
 end;
 
 procedure TMainClientFrame.EventSendTarde(Sender: TObject; ATradeParam: TTradeParam);
 begin
-  StatusFrame.Status.GetOperationTrade(
+  Status.GetOperationTrade(
     TParamStatus.Create(
       ATradeParam.Side,
       ATradeParam.Price,

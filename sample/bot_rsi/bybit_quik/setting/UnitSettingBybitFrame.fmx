@@ -1,6 +1,6 @@
 object SettingBybitFrame: TSettingBybitFrame
   Size.Width = 513.000000000000000000
-  Size.Height = 303.000000000000000000
+  Size.Height = 423.000000000000000000
   Size.PlatformDefault = False
   object Text1: TText
     Position.X = 8.000000000000000000
@@ -62,10 +62,37 @@ object SettingBybitFrame: TSettingBybitFrame
   object LayoutTactics: TLayout
     Anchors = [akLeft, akTop, akRight]
     Position.X = 132.000000000000000000
-    Position.Y = 96.000000000000000000
+    Position.Y = 124.000000000000000000
     Size.Width = 373.000000000000000000
     Size.Height = 100.000000000000000000
     Size.PlatformDefault = False
+    TabOrder = 6
+  end
+  object ComboBoxInterval: TComboBox
+    Anchors = [akLeft, akTop, akRight]
+    Position.X = 132.000000000000000000
+    Position.Y = 96.000000000000000000
+    Size.Width = 373.000000000000000000
+    Size.Height = 22.000000000000000000
+    Size.PlatformDefault = False
     TabOrder = 7
+  end
+  object Text4: TText
+    Position.X = 8.000000000000000000
+    Position.Y = 96.000000000000000000
+    Size.Width = 121.000000000000000000
+    Size.Height = 21.000000000000000000
+    Size.PlatformDefault = False
+    Text = #1048#1085#1090#1077#1088#1074#1072#1083
+    TextSettings.HorzAlign = Leading
+  end
+  object LayoutTimeLimit: TLayout
+    Anchors = [akLeft, akTop, akRight]
+    Position.X = 132.000000000000000000
+    Position.Y = 228.000000000000000000
+    Size.Width = 373.000000000000000000
+    Size.Height = 65.000000000000000000
+    Size.PlatformDefault = False
+    TabOrder = 9
   end
 end

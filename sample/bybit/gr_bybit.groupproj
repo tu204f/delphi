@@ -27,22 +27,10 @@
         <Projects Include="sample\order_book\orderbook.dproj">
             <Dependencies/>
         </Projects>
-        <Projects Include="sample\demo_bot\demo_bot.dproj">
-            <Dependencies/>
-        </Projects>
-        <Projects Include="sample\demo_bot_2\demo_bot_2.dproj">
-            <Dependencies/>
-        </Projects>
         <Projects Include="sample\indicator\indicator.dproj">
             <Dependencies/>
         </Projects>
-        <Projects Include="sample\demo_bot_3\demo_bot_rsi.dproj">
-            <Dependencies/>
-        </Projects>
-        <Projects Include="sample\learning\learning.dproj">
-            <Dependencies/>
-        </Projects>
-        <Projects Include="sample\learning_2\learning_2.dproj">
+        <Projects Include="sample\order_history\get_oh.dproj">
             <Dependencies/>
         </Projects>
     </ItemGroup>
@@ -125,24 +113,6 @@
     <Target Name="orderbook:Make">
         <MSBuild Projects="sample\order_book\orderbook.dproj" Targets="Make"/>
     </Target>
-    <Target Name="demo_bot">
-        <MSBuild Projects="sample\demo_bot\demo_bot.dproj"/>
-    </Target>
-    <Target Name="demo_bot:Clean">
-        <MSBuild Projects="sample\demo_bot\demo_bot.dproj" Targets="Clean"/>
-    </Target>
-    <Target Name="demo_bot:Make">
-        <MSBuild Projects="sample\demo_bot\demo_bot.dproj" Targets="Make"/>
-    </Target>
-    <Target Name="demo_bot_2">
-        <MSBuild Projects="sample\demo_bot_2\demo_bot_2.dproj"/>
-    </Target>
-    <Target Name="demo_bot_2:Clean">
-        <MSBuild Projects="sample\demo_bot_2\demo_bot_2.dproj" Targets="Clean"/>
-    </Target>
-    <Target Name="demo_bot_2:Make">
-        <MSBuild Projects="sample\demo_bot_2\demo_bot_2.dproj" Targets="Make"/>
-    </Target>
     <Target Name="indicator">
         <MSBuild Projects="sample\indicator\indicator.dproj"/>
     </Target>
@@ -152,41 +122,23 @@
     <Target Name="indicator:Make">
         <MSBuild Projects="sample\indicator\indicator.dproj" Targets="Make"/>
     </Target>
-    <Target Name="demo_bot_rsi">
-        <MSBuild Projects="sample\demo_bot_3\demo_bot_rsi.dproj"/>
+    <Target Name="get_oh">
+        <MSBuild Projects="sample\order_history\get_oh.dproj"/>
     </Target>
-    <Target Name="demo_bot_rsi:Clean">
-        <MSBuild Projects="sample\demo_bot_3\demo_bot_rsi.dproj" Targets="Clean"/>
+    <Target Name="get_oh:Clean">
+        <MSBuild Projects="sample\order_history\get_oh.dproj" Targets="Clean"/>
     </Target>
-    <Target Name="demo_bot_rsi:Make">
-        <MSBuild Projects="sample\demo_bot_3\demo_bot_rsi.dproj" Targets="Make"/>
-    </Target>
-    <Target Name="learning">
-        <MSBuild Projects="sample\learning\learning.dproj"/>
-    </Target>
-    <Target Name="learning:Clean">
-        <MSBuild Projects="sample\learning\learning.dproj" Targets="Clean"/>
-    </Target>
-    <Target Name="learning:Make">
-        <MSBuild Projects="sample\learning\learning.dproj" Targets="Make"/>
-    </Target>
-    <Target Name="learning_2">
-        <MSBuild Projects="sample\learning_2\learning_2.dproj"/>
-    </Target>
-    <Target Name="learning_2:Clean">
-        <MSBuild Projects="sample\learning_2\learning_2.dproj" Targets="Clean"/>
-    </Target>
-    <Target Name="learning_2:Make">
-        <MSBuild Projects="sample\learning_2\learning_2.dproj" Targets="Make"/>
+    <Target Name="get_oh:Make">
+        <MSBuild Projects="sample\order_history\get_oh.dproj" Targets="Make"/>
     </Target>
     <Target Name="Build">
-        <CallTarget Targets="bybit;instrument;recent_trade;candels;history;place;reconnect;orderbook;demo_bot;demo_bot_2;indicator;demo_bot_rsi;learning;learning_2"/>
+        <CallTarget Targets="bybit;instrument;recent_trade;candels;history;place;reconnect;orderbook;indicator;get_oh"/>
     </Target>
     <Target Name="Clean">
-        <CallTarget Targets="bybit:Clean;instrument:Clean;recent_trade:Clean;candels:Clean;history:Clean;place:Clean;reconnect:Clean;orderbook:Clean;demo_bot:Clean;demo_bot_2:Clean;indicator:Clean;demo_bot_rsi:Clean;learning:Clean;learning_2:Clean"/>
+        <CallTarget Targets="bybit:Clean;instrument:Clean;recent_trade:Clean;candels:Clean;history:Clean;place:Clean;reconnect:Clean;orderbook:Clean;indicator:Clean;get_oh:Clean"/>
     </Target>
     <Target Name="Make">
-        <CallTarget Targets="bybit:Make;instrument:Make;recent_trade:Make;candels:Make;history:Make;place:Make;reconnect:Make;orderbook:Make;demo_bot:Make;demo_bot_2:Make;indicator:Make;demo_bot_rsi:Make;learning:Make;learning_2:Make"/>
+        <CallTarget Targets="bybit:Make;instrument:Make;recent_trade:Make;candels:Make;history:Make;place:Make;reconnect:Make;orderbook:Make;indicator:Make;get_oh:Make"/>
     </Target>
     <Import Project="$(BDS)\Bin\CodeGear.Group.Targets" Condition="Exists('$(BDS)\Bin\CodeGear.Group.Targets')"/>
 </Project>

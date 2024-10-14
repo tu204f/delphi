@@ -33,7 +33,7 @@ uses
   Lb.DataModuleDB in '..\..\..\library\db\Lb.DataModuleDB.pas' {DataModuleDB: TDataModule},
   Lb.Resource.Script in '..\..\..\library\Lb.Resource.Script.pas',
   Lb.History.DB in '..\lib\Lb.History.DB.pas',
-  Lb.HistoryIndicator in '..\lib\Lb.HistoryIndicator.pas',
+  Lb.HistoryIndicator.Bybit in '..\lib\Lb.HistoryIndicator.Bybit.pas',
   Lb.SysUtils in '..\lib\Lb.SysUtils.pas',
   Lb.Trader in '..\lib\Lb.Trader.pas',
   Lb.VirtualTrade in '..\lib\Lb.VirtualTrade.pas',

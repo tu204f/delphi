@@ -5,7 +5,7 @@ object StatusFrame: TStatusFrame
   object Rectangle1: TRectangle
     Align = Client
     Size.Width = 535.000000000000000000
-    Size.Height = 47.000000000000000000
+    Size.Height = 69.000000000000000000
     Size.PlatformDefault = False
     object EditValueRSI: TEdit
       Touch.InteractiveGestures = [LongTap, DoubleTap]
@@ -19,8 +19,8 @@ object StatusFrame: TStatusFrame
       Margins.Left = 3.000000000000000000
       Margins.Top = 3.000000000000000000
       Margins.Bottom = 3.000000000000000000
-      Size.Width = 250.000000000000000000
-      Size.Height = 41.000000000000000000
+      Size.Width = 316.000000000000000000
+      Size.Height = 63.000000000000000000
       Size.PlatformDefault = False
       StyledSettings = [Family, FontColor]
     end
@@ -31,54 +31,16 @@ object StatusFrame: TStatusFrame
       ReadOnly = True
       TextSettings.Font.Size = 16.000000000000000000
       TextSettings.Font.StyleExt = {00070000000000000004000000}
-      Position.X = 256.000000000000000000
+      Position.X = 322.000000000000000000
       Position.Y = 3.000000000000000000
       Enabled = False
       Margins.Left = 3.000000000000000000
       Margins.Top = 3.000000000000000000
       Margins.Bottom = 3.000000000000000000
       Size.Width = 213.000000000000000000
-      Size.Height = 41.000000000000000000
+      Size.Height = 63.000000000000000000
       Size.PlatformDefault = False
       StyledSettings = [Family, FontColor]
     end
-    object ButtonSell: TButton
-      Align = Right
-      Margins.Left = 3.000000000000000000
-      Margins.Top = 3.000000000000000000
-      Margins.Right = 3.000000000000000000
-      Margins.Bottom = 3.000000000000000000
-      Position.X = 502.000000000000000000
-      Position.Y = 3.000000000000000000
-      Size.Width = 30.000000000000000000
-      Size.Height = 41.000000000000000000
-      Size.PlatformDefault = False
-      TabOrder = 4
-      Text = 'Sell'
-      OnClick = ButtonSellClick
-    end
-    object ButtonBuy: TButton
-      Align = Right
-      Margins.Top = 3.000000000000000000
-      Margins.Bottom = 3.000000000000000000
-      Position.X = 469.000000000000000000
-      Position.Y = 3.000000000000000000
-      Size.Width = 30.000000000000000000
-      Size.Height = 41.000000000000000000
-      Size.PlatformDefault = False
-      TabOrder = 5
-      Text = 'Buy'
-      OnClick = ButtonBuyClick
-    end
-  end
-  object EditMsgOrder: TEdit
-    Touch.InteractiveGestures = [LongTap, DoubleTap]
-    Align = Bottom
-    TabOrder = 1
-    ReadOnly = True
-    Position.Y = 47.000000000000000000
-    Size.Width = 535.000000000000000000
-    Size.Height = 22.000000000000000000
-    Size.PlatformDefault = False
   end
 end

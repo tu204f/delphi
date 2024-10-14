@@ -64,8 +64,8 @@ begin
   // Список сделок
   BybitRecentTrade.Category := TTypeCategory.tcLinear;
   BybitRecentTrade.Symbol := 'BTCUSDT';
-  BybitRecentTrade.Start(1000);
   BybitRecentTrade.Limit := 100;
+  BybitRecentTrade.Start(1000);
 end;
 
 procedure TMainForm.ButtonStopClick(Sender: TObject);
@@ -117,7 +117,8 @@ begin
           xRecentTrade.Size.ToString + ';' +
           GetStrToTypeSide(xRecentTrade.Side) + ';' +
           xRecentTrade.Time.ToString;
-        _SaveTrade(xS);
+        //_SaveTrade(xS);
+        Memo.Lines.Add(xS);
         FBuffers.Add(xRecentTrade.ExecID);
       end
       else

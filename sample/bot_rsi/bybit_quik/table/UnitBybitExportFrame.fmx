@@ -36,6 +36,7 @@ object BybitExportFrame: TBybitExportFrame
         Size.Height = 20.000000000000000000
         Size.PlatformDefault = False
         TabOrder = 1
+        OnChange = ComboBoxTableChange
       end
     end
     object StrGrid: TStringGrid
@@ -46,8 +47,9 @@ object BybitExportFrame: TBybitExportFrame
       Size.Height = 374.000000000000000000
       Size.PlatformDefault = False
       TabOrder = 1
-      Viewport.Width = 552.000000000000000000
-      Viewport.Height = 374.000000000000000000
+      Options = [Editing, ColumnResize, ColumnMove, ColLines, RowLines, RowSelect, Tabs, Header, HeaderClick, AutoDisplacement]
+      Viewport.Width = 548.000000000000000000
+      Viewport.Height = 349.000000000000000000
     end
   end
   object Timer: TTimer

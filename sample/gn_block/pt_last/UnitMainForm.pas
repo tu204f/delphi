@@ -139,7 +139,7 @@ end;
 procedure TMainForm.SetLog(S: String);
 begin
   Memo.Lines.Add(S);
-  if Memo.Lines.Count > 70 then
+  if Memo.Lines.Count > 50 then
     Memo.Lines.Delete(0);
 end;
 

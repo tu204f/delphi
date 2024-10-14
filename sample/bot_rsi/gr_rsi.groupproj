@@ -15,6 +15,9 @@
         <Projects Include="bybit_quik\rsi_bq.dproj">
             <Dependencies/>
         </Projects>
+        <Projects Include="bq_rsi_2\rsi_bq_2.dproj">
+            <Dependencies/>
+        </Projects>
     </ItemGroup>
     <ProjectExtensions>
         <Borland.Personality>Default.Personality.12</Borland.Personality>
@@ -59,14 +62,23 @@
     <Target Name="rsi_bq:Make">
         <MSBuild Projects="bybit_quik\rsi_bq.dproj" Targets="Make"/>
     </Target>
+    <Target Name="rsi_bq_2">
+        <MSBuild Projects="bq_rsi_2\rsi_bq_2.dproj"/>
+    </Target>
+    <Target Name="rsi_bq_2:Clean">
+        <MSBuild Projects="bq_rsi_2\rsi_bq_2.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="rsi_bq_2:Make">
+        <MSBuild Projects="bq_rsi_2\rsi_bq_2.dproj" Targets="Make"/>
+    </Target>
     <Target Name="Build">
-        <CallTarget Targets="rsi_quik;rsi_bybit;rsi_quik_v2;rsi_bq"/>
+        <CallTarget Targets="rsi_quik;rsi_bybit;rsi_quik_v2;rsi_bq;rsi_bq_2"/>
     </Target>
     <Target Name="Clean">
-        <CallTarget Targets="rsi_quik:Clean;rsi_bybit:Clean;rsi_quik_v2:Clean;rsi_bq:Clean"/>
+        <CallTarget Targets="rsi_quik:Clean;rsi_bybit:Clean;rsi_quik_v2:Clean;rsi_bq:Clean;rsi_bq_2:Clean"/>
     </Target>
     <Target Name="Make">
-        <CallTarget Targets="rsi_quik:Make;rsi_bybit:Make;rsi_quik_v2:Make;rsi_bq:Make"/>
+        <CallTarget Targets="rsi_quik:Make;rsi_bybit:Make;rsi_quik_v2:Make;rsi_bq:Make;rsi_bq_2:Make"/>
     </Target>
     <Import Project="$(BDS)\Bin\CodeGear.Group.Targets" Condition="Exists('$(BDS)\Bin\CodeGear.Group.Targets')"/>
 </Project>

@@ -194,18 +194,36 @@
             <Form>MainForm</Form>
             <FormType>fmx</FormType>
         </DCCReference>
-        <DCCReference Include="..\lb\Lb.Bybit.SysUtils.pas"/>
-        <DCCReference Include="..\lb\Lb.Bybit.Candels.pas"/>
         <DCCReference Include="..\..\..\library\trade\patern\Lb.SysUtils.Candel.pas"/>
-        <DCCReference Include="..\lb\Lb.Bybit.Announcement.pas"/>
-        <DCCReference Include="..\lb\market\Lb.Bybit.InstrumentsInfo.pas"/>
-        <DCCReference Include="..\lb\market\Lb.Bybit.ServerTime.pas"/>
-        <DCCReference Include="..\lb\market\Lb.Bybit.Kline.pas"/>
-        <DCCReference Include="..\lb\Lb.Bybit.Encryption.pas"/>
-        <DCCReference Include="..\lb\position\Lb.Bybit.Position.pas"/>
-        <DCCReference Include="..\lb\trade\Lb.Bybit.Trade.pas"/>
-        <DCCReference Include="..\lb\Lb.Bybit.pas"/>
-        <DCCReference Include="..\lb\market\Lb.Bybit.OrderBook.pas"/>
+        <DCCReference Include="..\..\..\library\trade\bybit\trade\Lb.Bybit.RealTime.pas"/>
+        <DCCReference Include="..\..\..\library\trade\bybit\trade\Lb.Bybit.Trade.pas"/>
+        <DCCReference Include="..\..\..\library\trade\bybit\Lb.Bot.Tiket.pas"/>
+        <DCCReference Include="..\..\..\library\trade\bybit\Lb.Bybit.Announcement.pas"/>
+        <DCCReference Include="..\..\..\library\trade\bybit\Lb.Bybit.API.pas"/>
+        <DCCReference Include="..\..\..\library\trade\bybit\Lb.Bybit.Candels.pas"/>
+        <DCCReference Include="..\..\..\library\trade\bybit\Lb.Bybit.Encryption.pas"/>
+        <DCCReference Include="..\..\..\library\trade\bybit\Lb.Bybit.pas"/>
+        <DCCReference Include="..\..\..\library\trade\bybit\Lb.Bybit.SysUtils.pas"/>
+        <DCCReference Include="..\..\..\library\trade\bybit\Lb.Bybit.Test.pas"/>
+        <DCCReference Include="..\..\..\library\trade\bybit\Lb.SysUtils.pas"/>
+        <DCCReference Include="..\..\..\library\trade\bybit\Lb.TradeMan.pas"/>
+        <DCCReference Include="..\..\..\library\trade\bybit\position\Lb.Bybit.Position.pas"/>
+        <DCCReference Include="..\..\..\library\trade\bybit\market\Lb.Bybit.InstrumentsInfo.pas"/>
+        <DCCReference Include="..\..\..\library\trade\bybit\market\Lb.Bybit.Kline.pas"/>
+        <DCCReference Include="..\..\..\library\trade\bybit\market\Lb.Bybit.OrderBook.pas"/>
+        <DCCReference Include="..\..\..\library\trade\bybit\market\Lb.Bybit.RecentTrade.pas"/>
+        <DCCReference Include="..\..\..\library\trade\bybit\market\Lb.Bybit.ServerTime.pas"/>
+        <DCCReference Include="..\..\..\library\trade\bybit\chart\UnitCandelFrame.pas">
+            <Form>CandelFrame</Form>
+            <FormType>fmx</FormType>
+            <DesignClass>TFrame</DesignClass>
+        </DCCReference>
+        <DCCReference Include="..\..\..\library\trade\bybit\chart\UnitChartFrame.pas">
+            <Form>ChartFrame</Form>
+            <FormType>fmx</FormType>
+            <DesignClass>TFrame</DesignClass>
+        </DCCReference>
+        <DCCReference Include="..\..\..\library\Lb.Logger.pas"/>
         <BuildConfiguration Include="Release">
             <Key>Cfg_2</Key>
             <CfgParent>Base</CfgParent>

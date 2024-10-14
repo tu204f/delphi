@@ -58,15 +58,32 @@ procedure TQuikStatus.DoStart;
 begin
   inherited DoStart;
   FCurrentTime := 0;
-  FRSIQuikTable  := QuikManagerTable.Tables.GetTableName(ParamApplication.QuikTableRSI);
-  FSecurityTable := QuikManagerTable.Tables.GetTableName('security');
-  FQtyTable      := QuikManagerTable.Tables.GetTableName('qty');
+
+  FRSIQuikTable := nil;
+  FSecurityTable := nil;
+  FQtyTable := nil;
+
+  with QuikManagerTable.Tables do
+  begin
+    if IsTableName(ParamPlatform.QuikTableRSI) then
+      FRSIQuikTable  := GetTableName(ParamPlatform.QuikTableRSI);
+    if IsTableName('security') then
+      FSecurityTable := GetTableName('security');
+    if IsTableName('qty') then
+      FQtyTable := QuikManagerTable.Tables.GetTableName('qty');
+  end;
 end;
 
 procedure TQuikStatus.DoSelected;
 var
   xCurrentTime: TDateTime;
 begin
+  if not Assigned(FRSIQuikTable) then
+  begin
+    Stop;
+    Exit;
+  end;
+
   MinStep := 0;
   IsNewCandel := False;
 
@@ -85,7 +102,7 @@ begin
   end;
 
 
-  if GetSecCodeToTable(ParamApplication.SecCode,'CODE',FSecurityTable) then
+  if GetSecCodeToTable(ParamPlatform.SecCode,'CODE',FSecurityTable) then
   begin
     Bid := FSecurityTable.ByName['BID'].AsDouble;
     Ask := FSecurityTable.ByName['OFFER'].AsDouble;
@@ -93,10 +110,10 @@ begin
   end;
 
   // Включена вертуализация сделки
-  if not ParamApplication.IsVirtualChecked then
+  if not ParamPlatform.IsVirtualChecked then
   begin
     // Размер позиции
-    if GetSecCodeToTable(ParamApplication.SecCode,'SECCODE',FQtyTable) then
+    if GetSecCodeToTable(ParamPlatform.SecCode,'SECCODE',FQtyTable) then
       Position.Qty := FQtyTable.ByName['TOTAL_NET'].AsDouble;
 
     if Position.Qty > 0 then
@@ -140,21 +157,18 @@ var
   xBuySell: Char;
   xSyncOrder: TCustomSyncOrder;
 begin
-  if Date > (StrToDate('01.09.2024') + 30)  then
-    Exit;
-
   Result := inherited GetOperationTrade(AParamStatus);
-  if not ParamApplication.IsVirtualChecked then
+  if not ParamPlatform.IsVirtualChecked then
   begin
-    GetConnectQUIK(ParamApplication.PathQuik);
+    GetConnectQUIK(ParamPlatform.PathQuik);
     xBuySell := _BuySellToSide(AParamStatus.Side);
     if CharInSet(xBuySell,['B','S']) then
     begin
       xSyncOrder := TCustomSyncOrder.Create;
       try
-        xSyncOrder.SecCode   := ParamApplication.SecCode;
-        xSyncOrder.ClassCode := ParamApplication.ClassCode;
-        xSyncOrder.TrdaccID  := ParamApplication.TrdaccID;
+        xSyncOrder.SecCode   := ParamPlatform.SecCode;
+        xSyncOrder.ClassCode := ParamPlatform.ClassCode;
+        xSyncOrder.TrdaccID  := ParamPlatform.TrdaccID;
         xSyncOrder.GetNewOrder(
           _MktPrice(xBuySell,AParamStatus.Price),
           Trunc(AParamStatus.Qty),

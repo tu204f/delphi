@@ -35,14 +35,14 @@ type
     TabItemMain: TTabItem;
     ButtonStartStop: TButton;
     TabItemTable: TTabItem;
-    ButtonTactics: TButton;
     procedure ButtonSettingClick(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure ButtonStartStopClick(Sender: TObject);
     procedure ButtonTableClick(Sender: TObject);
-    procedure ButtonTacticsClick(Sender: TObject);
+    procedure FormClose(Sender: TObject; var Action: TCloseAction);
   private
-
+    procedure StatusOnStart(Sender: TObject);
+    procedure StatusOnStop(Sender: TObject);
   protected
     procedure InitFrame;
     procedure EventCloseTabControl;
@@ -61,6 +61,9 @@ var
 implementation
 
 {$R *.fmx}
+
+uses
+  Lb.Status;
 
 { TMainForm }
 
@@ -81,11 +84,24 @@ end;
 procedure TMainForm.FormShow(Sender: TObject);
 begin
   Self.Caption :=
-    'xBot - ' + GetStrToTypePlatform(ParamApplication.TypePlatform) +
+    'xBot - ' + GetStrToTypePlatform(ParamPlatform.TypePlatform) +
     ' [' + GetApplicationVersion + '] ';
 {$IFDEF DEBUG}
   Self.Caption := Self.Caption + ' debug';
 {$ENDIF}
+  SetBounds(
+    Self.Left,
+    Self.Top,
+    ParamApplication.Width,
+    ParamApplication.Height
+  );
+end;
+
+procedure TMainForm.FormClose(Sender: TObject; var Action: TCloseAction);
+begin
+  ParamApplication.Height := Self.Height;
+  ParamApplication.Width := Self.Width;
+  ParamApplication.Save;
 end;
 
 procedure TMainForm.InitFrame;
@@ -119,12 +135,16 @@ begin
   _InitTableFrame;
   SettingFrame.LoadSetting;
   TabControl.ActiveTab := TabItemMain;
+
+  Status.OnStart := StatusOnStart;
+  Status.OnStop := StatusOnStop;
 end;
 
 procedure TMainForm.SetHeaderCaption(const ACaption: String);
 begin
   Self.Caption := ACaption;
 end;
+
 
 procedure TMainForm.EventCloseTabControl;
 begin
@@ -136,30 +156,29 @@ begin
   TabControl.ActiveTab := TabItemSetting;
 end;
 
+procedure TMainForm.StatusOnStart(Sender: TObject);
+begin
+  ButtonStartStop.Text := 'Стоп';
+end;
+
+procedure TMainForm.StatusOnStop(Sender: TObject);
+begin
+  ButtonStartStop.Text := 'Старт';
+end;
+
 procedure TMainForm.ButtonStartStopClick(Sender: TObject);
 begin
   // Запускам или остановливаем торговую стратегию
-  if MainClientFrame.StatusFrame.Status.IsActive then
-  begin
-    ButtonStartStop.Text := 'Старт';
-    MainClientFrame.StatusFrame.Status.Stop;
-  end
+  if Status.IsActive then
+    Status.Stop
   else
-  begin
-    ButtonStartStop.Text := 'Стоп';
-    MainClientFrame.StatusFrame.Status.Start;
-  end;
+    Status.Start;
 end;
 
 procedure TMainForm.ButtonTableClick(Sender: TObject);
 begin
   // Показывать результат работы программы
   TabControl.ActiveTab := TabItemTable;
-end;
-
-procedure TMainForm.ButtonTacticsClick(Sender: TObject);
-begin
-  //
 end;
 
 end.

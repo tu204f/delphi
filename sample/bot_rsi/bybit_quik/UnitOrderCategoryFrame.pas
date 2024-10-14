@@ -53,6 +53,9 @@ type
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
     procedure SetParams(const AParam: TSituationParam);
+    ///<summary>
+    /// Направление заявки блока
+    ///</summary>
     property Side: TTypeSide read FSide write SetSide;
     property OnEventSendTarde: TOnEventSendTarde write FOnEventSendTarde;
   end;

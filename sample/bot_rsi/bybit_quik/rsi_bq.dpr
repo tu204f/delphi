@@ -45,13 +45,15 @@ uses
   Lb.Status.Quik in 'status\Lb.Status.Quik.pas',
   Lb.Status.Bybit in 'status\Lb.Status.Bybit.pas',
   Lb.Status in 'status\Lb.Status.pas',
-  Lb.HistoryIndicator in '..\lib\Lb.HistoryIndicator.pas',
+  Lb.HistoryIndicator.Bybit in '..\lib\Lb.HistoryIndicator.Bybit.pas',
   UnitSettingFrame in 'setting\UnitSettingFrame.pas' {SettingFrame: TFrame},
-  UnitSettingLevelFrame in 'setting\UnitSettingLevelFrame.pas' {SettingLevelFrame: TFrame},
   UnitLogForm in 'log\UnitLogForm.pas' {LogForm},
   UnitBybitExportFrame in 'table\UnitBybitExportFrame.pas' {BybitExportFrame: TFrame},
   UnitSettingTacticsFrame in 'setting\UnitSettingTacticsFrame.pas' {SettingTacticsFrame: TFrame},
-  Lb.VirtualTrade.V2 in '..\lib\Lb.VirtualTrade.V2.pas';
+  Lb.VirtualTrade.V2 in '..\lib\Lb.VirtualTrade.V2.pas',
+  UnitSettingLimitTimeFrame in 'setting\UnitSettingLimitTimeFrame.pas' {SettingLimitTimeFrame: TFrame},
+  UnitOrderUsersFrame in 'UnitOrderUsersFrame.pas' {OrderUsersFrame: TFrame},
+  Lb.Bot.Position in 'bot\Lb.Bot.Position.pas';
 
 {$R *.res}
 

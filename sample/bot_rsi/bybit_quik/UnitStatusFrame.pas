@@ -20,9 +20,7 @@ uses
   FMX.Controls.Presentation,
   FMX.Edit,
   Lb.SysUtils,
-  Lb.Status,
-  Lb.Status.Quik,
-  Lb.Status.Bybit;
+  Lb.Status;
 
 type
   ///<summary>
@@ -35,21 +33,11 @@ type
     Rectangle1: TRectangle;
     EditQty: TEdit;
     EditValueRSI: TEdit;
-    ButtonSell: TButton;
-    ButtonBuy: TButton;
-    EditMsgOrder: TEdit;
-    procedure ButtonBuyClick(Sender: TObject);
-    procedure ButtonSellClick(Sender: TObject);
   private
-    FQuikStatus: TQuikStatus;
-    FBybitStatus: TBybitStatus;
-    function GetStatus: TCustomStatus;
     procedure QuikStatusOnUpDate(Sender: TObject);
-    procedure QuikStatusOnInfoMsg(Sender: TObject; S: String);
   public
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
-    property Status: TCustomStatus read GetStatus;
   end;
 
 implementation
@@ -58,60 +46,16 @@ implementation
 
 { TStatusFrame }
 
-procedure TStatusFrame.ButtonBuyClick(Sender: TObject);
-var
-  xPrice: Double;
-  xParamStatus: TParamStatus;
-begin
-  case ParamApplication.TypePlatform of
-    TTypePlatform.tpBybit:
-      xParamStatus := TParamStatus.Create(TQBTypeSide.tsBuy,Status.Ask + 100,1,TTypeLine.tlOpen1);
-    TTypePlatform.tpQuik:
-      xParamStatus := TParamStatus.Create(TQBTypeSide.tsBuy,Status.Ask,1,TTypeLine.tlOpen1);
-  end;
-  Status.GetOperationTrade(xParamStatus);
-end;
-
-procedure TStatusFrame.ButtonSellClick(Sender: TObject);
-var
-  xParamStatus: TParamStatus;
-begin
-  case ParamApplication.TypePlatform of
-    TTypePlatform.tpBybit:
-      xParamStatus := TParamStatus.Create(TQBTypeSide.tsSell,Status.Bid - 100,1,TTypeLine.tlOpen1);
-    TTypePlatform.tpQuik:
-      xParamStatus := TParamStatus.Create(TQBTypeSide.tsSell,Status.Bid,1,TTypeLine.tlOpen1);
-  end;
-  Status.GetOperationTrade(xParamStatus);
-end;
-
 constructor TStatusFrame.Create(AOwner: TComponent);
 begin
   inherited;
-  FQuikStatus := TQuikStatus.Create;
-  FQuikStatus.OnUpDate := QuikStatusOnUpDate;
-  FQuikStatus.OnInfoMsg := QuikStatusOnInfoMsg;
-
-  FBybitStatus:= TBybitStatus.Create;
-  FBybitStatus.OnUpDate := QuikStatusOnUpDate;
-  FBybitStatus.OnInfoMsg := QuikStatusOnInfoMsg;
+  Status.OnUpDate := QuikStatusOnUpDate;
 end;
 
 destructor TStatusFrame.Destroy;
 begin
-  FreeAndNil(FBybitStatus);
-  FreeAndNil(FQuikStatus);
-  inherited;
-end;
 
-function TStatusFrame.GetStatus: TCustomStatus;
-begin
-  case ParamApplication.TypePlatform of
-    tpBybit: Result := FBybitStatus;
-    tpQuik: Result := FQuikStatus;
-  else
-    raise Exception.Create('Error Message: Тип платформы не определен');
-  end;
+  inherited;
 end;
 
 procedure TStatusFrame.QuikStatusOnUpDate(Sender: TObject);
@@ -133,11 +77,6 @@ begin
   end
   else
     EditQty.Text := '';
-end;
-
-procedure TStatusFrame.QuikStatusOnInfoMsg(Sender: TObject; S: String);
-begin
-  EditMsgOrder.Text := S;
 end;
 
 end.
