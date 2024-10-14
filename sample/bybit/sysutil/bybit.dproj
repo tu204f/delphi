@@ -199,10 +199,8 @@
         <DCCReference Include="..\..\..\library\trade\bybit\trade\Lb.Bybit.Trade.pas"/>
         <DCCReference Include="..\..\..\library\trade\bybit\Lb.Bot.Tiket.pas"/>
         <DCCReference Include="..\..\..\library\trade\bybit\Lb.Bybit.Announcement.pas"/>
-        <DCCReference Include="..\..\..\library\trade\bybit\Lb.Bybit.API.pas"/>
         <DCCReference Include="..\..\..\library\trade\bybit\Lb.Bybit.Candels.pas"/>
         <DCCReference Include="..\..\..\library\trade\bybit\Lb.Bybit.Encryption.pas"/>
-        <DCCReference Include="..\..\..\library\trade\bybit\Lb.Bybit.pas"/>
         <DCCReference Include="..\..\..\library\trade\bybit\Lb.Bybit.SysUtils.pas"/>
         <DCCReference Include="..\..\..\library\trade\bybit\Lb.Bybit.Test.pas"/>
         <DCCReference Include="..\..\..\library\trade\bybit\Lb.SysUtils.pas"/>

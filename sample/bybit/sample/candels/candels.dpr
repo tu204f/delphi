@@ -4,20 +4,19 @@ uses
   System.StartUpCopy,
   FMX.Forms,
   UnitMainForm in 'UnitMainForm.pas' {MainForm},
-  Lb.Bybit.SysUtils in '..\..\lb\Lb.Bybit.SysUtils.pas',
-  Lb.Bybit.Candels in '..\..\lb\Lb.Bybit.Candels.pas',
   Lb.SysUtils.Candel in '..\..\..\..\library\trade\patern\Lb.SysUtils.Candel.pas',
-  UnitCandelFrame in '..\..\lb\chart\UnitCandelFrame.pas' {CandelFrame: TFrame},
-  UnitChartFrame in '..\..\lb\chart\UnitChartFrame.pas' {ChartFrame: TFrame},
-  Lb.SysUtils in '..\..\lb\Lb.SysUtils.pas',
-  Lb.TradeMan in '..\..\lb\Lb.TradeMan.pas',
   Lb.Logger in '..\..\..\..\library\Lb.Logger.pas',
   Lb.Setting in '..\..\..\..\library\setting\Lb.Setting.pas',
   Lb.ConfigIniFile in '..\..\..\..\library\setting\Lb.ConfigIniFile.pas',
-  Lb.Bybit.InstrumentsInfo in '..\..\lb\market\Lb.Bybit.InstrumentsInfo.pas',
-  Lb.Bybit.Kline in '..\..\lb\market\Lb.Bybit.Kline.pas',
-  Lb.Bybit.ServerTime in '..\..\lb\market\Lb.Bybit.ServerTime.pas',
-  Lb.Bybit.Encryption in '..\..\lb\Lb.Bybit.Encryption.pas';
+  Lb.Bot.Tiket in '..\..\..\..\library\trade\bybit\Lb.Bot.Tiket.pas',
+  Lb.Bybit.SysUtils in '..\..\..\..\library\trade\bybit\Lb.Bybit.SysUtils.pas',
+  Lb.Bybit.Encryption in '..\..\..\..\library\trade\bybit\Lb.Bybit.Encryption.pas',
+  Lb.Bybit.Kline in '..\..\..\..\library\trade\bybit\market\Lb.Bybit.Kline.pas',
+  Lb.Bybit.Candels in '..\..\..\..\library\trade\bybit\Lb.Bybit.Candels.pas',
+  UnitCandelFrame in '..\..\..\..\library\trade\bybit\chart\UnitCandelFrame.pas' {CandelFrame: TFrame},
+  UnitChartFrame in '..\..\..\..\library\trade\bybit\chart\UnitChartFrame.pas' {ChartFrame: TFrame},
+  Lb.SysUtils in '..\..\..\..\library\trade\bybit\Lb.SysUtils.pas',
+  Lb.TradeMan in '..\..\..\..\library\trade\bybit\Lb.TradeMan.pas';
 
 {$R *.res}
 

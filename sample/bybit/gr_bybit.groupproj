@@ -21,9 +21,6 @@
         <Projects Include="sample\place\place.dproj">
             <Dependencies/>
         </Projects>
-        <Projects Include="sample\reconnect\reconnect.dproj">
-            <Dependencies/>
-        </Projects>
         <Projects Include="sample\order_book\orderbook.dproj">
             <Dependencies/>
         </Projects>
@@ -95,15 +92,6 @@
     <Target Name="place:Make">
         <MSBuild Projects="sample\place\place.dproj" Targets="Make"/>
     </Target>
-    <Target Name="reconnect">
-        <MSBuild Projects="sample\reconnect\reconnect.dproj"/>
-    </Target>
-    <Target Name="reconnect:Clean">
-        <MSBuild Projects="sample\reconnect\reconnect.dproj" Targets="Clean"/>
-    </Target>
-    <Target Name="reconnect:Make">
-        <MSBuild Projects="sample\reconnect\reconnect.dproj" Targets="Make"/>
-    </Target>
     <Target Name="orderbook">
         <MSBuild Projects="sample\order_book\orderbook.dproj"/>
     </Target>
@@ -132,13 +120,13 @@
         <MSBuild Projects="sample\order_history\get_oh.dproj" Targets="Make"/>
     </Target>
     <Target Name="Build">
-        <CallTarget Targets="bybit;instrument;recent_trade;candels;history;place;reconnect;orderbook;indicator;get_oh"/>
+        <CallTarget Targets="bybit;instrument;recent_trade;candels;history;place;orderbook;indicator;get_oh"/>
     </Target>
     <Target Name="Clean">
-        <CallTarget Targets="bybit:Clean;instrument:Clean;recent_trade:Clean;candels:Clean;history:Clean;place:Clean;reconnect:Clean;orderbook:Clean;indicator:Clean;get_oh:Clean"/>
+        <CallTarget Targets="bybit:Clean;instrument:Clean;recent_trade:Clean;candels:Clean;history:Clean;place:Clean;orderbook:Clean;indicator:Clean;get_oh:Clean"/>
     </Target>
     <Target Name="Make">
-        <CallTarget Targets="bybit:Make;instrument:Make;recent_trade:Make;candels:Make;history:Make;place:Make;reconnect:Make;orderbook:Make;indicator:Make;get_oh:Make"/>
+        <CallTarget Targets="bybit:Make;instrument:Make;recent_trade:Make;candels:Make;history:Make;place:Make;orderbook:Make;indicator:Make;get_oh:Make"/>
     </Target>
     <Import Project="$(BDS)\Bin\CodeGear.Group.Targets" Condition="Exists('$(BDS)\Bin\CodeGear.Group.Targets')"/>
 </Project>

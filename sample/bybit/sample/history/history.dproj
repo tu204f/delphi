@@ -191,9 +191,9 @@
             <Form>MainForm</Form>
             <FormType>fmx</FormType>
         </DCCReference>
-        <DCCReference Include="..\..\lb\market\Lb.Bybit.Kline.pas"/>
-        <DCCReference Include="..\..\lb\Lb.Bybit.SysUtils.pas"/>
-        <DCCReference Include="..\..\lb\Lb.Bybit.Encryption.pas"/>
+        <DCCReference Include="..\..\..\..\library\trade\bybit\Lb.Bybit.Encryption.pas"/>
+        <DCCReference Include="..\..\..\..\library\trade\bybit\Lb.Bybit.SysUtils.pas"/>
+        <DCCReference Include="..\..\..\..\library\trade\bybit\market\Lb.Bybit.Kline.pas"/>
         <BuildConfiguration Include="Release">
             <Key>Cfg_2</Key>
             <CfgParent>Base</CfgParent>
@@ -1001,11 +1001,6 @@
             <Platforms>
                 <Platform value="Android">True</Platform>
                 <Platform value="Android64">True</Platform>
-                <Platform value="iOSDevice32">False</Platform>
-                <Platform value="iOSDevice64">False</Platform>
-                <Platform value="iOSSimulator">False</Platform>
-                <Platform value="OSX32">False</Platform>
-                <Platform value="OSX64">False</Platform>
                 <Platform value="Win32">True</Platform>
                 <Platform value="Win64">True</Platform>
             </Platforms>
