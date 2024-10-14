@@ -2,10 +2,29 @@ object MainForm: TMainForm
   Left = 0
   Top = 0
   Caption = 'Form4'
-  ClientHeight = 480
-  ClientWidth = 640
+  ClientHeight = 649
+  ClientWidth = 775
   FormFactor.Width = 320
   FormFactor.Height = 480
   FormFactor.Devices = [Desktop]
   DesignerMasterStyle = 0
+  object Memo1: TMemo
+    Touch.InteractiveGestures = [Pan, LongTap, DoubleTap]
+    DataDetectorTypes = []
+    Position.X = 8.000000000000000000
+    Position.Y = 60.000000000000000000
+    Size.Width = 757.000000000000000000
+    Size.Height = 581.000000000000000000
+    Size.PlatformDefault = False
+    TabOrder = 0
+    Viewport.Width = 753.000000000000000000
+    Viewport.Height = 577.000000000000000000
+  end
+  object Button1: TButton
+    Position.X = 12.000000000000000000
+    Position.Y = 8.000000000000000000
+    TabOrder = 2
+    Text = 'Button1'
+    OnClick = Button1Click
+  end
 end

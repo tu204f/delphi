@@ -207,7 +207,14 @@
         <DCCReference Include="..\..\..\library\trade\quik\Quik.ValueTable.pas"/>
         <DCCReference Include="..\..\..\library\Lb.Logger.pas"/>
         <DCCReference Include="lb\Lb.Platfom.Bybit.pas"/>
-        <DCCReference Include="lb\Lb.MR.pas"/>
+        <DCCReference Include="lb\Lb.ManagerRisk.pas"/>
+        <DCCReference Include="..\..\..\library\trade\bybit\Lb.Bybit.Encryption.pas"/>
+        <DCCReference Include="..\..\..\library\trade\bybit\Lb.Bybit.SysUtils.pas"/>
+        <DCCReference Include="..\..\..\library\trade\bybit\market\Lb.Bybit.Kline.pas"/>
+        <DCCReference Include="..\..\..\library\trade\bybit\market\Lb.Bybit.OrderBook.pas"/>
+        <DCCReference Include="..\..\..\library\trade\bybit\market\Lb.Bybit.ServerTime.pas"/>
+        <DCCReference Include="lb\Lb.Level.pas"/>
+        <DCCReference Include="lb\Lb.Criteria.pas"/>
         <None Include="..\..\..\library\trade\quik\quik_connect.inc"/>
         <BuildConfiguration Include="Release">
             <Key>Cfg_2</Key>

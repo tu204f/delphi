@@ -16,7 +16,14 @@ uses
   Quik.ValueTable in '..\..\..\library\trade\quik\Quik.ValueTable.pas',
   Lb.Logger in '..\..\..\library\Lb.Logger.pas',
   Lb.Platfom.Bybit in 'lb\Lb.Platfom.Bybit.pas',
-  Lb.MR in 'lb\Lb.MR.pas';
+  Lb.ManagerRisk in 'lb\Lb.ManagerRisk.pas',
+  Lb.Bybit.Encryption in '..\..\..\library\trade\bybit\Lb.Bybit.Encryption.pas',
+  Lb.Bybit.SysUtils in '..\..\..\library\trade\bybit\Lb.Bybit.SysUtils.pas',
+  Lb.Bybit.Kline in '..\..\..\library\trade\bybit\market\Lb.Bybit.Kline.pas',
+  Lb.Bybit.OrderBook in '..\..\..\library\trade\bybit\market\Lb.Bybit.OrderBook.pas',
+  Lb.Bybit.ServerTime in '..\..\..\library\trade\bybit\market\Lb.Bybit.ServerTime.pas',
+  Lb.Level in 'lb\Lb.Level.pas',
+  Lb.Criteria in 'lb\Lb.Criteria.pas';
 
 {$R *.res}
 

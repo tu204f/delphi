@@ -9,7 +9,8 @@ uses
   System.Classes,
   System.Variants,
   Lb.SysUtils,
-  Lb.Platfom;
+  Lb.Platfom,
+  Lb.Criteria;
 
 type
 
@@ -19,6 +20,7 @@ type
   ///</summary>
   TBot = class(TObject)
   private
+    FPeriod: Integer;
     FTradingPlatform: TTradingPlatform;
   protected
     ///<summary>
@@ -32,14 +34,82 @@ type
   public
     constructor Create; virtual;
     destructor Destroy; override;
-    procedure SetSelected(const ACandels: TCandelList);
+    procedure SetSelected;
     ///<summary>
     /// На какой платформе работает — бот программы
     ///</summary>
     property TradingPlatform: TTradingPlatform read FTradingPlatform write FTradingPlatform;
+    ///<summary>
+    /// Период оценки риска
+    ///</summary>
+    property Period: Integer read FPeriod write FPeriod;
   end;
 
 implementation
+
+///<summary>Расчет индикатора</summary>
+function GetRSI(const APeriod: Integer; ACandels: TCandelList): Double;
+
+  function _SMA(const AValue: TDoubleList): Double;
+  var
+    xSum: Double;
+    i, iCount: Integer;
+  begin
+    Result := 0;
+    iCount := AValue.Count;
+    if iCount > 0 then
+    begin
+      xSum := 0;
+      for i := 0 to iCount - 1 do
+        xSum := xSum + AValue[i];
+      Result := xSum/iCount;
+    end;
+  end;
+
+var
+  xDelta: Double;
+  xCandel1, xCandel2: TCandel;
+  xU, xD: TDoubleList;
+  xMaU, xMaD, xRS: Double;
+begin
+  Result := 0;
+  if APeriod > ACandels.Count then
+    Exit;
+
+  if APeriod > 0 then
+  begin
+    xU := TDoubleList.Create;
+    xD := TDoubleList.Create;
+    try
+      xU.Add(0);
+      xD.Add(0);
+      for var i := 1 to APeriod - 1 do
+      begin
+        xCandel1 := ACandels[i - 1];
+        xCandel2 := ACandels[i];
+        xDelta := xCandel2.Close - xCandel1.Close;
+        if xDelta > 0 then
+        begin
+          xU.Add(xDelta);
+          xD.Add(0);
+        end
+        else
+        begin
+          xU.Add(0);
+          xD.Add(Abs(xDelta));
+        end;
+      end;
+
+      xMaU := _SMA(xU);
+      xMaD := _SMA(xD);
+      xRS  := xMaU/xMaD;
+      Result := 100 - 100/(1 + xRS);
+    finally
+      FreeAndNil(xD);
+      FreeAndNil(xU);
+    end;
+  end;
+end;
 
 { TBot }
 
@@ -54,6 +124,11 @@ begin
   inherited;
 end;
 
+function TBot.IsActivePosition: Boolean;
+begin
+  Result := False;
+end;
+
 function TBot.IsTrading: Boolean;
 begin
   // 1. Временной интервал, который можно торговать
@@ -63,11 +138,23 @@ begin
   Result := True;
 end;
 
-procedure TBot.SetSelected(const ACandels: TCandelList);
+procedure TBot.SetSelected;
 begin
   if IsTrading then
   begin
     // Можно соверщать торговые операции
+    if IsActivePosition then
+    begin
+      // Условие закрытие
+    end
+    else
+    begin
+      // Условия открытие позиции
+      var xValueRSI := GetRSI(FPeriod,FTradingPlatform.StateMarket.Candels);
+
+
+
+    end;
   end
   else if IsActivePosition then
   begin

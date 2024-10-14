@@ -12,10 +12,12 @@ uses
   Lb.SysUtils;
 
 type
-  TEventOnStart    = procedure(ASender: TObject) of object;
-  TEventOnStop     = procedure(ASender: TObject) of object;
-  TEventOnSelected = procedure(ASender: TObject) of object;
-  TEventOnMsgInfo  = procedure(ASender: TObject; AMsg: String) of object;
+  TEventOnStart        = procedure(ASender: TObject) of object;
+  TEventOnStop         = procedure(ASender: TObject) of object;
+  TEventOnSelected     = procedure(ASender: TObject) of object;
+  TEventOnMsgInfo      = procedure(ASender: TObject; AMsg: String) of object;
+  TEventOnStateMarket  = procedure(ASender: TObject; AStateMarket: TStateMarket) of object;
+
 
   ///<summary>
   /// Базовый объект для работы с платформой
@@ -55,17 +57,18 @@ type
   TTradingPlatform = class(TCustomTradingPlatform)
   private
     FSymbel: String;
-    FAsk: Double;
-    FBid: Double;
+    FOnStateMarket: TEventOnStateMarket;
+  protected
+    FStateMarket: TStateMarket;
+    procedure DoStateMarke; virtual;
   public
     constructor Create; override;
     destructor Destroy; override;
-    ///<symmary>Цена продавца</summary>
-    property Ask: Double read FAsk;
-    ///<summary>Цена покупателя</summary>
-    property Bid: Double read FBid;
     ///<summary>Платформа операций</summary>
     property Symbel: String read FSymbel write FSymbel;
+    ///<summary>Состояние рынка</summary>
+    property StateMarket: TStateMarket read FStateMarket;
+    property OnStateMarket: TEventOnStateMarket write FOnStateMarket;
   end;
 
 implementation
@@ -151,13 +154,19 @@ end;
 constructor TTradingPlatform.Create;
 begin
   inherited Create;
-
+  FStateMarket := TStateMarket.Create;
 end;
 
 destructor TTradingPlatform.Destroy;
 begin
-
+  FreeAndNil(FStateMarket);
   inherited Destroy;
+end;
+
+procedure TTradingPlatform.DoStateMarke;
+begin
+  if Assigned(FOnStateMarket) then
+    FOnStateMarket(Self,FStateMarket);
 end;
 
 end.
