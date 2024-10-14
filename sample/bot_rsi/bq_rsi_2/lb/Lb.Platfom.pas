@@ -159,16 +159,4 @@ begin
   inherited;
 end;
 
-function TPlatform.GetAsk: Double;
-begin
-
-end;
-
-function TPlatform.GetBid: Double;
-begin
-
-end;
-
-
-
 end.

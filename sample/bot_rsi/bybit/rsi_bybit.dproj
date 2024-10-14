@@ -259,7 +259,7 @@
         <DCCReference Include="..\lib\Lb.Trader.pas"/>
         <DCCReference Include="..\lib\Lb.VirtualTrade.pas"/>
         <DCCReference Include="..\lib\Lb.Level.pas"/>
-        <None Include="debug.inc"/>
+        <None Include="plarform.inc"/>
         <None Include="..\lib\history\db.sql"/>
         <BuildConfiguration Include="Release">
             <Key>Cfg_2</Key>

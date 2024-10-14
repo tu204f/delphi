@@ -191,9 +191,9 @@
             <Form>MainForm</Form>
             <FormType>fmx</FormType>
         </DCCReference>
-        <DCCReference Include="..\..\lb\market\Lb.Bybit.OrderBook.pas"/>
-        <DCCReference Include="..\..\lb\Lb.Bybit.SysUtils.pas"/>
-        <DCCReference Include="..\..\lb\Lb.Bybit.Encryption.pas"/>
+        <DCCReference Include="..\..\..\..\library\trade\bybit\Lb.Bybit.Encryption.pas"/>
+        <DCCReference Include="..\..\..\..\library\trade\bybit\Lb.Bybit.SysUtils.pas"/>
+        <DCCReference Include="..\..\..\..\library\trade\bybit\market\Lb.Bybit.OrderBook.pas"/>
         <BuildConfiguration Include="Release">
             <Key>Cfg_2</Key>
             <CfgParent>Base</CfgParent>
