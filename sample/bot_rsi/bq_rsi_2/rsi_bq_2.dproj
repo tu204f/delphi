@@ -206,6 +206,8 @@
         <DCCReference Include="..\..\..\library\trade\quik\Quik.SysUtils.pas"/>
         <DCCReference Include="..\..\..\library\trade\quik\Quik.ValueTable.pas"/>
         <DCCReference Include="..\..\..\library\Lb.Logger.pas"/>
+        <DCCReference Include="lb\Lb.Platfom.Bybit.pas"/>
+        <DCCReference Include="lb\Lb.MR.pas"/>
         <None Include="..\..\..\library\trade\quik\quik_connect.inc"/>
         <BuildConfiguration Include="Release">
             <Key>Cfg_2</Key>

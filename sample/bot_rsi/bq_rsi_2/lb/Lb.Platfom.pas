@@ -20,7 +20,7 @@ type
   ///<summary>
   /// Базовый объект для работы с платформой
   ///</summary>
-  TCustomPlatform = class(TObject)
+  TCustomTradingPlatform = class(TObject)
   private
     FTimer: TTimer;
     function GetIsActive: Boolean;
@@ -52,13 +52,13 @@ type
   ///<summary>
   /// Платформа
   ///</summary>
-  TPlatform = class(TCustomPlatform)
+  TTradingPlatform = class(TCustomTradingPlatform)
   private
     FSymbel: String;
     FAsk: Double;
     FBid: Double;
   public
-    constructor Create; virtual;
+    constructor Create; override;
     destructor Destroy; override;
     ///<symmary>Цена продавца</summary>
     property Ask: Double read FAsk;
@@ -70,9 +70,9 @@ type
 
 implementation
 
-{ TCustomPlatform }
+{ TCustomTradingPlatform }
 
-constructor TCustomPlatform.Create;
+constructor TCustomTradingPlatform.Create;
 begin
   FTimer := TTimer.Create(nil);
   FTimer.OnTimer  := TimerTimer;
@@ -80,18 +80,18 @@ begin
   FTimer.Interval := 1000;
 end;
 
-destructor TCustomPlatform.Destroy;
+destructor TCustomTradingPlatform.Destroy;
 begin
   FreeAndNil(FTimer);
   inherited;
 end;
 
-function TCustomPlatform.GetIsActive: Boolean;
+function TCustomTradingPlatform.GetIsActive: Boolean;
 begin
   Result := FTimer.Enabled;
 end;
 
-procedure TCustomPlatform.Start;
+procedure TCustomTradingPlatform.Start;
 begin
   if not IsActive then
   begin
@@ -100,7 +100,7 @@ begin
   end;
 end;
 
-procedure TCustomPlatform.Stop;
+procedure TCustomTradingPlatform.Stop;
 begin
   if IsActive then
   begin
@@ -109,7 +109,7 @@ begin
   end;
 end;
 
-procedure TCustomPlatform.TimerTimer(Sender: TObject);
+procedure TCustomTradingPlatform.TimerTimer(Sender: TObject);
 begin
   try
     DoSelected;
@@ -122,41 +122,42 @@ begin
   end;
 end;
 
-procedure TCustomPlatform.DoStart;
+procedure TCustomTradingPlatform.DoStart;
 begin
   if Assigned(FEventOnStart) then
     FEventOnStart(Self);
 end;
 
-procedure TCustomPlatform.DoStop;
+procedure TCustomTradingPlatform.DoStop;
 begin
   if Assigned(FEventOnStop) then
     FEventOnStop(Self);
 end;
 
-procedure TCustomPlatform.DoSelected;
+procedure TCustomTradingPlatform.DoSelected;
 begin
   if Assigned(FEventOnSelected) then
     FEventOnSelected(Self);
 end;
 
-procedure TCustomPlatform.DoMsgInfo(S: String);
+procedure TCustomTradingPlatform.DoMsgInfo(S: String);
 begin
   if Assigned(FEventOnMsgInfo) then
     FEventOnMsgInfo(Self,S);
 end;
 
-{ TPlatform }
+{ TTradingPlatform }
 
-constructor TPlatform.Create;
+constructor TTradingPlatform.Create;
 begin
+  inherited Create;
 
 end;
 
-destructor TPlatform.Destroy;
+destructor TTradingPlatform.Destroy;
 begin
 
-  inherited;
+  inherited Destroy;
 end;
 
 end.
