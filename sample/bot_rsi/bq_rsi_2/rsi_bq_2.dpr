@@ -13,7 +13,8 @@ uses
   QuikTransOrder in '..\..\..\library\trade\libquik\QuikTransOrder.pas',
   Quik.Manager.DDE in '..\..\..\library\trade\quik\Quik.Manager.DDE.pas',
   Quik.SysUtils in '..\..\..\library\trade\quik\Quik.SysUtils.pas',
-  Quik.ValueTable in '..\..\..\library\trade\quik\Quik.ValueTable.pas';
+  Quik.ValueTable in '..\..\..\library\trade\quik\Quik.ValueTable.pas',
+  Lb.Logger in '..\..\..\library\Lb.Logger.pas';
 
 {$R *.res}
 

@@ -31,17 +31,6 @@ uses
   QuikTrans2QuikAPI in '..\..\..\library\trade\libquik\QuikTrans2QuikAPI.pas',
   QuikTransOrder in '..\..\..\library\trade\libquik\QuikTransOrder.pas',
   Lb.Level in '..\lib\Lb.Level.pas',
-  Lb.Bybit.Encryption in '..\..\bybit\lb\Lb.Bybit.Encryption.pas',
-  Lb.Bybit.SysUtils in '..\..\bybit\lb\Lb.Bybit.SysUtils.pas',
-  Lb.Bybit.RealTime in '..\..\bybit\lb\trade\Lb.Bybit.RealTime.pas',
-  Lb.Bybit.Trade in '..\..\bybit\lb\trade\Lb.Bybit.Trade.pas',
-  Lb.Bybit.Position in '..\..\bybit\lb\position\Lb.Bybit.Position.pas',
-  Lb.Bybit.InstrumentsInfo in '..\..\bybit\lb\market\Lb.Bybit.InstrumentsInfo.pas',
-  Lb.Bybit.Kline in '..\..\bybit\lb\market\Lb.Bybit.Kline.pas',
-  Lb.Bybit.OrderBook in '..\..\bybit\lb\market\Lb.Bybit.OrderBook.pas',
-  Lb.Bybit.RecentTrade in '..\..\bybit\lb\market\Lb.Bybit.RecentTrade.pas',
-  Lb.Bybit.ServerTime in '..\..\bybit\lb\market\Lb.Bybit.ServerTime.pas',
-  Lb.Indicator in '..\..\bybit\lb\indicator\Lb.Indicator.pas',
   Lb.Status.Quik in 'status\Lb.Status.Quik.pas',
   Lb.Status.Bybit in 'status\Lb.Status.Bybit.pas',
   Lb.Status in 'status\Lb.Status.pas',
@@ -53,7 +42,18 @@ uses
   Lb.VirtualTrade.V2 in '..\lib\Lb.VirtualTrade.V2.pas',
   UnitSettingLimitTimeFrame in 'setting\UnitSettingLimitTimeFrame.pas' {SettingLimitTimeFrame: TFrame},
   UnitOrderUsersFrame in 'UnitOrderUsersFrame.pas' {OrderUsersFrame: TFrame},
-  Lb.Bot.Position in 'bot\Lb.Bot.Position.pas';
+  Lb.Bot.Position in 'bot\Lb.Bot.Position.pas',
+  Lb.Bybit.Encryption in '..\..\..\library\trade\bybit\Lb.Bybit.Encryption.pas',
+  Lb.Bybit.SysUtils in '..\..\..\library\trade\bybit\Lb.Bybit.SysUtils.pas',
+  Lb.Bybit.RealTime in '..\..\..\library\trade\bybit\trade\Lb.Bybit.RealTime.pas',
+  Lb.Bybit.Trade in '..\..\..\library\trade\bybit\trade\Lb.Bybit.Trade.pas',
+  Lb.Bybit.InstrumentsInfo in '..\..\..\library\trade\bybit\market\Lb.Bybit.InstrumentsInfo.pas',
+  Lb.Bybit.Kline in '..\..\..\library\trade\bybit\market\Lb.Bybit.Kline.pas',
+  Lb.Bybit.OrderBook in '..\..\..\library\trade\bybit\market\Lb.Bybit.OrderBook.pas',
+  Lb.Bybit.RecentTrade in '..\..\..\library\trade\bybit\market\Lb.Bybit.RecentTrade.pas',
+  Lb.Bybit.ServerTime in '..\..\..\library\trade\bybit\market\Lb.Bybit.ServerTime.pas',
+  Lb.Indicator in '..\..\..\library\trade\bybit\indicator\Lb.Indicator.pas',
+  Lb.Bybit.Position in '..\..\..\library\trade\bybit\position\Lb.Bybit.Position.pas';
 
 {$R *.res}
 

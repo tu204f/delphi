@@ -3,15 +3,6 @@
         <ProjectGuid>{D93031BF-1297-4273-A5F3-7D55921B1EAD}</ProjectGuid>
     </PropertyGroup>
     <ItemGroup>
-        <Projects Include="quik\rsi_quik.dproj">
-            <Dependencies/>
-        </Projects>
-        <Projects Include="bybit\rsi_bybit.dproj">
-            <Dependencies/>
-        </Projects>
-        <Projects Include="quik.v2\rsi_quik.v2.dproj">
-            <Dependencies/>
-        </Projects>
         <Projects Include="bybit_quik\rsi_bq.dproj">
             <Dependencies/>
         </Projects>
@@ -26,33 +17,6 @@
             <Default.Personality/>
         </BorlandProject>
     </ProjectExtensions>
-    <Target Name="rsi_quik">
-        <MSBuild Projects="quik\rsi_quik.dproj"/>
-    </Target>
-    <Target Name="rsi_quik:Clean">
-        <MSBuild Projects="quik\rsi_quik.dproj" Targets="Clean"/>
-    </Target>
-    <Target Name="rsi_quik:Make">
-        <MSBuild Projects="quik\rsi_quik.dproj" Targets="Make"/>
-    </Target>
-    <Target Name="rsi_bybit">
-        <MSBuild Projects="bybit\rsi_bybit.dproj"/>
-    </Target>
-    <Target Name="rsi_bybit:Clean">
-        <MSBuild Projects="bybit\rsi_bybit.dproj" Targets="Clean"/>
-    </Target>
-    <Target Name="rsi_bybit:Make">
-        <MSBuild Projects="bybit\rsi_bybit.dproj" Targets="Make"/>
-    </Target>
-    <Target Name="rsi_quik_v2">
-        <MSBuild Projects="quik.v2\rsi_quik.v2.dproj"/>
-    </Target>
-    <Target Name="rsi_quik_v2:Clean">
-        <MSBuild Projects="quik.v2\rsi_quik.v2.dproj" Targets="Clean"/>
-    </Target>
-    <Target Name="rsi_quik_v2:Make">
-        <MSBuild Projects="quik.v2\rsi_quik.v2.dproj" Targets="Make"/>
-    </Target>
     <Target Name="rsi_bq">
         <MSBuild Projects="bybit_quik\rsi_bq.dproj"/>
     </Target>
@@ -72,13 +36,13 @@
         <MSBuild Projects="bq_rsi_2\rsi_bq_2.dproj" Targets="Make"/>
     </Target>
     <Target Name="Build">
-        <CallTarget Targets="rsi_quik;rsi_bybit;rsi_quik_v2;rsi_bq;rsi_bq_2"/>
+        <CallTarget Targets="rsi_bq;rsi_bq_2"/>
     </Target>
     <Target Name="Clean">
-        <CallTarget Targets="rsi_quik:Clean;rsi_bybit:Clean;rsi_quik_v2:Clean;rsi_bq:Clean;rsi_bq_2:Clean"/>
+        <CallTarget Targets="rsi_bq:Clean;rsi_bq_2:Clean"/>
     </Target>
     <Target Name="Make">
-        <CallTarget Targets="rsi_quik:Make;rsi_bybit:Make;rsi_quik_v2:Make;rsi_bq:Make;rsi_bq_2:Make"/>
+        <CallTarget Targets="rsi_bq:Make;rsi_bq_2:Make"/>
     </Target>
     <Import Project="$(BDS)\Bin\CodeGear.Group.Targets" Condition="Exists('$(BDS)\Bin\CodeGear.Group.Targets')"/>
 </Project>
