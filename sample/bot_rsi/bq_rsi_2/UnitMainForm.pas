@@ -13,12 +13,16 @@ uses
   FMX.Forms,
   FMX.Graphics,
   FMX.Dialogs,
+  FMX.Memo.Types,
+  FMX.Controls.Presentation,
+  FMX.ScrollBox,
+  FMX.Memo,
+  FMX.StdCtrls,
+
   Lb.SysUtils,
   Lb.Bot,
   Lb.Platfom,
-  Lb.Platfom.Bybit, FMX.Memo.Types, FMX.Controls.Presentation, FMX.ScrollBox,
-  FMX.Memo,
-  FMX.StdCtrls,
+  Lb.Platfom.Bybit,
   Lb.Criteria;
 
 type

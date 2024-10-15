@@ -13,16 +13,16 @@ object MainForm: TMainForm
     DataDetectorTypes = []
     Anchors = [akLeft, akTop, akRight, akBottom]
     Position.X = 8.000000000000000000
-    Position.Y = 60.000000000000000000
+    Position.Y = 36.000000000000000000
     Size.Width = 757.000000000000000000
-    Size.Height = 581.000000000000000000
+    Size.Height = 605.000000000000000000
     Size.PlatformDefault = False
     TabOrder = 0
     Viewport.Width = 753.000000000000000000
-    Viewport.Height = 577.000000000000000000
+    Viewport.Height = 601.000000000000000000
   end
   object Button1: TButton
-    Position.X = 12.000000000000000000
+    Position.X = 8.000000000000000000
     Position.Y = 8.000000000000000000
     TabOrder = 2
     Text = 'Button1'
