@@ -10,15 +10,11 @@ uses
   System.DateUtils,
   System.SyncObjs,
   System.Generics.Collections,
-
-  {Лишнее значение - TTypeSide}
-  Lb.Bybit.SysUtils,
-
+  Lb.SysUtils,
   Lb.Level;
 
 type
   TManagerCriteria = class;
-
   TEventOnSendTrade = procedure(ASender: TObject; ASide: TTypeSide; AQty: Double) of object;
 
   ///<summary>
@@ -80,6 +76,7 @@ type
     ///<summary>Напровление критерия</summary>
     property Side: TTypeSide read FSide write SetSide;
   public
+    procedure SetCreateCriteria(const AValueFrom, AValueTo, AStep, AReActiveValue, AQty: Double);
     procedure SetUpDateValue(const AValueRSI: Double);
     property OnSendTrade: TEventOnSendTrade write FOnSendTrade;
   end;
@@ -218,5 +215,49 @@ begin
   if Assigned(FOnSendTrade) then
     FOnSendTrade(Self,ASide,AQty);
 end;
+
+procedure TManagerCriteria.SetCreateCriteria(const AValueFrom, AValueTo, AStep,
+  AReActiveValue, AQty: Double);
+
+  function _IsTo(AValueTo, AValue: Double): Boolean;
+  begin
+    case FSide of
+      tsBuy: Result := AValue > AValueTo;
+      tsSell: Result := AValue < AValueTo;
+    else
+      Result := False;
+    end;
+  end;
+
+var
+  xValue, xReValue: Double;
+begin
+  Clear;
+  xValue := AValueFrom;
+  while _IsTo(AValueTo,xValue) do
+  begin
+    case FSide of
+      tsBuy: xReValue := xValue + AReActiveValue;
+      tsSell: xReValue := xValue - AReActiveValue;
+    else
+      xReValue := xValue;
+    end;
+
+    if xReValue > 100 then
+      xReValue := 100;
+    if xReValue < 0 then
+      xReValue := 0;
+
+    AddCriteria(xValue,xReValue,AQty);
+    case FSide of
+      tsBuy: xValue := xValue - AStep;
+      tsSell: xValue := xValue + AStep;
+    else
+      Break;
+    end;
+
+  end;
+end;
+
 
 end.

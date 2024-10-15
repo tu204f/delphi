@@ -17,7 +17,9 @@ uses
   Lb.Bot,
   Lb.Platfom,
   Lb.Platfom.Bybit, FMX.Memo.Types, FMX.Controls.Presentation, FMX.ScrollBox,
-  FMX.Memo, FMX.StdCtrls;
+  FMX.Memo,
+  FMX.StdCtrls,
+  Lb.Criteria;
 
 type
   TMainForm = class(TForm)
@@ -67,21 +69,30 @@ begin
 end;
 
 procedure TMainForm.TradingPlatformOnStateMarket(ASender: TObject; AStateMarket: TStateMarket);
+
+  function _ToBool(const AValue: Boolean): String;
+  begin
+    case AValue of
+      True: Result := 'V';
+      False: Result := 'X';
+    end;
+  end;
+
 var
   xS: String;
 begin
   Memo1.BeginUpdate;
   try
     Memo1.Lines.Clear;
-
     Memo1.Lines.Add(
       'Ask: ' + TradingPlatform.StateMarket.Ask.ToString + '; ' +
       'Bid: ' + TradingPlatform.StateMarket.Bid.ToString
     );
     Memo1.Lines.Add('****************************************************');
 
-    for var xC in AStateMarket.Candels do
+    for var i := 0 to AStateMarket.Candels.Count - 1 do
     begin
+      var xC := AStateMarket.Candels[i];
       xS :=
         xC.Time.ToString + '; ' +
         xC.Open.ToString + '; ' +
@@ -90,7 +101,46 @@ begin
         xC.Close.ToString + ';  ' +
         xC.Vol.ToString;
       Memo1.Lines.Add(xS);
+
+      if i > 10 then
+      begin
+        Memo1.Lines.Add('.....');
+        Break;
+      end;
+
     end;
+
+    Memo1.Lines.Add('****************************************************');
+    xS := 'ValueRSI: ' + Bot.ValueRSI.ToString;
+    Memo1.Lines.Add(xS);
+
+    Memo1.Lines.Add('****************************************************');
+    Memo1.Lines.Add('Продажа');
+    for var xCriteria in Bot.ManagerCriteriaSell do
+    begin
+      xS :=
+        '[' + _ToBool(xCriteria.IsActive) + ']' +
+        'Active: ' + xCriteria.ActiveLevel.Value.ToString + ' ' +
+        '[' + _ToBool(xCriteria.IsReActive) + ']' +
+        'ReActive: ' + xCriteria.ReActiveLevel.Value.ToString + ' ' +
+        'Qty: ' + xCriteria.Qty.ToString;
+      Memo1.Lines.Add(xS);
+    end;
+
+    Memo1.Lines.Add('****************************************************');
+    Memo1.Lines.Add('Покупка');
+    for var xCriteria in Bot.ManagerCriteriaBuy do
+    begin
+      xS :=
+        '[' + _ToBool(xCriteria.IsActive) + ']' +
+        'Active: ' + xCriteria.ActiveLevel.Value.ToString + ' ' +
+        '[' + _ToBool(xCriteria.IsReActive) + ']' +
+        'ReActive: ' + xCriteria.ReActiveLevel.Value.ToString + ' ' +
+        'Qty: ' + xCriteria.Qty.ToString;
+      Memo1.Lines.Add(xS);
+    end;
+
+
   finally
     Memo1.EndUpdate;
   end;

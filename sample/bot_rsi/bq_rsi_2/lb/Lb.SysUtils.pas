@@ -12,6 +12,12 @@ uses
   System.Generics.Collections;
 
 type
+  TTypeSide = (
+    tsNull, {добавлено новое значение}
+    tsBuy,
+    tsSell
+  );
+
   TDoubleList = TList<Double>;
 
 type

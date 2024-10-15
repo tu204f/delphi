@@ -22,6 +22,10 @@ type
   private
     FPeriod: Integer;
     FTradingPlatform: TTradingPlatform;
+    FValueRSI: Double;
+  private
+    FManagerCriteriaBuy: TManagerCriteria;
+    FManagerCriteriaSell: TManagerCriteria;
   protected
     ///<summary>
     /// Проверка возможности совершение торговых операций
@@ -43,6 +47,13 @@ type
     /// Период оценки риска
     ///</summary>
     property Period: Integer read FPeriod write FPeriod;
+    ///<summary>
+    /// Индекс значение работы RSI
+    ///</summary>
+    property ValueRSI: Double read FValueRSI;
+  public
+    property ManagerCriteriaBuy: TManagerCriteria read FManagerCriteriaBuy;
+    property ManagerCriteriaSell: TManagerCriteria read FManagerCriteriaSell;
   end;
 
 implementation
@@ -115,12 +126,24 @@ end;
 
 constructor TBot.Create;
 begin
+  FPeriod := 14;
+  FValueRSI := 0;
   FTradingPlatform := nil;
+
+  FManagerCriteriaBuy := TManagerCriteria.Create;
+  FManagerCriteriaBuy.Side := TTypeSide.tsBuy;
+  FManagerCriteriaBuy.SetCreateCriteria(50,0,10,10,0.01);
+
+  FManagerCriteriaSell:= TManagerCriteria.Create;
+  FManagerCriteriaSell.Side := TTypeSide.tsSell;
+  FManagerCriteriaSell.SetCreateCriteria(50,100,10,10,0.01);
+
 end;
 
 destructor TBot.Destroy;
 begin
-
+  FreeAndNil(FManagerCriteriaBuy);
+  FreeAndNil(FManagerCriteriaSell);
   inherited;
 end;
 
@@ -150,7 +173,7 @@ begin
     else
     begin
       // Условия открытие позиции
-      var xValueRSI := GetRSI(FPeriod,FTradingPlatform.StateMarket.Candels);
+      FValueRSI := GetRSI(FPeriod,FTradingPlatform.StateMarket.Candels);
 
 
 

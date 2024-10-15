@@ -65,7 +65,7 @@ begin
   {todo: Перевести эти параметры в найстроки}
   FBybitKline.Category := TTypeCategory.tcLinear;
   FBybitKline.Interval := TTypeInterval.ti_5;
-  FBybitKline.Limit    := 10;
+  FBybitKline.Limit    := 100;
   FBybitKline.Selected;
 
   FBybitOrderBook.Category := TTypeCategory.tcLinear;

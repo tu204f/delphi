@@ -11,6 +11,7 @@ object MainForm: TMainForm
   object Memo1: TMemo
     Touch.InteractiveGestures = [Pan, LongTap, DoubleTap]
     DataDetectorTypes = []
+    Anchors = [akLeft, akTop, akRight, akBottom]
     Position.X = 8.000000000000000000
     Position.Y = 60.000000000000000000
     Size.Width = 757.000000000000000000
