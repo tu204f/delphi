@@ -77,14 +77,14 @@ type
     function GetOpen: Double;
     function GetVol: Double;
     function GetDelta: Double;
-    function GetDateTimeUnix: Integer;
+    function GetDateTimeUnix: Int64;
   protected
     function GetFloatToStr(const AValue: String): Double;
   public
     procedure SetObjectJson(const AValueJsons: TJSONArray);
     function ToString: String; override;
-    property DateTimeUnix: Integer read GetDateTimeUnix;
     property DateTime: TDateTime read GetDateTime;
+    property DateTimeUnix: Int64 read GetDateTimeUnix;
     property Open: Double read GetOpen;
     property High: Double read GetHigh;
     property Low: Double read GetLow;
@@ -204,7 +204,7 @@ begin
   Result := xValue;
 end;
 
-function TCandelObject.GetDateTimeUnix: Integer;
+function TCandelObject.GetDateTimeUnix: Int64;
 begin
   Result := Round(StrToUInt64Def(Self.StartTime,0)/1000);
 end;

@@ -17,16 +17,6 @@ uses
   Lb.Bybit.Encryption;
 
 const
-{$DEFINE TEST}
-  BYBIT_HOST =
-{$IFDEF TEST}
-  // Тесторый сервер: https://testnet.bybit.com
-  'https://api-testnet.bybit.com';
-{$ELSE}
-  'https://api.bybit.com';
-{$ENDIF}
-
-const
   ERROR_CODE        = 10000;
   ERROR_CODE_HTTP   = ERROR_CODE + 1;
   // Код ошибка парсинга
@@ -352,11 +342,25 @@ function GetBoolToJson(const AJsonValue: TJSONValue): Boolean;
 
 function GetNow: Int64;
 
+var
+  ///<summary>
+  /// Ключаем режем тестрование
+  ///</summary>
+  BybitHostTest: Boolean = False;
+
 implementation
 
 uses
   System.IniFiles,
   System.RTTI;
+
+function LinkBybitHost: String;
+begin
+  case BybitHostTest of
+    True: Result := 'https://api-testnet.bybit.com';
+    False: Result := 'https://api.bybit.com';
+  end;
+end;
 
 function GetStrToFloat(const AValue: String): Double; inline;
 var
@@ -966,7 +970,7 @@ end;
 constructor TBybitModule.Create;
 begin
   FTypeHttp   := TTypeHttp.thNull;
-  FHost       := BYBIT_HOST;
+  FHost       := LinkBybitHost;
   FModule     := '';
   FParams     := TParamList.Create;
   FHeaders    := THeaderList.Create;
