@@ -18,7 +18,6 @@ type
   TEventOnMsgInfo      = procedure(ASender: TObject; AMsg: String) of object;
   TEventOnStateMarket  = procedure(ASender: TObject; AStateMarket: TStateMarket) of object;
 
-
   ///<summary>
   /// Базовый объект для работы с платформой
   ///</summary>

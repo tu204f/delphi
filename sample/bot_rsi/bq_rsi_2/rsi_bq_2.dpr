@@ -23,7 +23,8 @@ uses
   Lb.Bybit.OrderBook in '..\..\..\library\trade\bybit\market\Lb.Bybit.OrderBook.pas',
   Lb.Bybit.ServerTime in '..\..\..\library\trade\bybit\market\Lb.Bybit.ServerTime.pas',
   Lb.Level in 'lb\Lb.Level.pas',
-  Lb.Criteria in 'lb\Lb.Criteria.pas';
+  Lb.Criteria in 'lb\Lb.Criteria.pas',
+  Lb.Virtual.Trading in 'lb\Lb.Virtual.Trading.pas';
 
 {$R *.res}
 

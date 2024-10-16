@@ -13,8 +13,6 @@ uses
   Lb.Criteria;
 
 type
-
-
   ///<summary>
   /// Бот - для торговли
   ///</summary>
@@ -26,6 +24,8 @@ type
   private
     FManagerCriteriaBuy: TManagerCriteria;
     FManagerCriteriaSell: TManagerCriteria;
+    procedure ManagerCriteriaBuyOnSendTrade(ASender: TObject; ASide: TTypeSide; AQty: Double);
+    procedure ManagerCriteriaSellOnSendTrade(ASender: TObject; ASide: TTypeSide; AQty: Double);
   protected
     ///<summary>
     /// Проверка возможности совершение торговых операций
@@ -174,15 +174,24 @@ begin
     begin
       // Условия открытие позиции
       FValueRSI := GetRSI(FPeriod,FTradingPlatform.StateMarket.Candels);
-
-
-
+      ManagerCriteriaBuy.SetUpDateValue(FValueRSI);
+      ManagerCriteriaSell.SetUpDateValue(FValueRSI);
     end;
   end
   else if IsActivePosition then
   begin
     // Принудительно закрывать позицию
   end;
+end;
+
+procedure TBot.ManagerCriteriaBuyOnSendTrade(ASender: TObject; ASide: TTypeSide; AQty: Double);
+begin
+  // Купить торговать
+end;
+
+procedure TBot.ManagerCriteriaSellOnSendTrade(ASender: TObject; ASide: TTypeSide; AQty: Double);
+begin
+  // Продать
 end;
 
 end.
