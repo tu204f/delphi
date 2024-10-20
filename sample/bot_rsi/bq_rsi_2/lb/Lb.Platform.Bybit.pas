@@ -1,4 +1,4 @@
-unit Lb.Platfom.Bybit;
+unit Lb.Platform.Bybit;
 
 interface
 
@@ -10,7 +10,8 @@ uses
   System.Variants,
   FMX.Types,
   Lb.SysUtils,
-  Lb.Platfom,
+  Lb.Platform,
+  Lb.Platform.Trading,
   Lb.Bybit.SysUtils,
   Lb.Bybit.Kline,
   Lb.Bybit.OrderBook;
@@ -132,6 +133,5 @@ begin
   if FCountSelected = 0 then
     DoStateMarke;
 end;
-
 
 end.

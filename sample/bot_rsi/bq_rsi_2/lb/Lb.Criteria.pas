@@ -15,7 +15,7 @@ uses
 
 type
   TManagerCriteria = class;
-  TEventOnSendTrade = procedure(ASender: TObject; ASide: TTypeSide; AQty: Double) of object;
+  TEventOnSendTrade = procedure(ASender: TObject; ASide: TTypeBuySell; AQty: Double) of object;
 
   ///<summary>
   /// Критерий открытие позиции
@@ -27,15 +27,17 @@ type
     FActiveLevel: TOneEventLevel;
     FReActiveLevel: TOneEventLevel;
     FQty: Double;
-    FSide: TTypeSide;
+    FSide: TTypeBuySell;
   private
+    FOnChange: TNotifyEvent;
     FManagerCriteria: TManagerCriteria;
     procedure ActiveLevelOnIntersection(Sender: TObject);
     procedure ReActiveLevelOnIntersection(Sender: TObject);
-    procedure SetSide(const Value: TTypeSide);
+    procedure SetSide(const Value: TTypeBuySell);
     procedure SetActiveLevelSide;
   protected
-    procedure DoSendTrade(const ASide: TTypeSide; const AQty: Double);
+    procedure DoChange;
+    procedure DoSendTrade(const ASide: TTypeBuySell; const AQty: Double);
   public
     constructor Create(const AManagerCriteria: TManagerCriteria); virtual;
     destructor Destroy; override;
@@ -52,7 +54,8 @@ type
     ///<summary>Количество — критерия</summary>
     property Qty: Double read FQty write FQty;
     ///<summary>Направление критерия</summary>
-    property Side: TTypeSide read FSide write SetSide;
+    property Side: TTypeBuySell read FSide write SetSide;
+    property OnChange: TNotifyEvent write FOnChange;
   end;
 
   ///<summary>
@@ -63,18 +66,18 @@ type
   ///<summary>Менеджер критериев</summary>
   TManagerCriteria = class(TCriteriaList)
   private
-    FSide: TTypeSide;
+    FSide: TTypeBuySell;
     FOnSendTrade: TEventOnSendTrade;
-    procedure SetSide(const Value: TTypeSide);
+    procedure SetSide(const Value: TTypeBuySell);
   protected
-    procedure DoSendTrade(const ASide: TTypeSide; const AQty: Double);
+    procedure DoSendTrade(const ASide: TTypeBuySell; const AQty: Double);
   public
     ///<summary>Добавить кретерий</summary>
-    procedure AddCriteria(const ARSI, AActiveRSI, AQty: Double);
+    function AddCriteria(const ARSI, AActiveRSI, AQty: Double): Integer;
     ///<summary>Обновить значение критерия</summary>
     procedure UpDateCriteria(const AIndex: Integer; const ARSI, AActiveRSI, AQty: Double);
     ///<summary>Напровление критерия</summary>
-    property Side: TTypeSide read FSide write SetSide;
+    property Side: TTypeBuySell read FSide write SetSide;
   public
     procedure SetCreateCriteria(const AValueFrom, AValueTo, AStep, AReActiveValue, AQty: Double);
     procedure SetUpDateValue(const AValueRSI: Double);
@@ -107,14 +110,14 @@ end;
 procedure TCriteria.SetActiveLevelSide;
 begin
   case FSide of
-    TTypeSide.tsBuy: begin
+    TTypeBuySell.tsBuy: begin
       FActiveLevel.IsRepeat := False;
       FActiveLevel.WorkLevel := TIntersectionLevel.tlDownUp;
 
       FReActiveLevel.IsRepeat := False;
       FReActiveLevel.WorkLevel := TIntersectionLevel.tlUpDown;
     end;
-    TTypeSide.tsSell: begin
+    TTypeBuySell.tsSell: begin
       FActiveLevel.IsRepeat := False;
       FActiveLevel.WorkLevel := TIntersectionLevel.tlUpDown;
 
@@ -122,9 +125,10 @@ begin
       FReActiveLevel.WorkLevel := TIntersectionLevel.tlDownUp;
     end;
   end;
+  DoChange;
 end;
 
-procedure TCriteria.SetSide(const Value: TTypeSide);
+procedure TCriteria.SetSide(const Value: TTypeBuySell);
 begin
   FSide := Value;
   SetActiveLevelSide;
@@ -136,6 +140,7 @@ begin
   begin
     DoSendTrade(FSide, FQty);
     FIsActive := False;
+    DoChange;
   end;
 end;
 
@@ -167,7 +172,13 @@ begin
   _ReActiveLevelSetUpDate(AValueRSI);
 end;
 
-procedure TCriteria.DoSendTrade(const ASide: TTypeSide; const AQty: Double);
+procedure TCriteria.DoChange;
+begin
+  if Assigned(FOnChange) then
+    FOnChange(Self);
+end;
+
+procedure TCriteria.DoSendTrade(const ASide: TTypeBuySell; const AQty: Double);
 begin
   if Assigned(FManagerCriteria) then
     FManagerCriteria.DoSendTrade(ASide,AQty);
@@ -175,7 +186,7 @@ end;
 
 { TManagerCriteria }
 
-procedure TManagerCriteria.AddCriteria(const ARSI, AActiveRSI, AQty: Double);
+function TManagerCriteria.AddCriteria(const ARSI, AActiveRSI, AQty: Double): Integer;
 var
   xCriteria: TCriteria;
 begin
@@ -183,7 +194,8 @@ begin
   xCriteria.Qty := AQty;
   xCriteria.ActiveLevel.Value := ARSI;
   xCriteria.ReActiveLevel.Value := AActiveRSI;
-  Self.Add(xCriteria);
+  xCriteria.Side := FSide;
+  Result := Self.Add(xCriteria);
 end;
 
 procedure TManagerCriteria.UpDateCriteria(const AIndex: Integer; const ARSI,
@@ -197,7 +209,7 @@ begin
   xCriteria.ReActiveLevel.Value := AActiveRSI;
 end;
 
-procedure TManagerCriteria.SetSide(const Value: TTypeSide);
+procedure TManagerCriteria.SetSide(const Value: TTypeBuySell);
 begin
   FSide := Value;
   for var xC in Self do
@@ -210,7 +222,7 @@ begin
     xC.SetUpDateValue(AValueRSI);
 end;
 
-procedure TManagerCriteria.DoSendTrade(const ASide: TTypeSide; const AQty: Double);
+procedure TManagerCriteria.DoSendTrade(const ASide: TTypeBuySell; const AQty: Double);
 begin
   if Assigned(FOnSendTrade) then
     FOnSendTrade(Self,ASide,AQty);

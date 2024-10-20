@@ -9,10 +9,12 @@ uses
   System.Classes,
   System.Variants,
   Lb.SysUtils,
-  Lb.Platfom,
+  Lb.Platform,
   Lb.Criteria;
 
 type
+  TEventOnSendTrade = procedure(ASender: TObject; const ATime: TDateTime; const APrice, AQty: Double; ASide: TTypeBuySell) of object;
+
   ///<summary>
   /// Бот - для торговли
   ///</summary>
@@ -24,9 +26,10 @@ type
   private
     FManagerCriteriaBuy: TManagerCriteria;
     FManagerCriteriaSell: TManagerCriteria;
-    procedure ManagerCriteriaBuyOnSendTrade(ASender: TObject; ASide: TTypeSide; AQty: Double);
-    procedure ManagerCriteriaSellOnSendTrade(ASender: TObject; ASide: TTypeSide; AQty: Double);
+    procedure ManagerCriteriaBuyOnSendTrade(ASender: TObject; ASide: TTypeBuySell; AQty: Double);
+    procedure ManagerCriteriaSellOnSendTrade(ASender: TObject; ASide: TTypeBuySell; AQty: Double);
   protected
+    FOnSendTrade: TEventOnSendTrade;
     ///<summary>
     /// Проверка возможности совершение торговых операций
     ///</summary>
@@ -35,6 +38,10 @@ type
     /// Есть активня позиция
     ///</summary>
     function IsActivePosition: Boolean;
+    ///<summary>
+    /// Отправляем торговый приказ
+    ///</summary>
+    procedure DoSendTrade(const ATime: TDateTime; const APrice, AQty: Double; ASide: TTypeBuySell);
   public
     constructor Create; virtual;
     destructor Destroy; override;
@@ -51,8 +58,11 @@ type
     /// Индекс значение работы RSI
     ///</summary>
     property ValueRSI: Double read FValueRSI;
+    property OnSendTrade: TEventOnSendTrade write FOnSendTrade;
   public
+    ///<summary>Критерий на покупку</summary>
     property ManagerCriteriaBuy: TManagerCriteria read FManagerCriteriaBuy;
+    ///<summary>Критерий на продаже</summary>
     property ManagerCriteriaSell: TManagerCriteria read FManagerCriteriaSell;
   end;
 
@@ -131,11 +141,11 @@ begin
   FTradingPlatform := nil;
 
   FManagerCriteriaBuy := TManagerCriteria.Create;
-  FManagerCriteriaBuy.Side := TTypeSide.tsBuy;
+  FManagerCriteriaBuy.Side := TTypeBuySell.tsBuy;
   FManagerCriteriaBuy.SetCreateCriteria(50,0,10,10,0.01);
 
   FManagerCriteriaSell:= TManagerCriteria.Create;
-  FManagerCriteriaSell.Side := TTypeSide.tsSell;
+  FManagerCriteriaSell.Side := TTypeBuySell.tsSell;
   FManagerCriteriaSell.SetCreateCriteria(50,100,10,10,0.01);
 
 end;
@@ -184,14 +194,50 @@ begin
   end;
 end;
 
-procedure TBot.ManagerCriteriaBuyOnSendTrade(ASender: TObject; ASide: TTypeSide; AQty: Double);
+procedure TBot.ManagerCriteriaBuyOnSendTrade(ASender: TObject; ASide: TTypeBuySell; AQty: Double);
 begin
   // Купить торговать
+  if Assigned(FTradingPlatform) then
+    DoSendTrade(
+      Date + Time,
+      FTradingPlatform.StateMarket.Ask,
+      AQty,
+      ASide
+    );
 end;
 
-procedure TBot.ManagerCriteriaSellOnSendTrade(ASender: TObject; ASide: TTypeSide; AQty: Double);
+procedure TBot.ManagerCriteriaSellOnSendTrade(ASender: TObject; ASide: TTypeBuySell; AQty: Double);
 begin
   // Продать
+  if Assigned(FTradingPlatform) then
+    DoSendTrade(
+      Date + Time,
+      FTradingPlatform.StateMarket.Bid,
+      AQty,
+      ASide
+    );
+end;
+
+procedure TBot.DoSendTrade(const ATime: TDateTime; const APrice, AQty: Double;
+  ASide: TTypeBuySell);
+begin
+  if Assigned(FTradingPlatform) then
+  begin
+    FTradingPlatform.SendTrade(
+      Date + Time,
+      APrice,
+      AQty,
+      ASide
+    );
+    if Assigned(FOnSendTrade) then
+      FOnSendTrade(
+        Self,
+        Date + Time,
+        APrice,
+        AQty,
+        ASide
+      );
+  end;
 end;
 
 end.

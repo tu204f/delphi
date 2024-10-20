@@ -1,4 +1,4 @@
-unit Lb.Platfom;
+unit Lb.Platform;
 
 interface
 
@@ -9,7 +9,8 @@ uses
   System.Classes,
   System.Variants,
   FMX.Types,
-  Lb.SysUtils;
+  Lb.SysUtils,
+  Lb.Platform.Trading;
 
 type
   TEventOnStart        = procedure(ASender: TObject) of object;
@@ -59,6 +60,7 @@ type
     FOnStateMarket: TEventOnStateMarket;
   protected
     FStateMarket: TStateMarket;
+    FPlatformTrading: TPlatformTrading;
     procedure DoStateMarke; virtual;
   public
     constructor Create; override;
@@ -68,7 +70,14 @@ type
     ///<summary>Состояние рынка</summary>
     property StateMarket: TStateMarket read FStateMarket;
     property OnStateMarket: TEventOnStateMarket write FOnStateMarket;
+  public
+    ///<summary>
+    /// Есть потенциальная ошибка зависание заявки
+    ///</summary>
+    procedure SendTrade(const ATime: TDateTime; const APrice, AQty: Double; ASide: TTypeBuySell); virtual;
+    property Trading: TPlatformTrading read FPlatformTrading;
   end;
+
 
 implementation
 
@@ -154,10 +163,12 @@ constructor TTradingPlatform.Create;
 begin
   inherited Create;
   FStateMarket := TStateMarket.Create;
+  FPlatformTrading := TPlatformTrading.Create;
 end;
 
 destructor TTradingPlatform.Destroy;
 begin
+  FreeAndNil(FPlatformTrading);
   FreeAndNil(FStateMarket);
   inherited Destroy;
 end;
@@ -166,6 +177,11 @@ procedure TTradingPlatform.DoStateMarke;
 begin
   if Assigned(FOnStateMarket) then
     FOnStateMarket(Self,FStateMarket);
+end;
+
+procedure TTradingPlatform.SendTrade(const ATime: TDateTime; const APrice, AQty: Double; ASide: TTypeBuySell);
+begin
+  FPlatformTrading.OpenTrade(ATime,APrice, AQty, ASide);
 end;
 
 end.

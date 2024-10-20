@@ -1,0 +1,166 @@
+object CategoryFrame: TCategoryFrame
+  Size.Width = 479.000000000000000000
+  Size.Height = 28.000000000000000000
+  Size.PlatformDefault = False
+  object Rectangle: TRectangle
+    Align = Client
+    Size.Width = 479.000000000000000000
+    Size.Height = 28.000000000000000000
+    Size.PlatformDefault = False
+    Stroke.Color = claNull
+    object GridPanel: TGridPanelLayout
+      Align = Client
+      Margins.Top = 3.000000000000000000
+      Margins.Bottom = 3.000000000000000000
+      Size.Width = 479.000000000000000000
+      Size.Height = 22.000000000000000000
+      Size.PlatformDefault = False
+      TabOrder = 0
+      ColumnCollection = <
+        item
+          SizeStyle = Absolute
+          Value = 30.000000000000000000
+        end
+        item
+          Value = 33.333333333333340000
+        end
+        item
+          SizeStyle = Absolute
+          Value = 30.000000000000000000
+        end
+        item
+          Value = 33.333333333333340000
+        end
+        item
+          Value = 33.333333333333340000
+        end>
+      ControlCollection = <
+        item
+          Column = 0
+          Control = Layout1
+          Row = 0
+        end
+        item
+          Column = 1
+          Control = Layout2
+          Row = 0
+        end
+        item
+          Column = 2
+          Control = Layout3
+          Row = 0
+        end
+        item
+          Column = 3
+          Control = Layout4
+          Row = 0
+        end
+        item
+          Column = 4
+          Control = Layout5
+          Row = 0
+        end>
+      RowCollection = <
+        item
+          Value = 100.000000000000000000
+        end>
+      object Layout1: TLayout
+        Align = Client
+        Size.Width = 30.000000000000000000
+        Size.Height = 22.000000000000000000
+        Size.PlatformDefault = False
+        TabOrder = 4
+        object CheckBoxActive: TCheckBox
+          Align = Center
+          Size.Width = 20.000000000000000000
+          Size.Height = 19.000000000000000000
+          Size.PlatformDefault = False
+          TabOrder = 0
+          OnChange = CheckBoxActiveChange
+        end
+      end
+      object Layout2: TLayout
+        Align = Client
+        Margins.Left = 3.000000000000000000
+        Margins.Right = 3.000000000000000000
+        Size.Width = 133.666671752929700000
+        Size.Height = 22.000000000000000000
+        Size.PlatformDefault = False
+        TabOrder = 3
+        object SpinBoxActiveRSI: TSpinBox
+          Touch.InteractiveGestures = [LongTap, DoubleTap]
+          Align = VertCenter
+          TabOrder = 0
+          Cursor = crIBeam
+          Value = 30.000000000000000000
+          Position.Y = -3.000000000000000000
+          Size.Width = 133.666671752929700000
+          Size.Height = 28.000000000000000000
+          Size.PlatformDefault = False
+          OnChange = SpinBoxActiveRSIChange
+        end
+      end
+      object Layout3: TLayout
+        Align = Client
+        Size.Width = 30.000000000000000000
+        Size.Height = 22.000000000000000000
+        Size.PlatformDefault = False
+        TabOrder = 2
+        object CheckBoxReActive: TCheckBox
+          Align = Center
+          Size.Width = 20.000000000000000000
+          Size.Height = 19.000000000000000000
+          Size.PlatformDefault = False
+          TabOrder = 0
+          OnChange = CheckBoxReActiveChange
+        end
+      end
+      object Layout4: TLayout
+        Align = Client
+        Size.Width = 139.666671752929700000
+        Size.Height = 22.000000000000000000
+        Size.PlatformDefault = False
+        TabOrder = 1
+        object SpinBoxReActiveRSI: TSpinBox
+          Touch.InteractiveGestures = [LongTap, DoubleTap]
+          Align = VertCenter
+          TabOrder = 0
+          Cursor = crIBeam
+          Value = 20.000000000000000000
+          Position.X = 3.000000000000000000
+          Position.Y = -3.000000000000000000
+          Margins.Left = 3.000000000000000000
+          Margins.Right = 3.000000000000000000
+          Size.Width = 133.666671752929700000
+          Size.Height = 28.000000000000000000
+          Size.PlatformDefault = False
+          OnChange = SpinBoxReActiveRSIChange
+        end
+      end
+      object Layout5: TLayout
+        Align = Client
+        Size.Width = 139.666656494140600000
+        Size.Height = 22.000000000000000000
+        Size.PlatformDefault = False
+        TabOrder = 0
+        object SpinBoxQty: TSpinBox
+          Touch.InteractiveGestures = [LongTap, DoubleTap]
+          Align = VertCenter
+          TabOrder = 0
+          Cursor = crIBeam
+          Value = 0.010000000000000000
+          ValueType = Float
+          Increment = 0.009999999776482582
+          Position.X = 3.000000000000000000
+          Position.Y = -3.000000000000000000
+          Margins.Left = 3.000000000000000000
+          Margins.Right = 3.000000000000000000
+          Size.Width = 133.666656494140600000
+          Size.Height = 28.000000000000000000
+          Size.PlatformDefault = False
+          OnChange = SpinBoxQtyChange
+        end
+      end
+    end
+  end
+end

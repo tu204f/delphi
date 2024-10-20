@@ -2,30 +2,171 @@ object MainForm: TMainForm
   Left = 0
   Top = 0
   Caption = 'Form4'
-  ClientHeight = 649
-  ClientWidth = 775
+  ClientHeight = 857
+  ClientWidth = 906
   FormFactor.Width = 320
   FormFactor.Height = 480
   FormFactor.Devices = [Desktop]
   DesignerMasterStyle = 0
-  object Memo1: TMemo
-    Touch.InteractiveGestures = [Pan, LongTap, DoubleTap]
-    DataDetectorTypes = []
+  object ButtonStart: TButton
+    Position.X = 8.000000000000000000
+    Position.Y = 8.000000000000000000
+    TabOrder = 1
+    Text = 'ButtonStart'
+    OnClick = ButtonStartClick
+  end
+  object ButtonBuy: TButton
+    Position.X = 360.000000000000000000
+    Position.Y = 8.000000000000000000
+    TabOrder = 4
+    Text = 'ButtonBuy'
+    OnClick = ButtonBuyClick
+  end
+  object ButtonSell: TButton
+    Position.X = 444.000000000000000000
+    Position.Y = 8.000000000000000000
+    TabOrder = 5
+    Text = 'ButtonSell'
+    OnClick = ButtonSellClick
+  end
+  object ButtonBuy2: TButton
+    Position.X = 540.000000000000000000
+    Position.Y = 8.000000000000000000
+    TabOrder = 2
+    Text = 'ButtonBuy2'
+    OnClick = ButtonBuy2Click
+  end
+  object ButtonSell2: TButton
+    Position.X = 624.000000000000000000
+    Position.Y = 8.000000000000000000
+    TabOrder = 3
+    Text = 'ButtonSell2'
+    OnClick = ButtonSell2Click
+  end
+  object ButtonStop: TButton
+    Position.X = 92.000000000000000000
+    Position.Y = 8.000000000000000000
+    TabOrder = 6
+    Text = 'ButtonStop'
+    OnClick = ButtonStopClick
+  end
+  object TabControl: TTabControl
     Anchors = [akLeft, akTop, akRight, akBottom]
     Position.X = 8.000000000000000000
     Position.Y = 36.000000000000000000
-    Size.Width = 757.000000000000000000
-    Size.Height = 605.000000000000000000
+    Size.Width = 892.000000000000000000
+    Size.Height = 813.000000000000000000
     Size.PlatformDefault = False
-    TabOrder = 0
-    Viewport.Width = 753.000000000000000000
-    Viewport.Height = 601.000000000000000000
-  end
-  object Button1: TButton
-    Position.X = 8.000000000000000000
-    Position.Y = 8.000000000000000000
-    TabOrder = 2
-    Text = 'Button1'
-    OnClick = Button1Click
+    TabIndex = 1
+    TabOrder = 7
+    TabPosition = PlatformDefault
+    Sizes = (
+      892s
+      787s
+      892s
+      787s)
+    object TabItemLog: TTabItem
+      CustomIcon = <
+        item
+        end>
+      IsSelected = False
+      Size.Width = 82.000000000000000000
+      Size.Height = 26.000000000000000000
+      Size.PlatformDefault = False
+      StyleLookup = ''
+      TabOrder = 0
+      Text = 'TabItemLog'
+      ExplicitSize.cx = 82.000000000000000000
+      ExplicitSize.cy = 26.000000000000000000
+      object Memo1: TMemo
+        Touch.InteractiveGestures = [Pan, LongTap, DoubleTap]
+        DataDetectorTypes = []
+        Align = Client
+        Margins.Left = 10.000000000000000000
+        Margins.Top = 10.000000000000000000
+        Margins.Right = 10.000000000000000000
+        Margins.Bottom = 10.000000000000000000
+        Size.Width = 872.000000000000000000
+        Size.Height = 767.000000000000000000
+        Size.PlatformDefault = False
+        TabOrder = 0
+        Viewport.Width = 868.000000000000000000
+        Viewport.Height = 763.000000000000000000
+      end
+    end
+    object TabItemFrame: TTabItem
+      CustomIcon = <
+        item
+        end>
+      IsSelected = True
+      Size.Width = 95.000000000000000000
+      Size.Height = 26.000000000000000000
+      Size.PlatformDefault = False
+      StyleLookup = ''
+      TabOrder = 0
+      Text = 'TabItemFrame'
+      ExplicitSize.cx = 95.000000000000000000
+      ExplicitSize.cy = 26.000000000000000000
+      object GridLayout: TGridPanelLayout
+        Position.X = 12.000000000000000000
+        Position.Y = 18.000000000000000000
+        Size.Width = 513.000000000000000000
+        Size.Height = 439.000000000000000000
+        Size.PlatformDefault = False
+        TabOrder = 0
+        ColumnCollection = <
+          item
+            Value = 100.000000000000000000
+          end>
+        ControlCollection = <
+          item
+            Column = 0
+            Control = LayoutSell
+            Row = 0
+          end
+          item
+            Column = 0
+            Control = LayoutBuy
+            Row = 1
+          end>
+        RowCollection = <
+          item
+            Value = 50.000000000000000000
+          end
+          item
+            Value = 50.000000000000000000
+          end>
+        object LayoutSell: TLayout
+          Align = Client
+          Margins.Top = 6.000000000000000000
+          Margins.Bottom = 3.000000000000000000
+          Size.Width = 513.000000000000000000
+          Size.Height = 210.500000000000000000
+          Size.PlatformDefault = False
+          TabOrder = 1
+        end
+        object LayoutBuy: TLayout
+          Align = Client
+          Margins.Top = 3.000000000000000000
+          Margins.Bottom = 6.000000000000000000
+          Size.Width = 513.000000000000000000
+          Size.Height = 210.500000000000000000
+          Size.PlatformDefault = False
+          TabOrder = 0
+        end
+      end
+      object MemoSendTrade: TMemo
+        Touch.InteractiveGestures = [Pan, LongTap, DoubleTap]
+        DataDetectorTypes = []
+        Position.X = 12.000000000000000000
+        Position.Y = 466.000000000000000000
+        Size.Width = 517.000000000000000000
+        Size.Height = 203.000000000000000000
+        Size.PlatformDefault = False
+        TabOrder = 1
+        Viewport.Width = 513.000000000000000000
+        Viewport.Height = 199.000000000000000000
+      end
+    end
   end
 end

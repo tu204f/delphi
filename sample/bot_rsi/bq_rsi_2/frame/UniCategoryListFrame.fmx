@@ -1,0 +1,94 @@
+object CategoryListFrame: TCategoryListFrame
+  Align = Client
+  Size.Width = 425.000000000000000000
+  Size.Height = 170.000000000000000000
+  Size.PlatformDefault = False
+  object GridPanel: TGridPanelLayout
+    Align = Client
+    Size.Width = 425.000000000000000000
+    Size.Height = 170.000000000000000000
+    Size.PlatformDefault = False
+    TabOrder = 0
+    ColumnCollection = <
+      item
+        Value = 100.000000000000000000
+      end>
+    ControlCollection = <
+      item
+        Column = 0
+        Control = Layout1
+        Row = 0
+      end
+      item
+        Column = 0
+        Control = Layout2
+        Row = 1
+      end
+      item
+        Column = 0
+        Control = Layout3
+        Row = 2
+      end
+      item
+        Column = 0
+        Control = Layout4
+        Row = 3
+      end
+      item
+        Column = 0
+        Control = Layout5
+        Row = 4
+      end>
+    RowCollection = <
+      item
+        Value = 20.000000000000000000
+      end
+      item
+        Value = 20.000000000000000000
+      end
+      item
+        Value = 20.000000000000000000
+      end
+      item
+        Value = 20.000000000000000000
+      end
+      item
+        Value = 20.000000000000000000
+      end>
+    object Layout1: TLayout
+      Align = Client
+      Size.Width = 425.000000000000000000
+      Size.Height = 34.000000000000000000
+      Size.PlatformDefault = False
+      TabOrder = 4
+    end
+    object Layout2: TLayout
+      Align = Client
+      Size.Width = 425.000000000000000000
+      Size.Height = 34.000000000000000000
+      Size.PlatformDefault = False
+      TabOrder = 3
+    end
+    object Layout3: TLayout
+      Align = Client
+      Size.Width = 425.000000000000000000
+      Size.Height = 34.000000000000000000
+      Size.PlatformDefault = False
+      TabOrder = 2
+    end
+    object Layout4: TLayout
+      Align = Client
+      Size.Width = 425.000000000000000000
+      Size.Height = 34.000000000000000000
+      Size.PlatformDefault = False
+      TabOrder = 1
+    end
+    object Layout5: TLayout
+      Align = Client
+      Size.Width = 425.000000000000000000
+      Size.Height = 34.000000000000000000
+      Size.PlatformDefault = False
+      TabOrder = 0
+    end
+  end
+end

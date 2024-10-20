@@ -6,7 +6,7 @@ uses
   UnitMainForm in 'UnitMainForm.pas' {MainForm},
   Lb.Bot in 'lb\Lb.Bot.pas',
   Lb.SysUtils in 'lb\Lb.SysUtils.pas',
-  Lb.Platfom in 'lb\Lb.Platfom.pas',
+  Lb.Platform in 'lb\Lb.Platform.pas',
   BTMemoryModule in '..\..\..\library\trade\libquik\BTMemoryModule.pas',
   QuikTrans2Order in '..\..\..\library\trade\libquik\QuikTrans2Order.pas',
   QuikTrans2QuikAPI in '..\..\..\library\trade\libquik\QuikTrans2QuikAPI.pas',
@@ -15,7 +15,7 @@ uses
   Quik.SysUtils in '..\..\..\library\trade\quik\Quik.SysUtils.pas',
   Quik.ValueTable in '..\..\..\library\trade\quik\Quik.ValueTable.pas',
   Lb.Logger in '..\..\..\library\Lb.Logger.pas',
-  Lb.Platfom.Bybit in 'lb\Lb.Platfom.Bybit.pas',
+  Lb.Platform.Bybit in 'lb\Lb.Platform.Bybit.pas',
   Lb.ManagerRisk in 'lb\Lb.ManagerRisk.pas',
   Lb.Bybit.Encryption in '..\..\..\library\trade\bybit\Lb.Bybit.Encryption.pas',
   Lb.Bybit.SysUtils in '..\..\..\library\trade\bybit\Lb.Bybit.SysUtils.pas',
@@ -24,7 +24,9 @@ uses
   Lb.Bybit.ServerTime in '..\..\..\library\trade\bybit\market\Lb.Bybit.ServerTime.pas',
   Lb.Level in 'lb\Lb.Level.pas',
   Lb.Criteria in 'lb\Lb.Criteria.pas',
-  Lb.Virtual.Trading in 'lb\Lb.Virtual.Trading.pas';
+  Lb.Platform.Trading in 'lb\Lb.Platform.Trading.pas',
+  UnitCategoryFrame in 'frame\UnitCategoryFrame.pas' {CategoryFrame: TFrame},
+  UniCategoryListFrame in 'frame\UniCategoryListFrame.pas' {CategoryListFrame: TFrame};
 
 {$R *.res}
 

@@ -12,7 +12,7 @@ uses
   System.Generics.Collections;
 
 type
-  TTypeSide = (
+  TTypeBuySell = (
     tsNull, {добавлено новое значение}
     tsBuy,
     tsSell
@@ -66,7 +66,43 @@ type
     property Candels: TCandelList read FCandels;
   end;
 
+  ///<summary>
+  /// Позиция
+  ///</summary>
+  TPositionMarket = class(TObject)
+    OpenTime: Int64;
+    CloseTime: Int64;
+    Side: TTypeBuySell;
+    OpenPrice: Double;
+    ClosePrice: Double;
+    MovingPrice: Double;
+    Qty: Double;
+    Value: Double;
+  end;
+
+function GetCrossSide(ASide: TTypeBuySell): TTypeBuySell;
+function GetStrToSide(ASide: TTypeBuySell): String;
+
 implementation
+
+function GetStrToSide(ASide: TTypeBuySell): String;
+begin
+  case ASide of
+    tsNull: Result := 'N';
+    tsBuy: Result := 'B';
+    tsSell: Result := 'S';
+  end;
+end;
+
+function GetCrossSide(ASide: TTypeBuySell): TTypeBuySell;
+begin
+  case ASide of
+    tsBuy: Result := TTypeBuySell.tsSell;
+    tsSell: Result := TTypeBuySell.tsBuy;
+  else
+    Result := ASide;
+  end;
+end;
 
 { TStateMarket }
 
