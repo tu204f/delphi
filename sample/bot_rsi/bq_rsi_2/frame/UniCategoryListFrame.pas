@@ -16,7 +16,7 @@ uses
   FMX.StdCtrls,
   FMX.Layouts,
   UnitCategoryFrame,
-  Lb.Criteria,
+  Lb.Category,
   Lb.SysUtils;
 
 type
@@ -29,9 +29,9 @@ type
     Layout4: TLayout;
     Layout5: TLayout;
   private
-    FManagerCriteria: TManagerCriteria;
+    FManagerCategory: TManagerCategory;
     procedure InitCategoryFrame;
-    procedure SetManagerCriteria(const Value: TManagerCriteria);
+    procedure SetManagerCategory(const Value: TManagerCategory);
     function GetSide: TTypeBuySell;
   protected
     Category1: TCategoryFrame;
@@ -43,7 +43,7 @@ type
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
     property Side: TTypeBuySell read GetSide;
-    property ManagerCriteria: TManagerCriteria read FManagerCriteria write SetManagerCriteria;
+    property ManagerCategory: TManagerCategory read FManagerCategory write SetManagerCategory;
   end;
 
 implementation
@@ -93,35 +93,35 @@ end;
 
 function TCategoryListFrame.GetSide: TTypeBuySell;
 begin
-  if Assigned(FManagerCriteria) then
-    Result := FManagerCriteria.Side
+  if Assigned(FManagerCategory) then
+    Result := FManagerCategory.Side
   else
     Result := TTypeBuySell.tsNull;
 end;
 
-procedure TCategoryListFrame.SetManagerCriteria(const Value: TManagerCriteria);
+procedure TCategoryListFrame.SetManagerCategory(const Value: TManagerCategory);
 
   function _IsCriteria(AIndex: Integer): Boolean;
   begin
-    Result := (FManagerCriteria.Count - 1) >= AIndex;
+    Result := (FManagerCategory.Count - 1) >= AIndex;
   end;
 
 begin
-  FManagerCriteria := Value;
-  case FManagerCriteria.Side of
+  FManagerCategory := Value;
+  case FManagerCategory.Side of
     tsBuy: begin
-      Category1.Criteria := FManagerCriteria.Items[0];
-      Category2.Criteria := FManagerCriteria.Items[1];
-      Category3.Criteria := FManagerCriteria.Items[2];
-      Category4.Criteria := FManagerCriteria.Items[3];
-      Category5.Criteria := FManagerCriteria.Items[4];
+      Category1.Category := FManagerCategory.Items[0];
+      Category2.Category := FManagerCategory.Items[1];
+      Category3.Category := FManagerCategory.Items[2];
+      Category4.Category := FManagerCategory.Items[3];
+      Category5.Category := FManagerCategory.Items[4];
     end;
     tsSell: begin
-      Category5.Criteria := FManagerCriteria.Items[0];
-      Category4.Criteria := FManagerCriteria.Items[1];
-      Category3.Criteria := FManagerCriteria.Items[2];
-      Category2.Criteria := FManagerCriteria.Items[3];
-      Category1.Criteria := FManagerCriteria.Items[4];
+      Category5.Category := FManagerCategory.Items[0];
+      Category4.Category := FManagerCategory.Items[1];
+      Category3.Category := FManagerCategory.Items[2];
+      Category2.Category := FManagerCategory.Items[3];
+      Category1.Category := FManagerCategory.Items[4];
     end;
   end;
 end;

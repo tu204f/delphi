@@ -1,4 +1,4 @@
-unit Lb.Criteria;
+unit Lb.Category;
 
 interface
 
@@ -14,13 +14,13 @@ uses
   Lb.Level;
 
 type
-  TManagerCriteria = class;
+  TManagerCategory = class;
   TEventOnSendTrade = procedure(ASender: TObject; ASide: TTypeBuySell; AQty: Double) of object;
 
   ///<summary>
   /// Критерий открытие позиции
   ///</summary>
-  TCriteria = class(TObject)
+  TCategory = class(TObject)
   private
     FIsActive: Boolean;
     FIsReActive: Boolean;
@@ -30,7 +30,7 @@ type
     FSide: TTypeBuySell;
   private
     FOnChange: TNotifyEvent;
-    FManagerCriteria: TManagerCriteria;
+    FManagerCategory: TManagerCategory;
     procedure ActiveLevelOnIntersection(Sender: TObject);
     procedure ReActiveLevelOnIntersection(Sender: TObject);
     procedure SetSide(const Value: TTypeBuySell);
@@ -39,7 +39,7 @@ type
     procedure DoChange;
     procedure DoSendTrade(const ASide: TTypeBuySell; const AQty: Double);
   public
-    constructor Create(const AManagerCriteria: TManagerCriteria); virtual;
+    constructor Create(const AManagerCategory: TManagerCategory); virtual;
     destructor Destroy; override;
     ///<summary>Обновление значение RSI</summary>
     procedure SetUpDateValue(const AValueRSI: Double);
@@ -61,10 +61,10 @@ type
   ///<summary>
   /// Список критериев, на основание которых открывается позиция;
   ///</summary>
-  TCriteriaList = TObjectList<TCriteria>;
+  TCategoryList = TObjectList<TCategory>;
 
   ///<summary>Менеджер критериев</summary>
-  TManagerCriteria = class(TCriteriaList)
+  TManagerCategory= class(TCategoryList)
   private
     FSide: TTypeBuySell;
     FOnSendTrade: TEventOnSendTrade;
@@ -73,9 +73,9 @@ type
     procedure DoSendTrade(const ASide: TTypeBuySell; const AQty: Double);
   public
     ///<summary>Добавить кретерий</summary>
-    function AddCriteria(const ARSI, AActiveRSI, AQty: Double): Integer;
+    function AddCategory(const ARSI, AActiveRSI, AQty: Double): Integer;
     ///<summary>Обновить значение критерия</summary>
-    procedure UpDateCriteria(const AIndex: Integer; const ARSI, AActiveRSI, AQty: Double);
+    procedure UpDateCategory(const AIndex: Integer; const ARSI, AActiveRSI, AQty: Double);
     ///<summary>Напровление критерия</summary>
     property Side: TTypeBuySell read FSide write SetSide;
   public
@@ -86,11 +86,11 @@ type
 
 implementation
 
-{ TCriteria }
+{ TCategory }
 
-constructor TCriteria.Create(const AManagerCriteria: TManagerCriteria);
+constructor TCategory.Create(const AManagerCategory: TManagerCategory);
 begin
-  FManagerCriteria := AManagerCriteria;
+  FManagerCategory := AManagerCategory;
 
   FActiveLevel := TOneEventLevel.Create;
   FActiveLevel.OnIntersectionLevel := ActiveLevelOnIntersection;
@@ -99,7 +99,7 @@ begin
   FReActiveLevel.OnIntersectionLevel := ReActiveLevelOnIntersection;
 end;
 
-destructor TCriteria.Destroy;
+destructor TCategory.Destroy;
 begin
   FreeAndNil(FReActiveLevel);
   FreeAndNil(FActiveLevel);
@@ -107,7 +107,7 @@ begin
 end;
 
 
-procedure TCriteria.SetActiveLevelSide;
+procedure TCategory.SetActiveLevelSide;
 begin
   case FSide of
     TTypeBuySell.tsBuy: begin
@@ -128,13 +128,13 @@ begin
   DoChange;
 end;
 
-procedure TCriteria.SetSide(const Value: TTypeBuySell);
+procedure TCategory.SetSide(const Value: TTypeBuySell);
 begin
   FSide := Value;
   SetActiveLevelSide;
 end;
 
-procedure TCriteria.ActiveLevelOnIntersection(Sender: TObject);
+procedure TCategory.ActiveLevelOnIntersection(Sender: TObject);
 begin
   if FIsActive then
   begin
@@ -144,7 +144,7 @@ begin
   end;
 end;
 
-procedure TCriteria.ReActiveLevelOnIntersection(Sender: TObject);
+procedure TCategory.ReActiveLevelOnIntersection(Sender: TObject);
 begin
   if FIsReActive then
   begin
@@ -153,7 +153,7 @@ begin
   end;
 end;
 
-procedure TCriteria.SetUpDateValue(const AValueRSI: Double);
+procedure TCategory.SetUpDateValue(const AValueRSI: Double);
 
   procedure _ActiveLevelSetUpDate(const AValue: Double);
   begin
@@ -172,63 +172,63 @@ begin
   _ReActiveLevelSetUpDate(AValueRSI);
 end;
 
-procedure TCriteria.DoChange;
+procedure TCategory.DoChange;
 begin
   if Assigned(FOnChange) then
     FOnChange(Self);
 end;
 
-procedure TCriteria.DoSendTrade(const ASide: TTypeBuySell; const AQty: Double);
+procedure TCategory.DoSendTrade(const ASide: TTypeBuySell; const AQty: Double);
 begin
-  if Assigned(FManagerCriteria) then
-    FManagerCriteria.DoSendTrade(ASide,AQty);
+  if Assigned(FManagerCategory) then
+    FManagerCategory.DoSendTrade(ASide,AQty);
 end;
 
-{ TManagerCriteria }
+{ TManagerCategory }
 
-function TManagerCriteria.AddCriteria(const ARSI, AActiveRSI, AQty: Double): Integer;
+function TManagerCategory.AddCategory(const ARSI, AActiveRSI, AQty: Double): Integer;
 var
-  xCriteria: TCriteria;
+  xCategory: TCategory;
 begin
-  xCriteria := TCriteria.Create(Self);
-  xCriteria.Qty := AQty;
-  xCriteria.ActiveLevel.Value := ARSI;
-  xCriteria.ReActiveLevel.Value := AActiveRSI;
-  xCriteria.Side := FSide;
-  Result := Self.Add(xCriteria);
+  xCategory := TCategory.Create(Self);
+  xCategory.Qty := AQty;
+  xCategory.ActiveLevel.Value := ARSI;
+  xCategory.ReActiveLevel.Value := AActiveRSI;
+  xCategory.Side := FSide;
+  Result := Self.Add(xCategory);
 end;
 
-procedure TManagerCriteria.UpDateCriteria(const AIndex: Integer; const ARSI,
+procedure TManagerCategory.UpDateCategory(const AIndex: Integer; const ARSI,
   AActiveRSI, AQty: Double);
 var
-  xCriteria: TCriteria;
+  xCategory: TCategory;
 begin
-  xCriteria := Self.Items[AIndex];
-  xCriteria.Qty := AQty;
-  xCriteria.ActiveLevel.Value := ARSI;
-  xCriteria.ReActiveLevel.Value := AActiveRSI;
+  xCategory := Self.Items[AIndex];
+  xCategory.Qty := AQty;
+  xCategory.ActiveLevel.Value := ARSI;
+  xCategory.ReActiveLevel.Value := AActiveRSI;
 end;
 
-procedure TManagerCriteria.SetSide(const Value: TTypeBuySell);
+procedure TManagerCategory.SetSide(const Value: TTypeBuySell);
 begin
   FSide := Value;
   for var xC in Self do
     xC.Side := Value;
 end;
 
-procedure TManagerCriteria.SetUpDateValue(const AValueRSI: Double);
+procedure TManagerCategory.SetUpDateValue(const AValueRSI: Double);
 begin
   for var xC in Self do
     xC.SetUpDateValue(AValueRSI);
 end;
 
-procedure TManagerCriteria.DoSendTrade(const ASide: TTypeBuySell; const AQty: Double);
+procedure TManagerCategory.DoSendTrade(const ASide: TTypeBuySell; const AQty: Double);
 begin
   if Assigned(FOnSendTrade) then
     FOnSendTrade(Self,ASide,AQty);
 end;
 
-procedure TManagerCriteria.SetCreateCriteria(const AValueFrom, AValueTo, AStep,
+procedure TManagerCategory.SetCreateCriteria(const AValueFrom, AValueTo, AStep,
   AReActiveValue, AQty: Double);
 
   function _IsTo(AValueTo, AValue: Double): Boolean;
@@ -260,7 +260,7 @@ begin
     if xReValue < 0 then
       xReValue := 0;
 
-    AddCriteria(xValue,xReValue,AQty);
+    AddCategory(xValue,xReValue,AQty);
     case FSide of
       tsBuy: xValue := xValue - AStep;
       tsSell: xValue := xValue + AStep;

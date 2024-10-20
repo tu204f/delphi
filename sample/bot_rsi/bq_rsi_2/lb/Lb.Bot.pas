@@ -10,7 +10,7 @@ uses
   System.Variants,
   Lb.SysUtils,
   Lb.Platform,
-  Lb.Criteria;
+  Lb.Category;
 
 type
   TEventOnSendTrade = procedure(ASender: TObject; const ATime: TDateTime; const APrice, AQty: Double; ASide: TTypeBuySell) of object;
@@ -24,8 +24,8 @@ type
     FTradingPlatform: TTradingPlatform;
     FValueRSI: Double;
   private
-    FManagerCriteriaBuy: TManagerCriteria;
-    FManagerCriteriaSell: TManagerCriteria;
+    FManagerCategoryBuy: TManagerCategory;
+    FManagerCategorySell: TManagerCategory;
     procedure ManagerCriteriaBuyOnSendTrade(ASender: TObject; ASide: TTypeBuySell; AQty: Double);
     procedure ManagerCriteriaSellOnSendTrade(ASender: TObject; ASide: TTypeBuySell; AQty: Double);
   protected
@@ -61,9 +61,9 @@ type
     property OnSendTrade: TEventOnSendTrade write FOnSendTrade;
   public
     ///<summary>Критерий на покупку</summary>
-    property ManagerCriteriaBuy: TManagerCriteria read FManagerCriteriaBuy;
+    property ManagerCategoryBuy: TManagerCategory read FManagerCategoryBuy;
     ///<summary>Критерий на продаже</summary>
-    property ManagerCriteriaSell: TManagerCriteria read FManagerCriteriaSell;
+    property ManagerCategorySell: TManagerCategory read FManagerCategorySell;
   end;
 
 implementation
@@ -140,20 +140,20 @@ begin
   FValueRSI := 0;
   FTradingPlatform := nil;
 
-  FManagerCriteriaBuy := TManagerCriteria.Create;
-  FManagerCriteriaBuy.Side := TTypeBuySell.tsBuy;
-  FManagerCriteriaBuy.SetCreateCriteria(50,0,10,10,0.01);
+  FManagerCategoryBuy := TManagerCategory.Create;
+  FManagerCategoryBuy.Side := TTypeBuySell.tsBuy;
+  FManagerCategoryBuy.SetCreateCriteria(50,0,10,10,0.01);
 
-  FManagerCriteriaSell:= TManagerCriteria.Create;
-  FManagerCriteriaSell.Side := TTypeBuySell.tsSell;
-  FManagerCriteriaSell.SetCreateCriteria(50,100,10,10,0.01);
+  FManagerCategorySell:= TManagerCategory.Create;
+  FManagerCategorySell.Side := TTypeBuySell.tsSell;
+  FManagerCategorySell.SetCreateCriteria(50,100,10,10,0.01);
 
 end;
 
 destructor TBot.Destroy;
 begin
-  FreeAndNil(FManagerCriteriaBuy);
-  FreeAndNil(FManagerCriteriaSell);
+  FreeAndNil(FManagerCategoryBuy);
+  FreeAndNil(FManagerCategorySell);
   inherited;
 end;
 
@@ -184,8 +184,8 @@ begin
     begin
       // Условия открытие позиции
       FValueRSI := GetRSI(FPeriod,FTradingPlatform.StateMarket.Candels);
-      ManagerCriteriaBuy.SetUpDateValue(FValueRSI);
-      ManagerCriteriaSell.SetUpDateValue(FValueRSI);
+      ManagerCategoryBuy.SetUpDateValue(FValueRSI);
+      ManagerCategorySell.SetUpDateValue(FValueRSI);
     end;
   end
   else if IsActivePosition then

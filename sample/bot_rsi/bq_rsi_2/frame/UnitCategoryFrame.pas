@@ -20,7 +20,7 @@ uses
   FMX.SpinBox,
   FMX.Layouts,
   FMX.Objects,
-  Lb.Criteria,
+  Lb.Category,
   Lb.SysUtils,
   Lb.Level;
 
@@ -45,16 +45,16 @@ type
     procedure SpinBoxReActiveRSIChange(Sender: TObject);
     procedure SpinBoxQtyChange(Sender: TObject);
   private
-    FCriteria: TCriteria;
-    procedure SetCriteria(const Value: TCriteria);
-    procedure CriteriaOnChange(Sender: TObject);
+    FCategory: TCategory;
+    procedure SetCategory(const Value: TCategory);
+    procedure CategoryOnChange(Sender: TObject);
   protected
-    procedure SetShowCriteria;
+    procedure SetShowCategory;
   public
     Index: Integer;
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
-    property Criteria: TCriteria read FCriteria write SetCriteria;
+    property Category: TCategory read FCategory write SetCategory;
   end;
 
 implementation
@@ -79,54 +79,54 @@ begin
   inherited;
 end;
 
-procedure TCategoryFrame.SetCriteria(const Value: TCriteria);
+procedure TCategoryFrame.SetCategory(const Value: TCategory);
 begin
-  FCriteria := Value;
-  SetShowCriteria;
-  case FCriteria.Side of
+  FCategory := Value;
+  SetShowCategory;
+  case FCategory.Side of
     tsBuy: Rectangle.Fill.Color := TAlphaColorRec.Green;
     tsSell: Rectangle.Fill.Color := TAlphaColorRec.Red;
   end;
-  FCriteria.OnChange := CriteriaOnChange;
+  FCategory.OnChange := CategoryOnChange;
 end;
 
-procedure TCategoryFrame.SetShowCriteria;
+procedure TCategoryFrame.SetShowCategory;
 begin
-  CheckBoxActive.IsChecked := FCriteria.IsActive;
-  CheckBoxReActive.IsChecked := FCriteria.IsReActive;
-  SpinBoxActiveRSI.Value := FCriteria.ActiveLevel.Value;
-  SpinBoxReActiveRSI.Value := FCriteria.ReActiveLevel.Value;
-  SpinBoxQty.Value := FCriteria.Qty;
+  CheckBoxActive.IsChecked := FCategory.IsActive;
+  CheckBoxReActive.IsChecked := FCategory.IsReActive;
+  SpinBoxActiveRSI.Value := FCategory.ActiveLevel.Value;
+  SpinBoxReActiveRSI.Value := FCategory.ReActiveLevel.Value;
+  SpinBoxQty.Value := FCategory.Qty;
 end;
 
-procedure TCategoryFrame.CriteriaOnChange(Sender: TObject);
+procedure TCategoryFrame.CategoryOnChange(Sender: TObject);
 begin
-  SetShowCriteria;
+  SetShowCategory;
 end;
 
 procedure TCategoryFrame.CheckBoxActiveChange(Sender: TObject);
 begin
-  FCriteria.IsActive := CheckBoxActive.IsChecked;
+  FCategory.IsActive := CheckBoxActive.IsChecked;
 end;
 
 procedure TCategoryFrame.CheckBoxReActiveChange(Sender: TObject);
 begin
-  FCriteria.IsReActive := CheckBoxReActive.IsChecked;
+  FCategory.IsReActive := CheckBoxReActive.IsChecked;
 end;
 
 procedure TCategoryFrame.SpinBoxActiveRSIChange(Sender: TObject);
 begin
-  FCriteria.ActiveLevel.Value := SpinBoxActiveRSI.Value;
+  FCategory.ActiveLevel.Value := SpinBoxActiveRSI.Value;
 end;
 
 procedure TCategoryFrame.SpinBoxReActiveRSIChange(Sender: TObject);
 begin
-  FCriteria.ReActiveLevel.Value := SpinBoxReActiveRSI.Value;
+  FCategory.ReActiveLevel.Value := SpinBoxReActiveRSI.Value;
 end;
 
 procedure TCategoryFrame.SpinBoxQtyChange(Sender: TObject);
 begin
-  FCriteria.Qty := SpinBoxQty.Value;
+  FCategory.Qty := SpinBoxQty.Value;
 end;
 
 end.

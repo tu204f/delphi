@@ -23,7 +23,7 @@ uses
   Lb.Bybit.OrderBook in '..\..\..\library\trade\bybit\market\Lb.Bybit.OrderBook.pas',
   Lb.Bybit.ServerTime in '..\..\..\library\trade\bybit\market\Lb.Bybit.ServerTime.pas',
   Lb.Level in 'lb\Lb.Level.pas',
-  Lb.Criteria in 'lb\Lb.Criteria.pas',
+  Lb.Category in 'lb\Lb.Category.pas',
   Lb.Platform.Trading in 'lb\Lb.Platform.Trading.pas',
   UnitCategoryFrame in 'frame\UnitCategoryFrame.pas' {CategoryFrame: TFrame},
   UniCategoryListFrame in 'frame\UniCategoryListFrame.pas' {CategoryListFrame: TFrame};

@@ -24,7 +24,7 @@ uses
   Lb.Bot,
   Lb.Platform,
   Lb.Platform.Bybit,
-  Lb.Criteria,
+  Lb.Category,
   FMX.TabControl,
   FMX.Layouts,
   UniCategoryListFrame;
@@ -103,8 +103,8 @@ begin
 
   InitFrame;
 
-  FCategoryListSell.ManagerCriteria := Bot.ManagerCriteriaSell;
-  FCategoryListBuy.ManagerCriteria := Bot.ManagerCriteriaBuy;
+  FCategoryListSell.ManagerCategory := Bot.ManagerCategorySell;
+  FCategoryListBuy.ManagerCategory := Bot.ManagerCategoryBuy;
 end;
 
 destructor TMainForm.Destroy;
@@ -211,29 +211,29 @@ begin
 
     Memo1.Lines.Add('****************************************************');
     Memo1.Lines.Add('Продажа');
-    for var i := Bot.ManagerCriteriaSell.Count - 1 downto 0 do
+    for var i := Bot.ManagerCategorySell.Count - 1 downto 0 do
     begin
-      var xCriteria := Bot.ManagerCriteriaSell.Items[i];
+      var xCategory := Bot.ManagerCategorySell.Items[i];
       xS := 'Ind [' + i.ToString + '] ' +
-        '[' + _ToBool(xCriteria.IsActive) + '] ' +
-        'Active: ' + xCriteria.ActiveLevel.Value.ToString + '; ' +
-        '[' + _ToBool(xCriteria.IsReActive) + '] ' +
-        'ReActive: ' + xCriteria.ReActiveLevel.Value.ToString + '; ' +
-        'Qty: ' + xCriteria.Qty.ToString;
+        '[' + _ToBool(xCategory.IsActive) + '] ' +
+        'Active: ' + xCategory.ActiveLevel.Value.ToString + '; ' +
+        '[' + _ToBool(xCategory.IsReActive) + '] ' +
+        'ReActive: ' + xCategory.ReActiveLevel.Value.ToString + '; ' +
+        'Qty: ' + xCategory.Qty.ToString;
       Memo1.Lines.Add(xS);
     end;
 
     Memo1.Lines.Add('****************************************************');
     Memo1.Lines.Add('Покупка');
-    for var i := 0 to Bot.ManagerCriteriaBuy.Count - 1 do
+    for var i := 0 to Bot.ManagerCategoryBuy.Count - 1 do
     begin
-      var xCriteria := Bot.ManagerCriteriaBuy.Items[i];
+      var xCategory := Bot.ManagerCategoryBuy.Items[i];
       xS := 'Ind [' + i.ToString + '] ' +
-        '[' + _ToBool(xCriteria.IsActive) + '] ' +
-        'Active: ' + xCriteria.ActiveLevel.Value.ToString + '; ' +
-        '[' + _ToBool(xCriteria.IsReActive) + '] ' +
-        'ReActive: ' + xCriteria.ReActiveLevel.Value.ToString + '; ' +
-        'Qty: ' + xCriteria.Qty.ToString;
+        '[' + _ToBool(xCategory.IsActive) + '] ' +
+        'Active: ' + xCategory.ActiveLevel.Value.ToString + '; ' +
+        '[' + _ToBool(xCategory.IsReActive) + '] ' +
+        'ReActive: ' + xCategory.ReActiveLevel.Value.ToString + '; ' +
+        'Qty: ' + xCategory.Qty.ToString;
       Memo1.Lines.Add(xS);
     end;
 

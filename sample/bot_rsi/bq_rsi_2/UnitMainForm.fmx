@@ -160,11 +160,11 @@ object MainForm: TMainForm
         DataDetectorTypes = []
         Position.X = 12.000000000000000000
         Position.Y = 466.000000000000000000
-        Size.Width = 517.000000000000000000
+        Size.Width = 513.000000000000000000
         Size.Height = 203.000000000000000000
         Size.PlatformDefault = False
         TabOrder = 1
-        Viewport.Width = 513.000000000000000000
+        Viewport.Width = 509.000000000000000000
         Viewport.Height = 199.000000000000000000
       end
     end
