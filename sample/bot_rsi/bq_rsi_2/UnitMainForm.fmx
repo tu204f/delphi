@@ -57,7 +57,7 @@ object MainForm: TMainForm
     Size.Width = 892.000000000000000000
     Size.Height = 813.000000000000000000
     Size.PlatformDefault = False
-    TabIndex = 1
+    TabIndex = 0
     TabOrder = 7
     TabPosition = PlatformDefault
     Sizes = (
@@ -69,7 +69,7 @@ object MainForm: TMainForm
       CustomIcon = <
         item
         end>
-      IsSelected = False
+      IsSelected = True
       Size.Width = 82.000000000000000000
       Size.Height = 26.000000000000000000
       Size.PlatformDefault = False
@@ -98,7 +98,7 @@ object MainForm: TMainForm
       CustomIcon = <
         item
         end>
-      IsSelected = True
+      IsSelected = False
       Size.Width = 95.000000000000000000
       Size.Height = 26.000000000000000000
       Size.PlatformDefault = False

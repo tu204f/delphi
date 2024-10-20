@@ -5,6 +5,8 @@ unit Lb.Platform.Trading;
 
 interface
 
+{$I debug.inc}
+
 uses
   System.Classes,
   System.SysUtils,
@@ -50,6 +52,7 @@ type
       procedure OpenTrade(const ATime: Int64; const APrice, AQty: Double; ASide: TTypeBuySell);
       function GetProfit(const APrice: Double = 0): Double;
       function ToString: string; override;
+      function IsActive: Boolean;
       property History: TTradeList read FHistory;
     public
       property OpenTime: Int64 read FOpenTime;
@@ -76,9 +79,16 @@ type
     procedure CloseTrade(const ATime: Int64; const APrice: Double);
     property Positions: TPositionList read FPositions;
     property CurrentPosition: TPosition read FPosition;
+    property IsPosition: Boolean read GetIsPosition;
   end;
 
 implementation
+
+{$IFDEF DEBUG}
+uses
+  Lb.Logger;
+{$ENDIF}
+
 
 { TPlatformTrading.TPosition }
 
@@ -119,8 +129,10 @@ begin
 end;
 
 function TPlatformTrading.TPosition.GetProfit(const APrice: Double): Double;
+const
+  SIZE_ROUND = 10000;
 
-  function _GetProfit: Double;
+  function _GetValue: Double;
   var
     xValue: Double;
     xTrade: TPlatformTrading.TTrade;
@@ -132,24 +144,37 @@ function TPlatformTrading.TPosition.GetProfit(const APrice: Double): Double;
       for i := 0 to iCount - 1 do
       begin
         xTrade := FHistory[i];
-        xValue := xValue + xTrade.Price * xTrade.Qty;
+        case xTrade.Side of
+          tsBuy : xValue := xValue - xTrade.Price * xTrade.Qty;
+          tsSell: xValue := xValue + xTrade.Price * xTrade.Qty;
+        end;
       end;
     Result := xValue;
   end;
 
+var
+  xValue: Double;
 begin
+  xValue := 0;
   if FQty = 0 then
-    Result := _GetProfit
+  begin
+    xValue := _GetValue;
+  end
   else
   begin
     if APrice = 0 then
        raise Exception.Create('Error Message: Неуказаная цена');
-
     case FSide of
-      tsBuy : Result := APrice * FQty - _GetProfit;
-      tsSell: Result := _GetProfit + APrice * FQty;
+      tsBuy : xValue := APrice * FQty + _GetValue;
+      tsSell: xValue := _GetValue - APrice * FQty;
     end;
   end;
+  Result := Round(xValue * SIZE_ROUND)/SIZE_ROUND;
+end;
+
+function TPlatformTrading.TPosition.IsActive: Boolean;
+begin
+  Result := FTrades.Count > 0;
 end;
 
 procedure TPlatformTrading.TPosition.OpenTrade(const ATime: Int64; const APrice,
@@ -159,6 +184,13 @@ var
   xTrade: TPlatformTrading.TTrade;
   xHistory: TPlatformTrading.TTrade;
 begin
+{$IFDEF DBG_POS_OPEN_TRADE}
+  TLogger.Log('TPlatformTrading.TPosition.OpenTrade:');
+  TLogger.LogTreeText(3,'>> Time:' + ATime.ToString);
+  TLogger.LogTreeText(3,'>> Price:' + APrice.ToString);
+  TLogger.LogTreeText(3,'>> Qty:' + AQty.ToString);
+  TLogger.LogTreeText(3,'>> Side:' + GetStrToSide(ASide));
+{$ENDIF}
   xHistory.Time := ATime;
   xHistory.Price := APrice;
   xHistory.Qty := AQty;
@@ -178,6 +210,9 @@ begin
     xTrade.Side := ASide;
     FTrades.Add(xTrade);
     FSide := ASide;
+{$IFDEF DBG_POS_OPEN_TRADE}
+    TLogger.LogText('Записываем сделку');
+{$ENDIF}
   end
   else
   begin
@@ -188,6 +223,9 @@ begin
       xTrade.Qty := AQty;
       xTrade.Side := ASide;
       FTrades.Add(xTrade);
+{$IFDEF DBG_POS_OPEN_TRADE}
+    TLogger.LogText('Записываем сделку. Направление сделки совпадает');
+{$ENDIF}
     end
     else
     begin
@@ -196,13 +234,18 @@ begin
       while xQty > 0 do
       begin
         xQty := xQty - xTrade.Qty;
-        if xQty > 0 then
+        if xQty >= 0 then
         begin
           FTrades.Delete(0);
           if FTrades.Count > 0 then
             xTrade := FTrades[0]
           else
+          begin
+            FPlatformTrading.FPosition := nil;
+            FCloseTime := ATime;
+            FClosePrice := APrice;
             Break;
+          end;
         end
         else
         begin
@@ -211,8 +254,11 @@ begin
           Break;
         end;
       end;
-
-
+{$IFDEF DBG_POS_OPEN_TRADE}
+      TLogger.LogText('Принцип первый пришел, первый ушёл');
+      TLogger.LogTreeText(3,'>> xQty:' + xQty.ToString);
+      TLogger.LogTreeText(3,'>> Trades.Count:' + FTrades.Count.ToString);
+{$ENDIF}
       if xQty > 0 then
       begin
 
@@ -270,7 +316,9 @@ end;
 
 function TPlatformTrading.GetIsPosition: Boolean;
 begin
-
+  Result := False;
+  if Assigned(FPosition) then
+    Result := FPosition.IsActive;
 end;
 
 procedure TPlatformTrading.OpenTrade(const ATime: Int64; const APrice,

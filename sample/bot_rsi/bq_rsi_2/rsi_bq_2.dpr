@@ -31,6 +31,10 @@ uses
 {$R *.res}
 
 begin
+{$IFDEF DEBUG}
+  TLogger.ClearLog;
+  TLogger.Log('Старт программы');
+{$ENDIF}
   Application.Initialize;
   Application.CreateForm(TMainForm, MainForm);
   Application.Run;

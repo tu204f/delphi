@@ -2,6 +2,8 @@ unit Lb.Category;
 
 interface
 
+{$I debug.inc}
+
 uses
   System.Classes,
   System.SysUtils,
@@ -86,6 +88,11 @@ type
 
 implementation
 
+{$IFDEF DEBUG}
+uses
+  Lb.Logger;
+{$ENDIF}
+
 { TCategory }
 
 constructor TCategory.Create(const AManagerCategory: TManagerCategory);
@@ -136,6 +143,9 @@ end;
 
 procedure TCategory.ActiveLevelOnIntersection(Sender: TObject);
 begin
+{$IFDEF DBG_CATEGORY_LEVEL}
+  TLogger.Log('TCategory.ActiveLevelOnIntersection:');
+{$ENDIF}
   if FIsActive then
   begin
     DoSendTrade(FSide, FQty);
@@ -146,6 +156,9 @@ end;
 
 procedure TCategory.ReActiveLevelOnIntersection(Sender: TObject);
 begin
+{$IFDEF DBG_CATEGORY_LEVEL}
+  TLogger.Log('TCategory.ReActiveLevelOnIntersection:');
+{$ENDIF}
   if FIsReActive then
   begin
     FIsActive := True;
@@ -157,17 +170,26 @@ procedure TCategory.SetUpDateValue(const AValueRSI: Double);
 
   procedure _ActiveLevelSetUpDate(const AValue: Double);
   begin
+    {$IFDEF DBG_CATEGORY}
+      TLogger.Log('_ActiveLevelSetUpDate');
+    {$ENDIF}
     if IsActive then
       FActiveLevel.SetUpDate(AValue);
   end;
 
   procedure _ReActiveLevelSetUpDate(const AValue: Double);
   begin
+    {$IFDEF DBG_CATEGORY}
+      TLogger.Log('_ReActiveLevelSetUpDate');
+    {$ENDIF}
     if not IsActive and FIsReActive then
       ReActiveLevel.SetUpDate(AValue);
   end;
 
 begin
+{$IFDEF DBG_CATEGORY}
+  TLogger.Log('TCategory.SetUpDateValue:');
+{$ENDIF}
   _ActiveLevelSetUpDate(AValueRSI);
   _ReActiveLevelSetUpDate(AValueRSI);
 end;
@@ -180,6 +202,11 @@ end;
 
 procedure TCategory.DoSendTrade(const ASide: TTypeBuySell; const AQty: Double);
 begin
+{$IFDEF DBG_CATEGORY_SEND}
+  TLogger.Log('TCategory.DoSendTrade:');
+  TLogger.LogTreeText(3,'Side: ' + GetStrToSide(ASide));
+  TLogger.LogTreeText(3,'AQty: ' + AQty.ToString);
+{$ENDIF}
   if Assigned(FManagerCategory) then
     FManagerCategory.DoSendTrade(ASide,AQty);
 end;
@@ -218,12 +245,18 @@ end;
 
 procedure TManagerCategory.SetUpDateValue(const AValueRSI: Double);
 begin
+{$IFDEF DBG_CATEGORY}
+  TLogger.Log('TManagerCategory.SetUpDateValue: ValueRSI = ' + AValueRSI.ToString);
+{$ENDIF}
   for var xC in Self do
     xC.SetUpDateValue(AValueRSI);
 end;
 
 procedure TManagerCategory.DoSendTrade(const ASide: TTypeBuySell; const AQty: Double);
 begin
+{$IFDEF DBG_MANAGER_SEND}
+  TLogger.Log('TManagerCategory.DoSendTrade:');
+{$ENDIF}
   if Assigned(FOnSendTrade) then
     FOnSendTrade(Self,ASide,AQty);
 end;

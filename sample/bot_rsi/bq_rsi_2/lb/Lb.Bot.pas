@@ -143,10 +143,12 @@ begin
   FManagerCategoryBuy := TManagerCategory.Create;
   FManagerCategoryBuy.Side := TTypeBuySell.tsBuy;
   FManagerCategoryBuy.SetCreateCriteria(50,0,10,10,0.01);
+  FManagerCategoryBuy.OnSendTrade := ManagerCriteriaBuyOnSendTrade;
 
   FManagerCategorySell:= TManagerCategory.Create;
   FManagerCategorySell.Side := TTypeBuySell.tsSell;
   FManagerCategorySell.SetCreateCriteria(50,100,10,10,0.01);
+  FManagerCategorySell.OnSendTrade := ManagerCriteriaSellOnSendTrade;
 
 end;
 
@@ -160,6 +162,8 @@ end;
 function TBot.IsActivePosition: Boolean;
 begin
   Result := False;
+  if Assigned(FTradingPlatform) then
+    Result := FTradingPlatform.Trading.IsPosition;
 end;
 
 function TBot.IsTrading: Boolean;
@@ -172,6 +176,9 @@ begin
 end;
 
 procedure TBot.SetSelected;
+var
+  xSide: TTypeBuySell;
+  xPrice, xQty: Double;
 begin
   if IsTrading then
   begin
@@ -179,6 +186,8 @@ begin
     if IsActivePosition then
     begin
       // Условие закрытие
+
+
     end
     else
     begin
@@ -191,6 +200,21 @@ begin
   else if IsActivePosition then
   begin
     // Принудительно закрывать позицию
+    xSide := FTradingPlatform.Trading.CurrentPosition.Side;
+    xSide := GetCrossSide(xSide);
+
+    xQty := FTradingPlatform.Trading.CurrentPosition.Qty;
+    case xSide of
+      tsBuy: xPrice := FTradingPlatform.StateMarket.Ask;
+      tsSell: xPrice := FTradingPlatform.StateMarket.Bid;
+    end;
+
+    DoSendTrade(
+      Date + Time,
+      xPrice,
+      xQty,
+      xSide
+    );
   end;
 end;
 

@@ -142,6 +142,7 @@ procedure TMainForm.TradingPlatformOnStateMarket(ASender: TObject; AStateMarket:
     xTrading: TPlatformTrading;
     i, iCount: Integer;
   var
+    xProfit: Double;
     xTrade: TPlatformTrading.TTrade;
     j, jCount: Integer;
   begin
@@ -151,7 +152,17 @@ procedure TMainForm.TradingPlatformOnStateMarket(ASender: TObject; AStateMarket:
       for i := 0 to iCount - 1 do
       begin
         xPosition := xTrading.Positions[i];
-        Memo1.Lines.Add('pos: ' + xPosition.ToString);
+
+        xProfit := 0;
+        case xPosition.Side of
+          tsBuy : xProfit := xPosition.GetProfit(TradingPlatform.StateMarket.Bid);
+          tsSell: xProfit := xPosition.GetProfit(TradingPlatform.StateMarket.Ask);
+        end;
+        Memo1.Lines.Add(
+          'pos: ' + xPosition.ToString + ' res: ' +
+          '; Profit: ' + xProfit.ToString +
+          '; Qty: ' + xPosition.Qty.ToString
+        );
 
         jCount := xPosition.History.Count;
         if jCount > 0 then
@@ -254,6 +265,7 @@ begin
   begin
     Add('BotOnSendTrade:');
     Add(' >> ' + DateTimeToStr(ATime));
+    Add(' >> ' + APrice.ToString);
     Add(' >> ' + AQty.ToString);
     Add(' >> ' + GetStrToSide(ASide));
   end;
