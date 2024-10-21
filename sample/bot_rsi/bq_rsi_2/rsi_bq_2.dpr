@@ -26,7 +26,8 @@ uses
   Lb.Category in 'lb\Lb.Category.pas',
   Lb.Platform.Trading in 'lb\Lb.Platform.Trading.pas',
   UnitCategoryFrame in 'frame\UnitCategoryFrame.pas' {CategoryFrame: TFrame},
-  UniCategoryListFrame in 'frame\UniCategoryListFrame.pas' {CategoryListFrame: TFrame};
+  UniCategoryListFrame in 'frame\UniCategoryListFrame.pas' {CategoryListFrame: TFrame},
+  Lb.ParamClose in 'lb\Lb.ParamClose.pas';
 
 {$R *.res}
 

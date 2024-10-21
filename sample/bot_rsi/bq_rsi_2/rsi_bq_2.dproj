@@ -226,6 +226,7 @@
             <FormType>fmx</FormType>
             <DesignClass>TFrame</DesignClass>
         </DCCReference>
+        <DCCReference Include="lb\Lb.ParamClose.pas"/>
         <None Include="..\..\..\library\trade\quik\quik_connect.inc"/>
         <None Include="lb\debug.inc"/>
         <BuildConfiguration Include="Release">

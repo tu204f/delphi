@@ -10,7 +10,8 @@ uses
   System.Variants,
   Lb.SysUtils,
   Lb.Platform,
-  Lb.Category;
+  Lb.Category,
+  Lb.Platform.Trading;
 
 type
   TEventOnSendTrade = procedure(ASender: TObject; const ATime: TDateTime; const APrice, AQty: Double; ASide: TTypeBuySell) of object;
@@ -176,34 +177,19 @@ begin
 end;
 
 procedure TBot.SetSelected;
-var
-  xSide: TTypeBuySell;
-  xPrice, xQty: Double;
-begin
-  if IsTrading then
-  begin
-    // Можно соверщать торговые операции
-    if IsActivePosition then
-    begin
-      // Условие закрытие
 
-
-    end
-    else
-    begin
-      // Условия открытие позиции
-      FValueRSI := GetRSI(FPeriod,FTradingPlatform.StateMarket.Candels);
-      ManagerCategoryBuy.SetUpDateValue(FValueRSI);
-      ManagerCategorySell.SetUpDateValue(FValueRSI);
-    end;
-  end
-  else if IsActivePosition then
+  procedure _PositionClose;
+  var
+    xSide: TTypeBuySell;
+    xPrice, xQty: Double;
+    xPosition: TPlatformTrading.TPosition;
   begin
+    xPosition := FTradingPlatform.Trading.CurrentPosition;
     // Принудительно закрывать позицию
-    xSide := FTradingPlatform.Trading.CurrentPosition.Side;
+    xSide := xPosition.Side;
     xSide := GetCrossSide(xSide);
 
-    xQty := FTradingPlatform.Trading.CurrentPosition.Qty;
+    xQty := xPosition.Qty;
     case xSide of
       tsBuy: xPrice := FTradingPlatform.StateMarket.Ask;
       tsSell: xPrice := FTradingPlatform.StateMarket.Bid;
@@ -216,6 +202,46 @@ begin
       xSide
     );
   end;
+
+  procedure _IfProfitPositionClose;
+  var
+    xProfit: Double;
+    xPosition: TPlatformTrading.TPosition;
+  begin
+    // закрытие позиции по условиями
+
+    xProfit := 0;
+    xPosition := FTradingPlatform.Trading.CurrentPosition;
+    case xPosition.Side of
+      tsBuy : xProfit := xPosition.GetProfit(TradingPlatform.StateMarket.Bid);
+      tsSell: xProfit := xPosition.GetProfit(TradingPlatform.StateMarket.Ask);
+    end;
+
+    if xProfit > 0 then
+      _PositionClose;
+  end;
+
+
+begin
+  if IsTrading then
+  begin
+    // Можно соверщать торговые операции
+    if IsActivePosition then
+    begin
+      // Условие закрытие
+      _IfProfitPositionClose;
+    end
+    else
+    begin
+      // Условия открытие позиции
+      FValueRSI := GetRSI(FPeriod,FTradingPlatform.StateMarket.Candels);
+      ManagerCategoryBuy.SetUpDateValue(FValueRSI);
+      ManagerCategorySell.SetUpDateValue(FValueRSI);
+    end;
+  end
+  else
+    if IsActivePosition then
+      _PositionClose;
 end;
 
 procedure TBot.ManagerCriteriaBuyOnSendTrade(ASender: TObject; ASide: TTypeBuySell; AQty: Double);
