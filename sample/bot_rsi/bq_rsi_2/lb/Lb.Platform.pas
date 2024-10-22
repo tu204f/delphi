@@ -61,6 +61,7 @@ type
   protected
     FStateMarket: TStateMarket;
     FPlatformTrading: TPlatformTrading;
+    FCrossPlatformTrading: TPlatformTrading;
     procedure DoStateMarke; virtual;
   public
     constructor Create; override;
@@ -75,7 +76,14 @@ type
     /// Есть потенциальная ошибка зависание заявки
     ///</summary>
     procedure SendTrade(const ATime: TDateTime; const APrice, AQty: Double; ASide: TTypeBuySell); virtual;
+    ///<summary>
+    /// Торгуем по стратегии
+    ///</summary>
     property Trading: TPlatformTrading read FPlatformTrading;
+    ///<summary>
+    /// Все делаем на оборот
+    ///</summary>
+    property CrossTrading: TPlatformTrading read FCrossPlatformTrading;
   end;
 
 
@@ -164,10 +172,12 @@ begin
   inherited Create;
   FStateMarket := TStateMarket.Create;
   FPlatformTrading := TPlatformTrading.Create;
+  FCrossPlatformTrading := TPlatformTrading.Create;
 end;
 
 destructor TTradingPlatform.Destroy;
 begin
+  FreeAndNil(FCrossPlatformTrading);
   FreeAndNil(FPlatformTrading);
   FreeAndNil(FStateMarket);
   inherited Destroy;
@@ -182,6 +192,24 @@ end;
 procedure TTradingPlatform.SendTrade(const ATime: TDateTime; const APrice, AQty: Double; ASide: TTypeBuySell);
 begin
   FPlatformTrading.OpenTrade(ATime,APrice, AQty, ASide);
+  case ASide of
+    tsBuy: begin
+      FCrossPlatformTrading.OpenTrade(
+        ATime,
+        FStateMarket.Bid,
+        AQty,
+        TTypeBuySell.tsSell
+      );
+    end;
+    tsSell: begin
+      FCrossPlatformTrading.OpenTrade(
+        ATime,
+        FStateMarket.Ask,
+        AQty,
+        TTypeBuySell.tsBuy
+      );
+    end;
+  end;
 end;
 
 end.

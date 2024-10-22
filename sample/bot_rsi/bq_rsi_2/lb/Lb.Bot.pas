@@ -345,12 +345,16 @@ procedure TBot.DoSendTrade(const ATime: TDateTime; const APrice, AQty: Double;
 begin
   if Assigned(FTradingPlatform) then
   begin
+
     FTradingPlatform.SendTrade(
       Date + Time,
       APrice,
       AQty,
       ASide
     );
+
+
+
     if Assigned(FOnSendTrade) then
       FOnSendTrade(
         Self,

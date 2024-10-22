@@ -186,6 +186,53 @@ procedure TMainForm.TradingPlatformOnStateMarket(ASender: TObject; AStateMarket:
       end;
   end;
 
+  procedure _CrossVirtualTrading;
+  var
+    xPosition: TPlatformTrading.TPosition;
+    xTrading: TPlatformTrading;
+    i, iCount: Integer;
+  var
+    xProfit: Double;
+    xTrade: TPlatformTrading.TTrade;
+    j, jCount: Integer;
+  begin
+    xTrading := TradingPlatform.CrossTrading;
+    iCount := xTrading.Positions.Count;
+    if iCount > 0 then
+      for i := 0 to iCount - 1 do
+      begin
+        xPosition := xTrading.Positions[i];
+
+        xProfit := 0;
+        case xPosition.Side of
+          tsBuy : xProfit := xPosition.GetProfit(TradingPlatform.StateMarket.Bid);
+          tsSell: xProfit := xPosition.GetProfit(TradingPlatform.StateMarket.Ask);
+        end;
+        Memo1.Lines.Add(
+          'pos: ' + xPosition.ToString + ' res: ' +
+          '; Profit: ' + xProfit.ToString +
+          '; Qty: ' + xPosition.Qty.ToString
+        );
+
+        jCount := xPosition.History.Count;
+        if jCount > 0 then
+          for j := 0 to jCount - 1 do
+          begin
+            xTrade := xPosition.History[j];
+
+            Memo1.Lines.Add(
+              '   >>' +
+              xTrade.Time.ToString + ';' +
+              xTrade.Price.ToString + ';' +
+              xTrade.Qty.ToString + ';' +
+              GetStrToSide(xTrade.Side) + ';'
+            );
+
+          end;
+
+      end;
+  end;
+
 
 var
   xS: String;
@@ -257,6 +304,10 @@ begin
     Memo1.Lines.Add('****************************************************');
     Memo1.Lines.Add('История - операций');
     _VirtualTrading;
+
+    Memo1.Lines.Add('****************************************************');
+    Memo1.Lines.Add('Если не работает как задумано будем делать все наоборот');
+    _CrossVirtualTrading;
 
   finally
     Memo1.EndUpdate;
