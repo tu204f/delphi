@@ -110,6 +110,9 @@ procedure TPlatformTrading.TPosition.ExecuteTrade;
 var
   xTrade: TPlatformTrading.TTrade;
 begin
+{$IFDEF DBG_POS_EXECUTE_TRADE}
+  TLogger.Log('TPlatformTrading.TPosition.ExecuteTrade');
+{$ENDIF}
   FMovingPrice := 0;
   FQty := 0;
   FValue := 0;
@@ -121,11 +124,18 @@ begin
       FQty := FQty + xTrade.Qty;
       FValue := FValue + xTrade.Price * xTrade.Qty;
     end;
-    if FQty = 0 then
+{$IFDEF DBG_POS_EXECUTE_TRADE}
+    TLogger.LogTreeText(3,'>> Qty:' + FQty.ToString);
+    TLogger.LogTreeText(3,'>> Value: ' + FValue.ToString);
+{$ENDIF}
+    if FQty > 0 then
       FMovingPrice := FValue/FQty
     else
       FMovingPrice := 0;
   end;
+{$IFDEF DBG_POS_EXECUTE_TRADE}
+  TLogger.LogTreeText(3,'>> MovingPrice:' + FMovingPrice.ToString);
+{$ENDIF}
 end;
 
 function TPlatformTrading.TPosition.GetProfit(const APrice: Double): Double;

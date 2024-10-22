@@ -70,6 +70,9 @@ var
 
 implementation
 
+uses
+  System.DateUtils;
+
 {$R *.fmx}
 
 { TMainForm }
@@ -200,6 +203,7 @@ begin
     begin
       var xC := AStateMarket.Candels[i];
       xS :=
+        DateTimeToStr(UnixToDateTime(xC.Time)) + '; ' +
         xC.Time.ToString + '; ' +
         xC.Open.ToString + '; ' +
         xC.High.ToString + '; ' +
@@ -217,7 +221,9 @@ begin
     end;
 
     Memo1.Lines.Add('****************************************************');
-    xS := 'ValueRSI: ' + Bot.ValueRSI.ToString;
+    xS :=
+       'ValueRSI: ' + Bot.ValueRSI.ToString + ' ' +
+       'ValueATR: ' + Bot.ValueATR.ToString;
     Memo1.Lines.Add(xS);
 
     Memo1.Lines.Add('****************************************************');

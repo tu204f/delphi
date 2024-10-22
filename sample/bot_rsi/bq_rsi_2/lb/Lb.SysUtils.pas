@@ -25,7 +25,7 @@ type
   /// Свеча
   ///</summary>
   TCandel = record
-    Time: Integer;  // Дата и время
+    Time: Int64;    // Дата и время
     Open: Double;   // Цена открытие
     High: Double;   // Максимальная цена
     Low: Double;    // Минимальная цена

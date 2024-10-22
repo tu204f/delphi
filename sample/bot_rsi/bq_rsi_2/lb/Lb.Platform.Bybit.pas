@@ -2,6 +2,8 @@ unit Lb.Platform.Bybit;
 
 interface
 
+{$I debug.inc}
+
 uses
   System.SysUtils,
   System.Types,
@@ -35,6 +37,11 @@ type
   end;
 
 implementation
+
+{$IFDEF DEBUG}
+uses
+  Lb.Logger;
+{$ENDIF}
 
 { TPlatfomBybit }
 
@@ -93,17 +100,28 @@ procedure TPlatfomBybit.BybitKlineOnEventEndLoading(ASender: TObject);
   end;
 
 begin
+{$IFDEF DBG_BYBIT_CANDEL_OBJECT}
+  TLogger.Log('TPlatfomBybit.BybitKlineOnEventEndLoading');
+{$ENDIF}
   FStateMarket.Candels.Clear;
   for var xCandelObject in FBybitKline.CandelObjects do
   begin
+{$IFDEF DBG_BYBIT_CANDEL_OBJECT}
+    TLogger.LogTree(3,
+      DateTimeToStr(xCandelObject.DateTime) + ' ' +
+      xCandelObject.Close.ToString
+    );
+{$ENDIF}
     FStateMarket.Candels.Add(
       _ToCandel(xCandelObject)
     );
   end;
-
   Dec(FCountSelected);
   if FCountSelected = 0 then
     DoStateMarke;
+{$IFDEF DBG_BYBIT_CANDEL_OBJECT}
+  TLogger.Log('**********************************************');
+{$ENDIF}
 end;
 
 procedure TPlatfomBybit.BybitOrderBookOnEventEndLoading(ASender: TObject);

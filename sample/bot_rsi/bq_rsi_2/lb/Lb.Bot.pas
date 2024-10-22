@@ -24,6 +24,7 @@ type
     FPeriod: Integer;
     FTradingPlatform: TTradingPlatform;
     FValueRSI: Double;
+    FValueATR: Double;
   private
     FManagerCategoryBuy: TManagerCategory;
     FManagerCategorySell: TManagerCategory;
@@ -59,6 +60,11 @@ type
     /// Индекс значение работы RSI
     ///</summary>
     property ValueRSI: Double read FValueRSI;
+    ///<summary>
+    /// Значение валатилности рынка
+    ///</summary>
+    property ValueATR: Double read FValueATR;
+
     property OnSendTrade: TEventOnSendTrade write FOnSendTrade;
   public
     ///<summary>Критерий на покупку</summary>
@@ -69,25 +75,80 @@ type
 
 implementation
 
-///<summary>Расчет индикатора</summary>
-function GetRSI(const APeriod: Integer; ACandels: TCandelList): Double;
-
-  function _SMA(const AValue: TDoubleList): Double;
-  var
-    xSum: Double;
-    i, iCount: Integer;
+function GetSMA(const AValue: TDoubleList): Double;
+var
+  xSum: Double;
+  i, iCount: Integer;
+begin
+  Result := 0;
+  iCount := AValue.Count;
+  if iCount > 0 then
   begin
-    Result := 0;
-    iCount := AValue.Count;
-    if iCount > 0 then
-    begin
-      xSum := 0;
-      for i := 0 to iCount - 1 do
-        xSum := xSum + AValue[i];
-      Result := xSum/iCount;
-    end;
+    xSum := 0;
+    for i := 0 to iCount - 1 do
+      xSum := xSum + AValue[i];
+    Result := xSum/iCount;
+  end;
+end;
+
+///<summary>Определяем валатиность рынка</summary>
+function GetATR(const APeriod: Integer; ACandels: TCandelList): Double;
+
+  function _MAX(const AValue1, AValue2, AValue3: Double): Double;
+  var
+    xValue: Double;
+  begin
+    if xValue < AValue1 then
+      xValue := AValue1;
+    if xValue < AValue2 then
+      xValue := AValue2;
+    if xValue < AValue3 then
+      xValue := AValue3;
+    Result := xValue;
   end;
 
+var
+  xDelta: Double;
+  xCandel1, xCandel2: TCandel;
+  xTR: TDoubleList;
+begin
+  Result := 0;
+  if APeriod > ACandels.Count then
+    Exit;
+
+  if APeriod > 0 then
+  begin
+    xTR := TDoubleList.Create;
+    try
+      for var i := 0 to APeriod - 1 do
+      begin
+        if i > 0 then
+        begin
+          xCandel1 := ACandels[i - 1];
+          xCandel2 := ACandels[i];
+          xDelta := _MAX(
+            xCandel2.High - xCandel2.Low,
+            xCandel2.High - xCandel1.Close,
+            xCandel1.Close - xCandel2.Low
+          );
+          xTR.Add(xDelta);
+        end
+        else
+        begin
+          xCandel1 := ACandels[i];
+          xDelta := xCandel1.High - xCandel1.Low;
+          xTR.Add(xDelta);
+        end;
+      end;
+      Result := GetSMA(xTR);
+    finally
+      FreeAndNil(xTR);
+    end;
+  end;
+end;
+
+///<summary>Расчет индикатора</summary>
+function GetRSI(const APeriod: Integer; ACandels: TCandelList): Double;
 var
   xDelta: Double;
   xCandel1, xCandel2: TCandel;
@@ -109,7 +170,7 @@ begin
       begin
         xCandel1 := ACandels[i - 1];
         xCandel2 := ACandels[i];
-        xDelta := xCandel2.Close - xCandel1.Close;
+        xDelta := xCandel1.Close - xCandel2.Close;
         if xDelta > 0 then
         begin
           xU.Add(xDelta);
@@ -122,8 +183,8 @@ begin
         end;
       end;
 
-      xMaU := _SMA(xU);
-      xMaD := _SMA(xD);
+      xMaU := GetSMA(xU);
+      xMaD := GetSMA(xD);
       xRS  := xMaU/xMaD;
       Result := 100 - 100/(1 + xRS);
     finally
@@ -208,17 +269,22 @@ procedure TBot.SetSelected;
     xProfit: Double;
     xPosition: TPlatformTrading.TPosition;
   begin
-    // закрытие позиции по условиями
-
     xProfit := 0;
     xPosition := FTradingPlatform.Trading.CurrentPosition;
-    case xPosition.Side of
-      tsBuy : xProfit := xPosition.GetProfit(TradingPlatform.StateMarket.Bid);
-      tsSell: xProfit := xPosition.GetProfit(TradingPlatform.StateMarket.Ask);
-    end;
+    if xPosition.MovingPrice > 0 then
+    begin
+      case xPosition.Side of
+        tsBuy : xProfit := TradingPlatform.StateMarket.Bid - xPosition.MovingPrice;
+        tsSell: xProfit := xPosition.MovingPrice - TradingPlatform.StateMarket.Ask;
+      end;
 
-    if xProfit > 0 then
-      _PositionClose;
+      if xProfit > 2 * FValueATR then
+        _PositionClose;
+
+      if xProfit < (-1 * FValueATR) then
+        _PositionClose;
+
+    end;
   end;
 
 
@@ -235,8 +301,14 @@ begin
     begin
       // Условия открытие позиции
       FValueRSI := GetRSI(FPeriod,FTradingPlatform.StateMarket.Candels);
+      FValueRSI := Round(FValueRSI * 100)/100;
+
+      FValueATR := GetATR(FPeriod,FTradingPlatform.StateMarket.Candels);
+      FValueATR := Round(FValueATR * 100)/100;
+
       ManagerCategoryBuy.SetUpDateValue(FValueRSI);
       ManagerCategorySell.SetUpDateValue(FValueRSI);
+
     end;
   end
   else
