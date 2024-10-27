@@ -19,7 +19,7 @@ uses
   FMX.Memo,
   FMX.StdCtrls,
 
-  Lb.Platform.Trading,
+  Lb.Buffer.Trading,
   Lb.SysUtils,
   Lb.Bot,
   Lb.Platform,
@@ -40,11 +40,12 @@ type
     TabControl: TTabControl;
     TabItemLog: TTabItem;
     TabItemFrame: TTabItem;
-    Memo1: TMemo;
+    MemoInfo: TMemo;
     GridLayout: TGridPanelLayout;
     LayoutSell: TLayout;
     LayoutBuy: TLayout;
-    MemoSendTrade: TMemo;
+    MemoBot: TMemo;
+    MemoReversBot: TMemo;
     procedure ButtonStartClick(Sender: TObject);
     procedure ButtonBuyClick(Sender: TObject);
     procedure ButtonSellClick(Sender: TObject);
@@ -58,8 +59,10 @@ type
   private
     procedure TradingPlatformOnStateMarket(ASender: TObject; AStateMarket: TStateMarket);
     procedure BotOnSendTrade(ASender: TObject; const ATime: TDateTime; const APrice, AQty: Double; ASide: TTypeBuySell);
+    procedure ReversBotOnSendTrade(ASender: TObject; const ATime: TDateTime; const APrice, AQty: Double; ASide: TTypeBuySell);
   public
     Bot: TBot;
+    ReversBot: TBot;
     TradingPlatform: TTradingPlatform;
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
@@ -100,8 +103,13 @@ begin
   Bot := TBot.Create;
   Bot.OnSendTrade := BotOnSendTrade;
 
+  ReversBot := TBot.Create;
+  ReversBot.OnSendTrade := ReversBotOnSendTrade;
+
   TradingPlatform := TPlatfomBybit.Create;
   TradingPlatform.OnStateMarket := TradingPlatformOnStateMarket;
+
+  Bot.TradingPlatform := TradingPlatform;
   Bot.TradingPlatform := TradingPlatform;
 
   InitFrame;
@@ -129,6 +137,7 @@ begin
 
 end;
 
+
 procedure TMainForm.TradingPlatformOnStateMarket(ASender: TObject; AStateMarket: TStateMarket);
 
   function _ToBool(const AValue: Boolean): String;
@@ -141,15 +150,20 @@ procedure TMainForm.TradingPlatformOnStateMarket(ASender: TObject; AStateMarket:
 
   procedure _VirtualTrading;
   var
-    xPosition: TPlatformTrading.TPosition;
-    xTrading: TPlatformTrading;
+    xPosition: TBufferTrading.TPosition;
+    xTrading: TBufferTrading;
     i, iCount: Integer;
   var
     xProfit: Double;
-    xTrade: TPlatformTrading.TTrade;
+    xTrade: TBufferTrading.TTrade;
     j, jCount: Integer;
   begin
-    xTrading := TradingPlatform.Trading;
+    xTrading := Bot.Trading;
+
+    MemoBot.Lines.Add(
+      'Profit: ' + xTrading.ProfitClosePosition.ToString
+    );
+
     iCount := xTrading.Positions.Count;
     if iCount > 0 then
       for i := 0 to iCount - 1 do
@@ -161,7 +175,7 @@ procedure TMainForm.TradingPlatformOnStateMarket(ASender: TObject; AStateMarket:
           tsBuy : xProfit := xPosition.GetProfit(TradingPlatform.StateMarket.Bid);
           tsSell: xProfit := xPosition.GetProfit(TradingPlatform.StateMarket.Ask);
         end;
-        Memo1.Lines.Add(
+        MemoBot.Lines.Add(
           'pos: ' + xPosition.ToString + ' res: ' +
           '; Profit: ' + xProfit.ToString +
           '; Qty: ' + xPosition.Qty.ToString
@@ -173,7 +187,7 @@ procedure TMainForm.TradingPlatformOnStateMarket(ASender: TObject; AStateMarket:
           begin
             xTrade := xPosition.History[j];
 
-            Memo1.Lines.Add(
+            MemoBot.Lines.Add(
               '   >>' +
               xTrade.Time.ToString + ';' +
               xTrade.Price.ToString + ';' +
@@ -188,15 +202,20 @@ procedure TMainForm.TradingPlatformOnStateMarket(ASender: TObject; AStateMarket:
 
   procedure _CrossVirtualTrading;
   var
-    xPosition: TPlatformTrading.TPosition;
-    xTrading: TPlatformTrading;
+    xPosition: TBufferTrading.TPosition;
+    xTrading: TBufferTrading;
     i, iCount: Integer;
   var
     xProfit: Double;
-    xTrade: TPlatformTrading.TTrade;
+    xTrade: TBufferTrading.TTrade;
     j, jCount: Integer;
   begin
-    xTrading := TradingPlatform.CrossTrading;
+    xTrading := ReversBot.Trading;
+
+    MemoReversBot.Lines.Add(
+      'Profit: ' + xTrading.ProfitClosePosition.ToString
+    );
+
     iCount := xTrading.Positions.Count;
     if iCount > 0 then
       for i := 0 to iCount - 1 do
@@ -208,7 +227,7 @@ procedure TMainForm.TradingPlatformOnStateMarket(ASender: TObject; AStateMarket:
           tsBuy : xProfit := xPosition.GetProfit(TradingPlatform.StateMarket.Bid);
           tsSell: xProfit := xPosition.GetProfit(TradingPlatform.StateMarket.Ask);
         end;
-        Memo1.Lines.Add(
+        MemoReversBot.Lines.Add(
           'pos: ' + xPosition.ToString + ' res: ' +
           '; Profit: ' + xProfit.ToString +
           '; Qty: ' + xPosition.Qty.ToString
@@ -220,7 +239,7 @@ procedure TMainForm.TradingPlatformOnStateMarket(ASender: TObject; AStateMarket:
           begin
             xTrade := xPosition.History[j];
 
-            Memo1.Lines.Add(
+            MemoReversBot.Lines.Add(
               '   >>' +
               xTrade.Time.ToString + ';' +
               xTrade.Price.ToString + ';' +
@@ -237,14 +256,14 @@ procedure TMainForm.TradingPlatformOnStateMarket(ASender: TObject; AStateMarket:
 var
   xS: String;
 begin
-  Memo1.BeginUpdate;
+  MemoInfo.BeginUpdate;
   try
-    Memo1.Lines.Clear;
-    Memo1.Lines.Add(
+    MemoInfo.Lines.Clear;
+    MemoInfo.Lines.Add(
       'Ask: ' + TradingPlatform.StateMarket.Ask.ToString + '; ' +
       'Bid: ' + TradingPlatform.StateMarket.Bid.ToString
     );
-    Memo1.Lines.Add('****************************************************');
+    MemoInfo.Lines.Add('****************************************************');
 
     for var i := 0 to AStateMarket.Candels.Count - 1 do
     begin
@@ -257,24 +276,25 @@ begin
         xC.Low.ToString + '; ' +
         xC.Close.ToString + ';  ' +
         xC.Vol.ToString;
-      Memo1.Lines.Add(xS);
+      MemoInfo.Lines.Add(xS);
 
       if i > 10 then
       begin
-        Memo1.Lines.Add('.....');
+        MemoInfo.Lines.Add('.....');
         Break;
       end;
 
     end;
 
-    Memo1.Lines.Add('****************************************************');
+    MemoInfo.Lines.Add('****************************************************');
     xS :=
        'ValueRSI: ' + Bot.ValueRSI.ToString + ' ' +
-       'ValueATR: ' + Bot.ValueATR.ToString;
-    Memo1.Lines.Add(xS);
+       'ValueATR: ' + Bot.ValueATR.ToString + ' ' +
+       'StopLossPrice: ' + Bot.StopLossPrice.ToString;
+    MemoInfo.Lines.Add(xS);
 
-    Memo1.Lines.Add('****************************************************');
-    Memo1.Lines.Add('Продажа');
+    MemoInfo.Lines.Add('****************************************************');
+    MemoInfo.Lines.Add('Продажа');
     for var i := Bot.ManagerCategorySell.Count - 1 downto 0 do
     begin
       var xCategory := Bot.ManagerCategorySell.Items[i];
@@ -284,11 +304,11 @@ begin
         '[' + _ToBool(xCategory.IsReActive) + '] ' +
         'ReActive: ' + xCategory.ReActiveLevel.Value.ToString + '; ' +
         'Qty: ' + xCategory.Qty.ToString;
-      Memo1.Lines.Add(xS);
+      MemoInfo.Lines.Add(xS);
     end;
 
-    Memo1.Lines.Add('****************************************************');
-    Memo1.Lines.Add('Покупка');
+    MemoInfo.Lines.Add('****************************************************');
+    MemoInfo.Lines.Add('Покупка');
     for var i := 0 to Bot.ManagerCategoryBuy.Count - 1 do
     begin
       var xCategory := Bot.ManagerCategoryBuy.Items[i];
@@ -298,35 +318,31 @@ begin
         '[' + _ToBool(xCategory.IsReActive) + '] ' +
         'ReActive: ' + xCategory.ReActiveLevel.Value.ToString + '; ' +
         'Qty: ' + xCategory.Qty.ToString;
-      Memo1.Lines.Add(xS);
+      MemoInfo.Lines.Add(xS);
     end;
 
-    Memo1.Lines.Add('****************************************************');
-    Memo1.Lines.Add('История - операций');
+    // ------------------------------------------------------------------------
     _VirtualTrading;
-
-    Memo1.Lines.Add('****************************************************');
-    Memo1.Lines.Add('Если не работает как задумано будем делать все наоборот');
     _CrossVirtualTrading;
-
   finally
-    Memo1.EndUpdate;
+    MemoInfo.EndUpdate;
   end;
   Bot.SetSelected;
+  ReversBot.SetSelected;
 end;
 
 procedure TMainForm.BotOnSendTrade(ASender: TObject; const ATime: TDateTime;
   const APrice, AQty: Double; ASide: TTypeBuySell);
 begin
-  with MemoSendTrade.Lines do
-  begin
-    Add('BotOnSendTrade:');
-    Add(' >> ' + DateTimeToStr(ATime));
-    Add(' >> ' + APrice.ToString);
-    Add(' >> ' + AQty.ToString);
-    Add(' >> ' + GetStrToSide(ASide));
-  end;
+
 end;
+
+procedure TMainForm.ReversBotOnSendTrade(ASender: TObject;
+  const ATime: TDateTime; const APrice, AQty: Double; ASide: TTypeBuySell);
+begin
+
+end;
+
 
 procedure TMainForm.ButtonBuy2Click(Sender: TObject);
 begin

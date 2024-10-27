@@ -1,7 +1,7 @@
 (******************************************************************************)
-(* Фиксация подтвержденных сделок                                             *)
+(* Фиксация торговой операции независимо от торговой платформы                *)
 (******************************************************************************)
-unit Lb.Platform.Trading;
+unit Lb.Buffer.Trading;
 
 interface
 
@@ -19,7 +19,7 @@ uses
 
 type
   ///<summary>Виртуальная торговля</summary>
-  TPlatformTrading = class(TObject)
+  TBufferTrading = class(TObject)
   public type
     ///<summary>Сделка</summary>
     TTrade = record
@@ -27,6 +27,8 @@ type
       Price: Double;
       Qty: Double;
       Side: TTypeBuySell;
+    public
+      function ToString: string;
     end;
     TTradeList = TList<TTrade>;
 
@@ -41,13 +43,13 @@ type
       FQty: Double;
       FValue: Double;
       FTrades: TTradeList;
-      FPlatformTrading: TPlatformTrading;
+      FBufferTrading: TBufferTrading;
     private
       FHistory: TTradeList;
     protected
       procedure ExecuteTrade;
     public
-      constructor Create(const APlatformTrading: TPlatformTrading); virtual;
+      constructor Create(const ABufferTrading: TBufferTrading); virtual;
       destructor Destroy; override;
       procedure OpenTrade(const ATime: Int64; const APrice, AQty: Double; ASide: TTypeBuySell);
       function GetProfit(const APrice: Double = 0): Double;
@@ -69,7 +71,9 @@ type
   private
     FPosition: TPosition;
     FPositions: TPositionList;
+    FProfitClosePosition: Double;
     function GetIsPosition: Boolean;
+    function GetProfitClosePosition: Double;
   protected
   public
     constructor Create; virtual;
@@ -77,9 +81,11 @@ type
     procedure OpenTrade(const ATime: Int64; const APrice, AQty: Double; ASide: TTypeBuySell); overload;
     procedure OpenTrade(const ATime: TDateTime; const APrice, AQty: Double; ASide: TTypeBuySell); overload;
     procedure CloseTrade(const ATime: Int64; const APrice: Double);
+    procedure SaveTrading(const AFileName: String);
     property Positions: TPositionList read FPositions;
     property CurrentPosition: TPosition read FPosition;
     property IsPosition: Boolean read GetIsPosition;
+    property ProfitClosePosition: Double read GetProfitClosePosition;
   end;
 
 implementation
@@ -89,26 +95,39 @@ uses
   Lb.Logger;
 {$ENDIF}
 
+{ TBufferTrading.TTrade }
 
-{ TPlatformTrading.TPosition }
-
-constructor TPlatformTrading.TPosition.Create(const APlatformTrading: TPlatformTrading);
+function TBufferTrading.TTrade.ToString: string;
+var
+  xS: String;
 begin
-  FPlatformTrading := APlatformTrading;
+  xS :=
+    Time.ToString + ';' +
+    Price.ToString + ';' +
+    Qty.ToString + ';' +
+    GetStrToSide(Side);
+  Result := xS;
+end;
+
+{ TBufferTrading.TPosition }
+
+constructor TBufferTrading.TPosition.Create(const ABufferTrading: TBufferTrading);
+begin
+  FBufferTrading := ABufferTrading;
   FTrades := TTradeList.Create;
   FHistory:= TTradeList.Create;
 end;
 
-destructor TPlatformTrading.TPosition.Destroy;
+destructor TBufferTrading.TPosition.Destroy;
 begin
   FreeAndNil(FHistory);
   FreeAndNil(FTrades);
   inherited;
 end;
 
-procedure TPlatformTrading.TPosition.ExecuteTrade;
+procedure TBufferTrading.TPosition.ExecuteTrade;
 var
-  xTrade: TPlatformTrading.TTrade;
+  xTrade: TBufferTrading.TTrade;
 begin
 {$IFDEF DBG_POS_EXECUTE_TRADE}
   TLogger.Log('TPlatformTrading.TPosition.ExecuteTrade');
@@ -138,14 +157,14 @@ begin
 {$ENDIF}
 end;
 
-function TPlatformTrading.TPosition.GetProfit(const APrice: Double): Double;
+function TBufferTrading.TPosition.GetProfit(const APrice: Double): Double;
 const
   SIZE_ROUND = 10000;
 
   function _GetValue: Double;
   var
     xValue: Double;
-    xTrade: TPlatformTrading.TTrade;
+    xTrade: TBufferTrading.TTrade;
     i, iCount: Integer;
   begin
     xValue := 0;
@@ -173,7 +192,11 @@ begin
   else
   begin
     if APrice = 0 then
-       raise Exception.Create('Error Message: Неуказаная цена');
+    begin
+      Result := 0;
+      Exit;
+    end;
+
     case FSide of
       tsBuy : xValue := APrice * FQty + _GetValue;
       tsSell: xValue := _GetValue - APrice * FQty;
@@ -182,17 +205,17 @@ begin
   Result := Round(xValue * SIZE_ROUND)/SIZE_ROUND;
 end;
 
-function TPlatformTrading.TPosition.IsActive: Boolean;
+function TBufferTrading.TPosition.IsActive: Boolean;
 begin
   Result := FTrades.Count > 0;
 end;
 
-procedure TPlatformTrading.TPosition.OpenTrade(const ATime: Int64; const APrice,
+procedure TBufferTrading.TPosition.OpenTrade(const ATime: Int64; const APrice,
   AQty: Double; ASide: TTypeBuySell);
 var
   xQty: Double;
-  xTrade: TPlatformTrading.TTrade;
-  xHistory: TPlatformTrading.TTrade;
+  xTrade: TBufferTrading.TTrade;
+  xHistory: TBufferTrading.TTrade;
 begin
 {$IFDEF DBG_POS_OPEN_TRADE}
   TLogger.Log('TPlatformTrading.TPosition.OpenTrade:');
@@ -251,7 +274,7 @@ begin
             xTrade := FTrades[0]
           else
           begin
-            FPlatformTrading.FPosition := nil;
+            FBufferTrading.FPosition := nil;
             FCloseTime := ATime;
             FClosePrice := APrice;
             Break;
@@ -277,8 +300,8 @@ begin
         xHistory.Qty := xTrade.Qty;
         FHistory[xIndex] := xHistory;
 
-        FPlatformTrading.FPosition := nil;
-        FPlatformTrading.OpenTrade(
+        FBufferTrading.FPosition := nil;
+        FBufferTrading.OpenTrade(
           ATime,
           APrice,
           xQty,
@@ -295,7 +318,7 @@ begin
   ExecuteTrade;
 end;
 
-function TPlatformTrading.TPosition.ToString: string;
+function TBufferTrading.TPosition.ToString: string;
 begin
   var xS := '';
   xS :=
@@ -310,28 +333,28 @@ begin
   Result := xS;
 end;
 
-{ TPlatformTrading }
+{ TBufferTrading }
 
-constructor TPlatformTrading.Create;
+constructor TBufferTrading.Create;
 begin
   FPosition := nil;
   FPositions := TPositionList.Create;
 end;
 
-destructor TPlatformTrading.Destroy;
+destructor TBufferTrading.Destroy;
 begin
   FreeAndNil(FPositions);
   inherited;
 end;
 
-function TPlatformTrading.GetIsPosition: Boolean;
+function TBufferTrading.GetIsPosition: Boolean;
 begin
   Result := False;
   if Assigned(FPosition) then
     Result := FPosition.IsActive;
 end;
 
-procedure TPlatformTrading.OpenTrade(const ATime: Int64; const APrice,
+procedure TBufferTrading.OpenTrade(const ATime: Int64; const APrice,
   AQty: Double; ASide: TTypeBuySell);
 begin
   if not Assigned(FPosition) then
@@ -344,7 +367,7 @@ begin
     FPosition.OpenTrade(ATime,APrice,AQty,ASide);
 end;
 
-procedure TPlatformTrading.OpenTrade(const ATime: TDateTime; const APrice,
+procedure TBufferTrading.OpenTrade(const ATime: TDateTime; const APrice,
   AQty: Double; ASide: TTypeBuySell);
 var
   xTime: Int64;
@@ -355,7 +378,24 @@ begin
   OpenTrade(xTime,APrice,AQty,ASide);
 end;
 
-procedure TPlatformTrading.CloseTrade(const ATime: Int64; const APrice: Double);
+function TBufferTrading.GetProfitClosePosition: Double;
+var
+  xValue: Double;
+  xPosition: TPosition;
+  i, iCount: Integer;
+begin
+  xValue := 0;
+  iCount := FPositions.Count;
+  if iCount > 0 then
+    for i := 0 to iCount - 1 do
+    begin
+      xPosition := FPositions[i];
+      xValue := xValue + xPosition.GetProfit;
+    end;
+  Result := xValue;
+end;
+
+procedure TBufferTrading.CloseTrade(const ATime: Int64; const APrice: Double);
 begin
   if Assigned(FPosition) then
   begin
@@ -369,5 +409,26 @@ begin
     FPosition := nil;
   end;
 end;
+
+procedure TBufferTrading.SaveTrading(const AFileName: String);
+var
+  xStr: TStrings;
+  xTrade: TBufferTrading.TTrade;
+  xPosition: TBufferTrading.TPosition;
+begin
+  xStr := TStringList.Create;
+  try
+    for xPosition in FPositions do
+    begin
+      xStr.Add(xPosition.ToString);
+      for xTrade in xPosition.History do
+        xStr.Add('>>' + xTrade.ToString);
+    end;
+  finally
+    FreeAndNil(xStr);
+  end;
+end;
+
+
 
 end.

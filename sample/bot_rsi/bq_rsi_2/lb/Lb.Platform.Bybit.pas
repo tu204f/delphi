@@ -13,7 +13,6 @@ uses
   FMX.Types,
   Lb.SysUtils,
   Lb.Platform,
-  Lb.Platform.Trading,
   Lb.Bybit.SysUtils,
   Lb.Bybit.Kline,
   Lb.Bybit.OrderBook;

@@ -24,7 +24,7 @@ uses
   Lb.Bybit.ServerTime in '..\..\..\library\trade\bybit\market\Lb.Bybit.ServerTime.pas',
   Lb.Level in 'lb\Lb.Level.pas',
   Lb.Category in 'lb\Lb.Category.pas',
-  Lb.Platform.Trading in 'lb\Lb.Platform.Trading.pas',
+  Lb.Buffer.Trading in 'lb\Lb.Buffer.Trading.pas',
   UnitCategoryFrame in 'frame\UnitCategoryFrame.pas' {CategoryFrame: TFrame},
   UniCategoryListFrame in 'frame\UniCategoryListFrame.pas' {CategoryListFrame: TFrame},
   Lb.ParamClose in 'lb\Lb.ParamClose.pas';

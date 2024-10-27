@@ -11,21 +11,40 @@ uses
   Lb.SysUtils,
   Lb.Platform,
   Lb.Category,
-  Lb.Platform.Trading;
+  Lb.Buffer.Trading;
 
 type
+  TTypeBot = (tbStraight, tbReverse);
+
   TEventOnSendTrade = procedure(ASender: TObject; const ATime: TDateTime; const APrice, AQty: Double; ASide: TTypeBuySell) of object;
+
+  ///<summary>
+  /// Механиз фиксации опериции не зависемо отплатформы
+  ///</summary>
+  TCustomTraginBot = class(TObject)
+  private
+    FBufferTrading: TBufferTrading;
+  public
+    constructor Create; virtual;
+    destructor Destroy; override;
+    ///<summary>
+    /// Торгуем по стратегии
+    ///</summary>
+    property Trading: TBufferTrading read FBufferTrading;
+  end;
 
   ///<summary>
   /// Бот - для торговли
   ///</summary>
-  TBot = class(TObject)
+  TBot = class(TCustomTraginBot)
   private
     FPeriod: Integer;
     FTradingPlatform: TTradingPlatform;
+    FStopLossPrice: Double;
     FValueRSI: Double;
     FValueATR: Double;
   private
+    FTypeBot: TTypeBot;
     FManagerCategoryBuy: TManagerCategory;
     FManagerCategorySell: TManagerCategory;
     procedure ManagerCriteriaBuyOnSendTrade(ASender: TObject; ASide: TTypeBuySell; AQty: Double);
@@ -45,7 +64,7 @@ type
     ///</summary>
     procedure DoSendTrade(const ATime: TDateTime; const APrice, AQty: Double; ASide: TTypeBuySell);
   public
-    constructor Create; virtual;
+    constructor Create; override;
     destructor Destroy; override;
     procedure SetSelected;
     ///<summary>
@@ -56,6 +75,7 @@ type
     /// Период оценки риска
     ///</summary>
     property Period: Integer read FPeriod write FPeriod;
+
     ///<summary>
     /// Индекс значение работы RSI
     ///</summary>
@@ -64,6 +84,15 @@ type
     /// Значение валатилности рынка
     ///</summary>
     property ValueATR: Double read FValueATR;
+    ///<summary>
+    /// Рекомендуемая цена закрытия
+    ///</summary>
+    property StopLossPrice: Double read FStopLossPrice;
+
+    ///<summary>
+    /// Навпроление работы
+    ///</summary>
+    property TypeBot: TTypeBot read FTypeBot write FTypeBot;
 
     property OnSendTrade: TEventOnSendTrade write FOnSendTrade;
   public
@@ -74,6 +103,10 @@ type
   end;
 
 implementation
+
+
+(******************************************************************************)
+(* Процедуры которые помогают оценить состояние рынка                         *)
 
 function GetSMA(const AValue: TDoubleList): Double;
 var
@@ -194,10 +227,27 @@ begin
   end;
 end;
 
+(******************************************************************************)
+
+{ TCustomTraginBot }
+
+constructor TCustomTraginBot.Create;
+begin
+  FBufferTrading := TBufferTrading.Create;
+end;
+
+destructor TCustomTraginBot.Destroy;
+begin
+  FreeAndNil(FBufferTrading);
+  inherited;
+end;
+
+
 { TBot }
 
 constructor TBot.Create;
 begin
+  inherited;
   FPeriod := 14;
   FValueRSI := 0;
   FTradingPlatform := nil;
@@ -212,6 +262,8 @@ begin
   FManagerCategorySell.SetCreateCriteria(50,100,10,10,0.01);
   FManagerCategorySell.OnSendTrade := ManagerCriteriaSellOnSendTrade;
 
+  // Прямой объект
+  FTypeBot := TTypeBot.tbStraight;
 end;
 
 destructor TBot.Destroy;
@@ -225,7 +277,7 @@ function TBot.IsActivePosition: Boolean;
 begin
   Result := False;
   if Assigned(FTradingPlatform) then
-    Result := FTradingPlatform.Trading.IsPosition;
+    Result := Trading.IsPosition;
 end;
 
 function TBot.IsTrading: Boolean;
@@ -237,15 +289,40 @@ begin
   Result := True;
 end;
 
+procedure TBot.DoSendTrade(const ATime: TDateTime; const APrice, AQty: Double;
+  ASide: TTypeBuySell);
+begin
+  // Открытие позиции
+  if Assigned(FTradingPlatform) then
+  begin
+
+    FTradingPlatform.SendTrade(
+      Date + Time,
+      APrice,
+      AQty,
+      ASide
+    );
+
+    if Assigned(FOnSendTrade) then
+      FOnSendTrade(
+        Self,
+        Date + Time,
+        APrice,
+        AQty,
+        ASide
+      );
+  end;
+end;
+
 procedure TBot.SetSelected;
 
   procedure _PositionClose;
   var
     xSide: TTypeBuySell;
     xPrice, xQty: Double;
-    xPosition: TPlatformTrading.TPosition;
+    xPosition: TBufferTrading.TPosition;
   begin
-    xPosition := FTradingPlatform.Trading.CurrentPosition;
+    xPosition := Trading.CurrentPosition;
     // Принудительно закрывать позицию
     xSide := xPosition.Side;
     xSide := GetCrossSide(xSide);
@@ -266,29 +343,50 @@ procedure TBot.SetSelected;
 
   procedure _IfProfitPositionClose;
   var
-    xProfit: Double;
-    xPosition: TPlatformTrading.TPosition;
+    xValueCof: Double;
+    xPosition: TBufferTrading.TPosition;
+    xStopLoss: Double;
   begin
-    xProfit := 0;
-    xPosition := FTradingPlatform.Trading.CurrentPosition;
+    // Производим рекомендуемое значение закрытие позиции
+    xValueCof := 1;
+    xStopLoss := 0;
+    xPosition := Trading.CurrentPosition;
     if xPosition.MovingPrice > 0 then
     begin
       case xPosition.Side of
-        tsBuy : xProfit := TradingPlatform.StateMarket.Bid - xPosition.MovingPrice;
-        tsSell: xProfit := xPosition.MovingPrice - TradingPlatform.StateMarket.Ask;
+        tsBuy : begin
+          xStopLoss := xPosition.MovingPrice - xValueCof * FValueATR;
+
+          if FStopLossPrice = 0 then
+            FStopLossPrice := xStopLoss
+          else if FStopLossPrice < xStopLoss then
+            FStopLossPrice := xStopLoss;
+          if xStopLoss > FTradingPlatform.StateMarket.Bid then
+            _PositionClose;
+
+        end;
+        tsSell: begin
+
+          xStopLoss := xPosition.MovingPrice + xValueCof * FValueATR;
+          if FStopLossPrice = 0 then
+            FStopLossPrice := xStopLoss
+          else if FStopLossPrice > xStopLoss then
+            FStopLossPrice := xStopLoss;
+          if xStopLoss < FTradingPlatform.StateMarket.Ask then
+            _PositionClose;
+
+        end;
       end;
-
-      if xProfit > 2 * FValueATR then
-        _PositionClose;
-
-      if xProfit < (-1 * FValueATR) then
-        _PositionClose;
-
     end;
   end;
 
 
 begin
+
+  // волатильность рынка
+  FValueATR := GetATR(FPeriod,FTradingPlatform.StateMarket.Candels);
+  FValueATR := Round(FValueATR * 100)/100;
+
   if IsTrading then
   begin
     // Можно соверщать торговые операции
@@ -299,16 +397,12 @@ begin
     end
     else
     begin
+      FStopLossPrice := 0;
       // Условия открытие позиции
       FValueRSI := GetRSI(FPeriod,FTradingPlatform.StateMarket.Candels);
       FValueRSI := Round(FValueRSI * 100)/100;
-
-      FValueATR := GetATR(FPeriod,FTradingPlatform.StateMarket.Candels);
-      FValueATR := Round(FValueATR * 100)/100;
-
       ManagerCategoryBuy.SetUpDateValue(FValueRSI);
       ManagerCategorySell.SetUpDateValue(FValueRSI);
-
     end;
   end
   else
@@ -338,32 +432,6 @@ begin
       AQty,
       ASide
     );
-end;
-
-procedure TBot.DoSendTrade(const ATime: TDateTime; const APrice, AQty: Double;
-  ASide: TTypeBuySell);
-begin
-  if Assigned(FTradingPlatform) then
-  begin
-
-    FTradingPlatform.SendTrade(
-      Date + Time,
-      APrice,
-      AQty,
-      ASide
-    );
-
-
-
-    if Assigned(FOnSendTrade) then
-      FOnSendTrade(
-        Self,
-        Date + Time,
-        APrice,
-        AQty,
-        ASide
-      );
-  end;
 end;
 
 end.

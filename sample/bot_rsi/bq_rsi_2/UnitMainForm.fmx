@@ -2,8 +2,8 @@ object MainForm: TMainForm
   Left = 0
   Top = 0
   Caption = 'Form4'
-  ClientHeight = 857
-  ClientWidth = 906
+  ClientHeight = 773
+  ClientWidth = 1236
   FormFactor.Width = 320
   FormFactor.Height = 480
   FormFactor.Devices = [Desktop]
@@ -54,17 +54,17 @@ object MainForm: TMainForm
     Anchors = [akLeft, akTop, akRight, akBottom]
     Position.X = 8.000000000000000000
     Position.Y = 36.000000000000000000
-    Size.Width = 892.000000000000000000
-    Size.Height = 813.000000000000000000
+    Size.Width = 1222.000000000000000000
+    Size.Height = 729.000000000000000000
     Size.PlatformDefault = False
     TabIndex = 0
     TabOrder = 7
     TabPosition = PlatformDefault
     Sizes = (
-      892s
-      787s
-      892s
-      787s)
+      1222s
+      703s
+      1222s
+      703s)
     object TabItemLog: TTabItem
       CustomIcon = <
         item
@@ -78,7 +78,7 @@ object MainForm: TMainForm
       Text = 'TabItemLog'
       ExplicitSize.cx = 82.000000000000000000
       ExplicitSize.cy = 26.000000000000000000
-      object Memo1: TMemo
+      object MemoInfo: TMemo
         Touch.InteractiveGestures = [Pan, LongTap, DoubleTap]
         DataDetectorTypes = []
         Align = Client
@@ -86,12 +86,44 @@ object MainForm: TMainForm
         Margins.Top = 10.000000000000000000
         Margins.Right = 10.000000000000000000
         Margins.Bottom = 10.000000000000000000
-        Size.Width = 872.000000000000000000
-        Size.Height = 767.000000000000000000
+        Size.Width = 546.000000000000000000
+        Size.Height = 683.000000000000000000
         Size.PlatformDefault = False
         TabOrder = 0
-        Viewport.Width = 868.000000000000000000
-        Viewport.Height = 763.000000000000000000
+        Viewport.Width = 542.000000000000000000
+        Viewport.Height = 679.000000000000000000
+      end
+      object MemoBot: TMemo
+        Touch.InteractiveGestures = [Pan, LongTap, DoubleTap]
+        DataDetectorTypes = []
+        Align = Right
+        Margins.Top = 10.000000000000000000
+        Margins.Right = 10.000000000000000000
+        Margins.Bottom = 10.000000000000000000
+        Position.X = 566.000000000000000000
+        Position.Y = 10.000000000000000000
+        Size.Width = 318.000000000000000000
+        Size.Height = 683.000000000000000000
+        Size.PlatformDefault = False
+        TabOrder = 2
+        Viewport.Width = 314.000000000000000000
+        Viewport.Height = 679.000000000000000000
+      end
+      object MemoReversBot: TMemo
+        Touch.InteractiveGestures = [Pan, LongTap, DoubleTap]
+        DataDetectorTypes = []
+        Align = Right
+        Margins.Top = 10.000000000000000000
+        Margins.Right = 10.000000000000000000
+        Margins.Bottom = 10.000000000000000000
+        Position.X = 894.000000000000000000
+        Position.Y = 10.000000000000000000
+        Size.Width = 318.000000000000000000
+        Size.Height = 683.000000000000000000
+        Size.PlatformDefault = False
+        TabOrder = 1
+        Viewport.Width = 314.000000000000000000
+        Viewport.Height = 679.000000000000000000
       end
     end
     object TabItemFrame: TTabItem
@@ -154,18 +186,6 @@ object MainForm: TMainForm
           Size.PlatformDefault = False
           TabOrder = 0
         end
-      end
-      object MemoSendTrade: TMemo
-        Touch.InteractiveGestures = [Pan, LongTap, DoubleTap]
-        DataDetectorTypes = []
-        Position.X = 12.000000000000000000
-        Position.Y = 466.000000000000000000
-        Size.Width = 513.000000000000000000
-        Size.Height = 203.000000000000000000
-        Size.PlatformDefault = False
-        TabOrder = 1
-        Viewport.Width = 509.000000000000000000
-        Viewport.Height = 199.000000000000000000
       end
     end
   end

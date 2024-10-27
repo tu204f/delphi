@@ -222,6 +222,10 @@ begin
   xCategory.ActiveLevel.Value := ARSI;
   xCategory.ReActiveLevel.Value := AActiveRSI;
   xCategory.Side := FSide;
+
+  xCategory.IsActive := True;
+  xCategory.IsReActive := True;
+
   Result := Self.Add(xCategory);
 end;
 
