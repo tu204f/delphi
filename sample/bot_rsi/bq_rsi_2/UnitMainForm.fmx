@@ -3,7 +3,7 @@ object MainForm: TMainForm
   Top = 0
   Caption = 'Form4'
   ClientHeight = 773
-  ClientWidth = 1236
+  ClientWidth = 1457
   FormFactor.Width = 320
   FormFactor.Height = 480
   FormFactor.Devices = [Desktop]
@@ -54,16 +54,16 @@ object MainForm: TMainForm
     Anchors = [akLeft, akTop, akRight, akBottom]
     Position.X = 8.000000000000000000
     Position.Y = 36.000000000000000000
-    Size.Width = 1222.000000000000000000
+    Size.Width = 1443.000000000000000000
     Size.Height = 729.000000000000000000
     Size.PlatformDefault = False
     TabIndex = 0
     TabOrder = 7
     TabPosition = PlatformDefault
     Sizes = (
-      1222s
+      1443s
       703s
-      1222s
+      1443s
       703s)
     object TabItemLog: TTabItem
       CustomIcon = <
@@ -86,11 +86,11 @@ object MainForm: TMainForm
         Margins.Top = 10.000000000000000000
         Margins.Right = 10.000000000000000000
         Margins.Bottom = 10.000000000000000000
-        Size.Width = 546.000000000000000000
+        Size.Width = 603.000000000000000000
         Size.Height = 683.000000000000000000
         Size.PlatformDefault = False
         TabOrder = 0
-        Viewport.Width = 542.000000000000000000
+        Viewport.Width = 599.000000000000000000
         Viewport.Height = 679.000000000000000000
       end
       object MemoBot: TMemo
@@ -100,13 +100,13 @@ object MainForm: TMainForm
         Margins.Top = 10.000000000000000000
         Margins.Right = 10.000000000000000000
         Margins.Bottom = 10.000000000000000000
-        Position.X = 566.000000000000000000
+        Position.X = 623.000000000000000000
         Position.Y = 10.000000000000000000
-        Size.Width = 318.000000000000000000
+        Size.Width = 400.000000000000000000
         Size.Height = 683.000000000000000000
         Size.PlatformDefault = False
         TabOrder = 2
-        Viewport.Width = 314.000000000000000000
+        Viewport.Width = 396.000000000000000000
         Viewport.Height = 679.000000000000000000
       end
       object MemoReversBot: TMemo
@@ -116,13 +116,13 @@ object MainForm: TMainForm
         Margins.Top = 10.000000000000000000
         Margins.Right = 10.000000000000000000
         Margins.Bottom = 10.000000000000000000
-        Position.X = 894.000000000000000000
+        Position.X = 1033.000000000000000000
         Position.Y = 10.000000000000000000
-        Size.Width = 318.000000000000000000
+        Size.Width = 400.000000000000000000
         Size.Height = 683.000000000000000000
         Size.PlatformDefault = False
         TabOrder = 1
-        Viewport.Width = 314.000000000000000000
+        Viewport.Width = 396.000000000000000000
         Viewport.Height = 679.000000000000000000
       end
     end

@@ -295,8 +295,17 @@ begin
   // Открытие позиции
   if Assigned(FTradingPlatform) then
   begin
-
+    {todo: Передается один формат структуры}
+    {todo: Нужно переделать с ожиданием ответа торговой платформы}
+    // Отправляем в торгую платформу
     FTradingPlatform.SendTrade(
+      Date + Time,
+      APrice,
+      AQty,
+      ASide
+    );
+
+    Trading.OpenTrade(
       Date + Time,
       APrice,
       AQty,
@@ -382,6 +391,9 @@ procedure TBot.SetSelected;
 
 
 begin
+  {todo: Все вычисление вынести в отдельный модуль или объект, в целя исключение повторного вычисления}
+  if not Assigned(FTradingPlatform) then
+    Exit;
 
   // волатильность рынка
   FValueATR := GetATR(FPeriod,FTradingPlatform.StateMarket.Candels);
@@ -410,6 +422,14 @@ begin
       _PositionClose;
 end;
 
+function localSide(ATypeBot: TTypeBot; ASide: TTypeBuySell): TTypeBuySell;
+begin
+  if ATypeBot = TTypeBot.tbReverse then
+    Result := GetCrossSide(ASide)
+  else
+    Result := ASide;
+end;
+
 procedure TBot.ManagerCriteriaBuyOnSendTrade(ASender: TObject; ASide: TTypeBuySell; AQty: Double);
 begin
   // Купить торговать
@@ -418,7 +438,7 @@ begin
       Date + Time,
       FTradingPlatform.StateMarket.Ask,
       AQty,
-      ASide
+      localSide(FTypeBot,ASide)
     );
 end;
 
@@ -430,7 +450,7 @@ begin
       Date + Time,
       FTradingPlatform.StateMarket.Bid,
       AQty,
-      ASide
+      localSide(FTypeBot,ASide)
     );
 end;
 

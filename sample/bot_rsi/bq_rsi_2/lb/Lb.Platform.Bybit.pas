@@ -28,6 +28,7 @@ type
     FBybitOrderBook: TBybitOrderBook;
     procedure BybitKlineOnEventEndLoading(ASender: TObject);
     procedure BybitOrderBookOnEventEndLoading(ASender: TObject);
+    procedure BybitOnEventException(ASender: TObject);
   protected
     procedure DoSelected; override;
   public
@@ -51,9 +52,11 @@ begin
 
   FBybitKline := TBybitKline.Create;
   FBybitKline.OnEventEndLoading := BybitKlineOnEventEndLoading;
+  FBybitKline.OnEventException := BybitOnEventException;
 
   FBybitOrderBook := TBybitOrderBook.Create;
   FBybitOrderBook.OnEventEndLoading := BybitOrderBookOnEventEndLoading;
+  FBybitOrderBook.OnEventException := BybitOnEventException;
 end;
 
 destructor TPlatfomBybit.Destroy;
@@ -149,6 +152,11 @@ begin
   Dec(FCountSelected);
   if FCountSelected = 0 then
     DoStateMarke;
+end;
+
+procedure TPlatfomBybit.BybitOnEventException(ASender: TObject);
+begin
+  raise Exception.Create(TBybitHttpClient(ASender).ValueMessage);
 end;
 
 end.

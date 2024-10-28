@@ -105,12 +105,13 @@ begin
 
   ReversBot := TBot.Create;
   ReversBot.OnSendTrade := ReversBotOnSendTrade;
+  ReversBot.TypeBot := TTypeBot.tbReverse;
 
   TradingPlatform := TPlatfomBybit.Create;
   TradingPlatform.OnStateMarket := TradingPlatformOnStateMarket;
 
   Bot.TradingPlatform := TradingPlatform;
-  Bot.TradingPlatform := TradingPlatform;
+  ReversBot.TradingPlatform := TradingPlatform;
 
   InitFrame;
 
@@ -159,7 +160,7 @@ procedure TMainForm.TradingPlatformOnStateMarket(ASender: TObject; AStateMarket:
     j, jCount: Integer;
   begin
     xTrading := Bot.Trading;
-
+    MemoBot.Lines.Clear;
     MemoBot.Lines.Add(
       'Profit: ' + xTrading.ProfitClosePosition.ToString
     );
@@ -211,7 +212,7 @@ procedure TMainForm.TradingPlatformOnStateMarket(ASender: TObject; AStateMarket:
     j, jCount: Integer;
   begin
     xTrading := ReversBot.Trading;
-
+    MemoReversBot.Lines.Clear;
     MemoReversBot.Lines.Add(
       'Profit: ' + xTrading.ProfitClosePosition.ToString
     );
