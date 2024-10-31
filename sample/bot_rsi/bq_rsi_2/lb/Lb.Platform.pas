@@ -58,9 +58,14 @@ type
   private
     FSymbel: String;
     FOnStateMarket: TEventOnStateMarket;
+  private
+    FPeriod: Integer;
+    FValueRSI: Double;
+    FValueATR: Double;
   protected
     FStateMarket: TStateMarket;
     procedure DoStateMarke; virtual;
+    procedure DoSelected; override;
   public
     constructor Create; override;
     destructor Destroy; override;
@@ -74,10 +79,17 @@ type
     /// Есть потенциальная ошибка зависание заявки
     ///</summary>
     procedure SendTrade(const ATime: TDateTime; const APrice, AQty: Double; ASide: TTypeBuySell); virtual;
+  public
+    property Period: Integer read FPeriod write FPeriod;
+    property ValueRSI: Double read FValueRSI;
+    property ValueATR: Double read FValueATR;
   end;
 
 
 implementation
+
+uses
+  Lb.Bot;
 
 { TCustomTradingPlatform }
 
@@ -160,6 +172,7 @@ end;
 constructor TTradingPlatform.Create;
 begin
   inherited Create;
+  FPeriod := 14;
   FStateMarket := TStateMarket.Create;
 end;
 
@@ -167,6 +180,17 @@ destructor TTradingPlatform.Destroy;
 begin
   FreeAndNil(FStateMarket);
   inherited Destroy;
+end;
+
+procedure TTradingPlatform.DoSelected;
+begin
+  inherited;
+
+  FValueATR := GetATR(FPeriod,StateMarket.Candels);
+  FValueATR := Round(FValueATR * 100)/100;
+
+  FValueRSI := GetRSI(FPeriod,StateMarket.Candels);
+  FValueRSI := Round(FValueRSI * 100)/100;
 end;
 
 procedure TTradingPlatform.DoStateMarke;

@@ -18,6 +18,15 @@ uses
   Lb.SysUtils;
 
 type
+  ///<summary>Напров</summary>
+  TInfoPositionTrading = record
+    Profit: Double;     //
+    Price: Double;      //
+    Qty: Double;        //
+    Count: Integer;     //
+    Side: TTypeBuySell; //
+  end;
+
   ///<summary>Виртуальная торговля</summary>
   TBufferTrading = class(TObject)
   public type
@@ -85,7 +94,9 @@ type
     property Positions: TPositionList read FPositions;
     property CurrentPosition: TPosition read FPosition;
     property IsPosition: Boolean read GetIsPosition;
+  public
     property ProfitClosePosition: Double read GetProfitClosePosition;
+    function GetInfoPositionTrading(const AAsk, ABid: Double): TInfoPositionTrading;
   end;
 
 implementation
@@ -424,11 +435,29 @@ begin
       for xTrade in xPosition.History do
         xStr.Add('>>' + xTrade.ToString);
     end;
+    xStr.SaveToFile(AFileName);
   finally
     FreeAndNil(xStr);
   end;
 end;
 
-
+function TBufferTrading.GetInfoPositionTrading(const AAsk, ABid: Double): TInfoPositionTrading;
+var
+  xInfo: TInfoPositionTrading;
+begin
+  FillChar(xInfo,SizeOf(xInfo),0);
+  if Assigned(CurrentPosition) then
+  begin
+    xInfo.Side := CurrentPosition.Side;
+    xInfo.Price := CurrentPosition.MovingPrice;
+    case xInfo.Side of
+      tsBuy: xInfo.Profit := CurrentPosition.GetProfit(AAsk);
+      tsSell: xInfo.Profit := CurrentPosition.GetProfit(ABid);
+    end;
+    xInfo.Qty := CurrentPosition.Qty;
+    xInfo.Count := CurrentPosition.History.Count;
+  end;
+  Result := xInfo;
+end;
 
 end.

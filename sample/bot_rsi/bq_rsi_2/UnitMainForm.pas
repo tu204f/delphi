@@ -27,7 +27,7 @@ uses
   Lb.Category,
   FMX.TabControl,
   FMX.Layouts,
-  UniCategoryListFrame;
+  UniCategoryListFrame, System.Rtti, FMX.Grid.Style, FMX.Grid;
 
 type
   TMainForm = class(TForm)
@@ -44,8 +44,7 @@ type
     GridLayout: TGridPanelLayout;
     LayoutSell: TLayout;
     LayoutBuy: TLayout;
-    MemoBot: TMemo;
-    MemoReversBot: TMemo;
+    StrGrid: TStringGrid;
     procedure ButtonStartClick(Sender: TObject);
     procedure ButtonBuyClick(Sender: TObject);
     procedure ButtonSellClick(Sender: TObject);
@@ -56,13 +55,12 @@ type
     FCategoryListSell: TCategoryListFrame;
     FCategoryListBuy: TCategoryListFrame;
     procedure InitFrame;
+    procedure SetShowGrid;
   private
     procedure TradingPlatformOnStateMarket(ASender: TObject; AStateMarket: TStateMarket);
-    procedure BotOnSendTrade(ASender: TObject; const ATime: TDateTime; const APrice, AQty: Double; ASide: TTypeBuySell);
-    procedure ReversBotOnSendTrade(ASender: TObject; const ATime: TDateTime; const APrice, AQty: Double; ASide: TTypeBuySell);
   public
-    Bot: TBot;
-    ReversBot: TBot;
+    IndexTrade: Integer;
+    ManagerBot: TManagerBot;
     TradingPlatform: TTradingPlatform;
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
@@ -84,6 +82,8 @@ procedure TMainForm.ButtonStartClick(Sender: TObject);
 begin
   if not TradingPlatform.IsActive then
   begin
+    IndexTrade := 0;
+
     TradingPlatform.Symbel := 'ETHUSDT';
     TradingPlatform.StateMarket.Qty := 0.2;
     TradingPlatform.Start;
@@ -97,32 +97,68 @@ begin
 end;
 
 constructor TMainForm.Create(AOwner: TComponent);
+
+  procedure _InitManagerBot;
+  var
+    xBot: TBot;
+  begin
+    var xStep := 0.5;
+    for var i := 0 to 9 do
+    begin
+      xBot := ManagerBot.AddBot;
+      xBot.TypeBot := TTypeBot.tbLong;
+      xBot.ValueCof := 0.5 + xStep * i;
+    end;
+    for var i := 0 to 9 do
+    begin
+      xBot := ManagerBot.AddBot;
+      xBot.TypeBot := TTypeBot.tbShort;
+      xBot.ValueCof := 0.5 + xStep * i;
+    end;
+  end;
+
+  procedure SetAddColumn(const AHeader: String);
+  var
+    xCol: TStringColumn;
+  begin
+    xCol := TStringColumn.Create(nil);
+    xCol.Parent := StrGrid;
+    xCol.Header := AHeader;
+  end;
+
+var
+  xBot: TBot;
 begin
   inherited Create(AOwner);
 
-  Bot := TBot.Create;
-  Bot.OnSendTrade := BotOnSendTrade;
-
-  ReversBot := TBot.Create;
-  ReversBot.OnSendTrade := ReversBotOnSendTrade;
-  ReversBot.TypeBot := TTypeBot.tbReverse;
+  ManagerBot := TManagerBot.Create;
 
   TradingPlatform := TPlatfomBybit.Create;
   TradingPlatform.OnStateMarket := TradingPlatformOnStateMarket;
 
-  Bot.TradingPlatform := TradingPlatform;
-  ReversBot.TradingPlatform := TradingPlatform;
+  ManagerBot.TradingPlatform := TradingPlatform;
 
+  _InitManagerBot;
   InitFrame;
 
-  FCategoryListSell.ManagerCategory := Bot.ManagerCategorySell;
-  FCategoryListBuy.ManagerCategory := Bot.ManagerCategoryBuy;
+  xBot := ManagerBot.Items[0];
+  FCategoryListSell.ManagerCategory := xBot.ManagerCategorySell;
+  FCategoryListBuy.ManagerCategory := xBot.ManagerCategoryBuy;
+
+
+  SetAddColumn('id');
+  SetAddColumn('strateg');
+  SetAddColumn('кофф');
+  SetAddColumn('profit');
+  SetAddColumn('cross.profit');
+  SetAddColumn('PosCount');
+
 end;
 
 destructor TMainForm.Destroy;
 begin
   FreeAndNil(TradingPlatform);
-  FreeAndNil(Bot);
+  FreeAndNil(ManagerBot);
   inherited;
 end;
 
@@ -135,9 +171,7 @@ begin
   FCategoryListBuy := TCategoryListFrame.Create(nil);
   FCategoryListBuy.Parent := LayoutBuy;
   FCategoryListBuy.Align := TAlignLayout.Client;
-
 end;
-
 
 procedure TMainForm.TradingPlatformOnStateMarket(ASender: TObject; AStateMarket: TStateMarket);
 
@@ -149,117 +183,19 @@ procedure TMainForm.TradingPlatformOnStateMarket(ASender: TObject; AStateMarket:
     end;
   end;
 
-  procedure _VirtualTrading;
-  var
-    xPosition: TBufferTrading.TPosition;
-    xTrading: TBufferTrading;
-    i, iCount: Integer;
-  var
-    xProfit: Double;
-    xTrade: TBufferTrading.TTrade;
-    j, jCount: Integer;
-  begin
-    xTrading := Bot.Trading;
-    MemoBot.Lines.Clear;
-    MemoBot.Lines.Add(
-      'Profit: ' + xTrading.ProfitClosePosition.ToString
-    );
-
-    iCount := xTrading.Positions.Count;
-    if iCount > 0 then
-      for i := 0 to iCount - 1 do
-      begin
-        xPosition := xTrading.Positions[i];
-
-        xProfit := 0;
-        case xPosition.Side of
-          tsBuy : xProfit := xPosition.GetProfit(TradingPlatform.StateMarket.Bid);
-          tsSell: xProfit := xPosition.GetProfit(TradingPlatform.StateMarket.Ask);
-        end;
-        MemoBot.Lines.Add(
-          'pos: ' + xPosition.ToString + ' res: ' +
-          '; Profit: ' + xProfit.ToString +
-          '; Qty: ' + xPosition.Qty.ToString
-        );
-
-        jCount := xPosition.History.Count;
-        if jCount > 0 then
-          for j := 0 to jCount - 1 do
-          begin
-            xTrade := xPosition.History[j];
-
-            MemoBot.Lines.Add(
-              '   >>' +
-              xTrade.Time.ToString + ';' +
-              xTrade.Price.ToString + ';' +
-              xTrade.Qty.ToString + ';' +
-              GetStrToSide(xTrade.Side) + ';'
-            );
-
-          end;
-
-      end;
-  end;
-
-  procedure _CrossVirtualTrading;
-  var
-    xPosition: TBufferTrading.TPosition;
-    xTrading: TBufferTrading;
-    i, iCount: Integer;
-  var
-    xProfit: Double;
-    xTrade: TBufferTrading.TTrade;
-    j, jCount: Integer;
-  begin
-    xTrading := ReversBot.Trading;
-    MemoReversBot.Lines.Clear;
-    MemoReversBot.Lines.Add(
-      'Profit: ' + xTrading.ProfitClosePosition.ToString
-    );
-
-    iCount := xTrading.Positions.Count;
-    if iCount > 0 then
-      for i := 0 to iCount - 1 do
-      begin
-        xPosition := xTrading.Positions[i];
-
-        xProfit := 0;
-        case xPosition.Side of
-          tsBuy : xProfit := xPosition.GetProfit(TradingPlatform.StateMarket.Bid);
-          tsSell: xProfit := xPosition.GetProfit(TradingPlatform.StateMarket.Ask);
-        end;
-        MemoReversBot.Lines.Add(
-          'pos: ' + xPosition.ToString + ' res: ' +
-          '; Profit: ' + xProfit.ToString +
-          '; Qty: ' + xPosition.Qty.ToString
-        );
-
-        jCount := xPosition.History.Count;
-        if jCount > 0 then
-          for j := 0 to jCount - 1 do
-          begin
-            xTrade := xPosition.History[j];
-
-            MemoReversBot.Lines.Add(
-              '   >>' +
-              xTrade.Time.ToString + ';' +
-              xTrade.Price.ToString + ';' +
-              xTrade.Qty.ToString + ';' +
-              GetStrToSide(xTrade.Side) + ';'
-            );
-
-          end;
-
-      end;
-  end;
-
-
 var
   xS: String;
+  xBot: TBot;
+  iCount: Integer;
 begin
   MemoInfo.BeginUpdate;
   try
     MemoInfo.Lines.Clear;
+
+    Inc(IndexTrade);
+    MemoInfo.Lines.Add('IndexTrade: ' + IndexTrade.ToString);
+    MemoInfo.Lines.Add('****************************************************');
+
     MemoInfo.Lines.Add(
       'Ask: ' + TradingPlatform.StateMarket.Ask.ToString + '; ' +
       'Bid: ' + TradingPlatform.StateMarket.Bid.ToString
@@ -289,61 +225,49 @@ begin
 
     MemoInfo.Lines.Add('****************************************************');
     xS :=
-       'ValueRSI: ' + Bot.ValueRSI.ToString + ' ' +
-       'ValueATR: ' + Bot.ValueATR.ToString + ' ' +
-       'StopLossPrice: ' + Bot.StopLossPrice.ToString;
+       'ValueRSI: ' + TradingPlatform.ValueRSI.ToString + ' ' +
+       'ValueATR: ' + TradingPlatform.ValueATR.ToString + ' ';
     MemoInfo.Lines.Add(xS);
 
-    MemoInfo.Lines.Add('****************************************************');
-    MemoInfo.Lines.Add('Продажа');
-    for var i := Bot.ManagerCategorySell.Count - 1 downto 0 do
-    begin
-      var xCategory := Bot.ManagerCategorySell.Items[i];
-      xS := 'Ind [' + i.ToString + '] ' +
-        '[' + _ToBool(xCategory.IsActive) + '] ' +
-        'Active: ' + xCategory.ActiveLevel.Value.ToString + '; ' +
-        '[' + _ToBool(xCategory.IsReActive) + '] ' +
-        'ReActive: ' + xCategory.ReActiveLevel.Value.ToString + '; ' +
-        'Qty: ' + xCategory.Qty.ToString;
-      MemoInfo.Lines.Add(xS);
-    end;
+    ManagerBot.SetSelected;
+    SetShowGrid;
 
-    MemoInfo.Lines.Add('****************************************************');
-    MemoInfo.Lines.Add('Покупка');
-    for var i := 0 to Bot.ManagerCategoryBuy.Count - 1 do
-    begin
-      var xCategory := Bot.ManagerCategoryBuy.Items[i];
-      xS := 'Ind [' + i.ToString + '] ' +
-        '[' + _ToBool(xCategory.IsActive) + '] ' +
-        'Active: ' + xCategory.ActiveLevel.Value.ToString + '; ' +
-        '[' + _ToBool(xCategory.IsReActive) + '] ' +
-        'ReActive: ' + xCategory.ReActiveLevel.Value.ToString + '; ' +
-        'Qty: ' + xCategory.Qty.ToString;
-      MemoInfo.Lines.Add(xS);
-    end;
-
-    // ------------------------------------------------------------------------
-    _VirtualTrading;
-    _CrossVirtualTrading;
   finally
     MemoInfo.EndUpdate;
   end;
-  Bot.SetSelected;
-  ReversBot.SetSelected;
 end;
 
-procedure TMainForm.BotOnSendTrade(ASender: TObject; const ATime: TDateTime;
-  const APrice, AQty: Double; ASide: TTypeBuySell);
+procedure TMainForm.SetShowGrid;
+var
+  xPath: String;
+  xBot: TBot;
+  i, iCount: Integer;
 begin
+  xPath := 'd:\work\git\delphi\sample\bot_rsi\bq_rsi_2\app\bin\data\';
+  iCount := ManagerBot.Items.Count;
+  StrGrid.RowCount := iCount;
+  if iCount > 0 then
+    for i := 0 to iCount - 1 do
+    begin
+      xBot := ManagerBot.Items[i];
 
+      StrGrid.Cells[0,i] := i.ToString;
+      StrGrid.Cells[1,i] := GetStrToTypeBot(xBot.TypeBot);
+      StrGrid.Cells[2,i] := xBot.ValueCof.ToString;
+      StrGrid.Cells[3,i] := xBot.Trading.ProfitClosePosition.ToString;
+      StrGrid.Cells[4,i] := xBot.CrossTrading.ProfitClosePosition.ToString;
+      StrGrid.Cells[5,i] := xBot.Trading.Positions.Count.ToString;
+
+      xBot.Trading.SaveTrading(
+        xPath + 'bot_position_' + i.ToString + '.txt'
+      );
+
+      xBot.CrossTrading.SaveTrading(
+        xPath + 'bot_cross_position_' + i.ToString + '.txt'
+      );
+
+    end;
 end;
-
-procedure TMainForm.ReversBotOnSendTrade(ASender: TObject;
-  const ATime: TDateTime; const APrice, AQty: Double; ASide: TTypeBuySell);
-begin
-
-end;
-
 
 procedure TMainForm.ButtonBuy2Click(Sender: TObject);
 begin
