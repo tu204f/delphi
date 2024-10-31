@@ -178,7 +178,7 @@ begin
 
     // ќформл€ем модуль запроса
     xModule.TypeHttp := TTypeHttp.thPost;
-    xModule.Host := BYBIT_HOST;
+    xModule.Host := LinkBybitHost;
     case APlaceOrder.TypeProc of
       Place : xModule.Module := '/v5/order/create';
       Amend : xModule.Module := '/v5/order/amend';
