@@ -130,6 +130,9 @@ procedure TPlatfomBybit.BybitOrderBookOnEventEndLoading(ASender: TObject);
 var
   xBid, xAsk: Double;
 begin
+  xBid := 0;
+  xAsk := 0;
+
   for var xOrderMarket in FBybitOrderBook.OrderBook.Bids do
   begin
     if xOrderMarket.SumQuantity >= FStateMarket.Qty then

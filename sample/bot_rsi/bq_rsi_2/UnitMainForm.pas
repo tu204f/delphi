@@ -185,8 +185,6 @@ procedure TMainForm.TradingPlatformOnStateMarket(ASender: TObject; AStateMarket:
 
 var
   xS: String;
-  xBot: TBot;
-  iCount: Integer;
 begin
   MemoInfo.BeginUpdate;
   try

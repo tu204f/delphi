@@ -161,8 +161,7 @@ function GetATR(const APeriod: Integer; ACandels: TCandelList): Double;
   var
     xValue: Double;
   begin
-    if xValue < AValue1 then
-      xValue := AValue1;
+    xValue := AValue1;
     if xValue < AValue2 then
       xValue := AValue2;
     if xValue < AValue3 then
@@ -402,14 +401,24 @@ procedure TBot.SetSelected;
     case xSide of
       tsBuy: xPrice := FTradingPlatform.StateMarket.Ask;
       tsSell: xPrice := FTradingPlatform.StateMarket.Bid;
+    else
+      xPrice := 0;
     end;
 
-    DoSendTrade(
-      Date + Time,
-      xPrice,
-      xQty,
-      xSide
-    );
+    if xPrice > 0 then
+    begin
+      DoSendTrade(
+        Date + Time,
+        xPrice,
+        xQty,
+        xSide
+      )
+    end
+    else
+    begin
+      var xS := 'TBot.SetSelected._PositionClose';
+      raise Exception.Create('Error Message: ' + xS + ' ¬от такое не может быть.');
+    end;
   end;
 
   procedure _IfProfitPositionClose;
@@ -418,7 +427,6 @@ procedure TBot.SetSelected;
     xStopLoss: Double;
   begin
     // ѕроизводим рекомендуемое значение закрытие позиции
-    xStopLoss := 0;
     xPosition := Trading.CurrentPosition;
     if xPosition.MovingPrice > 0 then
     begin

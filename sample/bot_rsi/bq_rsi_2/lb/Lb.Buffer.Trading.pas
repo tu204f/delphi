@@ -80,7 +80,6 @@ type
   private
     FPosition: TPosition;
     FPositions: TPositionList;
-    FProfitClosePosition: Double;
     function GetIsPosition: Boolean;
     function GetProfitClosePosition: Double;
   protected
