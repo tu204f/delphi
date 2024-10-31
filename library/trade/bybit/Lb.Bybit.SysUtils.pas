@@ -207,9 +207,7 @@ type
     procedure Start(const AInterval: Integer = 0);
     ///<summary>Остановить цикл</summary>
     procedure Stop;
-
     procedure SetEncryption(const ApiKey, ApiSecret: String);
-
     ///<summary>Параметры запроса</summary>
     property BybitModule: TBybitModule read FBybitModule;
     property Interval: Integer read FInterval;
@@ -347,6 +345,8 @@ var
   /// Ключаем режем тестрование
   ///</summary>
   BybitHostTest: Boolean = False;
+
+function LinkBybitHost: String;
 
 implementation
 
@@ -836,6 +836,7 @@ begin
     begin
       while True do
       begin
+
         TThread.Synchronize(nil,DoEventBeginLoading);
         xHttpClientAPI := TBybitHttpClientAPI.Create;
         try
@@ -858,11 +859,13 @@ begin
         finally
           FreeAndNil(xHttpClientAPI);
         end;
+
         TThread.Synchronize(nil,DoEventEndLoading);
         if FInterval = 0 then
           Break
         else
           Sleep(FInterval);
+
         if Assigned(FTask) then
         begin
           if FTask.Status = TTaskStatus.Canceled then
@@ -870,6 +873,7 @@ begin
         end
         else
           Break;
+
       end;
     end
   );
