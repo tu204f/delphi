@@ -227,6 +227,7 @@
             <DesignClass>TFrame</DesignClass>
         </DCCReference>
         <DCCReference Include="lb\Lb.ParamClose.pas"/>
+        <DCCReference Include="..\..\..\library\trade\bybit\trade\Lb.Bybit.Trade.pas"/>
         <None Include="..\..\..\library\trade\quik\quik_connect.inc"/>
         <None Include="lb\debug.inc"/>
         <BuildConfiguration Include="Release">

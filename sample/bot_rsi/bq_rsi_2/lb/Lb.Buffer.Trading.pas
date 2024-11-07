@@ -18,6 +18,8 @@ uses
   Lb.SysUtils;
 
 type
+  TBufferTrading = class;
+
   ///<summary>Напров</summary>
   TInfoPositionTrading = record
     Profit: Double;     //
@@ -27,59 +29,60 @@ type
     Side: TTypeBuySell; //
   end;
 
+  ///<summary>Сделка</summary>
+  TBufferTrade = record
+    Time: Int64;
+    Price: Double;
+    Qty: Double;
+    Side: TTypeBuySell;
+  public
+    function ToString: string;
+  end;
+  TBufferTradeList = TList<TBufferTrade>;
+
+  ///<summary>Позиция</summary>
+  TBufferPosition = class(TObject)
+  private
+    FOpenTime: Int64;
+    FCloseTime: Int64;
+    FSide: TTypeBuySell;
+    FOpenPrice: Double;
+    FClosePrice: Double;
+    FMovingPrice: Double;
+    FQty: Double;
+    FValue: Double;
+    FTrades: TBufferTradeList;
+    FBufferTrading: TBufferTrading;
+  private
+    FHistory: TBufferTradeList;
+  protected
+    procedure ExecuteTrade;
+  public
+    constructor Create(const ABufferTrading: TBufferTrading); virtual;
+    destructor Destroy; override;
+    procedure OpenTrade(const ATime: Int64; const APrice, AQty: Double; ASide: TTypeBuySell);
+    function GetProfit(const APrice: Double = 0): Double;
+    function ToString: string; override;
+    function IsActive: Boolean;
+    property History: TBufferTradeList read FHistory;
+  public
+    property OpenTime: Int64 read FOpenTime;
+    property CloseTime: Int64 read FCloseTime;
+    property Side: TTypeBuySell read FSide;
+    property OpenPrice: Double read FOpenPrice;
+    property ClosePrice: Double read FClosePrice;
+    property MovingPrice: Double read FMovingPrice;
+    property Qty: Double read FQty;
+    property Value: Double read FValue;
+  end;
+  TBufferPositionList = TObjectList<TBufferPosition>;
+
+
   ///<summary>Виртуальная торговля</summary>
   TBufferTrading = class(TObject)
-  public type
-    ///<summary>Сделка</summary>
-    TTrade = record
-      Time: Int64;
-      Price: Double;
-      Qty: Double;
-      Side: TTypeBuySell;
-    public
-      function ToString: string;
-    end;
-    TTradeList = TList<TTrade>;
-
-    TPosition = class(TObject)
-    private
-      FOpenTime: Int64;
-      FCloseTime: Int64;
-      FSide: TTypeBuySell;
-      FOpenPrice: Double;
-      FClosePrice: Double;
-      FMovingPrice: Double;
-      FQty: Double;
-      FValue: Double;
-      FTrades: TTradeList;
-      FBufferTrading: TBufferTrading;
-    private
-      FHistory: TTradeList;
-    protected
-      procedure ExecuteTrade;
-    public
-      constructor Create(const ABufferTrading: TBufferTrading); virtual;
-      destructor Destroy; override;
-      procedure OpenTrade(const ATime: Int64; const APrice, AQty: Double; ASide: TTypeBuySell);
-      function GetProfit(const APrice: Double = 0): Double;
-      function ToString: string; override;
-      function IsActive: Boolean;
-      property History: TTradeList read FHistory;
-    public
-      property OpenTime: Int64 read FOpenTime;
-      property CloseTime: Int64 read FCloseTime;
-      property Side: TTypeBuySell read FSide;
-      property OpenPrice: Double read FOpenPrice;
-      property ClosePrice: Double read FClosePrice;
-      property MovingPrice: Double read FMovingPrice;
-      property Qty: Double read FQty;
-      property Value: Double read FValue;
-    end;
-    TPositionList = TObjectList<TPosition>;
-
   private
-    FPosition: TPosition;
-    FPositions: TPositionList;
+    FPosition: TBufferPosition;
+    FPositions: TBufferPositionList;
     function GetIsPosition: Boolean;
     function GetProfitClosePosition: Double;
   protected
@@ -90,8 +93,8 @@ type
     procedure OpenTrade(const ATime: TDateTime; const APrice, AQty: Double; ASide: TTypeBuySell); overload;
     procedure CloseTrade(const ATime: Int64; const APrice: Double);
     procedure SaveTrading(const AFileName: String);
-    property Positions: TPositionList read FPositions;
-    property CurrentPosition: TPosition read FPosition;
+    property Positions: TBufferPositionList read FPositions;
+    property CurrentPosition: TBufferPosition read FPosition;
     property IsPosition: Boolean read GetIsPosition;
   public
     property ProfitClosePosition: Double read GetProfitClosePosition;
@@ -105,9 +108,9 @@ uses
   Lb.Logger;
 {$ENDIF}
 
-{ TBufferTrading.TTrade }
+{ TBufferTrade }
 
-function TBufferTrading.TTrade.ToString: string;
+function TBufferTrade.ToString: string;
 var
   xS: String;
 begin
@@ -119,25 +122,25 @@ begin
   Result := xS;
 end;
 
-{ TBufferTrading.TPosition }
+{ TBufferPosition }
 
-constructor TBufferTrading.TPosition.Create(const ABufferTrading: TBufferTrading);
+constructor TBufferPosition.Create(const ABufferTrading: TBufferTrading);
 begin
   FBufferTrading := ABufferTrading;
-  FTrades := TTradeList.Create;
-  FHistory:= TTradeList.Create;
+  FTrades := TBufferTradeList.Create;
+  FHistory:= TBufferTradeList.Create;
 end;
 
-destructor TBufferTrading.TPosition.Destroy;
+destructor TBufferPosition.Destroy;
 begin
   FreeAndNil(FHistory);
   FreeAndNil(FTrades);
   inherited;
 end;
 
-procedure TBufferTrading.TPosition.ExecuteTrade;
+procedure TBufferPosition.ExecuteTrade;
 var
-  xTrade: TBufferTrading.TTrade;
+  xTrade: TBufferTrade;
 begin
 {$IFDEF DBG_POS_EXECUTE_TRADE}
   TLogger.Log('TPlatformTrading.TPosition.ExecuteTrade');
@@ -167,14 +170,14 @@ begin
 {$ENDIF}
 end;
 
-function TBufferTrading.TPosition.GetProfit(const APrice: Double): Double;
+function TBufferPosition.GetProfit(const APrice: Double): Double;
 const
   SIZE_ROUND = 10000;
 
   function _GetValue: Double;
   var
     xValue: Double;
-    xTrade: TBufferTrading.TTrade;
+    xTrade: TBufferTrade;
     i, iCount: Integer;
   begin
     xValue := 0;
@@ -215,17 +218,17 @@ begin
   Result := Round(xValue * SIZE_ROUND)/SIZE_ROUND;
 end;
 
-function TBufferTrading.TPosition.IsActive: Boolean;
+function TBufferPosition.IsActive: Boolean;
 begin
   Result := FTrades.Count > 0;
 end;
 
-procedure TBufferTrading.TPosition.OpenTrade(const ATime: Int64; const APrice,
+procedure TBufferPosition.OpenTrade(const ATime: Int64; const APrice,
   AQty: Double; ASide: TTypeBuySell);
 var
   xQty: Double;
-  xTrade: TBufferTrading.TTrade;
-  xHistory: TBufferTrading.TTrade;
+  xTrade: TBufferTrade;
+  xHistory: TBufferTrade;
 begin
 {$IFDEF DBG_POS_OPEN_TRADE}
   TLogger.Log('TPlatformTrading.TPosition.OpenTrade:');
@@ -284,7 +287,8 @@ begin
             xTrade := FTrades[0]
           else
           begin
-            FBufferTrading.FPosition := nil;
+            if Assigned(FBufferTrading) then
+              FBufferTrading.FPosition := nil;
             FCloseTime := ATime;
             FClosePrice := APrice;
             Break;
@@ -328,7 +332,7 @@ begin
   ExecuteTrade;
 end;
 
-function TBufferTrading.TPosition.ToString: string;
+function TBufferPosition.ToString: string;
 begin
   var xS := '';
   xS :=
@@ -348,7 +352,7 @@ end;
 constructor TBufferTrading.Create;
 begin
   FPosition := nil;
-  FPositions := TPositionList.Create;
+  FPositions := TBufferPositionList.Create;
 end;
 
 destructor TBufferTrading.Destroy;
@@ -369,7 +373,7 @@ procedure TBufferTrading.OpenTrade(const ATime: Int64; const APrice,
 begin
   if not Assigned(FPosition) then
   begin
-    FPosition := TPosition.Create(Self);
+    FPosition := TBufferPosition.Create(Self);
     FPositions.Add(FPosition);
     FPosition.OpenTrade(ATime,APrice,AQty,ASide);
   end
@@ -391,7 +395,7 @@ end;
 function TBufferTrading.GetProfitClosePosition: Double;
 var
   xValue: Double;
-  xPosition: TPosition;
+  xPosition: TBufferPosition;
   i, iCount: Integer;
 begin
   xValue := 0;
@@ -423,8 +427,8 @@ end;
 procedure TBufferTrading.SaveTrading(const AFileName: String);
 var
   xStr: TStrings;
-  xTrade: TBufferTrading.TTrade;
-  xPosition: TBufferTrading.TPosition;
+  xTrade: TBufferTrade;
+  xPosition: TBufferPosition;
 begin
   xStr := TStringList.Create;
   try

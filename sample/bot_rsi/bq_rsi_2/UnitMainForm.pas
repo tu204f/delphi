@@ -84,7 +84,7 @@ begin
   begin
     IndexTrade := 0;
 
-    TradingPlatform.Symbel := 'ETHUSDT';
+    TradingPlatform.Symbol := 'ETHUSDT';
     TradingPlatform.StateMarket.Qty := 0.2;
     TradingPlatform.Start;
   end;
@@ -102,19 +102,19 @@ constructor TMainForm.Create(AOwner: TComponent);
   var
     xBot: TBot;
   begin
-    var xStep := 0.5;
-    for var i := 0 to 9 do
-    begin
-      xBot := ManagerBot.AddBot;
-      xBot.TypeBot := TTypeBot.tbLong;
-      xBot.ValueCof := 0.5 + xStep * i;
-    end;
-    for var i := 0 to 9 do
-    begin
-      xBot := ManagerBot.AddBot;
-      xBot.TypeBot := TTypeBot.tbShort;
-      xBot.ValueCof := 0.5 + xStep * i;
-    end;
+//    var xStep := 0.5;
+//    for var i := 0 to 9 do
+//    begin
+    xBot := ManagerBot.AddBot;
+    xBot.TypeBot := TTypeBot.tbLong;
+    xBot.ValueCof := 3;
+//    end;
+//    for var i := 0 to 9 do
+//    begin
+//      xBot := ManagerBot.AddBot;
+//      xBot.TypeBot := TTypeBot.tbShort;
+//      xBot.ValueCof := 0.5 + xStep * i;
+//    end;
   end;
 
   procedure SetAddColumn(const AHeader: String);
@@ -135,6 +135,10 @@ begin
 
   TradingPlatform := TPlatfomBybit.Create;
   TradingPlatform.OnStateMarket := TradingPlatformOnStateMarket;
+
+  TPlatfomBybit(TradingPlatform).ApiKey := '3bvDxJnKzjkIg8y0RV';
+  TPlatfomBybit(TradingPlatform).ApiSecret := 'YtpORO6EYWTESXWwCyLiOBm75c1Tv6GSOzqJ';
+
 
   ManagerBot.TradingPlatform := TradingPlatform;
 
@@ -184,6 +188,8 @@ procedure TMainForm.TradingPlatformOnStateMarket(ASender: TObject; AStateMarket:
   end;
 
 var
+  xBot: TBot;
+  xInfo: TInfoPositionTrading;
   xS: String;
 begin
   MemoInfo.BeginUpdate;
@@ -230,6 +236,20 @@ begin
     ManagerBot.SetSelected;
     SetShowGrid;
 
+    if ManagerBot.Items.Count > 0 then
+    begin
+      MemoInfo.Lines.Add('****************************************************');
+      xBot := ManagerBot.Items[0];
+
+      xInfo := xBot.CrossTrading.GetInfoPositionTrading(
+        TradingPlatform.StateMarket.Ask,
+        TradingPlatform.StateMarket.Bid
+      );
+
+      MemoInfo.Lines.Add('  :: >> qty = ' + xInfo.Qty.ToString);
+      MemoInfo.Lines.Add('  :: >> profit = ' + xInfo.Profit.ToString);
+
+    end;
   finally
     MemoInfo.EndUpdate;
   end;
@@ -252,8 +272,10 @@ begin
       StrGrid.Cells[0,i] := i.ToString;
       StrGrid.Cells[1,i] := GetStrToTypeBot(xBot.TypeBot);
       StrGrid.Cells[2,i] := xBot.ValueCof.ToString;
+
       StrGrid.Cells[3,i] := xBot.Trading.ProfitClosePosition.ToString;
       StrGrid.Cells[4,i] := xBot.CrossTrading.ProfitClosePosition.ToString;
+
       StrGrid.Cells[5,i] := xBot.Trading.Positions.Count.ToString;
 
       xBot.Trading.SaveTrading(
@@ -272,7 +294,7 @@ begin
   TradingPlatform.SendTrade(
     Time,
     TradingPlatform.StateMarket.Ask,
-    2,
+    0.02,
     TTypeBuySell.tsBuy
   );
 end;
@@ -282,7 +304,7 @@ begin
   TradingPlatform.SendTrade(
     Time,
     TradingPlatform.StateMarket.Ask,
-    1,
+    0.01,
     TTypeBuySell.tsBuy
   );
 end;
@@ -292,7 +314,7 @@ begin
   TradingPlatform.SendTrade(
     Time,
     TradingPlatform.StateMarket.Bid,
-    2,
+    0.02,
     TTypeBuySell.tsSell
   );
 end;
@@ -302,7 +324,7 @@ begin
   TradingPlatform.SendTrade(
     Time,
     TradingPlatform.StateMarket.Bid,
-    1,
+    0.01,
     TTypeBuySell.tsSell
   );
 end;

@@ -320,8 +320,7 @@ begin
   Result := True;
 end;
 
-procedure TBot.DoSendTrade(const ATime: TDateTime; const APrice, AQty: Double;
-  ASide: TTypeBuySell);
+procedure TBot.DoSendTrade(const ATime: TDateTime; const APrice, AQty: Double; ASide: TTypeBuySell);
 
   procedure _IsCrossStrage(const ATime: TDateTime; const APrice, AQty: Double; ASide: TTypeBuySell);
   var
@@ -329,27 +328,17 @@ procedure TBot.DoSendTrade(const ATime: TDateTime; const APrice, AQty: Double;
   begin
     {todo: Передается один формат структуры}
     {todo: Нужно переделать с ожиданием ответа торговой платформы}
-
-//      xSide := GetCrossSide(ASide)
-//    else
-
     xSide := ASide;
+//
+//    // Отправляем в торгую платформу
+//    FTradingPlatform.SendTrade(
+//      ATime,
+//      APrice,
+//      AQty,
+//      GetCrossSide(xSide)
+//    );
 
-    // Отправляем в торгую платформу
-    FTradingPlatform.SendTrade(
-      ATime,
-      APrice,
-      AQty,
-      xSide
-    );
-
-    Trading.OpenTrade(
-      ATime,
-      APrice,
-      AQty,
-      xSide
-    );
-
+    // Для контроля фиксируем торговую операцию
     CrossTrading.OpenTrade(
       ATime,
       APrice,
@@ -357,6 +346,13 @@ procedure TBot.DoSendTrade(const ATime: TDateTime; const APrice, AQty: Double;
       GetCrossSide(xSide)
     );
 
+    // Часть системы расчета прибыли
+    Trading.OpenTrade(
+      ATime,
+      APrice,
+      AQty,
+      xSide
+    );
   end;
 
 begin
@@ -390,7 +386,7 @@ procedure TBot.SetSelected;
   var
     xSide: TTypeBuySell;
     xPrice, xQty: Double;
-    xPosition: TBufferTrading.TPosition;
+    xPosition: TBufferPosition;
   begin
     xPosition := Trading.CurrentPosition;
     // Принудительно закрывать позицию
@@ -423,7 +419,7 @@ procedure TBot.SetSelected;
 
   procedure _IfProfitPositionClose;
   var
-    xPosition: TBufferTrading.TPosition;
+    xPosition: TBufferPosition;
     xStopLoss: Double;
   begin
     // Производим рекомендуемое значение закрытие позиции
@@ -433,25 +429,13 @@ procedure TBot.SetSelected;
       case xPosition.Side of
         tsBuy : begin
           xStopLoss := xPosition.MovingPrice - FValueCof * FTradingPlatform.ValueATR;
-
-          if FStopLossPrice = 0 then
-            FStopLossPrice := xStopLoss
-          else if FStopLossPrice < xStopLoss then
-            FStopLossPrice := xStopLoss;
           if xStopLoss > FTradingPlatform.StateMarket.Bid then
             _PositionClose;
-
         end;
         tsSell: begin
-
           xStopLoss := xPosition.MovingPrice + FValueCof * FTradingPlatform.ValueATR;
-          if FStopLossPrice = 0 then
-            FStopLossPrice := xStopLoss
-          else if FStopLossPrice > xStopLoss then
-            FStopLossPrice := xStopLoss;
           if xStopLoss < FTradingPlatform.StateMarket.Ask then
             _PositionClose;
-
         end;
       end;
     end;

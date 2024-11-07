@@ -56,7 +56,7 @@ type
   ///</summary>
   TTradingPlatform = class(TCustomTradingPlatform)
   private
-    FSymbel: String;
+    FSymbol: String;
     FOnStateMarket: TEventOnStateMarket;
   private
     FPeriod: Integer;
@@ -70,7 +70,7 @@ type
     constructor Create; override;
     destructor Destroy; override;
     ///<summary>Платформа операций</summary>
-    property Symbel: String read FSymbel write FSymbel;
+    property Symbol: String read FSymbol write FSymbol;
     ///<summary>Состояние рынка</summary>
     property StateMarket: TStateMarket read FStateMarket;
     property OnStateMarket: TEventOnStateMarket write FOnStateMarket;
