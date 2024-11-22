@@ -429,12 +429,21 @@ procedure TBot.SetSelected;
       case xPosition.Side of
         tsBuy : begin
           xStopLoss := xPosition.MovingPrice - FValueCof * FTradingPlatform.ValueATR;
-          if xStopLoss > FTradingPlatform.StateMarket.Bid then
+          if FStopLossPrice = 0 then
+            FStopLossPrice := xStopLoss
+          else if FStopLossPrice < xStopLoss then
+            FStopLossPrice := xStopLoss;
+
+          if FStopLossPrice > FTradingPlatform.StateMarket.Bid then
             _PositionClose;
         end;
         tsSell: begin
           xStopLoss := xPosition.MovingPrice + FValueCof * FTradingPlatform.ValueATR;
-          if xStopLoss < FTradingPlatform.StateMarket.Ask then
+          if FStopLossPrice = 0 then
+            FStopLossPrice := xStopLoss
+          else if FStopLossPrice > xStopLoss then
+            FStopLossPrice := xStopLoss;
+          if FStopLossPrice < FTradingPlatform.StateMarket.Ask then
             _PositionClose;
         end;
       end;

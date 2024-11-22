@@ -102,19 +102,19 @@ constructor TMainForm.Create(AOwner: TComponent);
   var
     xBot: TBot;
   begin
-//    var xStep := 0.5;
-//    for var i := 0 to 9 do
-//    begin
-    xBot := ManagerBot.AddBot;
-    xBot.TypeBot := TTypeBot.tbLong;
-    xBot.ValueCof := 3;
-//    end;
-//    for var i := 0 to 9 do
-//    begin
-//      xBot := ManagerBot.AddBot;
-//      xBot.TypeBot := TTypeBot.tbShort;
-//      xBot.ValueCof := 0.5 + xStep * i;
-//    end;
+    var xStep := 0.5;
+    for var i := 0 to 9 do
+    begin
+      xBot := ManagerBot.AddBot;
+      xBot.TypeBot := TTypeBot.tbLong;
+      xBot.ValueCof := 0.5 + xStep * i;
+    end;
+    for var i := 0 to 9 do
+    begin
+      xBot := ManagerBot.AddBot;
+      xBot.TypeBot := TTypeBot.tbShort;
+      xBot.ValueCof := 0.5 + xStep * i;
+    end;
   end;
 
   procedure SetAddColumn(const AHeader: String);
@@ -156,6 +156,11 @@ begin
   SetAddColumn('profit');
   SetAddColumn('cross.profit');
   SetAddColumn('PosCount');
+
+  SetAddColumn('info.qty');
+  SetAddColumn('info.profit');
+
+  SetAddColumn('curr.profit');
 
 end;
 
@@ -260,6 +265,7 @@ var
   xPath: String;
   xBot: TBot;
   i, iCount: Integer;
+  xInfo: TInfoPositionTrading;
 begin
   xPath := 'd:\work\git\delphi\sample\bot_rsi\bq_rsi_2\app\bin\data\';
   iCount := ManagerBot.Items.Count;
@@ -269,6 +275,12 @@ begin
     begin
       xBot := ManagerBot.Items[i];
 
+      xInfo := xBot.CrossTrading.GetInfoPositionTrading(
+        TradingPlatform.StateMarket.Ask,
+        TradingPlatform.StateMarket.Bid
+      );
+
+
       StrGrid.Cells[0,i] := i.ToString;
       StrGrid.Cells[1,i] := GetStrToTypeBot(xBot.TypeBot);
       StrGrid.Cells[2,i] := xBot.ValueCof.ToString;
@@ -277,6 +289,13 @@ begin
       StrGrid.Cells[4,i] := xBot.CrossTrading.ProfitClosePosition.ToString;
 
       StrGrid.Cells[5,i] := xBot.Trading.Positions.Count.ToString;
+
+      StrGrid.Cells[6,i] := xInfo.Qty.ToString;
+      StrGrid.Cells[7,i] := xInfo.Profit.ToString;
+
+
+      StrGrid.Cells[8,i] := (xInfo.Profit + xBot.CrossTrading.ProfitClosePosition).ToString;
+
 
       xBot.Trading.SaveTrading(
         xPath + 'bot_position_' + i.ToString + '.txt'
