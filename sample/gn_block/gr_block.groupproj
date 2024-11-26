@@ -21,6 +21,9 @@
         <Projects Include="training\Training.dproj">
             <Dependencies/>
         </Projects>
+        <Projects Include="structure search\structure_search.dproj">
+            <Dependencies/>
+        </Projects>
     </ItemGroup>
     <ProjectExtensions>
         <Borland.Personality>Default.Personality.12</Borland.Personality>
@@ -83,14 +86,23 @@
     <Target Name="Training:Make">
         <MSBuild Projects="training\Training.dproj" Targets="Make"/>
     </Target>
+    <Target Name="structure_search">
+        <MSBuild Projects="structure search\structure_search.dproj"/>
+    </Target>
+    <Target Name="structure_search:Clean">
+        <MSBuild Projects="structure search\structure_search.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="structure_search:Make">
+        <MSBuild Projects="structure search\structure_search.dproj" Targets="Make"/>
+    </Target>
     <Target Name="Build">
-        <CallTarget Targets="candel;trader;pr_v1;pt_last;pr_v2;Training"/>
+        <CallTarget Targets="candel;trader;pr_v1;pt_last;pr_v2;Training;structure_search"/>
     </Target>
     <Target Name="Clean">
-        <CallTarget Targets="candel:Clean;trader:Clean;pr_v1:Clean;pt_last:Clean;pr_v2:Clean;Training:Clean"/>
+        <CallTarget Targets="candel:Clean;trader:Clean;pr_v1:Clean;pt_last:Clean;pr_v2:Clean;Training:Clean;structure_search:Clean"/>
     </Target>
     <Target Name="Make">
-        <CallTarget Targets="candel:Make;trader:Make;pr_v1:Make;pt_last:Make;pr_v2:Make;Training:Make"/>
+        <CallTarget Targets="candel:Make;trader:Make;pr_v1:Make;pt_last:Make;pr_v2:Make;Training:Make;structure_search:Make"/>
     </Target>
     <Import Project="$(BDS)\Bin\CodeGear.Group.Targets" Condition="Exists('$(BDS)\Bin\CodeGear.Group.Targets')"/>
 </Project>

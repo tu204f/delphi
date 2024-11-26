@@ -42,6 +42,8 @@ type
   private
     function GetCandels(Index: Integer): TCandel;
   public
+    function GetSelectedCandel(const AIndex: Integer): TCandel;
+    ///<summary>Не использовать, поменялся смысел</summary>
     property Candels[Index: Integer]: TCandel read GetCandels;
   end;
 
@@ -338,6 +340,10 @@ begin
   Result := GetCandelToStr(xS);
 end;
 
-
+function TCandelsSource.GetSelectedCandel(const AIndex: Integer): TCandel;
+begin
+  var xS := Self.Strings[AIndex];
+  Result := GetCandelToStr(xS);
+end;
 
 end.

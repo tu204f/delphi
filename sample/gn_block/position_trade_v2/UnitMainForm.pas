@@ -25,7 +25,8 @@ uses
   Lb.Pattern,
   System.Rtti,
   FMX.Grid.Style,
-  FMX.Grid;
+  FMX.Grid,
+  UnitBarsFrame;
 
 type
   TMainForm = class(TForm)
@@ -33,20 +34,30 @@ type
     Timer: TTimer;
     ButtonStop: TButton;
     ProgressBar: TProgressBar;
-    StrGrid: TStringGrid;
     Text1: TText;
     Text2: TText;
+    Memo: TMemo;
+    GridLayout: TGridPanelLayout;
+    CandelsLayout: TLayout;
+    ParentsLayout: TLayout;
     procedure ButtonStartClick(Sender: TObject);
     procedure ButtonStopClick(Sender: TObject);
     procedure TimerTimer(Sender: TObject);
   protected
     CandelIndex: Integer;
     CandelsSource: TCandelsSource;
-    ParrentTrades: TTradeList;
+    ParrentCandels: TParrentCandelList;
+    Candels: TCandelList;
+    procedure DoStart;
+    procedure DoStop;
+  protected
+    FCandelsFrame: TBarsFrame;
+    FParentsFrame: TBarsFrame;
+    procedure SetInitCandelsFrame;
+    procedure SetInitParentsFrame;
   public
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
-    procedure SaveParrentTrades;
   end;
 
 var
@@ -56,22 +67,7 @@ implementation
 
 {$R *.fmx}
 
-const
-  TRAND_PATTERN = 100;
-  TRAND_PROFIT  = 10;
-  VALUE_PROFIT  = 0.3;
-
 { TMainForm }
-
-procedure TMainForm.ButtonStopClick(Sender: TObject);
-begin
-  if Timer.Enabled then
-  begin
-    Timer.Enabled := False;
-    Text2.Text := ParrentTrades.Count.ToString;
-    SaveParrentTrades;
-  end;
-end;
 
 constructor TMainForm.Create(AOwner: TComponent);
 
@@ -86,24 +82,48 @@ constructor TMainForm.Create(AOwner: TComponent);
 
 begin
   inherited;
+
+  SetInitCandelsFrame;
+  SetInitParentsFrame;
+
   CandelsSource := TCandelsSource.Create;
-  ParrentTrades := TTradeList.Create;
+  Candels := TCandelList.Create;
+  ParrentCandels := TParrentCandelList.Create;
 end;
 
 destructor TMainForm.Destroy;
 begin
-  FreeAndNil(ParrentTrades);
+  FreeAndNil(FParentsFrame);
+  FreeAndNil(FCandelsFrame);
+
+  FreeAndNil(ParrentCandels);
+  FreeAndNil(Candels);
   FreeAndNil(CandelsSource);
   inherited;
 end;
 
+procedure TMainForm.SetInitCandelsFrame;
+begin
+  FCandelsFrame := TBarsFrame.Create(nil);
+  FCandelsFrame.Parent := CandelsLayout;
+  FCandelsFrame.Align := TAlignLayout.Client;
+end;
 
-procedure TMainForm.ButtonStartClick(Sender: TObject);
+procedure TMainForm.SetInitParentsFrame;
+begin
+  FParentsFrame := TBarsFrame.Create(nil);
+  FParentsFrame.Parent := ParentsLayout;
+  FParentsFrame.Align := TAlignLayout.Client;
+end;
+
+procedure TMainForm.DoStart;
 var
   xFileName: String;
 begin
   if not Timer.Enabled then
   begin
+    ParrentCandels.Clear;
+
     CandelIndex := 0;
     xFileName := ExtractFilePath(ParamStr(0)) + 'data\';
 
@@ -120,115 +140,74 @@ begin
   end;
 end;
 
-procedure TMainForm.TimerTimer(Sender: TObject);
-
-  procedure _Parrent(const ABuySell: Char);
-  var
-    xCandel: TCandel;
-    xParrent: TCandelList;
-    xTrade: TTrade;
-  begin
-    // Создание масски
-    xParrent := TCandelList.Create;
-    try
-      for var i := TRAND_PATTERN - 1 downto 0 do
-      begin
-        xCandel := CandelsSource.Candels[CandelIndex - i];
-        xParrent.Add(xCandel);
-      end;
-
-      xTrade := TTrade.Create;
-      xTrade.BuySell := ABuySell;
-      ToCandelParrent(xParrent,xTrade.ParrentCandels);
-      ParrentTrades.Add(xTrade);
-
-
-    finally
-      FreeAndNil(xParrent);
-    end;
-  end;
-
-  procedure _Timer;
-  var
-    xCurrentCandel, xProfitCandel: TCandel;
-  begin
-    try
-      if CandelIndex > TRAND_PATTERN then
-      begin
-        xCurrentCandel := CandelsSource.Candels[CandelIndex];
-        for var i := 1 to TRAND_PROFIT do
-        begin
-          xProfitCandel  := CandelsSource.Candels[CandelIndex + i];
-          // Покупка
-          if (xProfitCandel.High - xCurrentCandel.Close) >= VALUE_PROFIT then
-          begin
-            _Parrent('B');
-            Break;
-          end;
-
-          // Продать
-          if (xCurrentCandel.Close - xProfitCandel.Low) >= VALUE_PROFIT then
-          begin
-            _Parrent('S');
-            Break;
-          end;
-        end;
-      end;
-
-      Text1.Text := CandelIndex.ToString;
-      ProgressBar.Value := 100 * CandelIndex/(CandelsSource.Count);
-      Inc(CandelIndex);
-    except
-      ButtonStopClick(nil);
-    end;
-  end;
-
-var
-  i: Integer;
+procedure TMainForm.DoStop;
 begin
-  for i := 0 to 99 do
+  if Timer.Enabled then
   begin
-    if CandelsSource.Count > (CandelIndex + TRAND_PROFIT) then
-      _Timer
-    else
-    begin
-      ButtonStopClick(nil);
-      Break;
-    end;
+    Timer.Enabled := False;
   end;
 end;
 
-procedure TMainForm.SaveParrentTrades;
-var
-  xStr: TStrings;
+
+procedure TMainForm.ButtonStartClick(Sender: TObject);
 begin
-  xStr := TStringList.Create;
-  try
-    xStr.Add(ParrentTrades.Count.ToString);
-    var xFileName := ExtractFilePath(ParamStr(0)) + 'source\';
-    xFileName := xFileName + 'param.mps';
-    xStr.SaveToFile(xFileName);
-  finally
-    FreeAndNil(xStr);
-  end;
+  DoStart;
+end;
 
+procedure TMainForm.ButtonStopClick(Sender: TObject);
+begin
+  DoStop;
+end;
 
-  for var i := 0 to ParrentTrades.Count - 1 do
+procedure TMainForm.TimerTimer(Sender: TObject);
+
+  procedure _ShowParent;
+  var
+    i, iCount: Integer;
+    xParrentCandel: TParrentCandel;
   begin
-
-
-
-    var xTrade := ParrentTrades[i];
-    xStr := TStringList.Create;
-    try
-      StringsToTrade(xTrade,xStr);
-      var xFileName := ExtractFilePath(ParamStr(0)) + 'source\';
-      xFileName := xFileName + i.ToString + '.mps';
-      xStr.SaveToFile(xFileName);
-    finally
-      FreeAndNil(xStr);
+    iCount := ParrentCandels.Count;
+    if iCount > 0 then
+    begin
+      Memo.Lines.Add('** парент ------------------------------');
+      for i := 0 to iCount - 1 do
+      begin
+        xParrentCandel := ParrentCandels.Items[i];
+        Memo.Lines.Add(xParrentCandel.ToStr);
+      end;
     end;
   end;
+
+var
+  xCandel: TCandel;
+begin
+  Memo.Lines.Clear;
+  if CandelsSource.Count > CandelIndex then
+  begin
+    xCandel := CandelsSource.GetSelectedCandel(CandelIndex);
+    if Candels.Count < 50 then
+    begin
+      Candels.Add(xCandel);
+      Memo.Lines.Add('** Заполняем массив свячей');
+    end
+    else
+    begin
+      Candels.Delete(0);
+      Candels.Add(xCandel);
+      ToCandelParrent(
+        Candels,
+        ParrentCandels,
+        False
+       );
+      FCandelsFrame.SetShowStructure(Candels);
+      FParentsFrame.SetShowParants(ParrentCandels);
+      //DoStop;
+    end;
+    _ShowParent;
+    Inc(CandelIndex);
+  end
+  else
+    DoStop;
 end;
 
 end.

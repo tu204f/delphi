@@ -5,7 +5,9 @@ uses
   FMX.Forms,
   UnitMainForm in 'UnitMainForm.pas' {MainForm},
   Lb.ReadPrice in '..\lib\Lb.ReadPrice.pas',
-  Lb.Pattern in 'Lb.Pattern.pas';
+  Lb.Pattern in 'Lb.Pattern.pas',
+  UnitBarFrame in 'chart\UnitBarFrame.pas' {BarFrame: TFrame},
+  UnitBarsFrame in 'chart\UnitBarsFrame.pas' {BarsFrame: TFrame};
 
 {$R *.res}
 
