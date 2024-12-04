@@ -16,6 +16,23 @@ uses
   Lb.Level;
 
 type
+  ///<summary>
+  /// “оргуютс€ две пары
+  ///</summary>
+  TTradeLevel = class(TObject)
+  private
+    FTopLevel: TOneEventLevel;
+    FBottomLevel: TOneEventLevel;
+  protected
+    procedure TopLevelOnIntersection(Sender: TObject);
+    procedure BottomLevelOnIntersection(Sender: TObject);
+  public
+    constructor Create; virtual;
+    destructor Destroy; override;
+    procedure SetUpDateValue(const AValueRSI: Double);
+  end;
+
+type
   TManagerCategory = class;
   TEventOnSendTrade = procedure(ASender: TObject; ASide: TTypeBuySell; AQty: Double) of object;
 
@@ -60,6 +77,7 @@ type
     property OnChange: TNotifyEvent write FOnChange;
   end;
 
+
   ///<summary>
   /// —писок критериев, на основание которых открываетс€ позици€;
   ///</summary>
@@ -92,6 +110,46 @@ implementation
 uses
   Lb.Logger;
 {$ENDIF}
+
+{ TTradeLevel }
+
+constructor TTradeLevel.Create;
+begin
+  FTopLevel := TOneEventLevel.Create;
+  FTopLevel.OnIntersectionLevel := TopLevelOnIntersection;
+  FTopLevel.IsRepeat := False;
+  FTopLevel.WorkLevel := TIntersectionLevel.tlUpDown;
+
+  FBottomLevel := TOneEventLevel.Create;
+  FBottomLevel.OnIntersectionLevel := BottomLevelOnIntersection;
+  FBottomLevel.WorkLevel := TIntersectionLevel.tlDownUp;
+  FBottomLevel.IsRepeat := False;
+end;
+
+destructor TTradeLevel.Destroy;
+begin
+  FreeAndNil(FBottomLevel);
+  FreeAndNil(FTopLevel);
+  inherited;
+end;
+
+
+procedure TTradeLevel.TopLevelOnIntersection(Sender: TObject);
+begin
+
+end;
+
+procedure TTradeLevel.BottomLevelOnIntersection(Sender: TObject);
+begin
+
+end;
+
+procedure TTradeLevel.SetUpDateValue(const AValueRSI: Double);
+begin
+  FTopLevel.SetUpDate(AValueRSI);
+  FBottomLevel.SetUpDate(AValueRSI);
+end;
+
 
 { TCategory }
 
@@ -307,6 +365,7 @@ begin
 
   end;
 end;
+
 
 
 end.

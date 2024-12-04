@@ -246,10 +246,6 @@ begin
       MemoInfo.Lines.Add('****************************************************');
       xBot := ManagerBot.Items[0];
 
-      xInfo := xBot.CrossTrading.GetInfoPositionTrading(
-        TradingPlatform.StateMarket.Ask,
-        TradingPlatform.StateMarket.Bid
-      );
 
       MemoInfo.Lines.Add('  :: >> qty = ' + xInfo.Qty.ToString);
       MemoInfo.Lines.Add('  :: >> profit = ' + xInfo.Profit.ToString);
@@ -275,18 +271,13 @@ begin
     begin
       xBot := ManagerBot.Items[i];
 
-      xInfo := xBot.CrossTrading.GetInfoPositionTrading(
-        TradingPlatform.StateMarket.Ask,
-        TradingPlatform.StateMarket.Bid
-      );
-
 
       StrGrid.Cells[0,i] := i.ToString;
       StrGrid.Cells[1,i] := GetStrToTypeBot(xBot.TypeBot);
       StrGrid.Cells[2,i] := xBot.ValueCof.ToString;
 
       StrGrid.Cells[3,i] := xBot.Trading.ProfitClosePosition.ToString;
-      StrGrid.Cells[4,i] := xBot.CrossTrading.ProfitClosePosition.ToString;
+//      StrGrid.Cells[4,i] := xBot.CrossTrading.ProfitClosePosition.ToString;
 
       StrGrid.Cells[5,i] := xBot.Trading.Positions.Count.ToString;
 
@@ -294,16 +285,16 @@ begin
       StrGrid.Cells[7,i] := xInfo.Profit.ToString;
 
 
-      StrGrid.Cells[8,i] := (xInfo.Profit + xBot.CrossTrading.ProfitClosePosition).ToString;
+//      StrGrid.Cells[8,i] := (xInfo.Profit + xBot.CrossTrading.ProfitClosePosition).ToString;
 
 
       xBot.Trading.SaveTrading(
         xPath + 'bot_position_' + i.ToString + '.txt'
       );
 
-      xBot.CrossTrading.SaveTrading(
-        xPath + 'bot_cross_position_' + i.ToString + '.txt'
-      );
+//      xBot.CrossTrading.SaveTrading(
+//        xPath + 'bot_cross_position_' + i.ToString + '.txt'
+//      );
 
     end;
 end;

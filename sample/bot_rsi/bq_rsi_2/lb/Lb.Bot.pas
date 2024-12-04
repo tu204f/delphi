@@ -27,13 +27,13 @@ type
     ASide: TTypeBuySell
   ) of object;
 
+
   ///<summary>
   /// Механиз фиксации опериции не зависемо отплатформы
   ///</summary>
   TCustomTraginBot = class(TObject)
   private
     FBufferTrading: TBufferTrading;
-    FBufferCrossTrading: TBufferTrading;
   public
     constructor Create; virtual;
     destructor Destroy; override;
@@ -41,10 +41,6 @@ type
     /// Торгуем по стратегии
     ///</summary>
     property Trading: TBufferTrading read FBufferTrading;
-    ///<summary>
-    /// Торгуем по кросс стратегии
-    ///</summary>
-    property CrossTrading: TBufferTrading read FBufferCrossTrading;
   end;
 
   ///<summary>
@@ -263,12 +259,10 @@ end;
 constructor TCustomTraginBot.Create;
 begin
   FBufferTrading := TBufferTrading.Create;
-  FBufferCrossTrading := TBufferTrading.Create;
 end;
 
 destructor TCustomTraginBot.Destroy;
 begin
-  FreeAndNil(FBufferCrossTrading);
   FreeAndNil(FBufferTrading);
   inherited;
 end;
@@ -337,14 +331,6 @@ procedure TBot.DoSendTrade(const ATime: TDateTime; const APrice, AQty: Double; A
 //      AQty,
 //      GetCrossSide(xSide)
 //    );
-
-    // Для контроля фиксируем торговую операцию
-    CrossTrading.OpenTrade(
-      ATime,
-      APrice,
-      AQty,
-      GetCrossSide(xSide)
-    );
 
     // Часть системы расчета прибыли
     Trading.OpenTrade(
