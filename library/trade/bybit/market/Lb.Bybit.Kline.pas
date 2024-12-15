@@ -37,10 +37,14 @@ type
     procedure SetLimit(const Value: Integer);
     procedure SetEndTime(const Value: Double);
     procedure SetStartTime(const Value: Double);
+  private
+    FCandelStartTime: String;
+    FOnNewCandel: TNotifyEvent;
   protected
     FListJson: TJSONArray;
     FCandelObjects: TCandelObjectList;
     procedure DoEventParser; override;
+    procedure DoNewCandel; virtual;
   public
     constructor Create; override;
     destructor Destroy; override;
@@ -58,6 +62,7 @@ type
   public
     property ListJson: TJSONArray read FListJson;
     property CandelObjects: TCandelObjectList read FCandelObjects;
+    property OnNewCandel: TNotifyEvent write FOnNewCandel;
   end;
 
   ///<summary>Linear/Inverse</summary>
@@ -133,6 +138,7 @@ end;
 constructor TBybitKline.Create;
 begin
   inherited;
+  FCandelStartTime := '';
   BybitModule.TypeHttp := TTypeHttp.thGet;
   BybitModule.Module := '/v5/market/kline';
   FCandelObjects := TCandelObjectList.Create;
@@ -184,6 +190,8 @@ end;
 
 procedure TBybitKline.DoEventParser;
 var
+  iCount: Integer;
+  xCandelObject: TCandelObject;
   xValueJson: TJSONValue;
 begin
   xValueJson := Response.ResultObject.Values['list'];
@@ -191,7 +199,26 @@ begin
   begin
     FListJson := TJSONArray(xValueJson);
     SetLinearObjects(FListJson,FCandelObjects);
+
+    // получено нова€ све€а
+    iCount := FCandelObjects.Count;
+    if iCount > 0 then
+    begin
+      xCandelObject := FCandelObjects.Items[iCount - 1];
+      if not SameText(FCandelStartTime, xCandelObject.startTime) then
+      begin
+        FCandelStartTime := xCandelObject.startTime;
+        DoNewCandel;
+      end;
+    end;
+
   end;
+end;
+
+procedure TBybitKline.DoNewCandel;
+begin
+  if Assigned(FOnNewCandel) then
+    FOnNewCandel(Self);
 end;
 
 { TCandelObject }
