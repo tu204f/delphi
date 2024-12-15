@@ -27,7 +27,10 @@ uses
   Lb.Category,
   FMX.TabControl,
   FMX.Layouts,
-  UniCategoryListFrame, System.Rtti, FMX.Grid.Style, FMX.Grid;
+
+  System.Rtti,
+  FMX.Grid.Style,
+  FMX.Grid, FMX.Objects;
 
 type
   TMainForm = class(TForm)
@@ -45,16 +48,16 @@ type
     LayoutSell: TLayout;
     LayoutBuy: TLayout;
     StrGrid: TStringGrid;
+    Text1: TText;
+    Timer: TTimer;
     procedure ButtonStartClick(Sender: TObject);
     procedure ButtonBuyClick(Sender: TObject);
     procedure ButtonSellClick(Sender: TObject);
     procedure ButtonBuy2Click(Sender: TObject);
     procedure ButtonSell2Click(Sender: TObject);
     procedure ButtonStopClick(Sender: TObject);
+    procedure TimerTimer(Sender: TObject);
   private
-    FCategoryListSell: TCategoryListFrame;
-    FCategoryListBuy: TCategoryListFrame;
-    procedure InitFrame;
     procedure SetShowGrid;
   private
     procedure TradingPlatformOnStateMarket(ASender: TObject; AStateMarket: TStateMarket);
@@ -80,6 +83,7 @@ uses
 
 procedure TMainForm.ButtonStartClick(Sender: TObject);
 begin
+  // Запускаем сканирование рынка bybit
   if not TradingPlatform.IsActive then
   begin
     IndexTrade := 0;
@@ -87,6 +91,9 @@ begin
     TradingPlatform.Symbol := 'ETHUSDT';
     TradingPlatform.StateMarket.Qty := 0.2;
     TradingPlatform.Start;
+
+    Timer.Enabled := True;
+
   end;
 end;
 
@@ -94,6 +101,7 @@ procedure TMainForm.ButtonStopClick(Sender: TObject);
 begin
   if TradingPlatform.IsActive then
     TradingPlatform.Stop;
+  Timer.Enabled := False;
 end;
 
 constructor TMainForm.Create(AOwner: TComponent);
@@ -102,18 +110,16 @@ constructor TMainForm.Create(AOwner: TComponent);
   var
     xBot: TBot;
   begin
-    var xStep := 0.5;
-    for var i := 0 to 9 do
+    for var i := 0 to 0 do
     begin
       xBot := ManagerBot.AddBot;
-      xBot.TypeBot := TTypeBot.tbLong;
-      xBot.ValueCof := 0.5 + xStep * i;
-    end;
-    for var i := 0 to 9 do
-    begin
-      xBot := ManagerBot.AddBot;
-      xBot.TypeBot := TTypeBot.tbShort;
-      xBot.ValueCof := 0.5 + xStep * i;
+      with xBot.TradeBox do
+      begin
+        OpenLong   := 50;// 50 + (10 - Random(20));
+        CloseLong  := 80;// OpenLong + (20 + Random(10));
+        OpenShort  := 50;// OpenLong - Random(10);
+        CloseShort := 20;// OpenShort - (10 + Random(20));
+      end;
     end;
   end;
 
@@ -126,8 +132,6 @@ constructor TMainForm.Create(AOwner: TComponent);
     xCol.Header := AHeader;
   end;
 
-var
-  xBot: TBot;
 begin
   inherited Create(AOwner);
 
@@ -143,25 +147,17 @@ begin
   ManagerBot.TradingPlatform := TradingPlatform;
 
   _InitManagerBot;
-  InitFrame;
-
-  xBot := ManagerBot.Items[0];
-  FCategoryListSell.ManagerCategory := xBot.ManagerCategorySell;
-  FCategoryListBuy.ManagerCategory := xBot.ManagerCategoryBuy;
-
 
   SetAddColumn('id');
-  SetAddColumn('strateg');
-  SetAddColumn('кофф');
-  SetAddColumn('profit');
-  SetAddColumn('cross.profit');
-  SetAddColumn('PosCount');
+  SetAddColumn('open_long');
+  SetAddColumn('close_long');
+  SetAddColumn('open_short');
+  SetAddColumn('close_short');
 
+  SetAddColumn('PosCount');
   SetAddColumn('info.qty');
   SetAddColumn('info.profit');
-
   SetAddColumn('curr.profit');
-
 end;
 
 destructor TMainForm.Destroy;
@@ -171,16 +167,6 @@ begin
   inherited;
 end;
 
-procedure TMainForm.InitFrame;
-begin
-  FCategoryListSell:= TCategoryListFrame.Create(nil);
-  FCategoryListSell.Parent := LayoutSell;
-  FCategoryListSell.Align := TAlignLayout.Client;
-
-  FCategoryListBuy := TCategoryListFrame.Create(nil);
-  FCategoryListBuy.Parent := LayoutBuy;
-  FCategoryListBuy.Align := TAlignLayout.Client;
-end;
 
 procedure TMainForm.TradingPlatformOnStateMarket(ASender: TObject; AStateMarket: TStateMarket);
 
@@ -270,13 +256,15 @@ begin
     for i := 0 to iCount - 1 do
     begin
       xBot := ManagerBot.Items[i];
-
-
       StrGrid.Cells[0,i] := i.ToString;
-      StrGrid.Cells[1,i] := GetStrToTypeBot(xBot.TypeBot);
-      StrGrid.Cells[2,i] := xBot.ValueCof.ToString;
+      StrGrid.Cells[1,i] := xBot.TradeBox.OpenLong.ToString;
+      StrGrid.Cells[2,i] := xBot.TradeBox.CloseLong.ToString;
+      StrGrid.Cells[3,i] := xBot.TradeBox.OpenShort.ToString;
+      StrGrid.Cells[4,i] := xBot.TradeBox.CloseShort.ToString;
 
-      StrGrid.Cells[3,i] := xBot.Trading.ProfitClosePosition.ToString;
+
+
+//      StrGrid.Cells[3,i] := xBot.Trading.ProfitClosePosition.ToString;
 //      StrGrid.Cells[4,i] := xBot.CrossTrading.ProfitClosePosition.ToString;
 
       StrGrid.Cells[5,i] := xBot.Trading.Positions.Count.ToString;
@@ -338,5 +326,36 @@ begin
     TTypeBuySell.tsSell
   );
 end;
+
+var
+  localValueRSI: Double = 0;
+  localStepValue: Double = 5;
+  localTrade: Integer = 0;
+
+procedure TMainForm.TimerTimer(Sender: TObject);
+begin
+//  case localTrade of
+//    0: begin
+//      localValueRSI := localValueRSI + localStepValue;
+//      if localValueRSI >= 60 then
+//      begin
+//        localValueRSI := 60;
+//        localTrade := 1;
+//      end;
+//    end;
+//    1: begin
+//      localValueRSI := localValueRSI - localStepValue;
+//      if localValueRSI <= 40 then
+//      begin
+//        localValueRSI := 40;
+//        localTrade := 0;
+//      end;
+//    end;
+//  end;
+//
+//  for var xBot in ManagerBot.Items do
+//    xBot.SetSelected(localValueRSI);
+end;
+
 
 end.

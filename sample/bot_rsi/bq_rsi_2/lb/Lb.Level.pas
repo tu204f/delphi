@@ -65,6 +65,7 @@ type
     FIsRepeat: Boolean;
     FWorkLevel: TIntersectionLevel;
     procedure SetIsRepeat(const Value: Boolean);
+    procedure SetRepeatCount(const Value: Integer);
   protected
     procedure DoIntersectionLevel; override;
   public
@@ -73,7 +74,7 @@ type
     ///<summary>
     /// Количество повторений
     ///</summary>
-    property RepeatCount: Integer read FRepeatCount write FRepeatCount;
+    property RepeatCount: Integer read FRepeatCount write SetRepeatCount;
     ///<summary>
     /// Возможность по второго срабатывания
     ///</summary>
@@ -223,6 +224,12 @@ begin
     FCurrentRepeatCount := FRepeatCount
   else
     FCurrentRepeatCount := -1;
+end;
+
+procedure TOneEventLevel.SetRepeatCount(const Value: Integer);
+begin
+  FRepeatCount := Value;
+  FCurrentRepeatCount := FRepeatCount;
 end;
 
 { TLevelComparer }

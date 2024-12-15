@@ -89,12 +89,22 @@ type
   public
     constructor Create; virtual;
     destructor Destroy; override;
+
     procedure OpenTrade(const ATime: Int64; const APrice, AQty: Double; ASide: TTypeBuySell); overload;
     procedure OpenTrade(const ATime: TDateTime; const APrice, AQty: Double; ASide: TTypeBuySell); overload;
-    procedure CloseTrade(const ATime: Int64; const APrice: Double);
+
+    procedure CloseTrade(const ATime: Int64; const APrice: Double); overload;
+    procedure CloseTrade(const ATime: TDateTime; const APrice: Double); overload;
+
+    procedure ReverseTrade(const ATime: Int64; const APrice: Double); overload;
+    procedure ReverseTrade(const ATime: TDateTime; const APrice: Double); overload;
+
     procedure SaveTrading(const AFileName: String);
     property Positions: TBufferPositionList read FPositions;
     property CurrentPosition: TBufferPosition read FPosition;
+    ///<summary>
+    /// Есть открытая текущая позиция
+    ///</summary>
     property IsPosition: Boolean read GetIsPosition;
   public
     property ProfitClosePosition: Double read GetProfitClosePosition;
@@ -349,6 +359,7 @@ end;
 
 { TBufferTrading }
 
+
 constructor TBufferTrading.Create;
 begin
   FPosition := nil;
@@ -371,6 +382,13 @@ end;
 procedure TBufferTrading.OpenTrade(const ATime: Int64; const APrice,
   AQty: Double; ASide: TTypeBuySell);
 begin
+  {$IFDEF DEBUG}
+  TLogger.LogTree(0,'TBufferTrading.OpenTrade');
+  TLogger.LogTreeText(3,'>> ATime: ' + ATime.ToString);
+  TLogger.LogTreeText(3,'>> APrice: ' + APrice.ToString);
+  TLogger.LogTreeText(3,'>> AQty: ' + AQty.ToString);
+  TLogger.LogTreeText(3,'>> ASide: ' + GetStrToSide(ASide));
+  {$ENDIF}
   if not Assigned(FPosition) then
   begin
     FPosition := TBufferPosition.Create(Self);
@@ -387,10 +405,15 @@ var
   xTime: Int64;
   xHour, xMin, xSec, xMSec: Word;
 begin
+  {$IFDEF DEBUG}
+  TLogger.LogTree(0,'TBufferTrading.OpenTrade');
+  TLogger.LogTreeText(3,'>> ATime: ' + DateTimeToStr(ATime));
+  {$ENDIF}
   DecodeTime(ATime,xHour, xMin, xSec, xMSec);
   xTime := xHour * 3600 + xMin * 60  + xSec;//   xMSec;
   OpenTrade(xTime,APrice,AQty,ASide);
 end;
+
 
 function TBufferTrading.GetProfitClosePosition: Double;
 var
@@ -411,6 +434,11 @@ end;
 
 procedure TBufferTrading.CloseTrade(const ATime: Int64; const APrice: Double);
 begin
+  {$IFDEF DEBUG}
+  TLogger.LogTree(0,'TBufferTrading.CloseTrade');
+  TLogger.LogTreeText(3,'>> ATime: ' + ATime.ToString);
+  TLogger.LogTreeText(3,'>> APrice: ' + APrice.ToString);
+  {$ENDIF}
   if Assigned(FPosition) then
   begin
     if FPosition.Qty > 0 then
@@ -422,6 +450,57 @@ begin
       );
     FPosition := nil;
   end;
+end;
+
+procedure TBufferTrading.CloseTrade(const ATime: TDateTime; const APrice: Double);
+var
+  xTime: Int64;
+  xHour, xMin, xSec, xMSec: Word;
+begin
+  {$IFDEF DEBUG}
+  TLogger.LogTree(0,'TBufferTrading.CloseTrade');
+  TLogger.LogTreeText(3,'>> ATime: ' + DateTimeToStr(ATime));
+  {$ENDIF}
+  DecodeTime(ATime,xHour, xMin, xSec, xMSec);
+  xTime := xHour * 3600 + xMin * 60  + xSec;//   xMSec;
+  Self.CloseTrade(xTime,APrice);
+end;
+
+procedure TBufferTrading.ReverseTrade(const ATime: Int64; const APrice: Double);
+var
+  xQty: Double;
+  xSide: TTypeBuySell;
+begin
+  {$IFDEF DEBUG}
+  TLogger.LogTree(0,'TBufferTrading.ReverseTrade');
+  TLogger.LogTreeText(3,'>> ATime: ' + ATime.ToString);
+  TLogger.LogTreeText(3,'>> APrice: ' + APrice.ToString);
+  {$ENDIF}
+  if Assigned(FPosition) then
+  begin
+    xQty := 2 * FPosition.Qty;
+    xSide := GetCrossSide(FPosition.Side);
+    OpenTrade(
+      ATime,
+      APrice,
+      xQty,
+      xSide
+    );
+  end;
+end;
+
+procedure TBufferTrading.ReverseTrade(const ATime: TDateTime; const APrice: Double);
+var
+  xTime: Int64;
+  xHour, xMin, xSec, xMSec: Word;
+begin
+  {$IFDEF DEBUG}
+  TLogger.LogTree(0,'TBufferTrading.ReverseTrade');
+  TLogger.LogTreeText(3,'>> ATime: ' + DateTimeToStr(ATime));
+  {$ENDIF}
+  DecodeTime(ATime,xHour, xMin, xSec, xMSec);
+  xTime := xHour * 3600 + xMin * 60  + xSec;//   xMSec;
+  Self.ReverseTrade(xTime,APrice);
 end;
 
 procedure TBufferTrading.SaveTrading(const AFileName: String);

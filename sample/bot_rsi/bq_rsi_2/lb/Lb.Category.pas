@@ -17,92 +17,137 @@ uses
 
 type
   ///<summary>
+  /// Тип уровня верхний или нижний
+  ///</summary>
+  TTypeTradeLevel = (
+    tlNull,   // Нейтральное состояние
+    tlTop,    // верхний
+    tlBottom  // нижний
+  );
+
+  ///<summary>
+  /// Событие пересечение уровня
+  ///</summary>
+  TEventOnSideLevel = procedure(
+    ASender: TObject;
+    ATypeTradeLevel: TTypeTradeLevel
+  ) of object;
+
+  ///<summary>
   /// Торгуются две пары
   ///</summary>
   TTradeLevel = class(TObject)
   private
+    FOnSideLevel: TEventOnSideLevel;
     FTopLevel: TOneEventLevel;
     FBottomLevel: TOneEventLevel;
+    function GetValueBottom: Double;
+    function GetValueTop: Double;
+    procedure SetValueBottom(const Value: Double);
+    procedure SetValueTop(const Value: Double);
   protected
+    procedure DoSideLevel(const ATypeTradeLevel: TTypeTradeLevel); virtual;
     procedure TopLevelOnIntersection(Sender: TObject);
     procedure BottomLevelOnIntersection(Sender: TObject);
   public
     constructor Create; virtual;
     destructor Destroy; override;
     procedure SetUpDateValue(const AValueRSI: Double);
+    ///<summary>Значение верхний границы</summary>
+    property ValueTop: Double read GetValueTop write SetValueTop;
+    ///<summary>Заначенеи нижний границы</summary>
+    property ValueBottom: Double read GetValueBottom write SetValueBottom;
+    ///<summary>Событие пересечение уровня</summary>
+    property OnSideLevel: TEventOnSideLevel write FOnSideLevel;
   end;
 
 type
-  TManagerCategory = class;
-  TEventOnSendTrade = procedure(ASender: TObject; ASide: TTypeBuySell; AQty: Double) of object;
+  TTradeBox = class;
 
-  ///<summary>
-  /// Критерий открытие позиции
-  ///</summary>
-  TCategory = class(TObject)
+  ///<summary>Состояние сделки</summary>
+  TTypeTrade = (
+    ttNull,
+    ttOpen,
+    ttClose
+  );
+
+  ///<summary>Напровление сделки</summary>
+  TTypeDirection = (
+    tdNull,
+    tdLong,
+    tdShort
+  );
+
+  ///<summary>Событие коробки</summary>
+  TEventTradeBox = procedure(
+    ASender: TObject;
+    ATypeDirection: TTypeDirection;
+    ATypeTrade: TTypeTrade
+  ) of object;
+
+  ///<summary>Блок подает сигналы в длинную</summary>
+  TLongTradeLevel = class(TTradeLevel)
   private
-    FIsActive: Boolean;
-    FIsReActive: Boolean;
-    FActiveLevel: TOneEventLevel;
-    FReActiveLevel: TOneEventLevel;
-    FQty: Double;
-    FSide: TTypeBuySell;
-  private
-    FOnChange: TNotifyEvent;
-    FManagerCategory: TManagerCategory;
-    procedure ActiveLevelOnIntersection(Sender: TObject);
-    procedure ReActiveLevelOnIntersection(Sender: TObject);
-    procedure SetSide(const Value: TTypeBuySell);
-    procedure SetActiveLevelSide;
+    FTradeBox: TTradeBox;
   protected
-    procedure DoChange;
-    procedure DoSendTrade(const ASide: TTypeBuySell; const AQty: Double);
+    procedure DoSideLevel(const ATypeTradeLevel: TTypeTradeLevel); override;
+    property TradeBox: TTradeBox write FTradeBox;
   public
-    constructor Create(const AManagerCategory: TManagerCategory); virtual;
+    constructor Create; override;
     destructor Destroy; override;
-    ///<summary>Обновление значение RSI</summary>
-    procedure SetUpDateValue(const AValueRSI: Double);
-    ///<summary>Активация критерия</summary>
-    property ActiveLevel: TOneEventLevel read FActiveLevel;
-    ///<summary>Значение для реактивация критерия</summary>
-    property ReActiveLevel: TOneEventLevel read FReActiveLevel;
-    ///<summary>Критерий активен</summary>
-    property IsActive: Boolean read FIsActive write FIsActive;
-    ///<summary>Перезапустить критерий</summary>
-    property IsReActive: Boolean read FIsReActive write FIsReActive;
-    ///<summary>Количество — критерия</summary>
-    property Qty: Double read FQty write FQty;
-    ///<summary>Направление критерия</summary>
-    property Side: TTypeBuySell read FSide write SetSide;
-    property OnChange: TNotifyEvent write FOnChange;
   end;
 
-
-  ///<summary>
-  /// Список критериев, на основание которых открывается позиция;
-  ///</summary>
-  TCategoryList = TObjectList<TCategory>;
-
-  ///<summary>Менеджер критериев</summary>
-  TManagerCategory= class(TCategoryList)
+  ///<summary>Блок подает сигналы в короткую</summary>
+  TShortTradeLevel = class(TTradeLevel)
   private
-    FSide: TTypeBuySell;
-    FOnSendTrade: TEventOnSendTrade;
-    procedure SetSide(const Value: TTypeBuySell);
+    FTradeBox: TTradeBox;
   protected
-    procedure DoSendTrade(const ASide: TTypeBuySell; const AQty: Double);
+    procedure DoSideLevel(const ATypeTradeLevel: TTypeTradeLevel); override;
+    property TradeBox: TTradeBox write FTradeBox;
   public
-    ///<summary>Добавить кретерий</summary>
-    function AddCategory(const ARSI, AActiveRSI, AQty: Double): Integer;
-    ///<summary>Обновить значение критерия</summary>
-    procedure UpDateCategory(const AIndex: Integer; const ARSI, AActiveRSI, AQty: Double);
-    ///<summary>Напровление критерия</summary>
-    property Side: TTypeBuySell read FSide write SetSide;
-  public
-    procedure SetCreateCriteria(const AValueFrom, AValueTo, AStep, AReActiveValue, AQty: Double);
-    procedure SetUpDateValue(const AValueRSI: Double);
-    property OnSendTrade: TEventOnSendTrade write FOnSendTrade;
+    constructor Create; override;
+    destructor Destroy; override;
   end;
+
+  ///<summary>Коробка</summary>
+  TTradeBox = class(TObject)
+  private
+    FEventTradeBox: TEventTradeBox;
+  private
+    FDirection: TTypeDirection;
+    FTypeTrade: TTypeTrade;
+    FLongTradeLevel: TLongTradeLevel;
+    FShortTradeLevel: TShortTradeLevel;
+    function GetOpenLong: Double;
+    function GetOpenShort: Double;
+    function GetCloseLong: Double;
+    function GetCloseShort: Double;
+    procedure SetOpenLong(const Value: Double);
+    procedure SetOpenShort(const Value: Double);
+    procedure SetCloseLong(const Value: Double);
+    procedure SetCloseShort(const Value: Double);
+  protected
+    procedure DoTrade(const ADirection: TTypeDirection; const ATypeTrade: TTypeTrade);
+  public
+    constructor Create; virtual;
+    destructor Destroy; override;
+    ///<summary>Передаем значение опорного индикатора</summary>
+    procedure SetUpDateValue(const AValueRSI: Double);
+    ///<summary>Открываем длиную позицию</summary>
+    property OpenLong: Double read GetOpenLong write SetOpenLong;
+    ///<summary>Закрываем длиную позцию</summary>
+    property CloseLong: Double read GetCloseLong write SetCloseLong;
+    ///<summary>Открываем короткую позцию</summary>
+    property OpenShort: Double read GetOpenShort write SetOpenShort;
+    ///<summary>Закрываем короткую позциию</summary>
+    property CloseShort: Double read GetCloseShort write SetCloseShort;
+    property OnTradeBox: TEventTradeBox write FEventTradeBox;
+  end;
+
+function GetStrToTypeTradeLevel(ATypeTradeLevel: TTypeTradeLevel): String;
+
+function GetStrToTypeDirection(const ADirection: TTypeDirection): String;
+function GetStrToTypeTrade(const ATypeTrade: TTypeTrade): String;
 
 implementation
 
@@ -111,19 +156,52 @@ uses
   Lb.Logger;
 {$ENDIF}
 
+function GetStrToTypeTradeLevel(ATypeTradeLevel: TTypeTradeLevel): String;
+begin
+  case ATypeTradeLevel of
+    tlTop: Result := 'top';
+    tlBottom: Result := 'bottom';
+  else
+    Result := 'null';
+  end;
+end;
+
+function GetStrToTypeDirection(const ADirection: TTypeDirection): String;
+begin
+  case ADirection of
+    tdLong: Result := 'Long';
+    tdShort: Result := 'Short';
+  else
+    Result := 'non';
+  end;
+end;
+
+function GetStrToTypeTrade(const ATypeTrade: TTypeTrade): String;
+begin
+  case ATypeTrade of
+    ttOpen: Result := 'open';
+    ttClose: Result := 'close';
+  else
+    Result := 'non';
+  end;
+end;
+
 { TTradeLevel }
 
 constructor TTradeLevel.Create;
 begin
   FTopLevel := TOneEventLevel.Create;
   FTopLevel.OnIntersectionLevel := TopLevelOnIntersection;
-  FTopLevel.IsRepeat := False;
   FTopLevel.WorkLevel := TIntersectionLevel.tlUpDown;
+  FTopLevel.IsRepeat := True;
+  {todo: нужно переделать, что работа все подругому}
+  FTopLevel.RepeatCount := 65000;
 
   FBottomLevel := TOneEventLevel.Create;
   FBottomLevel.OnIntersectionLevel := BottomLevelOnIntersection;
   FBottomLevel.WorkLevel := TIntersectionLevel.tlDownUp;
-  FBottomLevel.IsRepeat := False;
+  FBottomLevel.IsRepeat := True;
+  FBottomLevel.RepeatCount := 65000;
 end;
 
 destructor TTradeLevel.Destroy;
@@ -133,15 +211,22 @@ begin
   inherited;
 end;
 
+procedure TTradeLevel.DoSideLevel(const ATypeTradeLevel: TTypeTradeLevel);
+begin
+  if Assigned(FOnSideLevel) then
+    FOnSideLevel(Self, ATypeTradeLevel);
+end;
 
 procedure TTradeLevel.TopLevelOnIntersection(Sender: TObject);
 begin
-
+  DoSideLevel(TTypeTradeLevel.tlTop);
+  FBottomLevel.WorkLevel := TIntersectionLevel.tlDownUp;
 end;
 
 procedure TTradeLevel.BottomLevelOnIntersection(Sender: TObject);
 begin
-
+  DoSideLevel(TTypeTradeLevel.tlBottom);
+  FTopLevel.WorkLevel := TIntersectionLevel.tlUpDown;
 end;
 
 procedure TTradeLevel.SetUpDateValue(const AValueRSI: Double);
@@ -150,222 +235,156 @@ begin
   FBottomLevel.SetUpDate(AValueRSI);
 end;
 
-
-{ TCategory }
-
-constructor TCategory.Create(const AManagerCategory: TManagerCategory);
+function TTradeLevel.GetValueBottom: Double;
 begin
-  FManagerCategory := AManagerCategory;
-
-  FActiveLevel := TOneEventLevel.Create;
-  FActiveLevel.OnIntersectionLevel := ActiveLevelOnIntersection;
-
-  FReActiveLevel := TOneEventLevel.Create;
-  FReActiveLevel.OnIntersectionLevel := ReActiveLevelOnIntersection;
+  Result := FBottomLevel.Value;
 end;
 
-destructor TCategory.Destroy;
+function TTradeLevel.GetValueTop: Double;
 begin
-  FreeAndNil(FReActiveLevel);
-  FreeAndNil(FActiveLevel);
+  Result := FTopLevel.Value;
+end;
+
+procedure TTradeLevel.SetValueBottom(const Value: Double);
+begin
+  FBottomLevel.Value := Value;
+end;
+
+procedure TTradeLevel.SetValueTop(const Value: Double);
+begin
+  FTopLevel.Value := Value;
+end;
+
+{ TLongTradeLevel }
+
+constructor TLongTradeLevel.Create;
+begin
+  inherited;
+  FTradeBox := nil;
+end;
+
+destructor TLongTradeLevel.Destroy;
+begin
+
   inherited;
 end;
 
-
-procedure TCategory.SetActiveLevelSide;
+procedure TLongTradeLevel.DoSideLevel(const ATypeTradeLevel: TTypeTradeLevel);
 begin
-  case FSide of
-    TTypeBuySell.tsBuy: begin
-      FActiveLevel.IsRepeat := False;
-      FActiveLevel.WorkLevel := TIntersectionLevel.tlDownUp;
-
-      FReActiveLevel.IsRepeat := False;
-      FReActiveLevel.WorkLevel := TIntersectionLevel.tlUpDown;
-    end;
-    TTypeBuySell.tsSell: begin
-      FActiveLevel.IsRepeat := False;
-      FActiveLevel.WorkLevel := TIntersectionLevel.tlUpDown;
-
-      FReActiveLevel.IsRepeat := False;
-      FReActiveLevel.WorkLevel := TIntersectionLevel.tlDownUp;
-    end;
-  end;
-  DoChange;
-end;
-
-procedure TCategory.SetSide(const Value: TTypeBuySell);
-begin
-  FSide := Value;
-  SetActiveLevelSide;
-end;
-
-procedure TCategory.ActiveLevelOnIntersection(Sender: TObject);
-begin
-{$IFDEF DBG_CATEGORY_LEVEL}
-  TLogger.Log('TCategory.ActiveLevelOnIntersection:');
-{$ENDIF}
-  if FIsActive then
+  inherited;
+  if Assigned(FTradeBox) then
   begin
-    DoSendTrade(FSide, FQty);
-    FIsActive := False;
-    DoChange;
-  end;
-end;
-
-procedure TCategory.ReActiveLevelOnIntersection(Sender: TObject);
-begin
-{$IFDEF DBG_CATEGORY_LEVEL}
-  TLogger.Log('TCategory.ReActiveLevelOnIntersection:');
-{$ENDIF}
-  if FIsReActive then
-  begin
-    FIsActive := True;
-    SetActiveLevelSide;
-  end;
-end;
-
-procedure TCategory.SetUpDateValue(const AValueRSI: Double);
-
-  procedure _ActiveLevelSetUpDate(const AValue: Double);
-  begin
-    {$IFDEF DBG_CATEGORY}
-      TLogger.Log('_ActiveLevelSetUpDate');
-    {$ENDIF}
-    if IsActive then
-      FActiveLevel.SetUpDate(AValue);
-  end;
-
-  procedure _ReActiveLevelSetUpDate(const AValue: Double);
-  begin
-    {$IFDEF DBG_CATEGORY}
-      TLogger.Log('_ReActiveLevelSetUpDate');
-    {$ENDIF}
-    if not IsActive and FIsReActive then
-      ReActiveLevel.SetUpDate(AValue);
-  end;
-
-begin
-{$IFDEF DBG_CATEGORY}
-  TLogger.Log('TCategory.SetUpDateValue:');
-{$ENDIF}
-  _ActiveLevelSetUpDate(AValueRSI);
-  _ReActiveLevelSetUpDate(AValueRSI);
-end;
-
-procedure TCategory.DoChange;
-begin
-  if Assigned(FOnChange) then
-    FOnChange(Self);
-end;
-
-procedure TCategory.DoSendTrade(const ASide: TTypeBuySell; const AQty: Double);
-begin
-{$IFDEF DBG_CATEGORY_SEND}
-  TLogger.Log('TCategory.DoSendTrade:');
-  TLogger.LogTreeText(3,'Side: ' + GetStrToSide(ASide));
-  TLogger.LogTreeText(3,'AQty: ' + AQty.ToString);
-{$ENDIF}
-  if Assigned(FManagerCategory) then
-    FManagerCategory.DoSendTrade(ASide,AQty);
-end;
-
-{ TManagerCategory }
-
-function TManagerCategory.AddCategory(const ARSI, AActiveRSI, AQty: Double): Integer;
-var
-  xCategory: TCategory;
-begin
-  xCategory := TCategory.Create(Self);
-  xCategory.Qty := AQty;
-  xCategory.ActiveLevel.Value := ARSI;
-  xCategory.ReActiveLevel.Value := AActiveRSI;
-  xCategory.Side := FSide;
-
-  xCategory.IsActive := True;
-  xCategory.IsReActive := True;
-
-  Result := Self.Add(xCategory);
-end;
-
-procedure TManagerCategory.UpDateCategory(const AIndex: Integer; const ARSI,
-  AActiveRSI, AQty: Double);
-var
-  xCategory: TCategory;
-begin
-  xCategory := Self.Items[AIndex];
-  xCategory.Qty := AQty;
-  xCategory.ActiveLevel.Value := ARSI;
-  xCategory.ReActiveLevel.Value := AActiveRSI;
-end;
-
-procedure TManagerCategory.SetSide(const Value: TTypeBuySell);
-begin
-  FSide := Value;
-  for var xC in Self do
-    xC.Side := Value;
-end;
-
-procedure TManagerCategory.SetUpDateValue(const AValueRSI: Double);
-begin
-{$IFDEF DBG_CATEGORY}
-  TLogger.Log('TManagerCategory.SetUpDateValue: ValueRSI = ' + AValueRSI.ToString);
-{$ENDIF}
-  for var xC in Self do
-    xC.SetUpDateValue(AValueRSI);
-end;
-
-procedure TManagerCategory.DoSendTrade(const ASide: TTypeBuySell; const AQty: Double);
-begin
-{$IFDEF DBG_MANAGER_SEND}
-  TLogger.Log('TManagerCategory.DoSendTrade:');
-{$ENDIF}
-  if Assigned(FOnSendTrade) then
-    FOnSendTrade(Self,ASide,AQty);
-end;
-
-procedure TManagerCategory.SetCreateCriteria(const AValueFrom, AValueTo, AStep,
-  AReActiveValue, AQty: Double);
-
-  function _IsTo(AValueTo, AValue: Double): Boolean;
-  begin
-    case FSide of
-      tsBuy: Result := AValue > AValueTo;
-      tsSell: Result := AValue < AValueTo;
+    case ATypeTradeLevel of
+      tlTop: FTradeBox.DoTrade(TTypeDirection.tdLong,TTypeTrade.ttClose);
+      tlBottom: FTradeBox.DoTrade(TTypeDirection.tdLong,TTypeTrade.ttOpen);
     else
-      Result := False;
+      raise Exception.Create('TLongTradeLevel.DoSideLevel: Типа уровня не определен');
     end;
-  end;
-
-var
-  xValue, xReValue: Double;
-begin
-  Clear;
-  xValue := AValueFrom;
-  while _IsTo(AValueTo,xValue) do
-  begin
-    case FSide of
-      tsBuy: xReValue := xValue + AReActiveValue;
-      tsSell: xReValue := xValue - AReActiveValue;
-    else
-      xReValue := xValue;
-    end;
-
-    if xReValue > 100 then
-      xReValue := 100;
-    if xReValue < 0 then
-      xReValue := 0;
-
-    AddCategory(xValue,xReValue,AQty);
-    case FSide of
-      tsBuy: xValue := xValue - AStep;
-      tsSell: xValue := xValue + AStep;
-    else
-      Break;
-    end;
-
   end;
 end;
 
+{ TShortTradeLevel }
 
+constructor TShortTradeLevel.Create;
+begin
+  inherited;
+  FTradeBox := nil;
+end;
+
+destructor TShortTradeLevel.Destroy;
+begin
+
+  inherited;
+end;
+
+procedure TShortTradeLevel.DoSideLevel(const ATypeTradeLevel: TTypeTradeLevel);
+begin
+  inherited;
+  if Assigned(FTradeBox) then
+  begin
+    case ATypeTradeLevel of
+      tlTop: FTradeBox.DoTrade(TTypeDirection.tdShort,TTypeTrade.ttOpen);
+      tlBottom: FTradeBox.DoTrade(TTypeDirection.tdShort,TTypeTrade.ttClose);
+    else
+      raise Exception.Create('TShortTradeLevel.DoSideLevel: Типа уровня не определен');
+    end;
+  end;
+end;
+
+{ TTradeBox }
+
+constructor TTradeBox.Create;
+begin
+  FDirection := TTypeDirection.tdNull;
+  FTypeTrade := TTypeTrade.ttNull;
+
+  FLongTradeLevel := TLongTradeLevel.Create;
+  FLongTradeLevel.TradeBox := Self;
+
+  FShortTradeLevel := TShortTradeLevel.Create;
+  FShortTradeLevel.TradeBox := Self;
+end;
+
+destructor TTradeBox.Destroy;
+begin
+  FreeAndNil(FShortTradeLevel);
+  FreeAndNil(FLongTradeLevel);
+  inherited;
+end;
+
+procedure TTradeBox.DoTrade(const ADirection: TTypeDirection; const ATypeTrade: TTypeTrade);
+begin
+  if Assigned(FEventTradeBox) then
+    FEventTradeBox(Self,ADirection,ATypeTrade);
+
+  FDirection := ADirection;
+  FTypeTrade := ATypeTrade;
+end;
+
+procedure TTradeBox.SetUpDateValue(const AValueRSI: Double);
+begin
+  FLongTradeLevel.SetUpDateValue(AValueRSI);
+  FShortTradeLevel.SetUpDateValue(AValueRSI);
+end;
+
+function TTradeBox.GetOpenLong: Double;
+begin
+  Result := FLongTradeLevel.ValueBottom;
+end;
+
+function TTradeBox.GetCloseLong: Double;
+begin
+  Result := FLongTradeLevel.ValueTop;
+end;
+
+function TTradeBox.GetOpenShort: Double;
+begin
+  Result := FShortTradeLevel.ValueTop;
+end;
+
+function TTradeBox.GetCloseShort: Double;
+begin
+  Result := FShortTradeLevel.ValueBottom;
+end;
+
+procedure TTradeBox.SetOpenLong(const Value: Double);
+begin
+  FLongTradeLevel.ValueBottom := Value;
+end;
+
+procedure TTradeBox.SetCloseLong(const Value: Double);
+begin
+  FLongTradeLevel.ValueTop := Value;
+end;
+
+procedure TTradeBox.SetOpenShort(const Value: Double);
+begin
+  FShortTradeLevel.ValueTop := Value;
+end;
+
+procedure TTradeBox.SetCloseShort(const Value: Double);
+begin
+  FShortTradeLevel.ValueBottom := Value;
+end;
 
 end.

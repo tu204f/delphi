@@ -79,7 +79,7 @@ type
     /// Есть потенциальная ошибка зависание заявки
     ///</summary>
     procedure SendTrade(const ATime: TDateTime; const APrice, AQty: Double; ASide: TTypeBuySell); virtual;
-  public
+  public {торговые правильа }
     property Period: Integer read FPeriod write FPeriod;
     property ValueRSI: Double read FValueRSI;
     property ValueATR: Double read FValueATR;

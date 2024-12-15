@@ -47,6 +47,11 @@ type
     FBid: Double;
     FQty: Double;
     FCandels: TCandelList;
+    FFirstCandelTime: Int64;
+    FIsNewCandel: Boolean;
+    FOnNewCandel: TNotifyEvent;
+  protected
+    procedure DoNewCandel;
   public
     constructor Create; virtual;
     destructor Destroy; override;
@@ -63,7 +68,10 @@ type
     /// Цена покупателя - который может взять Qty
     ///</summary>
     property Bid: Double read FBid;
+  public
+    procedure SetUpDataCandels;
     property Candels: TCandelList read FCandels;
+    property OnNewCandel: TNotifyEvent write FOnNewCandel;
   end;
 
   ///<summary>
@@ -111,6 +119,7 @@ begin
   FAsk := 0;
   FBid := 0;
   FCandels := TCandelList.Create;
+  FFirstCandelTime := 0;
 end;
 
 destructor TStateMarket.Destroy;
@@ -119,10 +128,40 @@ begin
   inherited;
 end;
 
+procedure TStateMarket.DoNewCandel;
+begin
+  if Assigned(FOnNewCandel) then
+    FOnNewCandel(Self);
+end;
+
 procedure TStateMarket.SetPrice(const AAsk, ABid: Double);
 begin
   FAsk := AAsk;
   FBid := ABid;
+end;
+
+procedure TStateMarket.SetUpDataCandels;
+var
+  xFirstCandelTime: Int64;
+begin
+  FIsNewCandel := False;
+  if FCandels.Count > 0 then
+  begin
+    xFirstCandelTime := FCandels[0].Time;
+    if FFirstCandelTime = 0 then
+    begin
+      FFirstCandelTime := xFirstCandelTime;
+    end
+    else
+    begin
+      FIsNewCandel := FFirstCandelTime <> xFirstCandelTime;
+      if FIsNewCandel then
+      begin
+        FFirstCandelTime := xFirstCandelTime;
+        DoNewCandel;
+      end;
+    end;
+  end;
 end;
 
 end.

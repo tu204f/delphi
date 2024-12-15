@@ -45,7 +45,6 @@ type
     procedure SpinBoxReActiveRSIChange(Sender: TObject);
     procedure SpinBoxQtyChange(Sender: TObject);
   private
-    FCategory: TCategory;
     procedure SetCategory(const Value: TCategory);
     procedure CategoryOnChange(Sender: TObject);
   protected

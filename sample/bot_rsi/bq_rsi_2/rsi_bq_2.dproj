@@ -216,16 +216,6 @@
         <DCCReference Include="lb\Lb.Level.pas"/>
         <DCCReference Include="lb\Lb.Category.pas"/>
         <DCCReference Include="lb\Lb.Buffer.Trading.pas"/>
-        <DCCReference Include="frame\UnitCategoryFrame.pas">
-            <Form>CategoryFrame</Form>
-            <FormType>fmx</FormType>
-            <DesignClass>TFrame</DesignClass>
-        </DCCReference>
-        <DCCReference Include="frame\UniCategoryListFrame.pas">
-            <Form>CategoryListFrame</Form>
-            <FormType>fmx</FormType>
-            <DesignClass>TFrame</DesignClass>
-        </DCCReference>
         <DCCReference Include="lb\Lb.ParamClose.pas"/>
         <DCCReference Include="..\..\..\library\trade\bybit\trade\Lb.Bybit.Trade.pas"/>
         <None Include="..\..\..\library\trade\quik\quik_connect.inc"/>
