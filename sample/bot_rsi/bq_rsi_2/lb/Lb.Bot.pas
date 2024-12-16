@@ -367,8 +367,7 @@ begin
   if not Assigned(FTradingPlatform) then
     Exit;
 
-  FValueRSI := FTradingPlatform.ValueRSI;
-  FTradeBox.SetUpDateValue(FValueRSI);
+v
 end;
 
 procedure TBot.SetSelected(const AValueRSI: Double);

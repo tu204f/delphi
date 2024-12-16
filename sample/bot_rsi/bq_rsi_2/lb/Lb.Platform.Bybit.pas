@@ -32,6 +32,7 @@ type
     procedure BybitKlineOnEventEndLoading(ASender: TObject);
     procedure BybitOrderBookOnEventEndLoading(ASender: TObject);
     procedure BybitOnEventException(ASender: TObject);
+    procedure BybitKlineOnNewCandel(ASender: TObject);
   protected
     procedure DoSelected; override;
     procedure DoMsgInfo(S: String); override;
@@ -70,6 +71,7 @@ begin
   FBybitKline := TBybitKline.Create;
   FBybitKline.OnEventEndLoading := BybitKlineOnEventEndLoading;
   FBybitKline.OnEventException := BybitOnEventException;
+  FBybitKline.OnNewCandel := BybitKlineOnNewCandel;
 
   FBybitOrderBook := TBybitOrderBook.Create;
   FBybitOrderBook.OnEventEndLoading := BybitOrderBookOnEventEndLoading;
@@ -182,6 +184,7 @@ begin
     DoStateMarke;
 end;
 
+
 procedure TPlatfomBybit.BybitOnEventException(ASender: TObject);
 begin
   raise Exception.Create(TBybitHttpClient(ASender).ValueMessage);
@@ -252,6 +255,11 @@ begin
     on E: Exception do
       raise Exception.Create('Error Message:' + E.Message);
   end;
+end;
+
+procedure TPlatfomBybit.BybitKlineOnNewCandel(ASender: TObject);
+begin
+  DoNewCandel;
 end;
 
 end.
