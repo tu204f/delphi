@@ -15,56 +15,26 @@ object MainForm: TMainForm
     Text = 'ButtonStart'
     OnClick = ButtonStartClick
   end
-  object ButtonBuy: TButton
-    Position.X = 532.000000000000000000
-    Position.Y = 8.000000000000000000
-    TabOrder = 4
-    Text = 'ButtonBuy'
-    OnClick = ButtonBuyClick
-  end
-  object ButtonSell: TButton
-    Position.X = 616.000000000000000000
-    Position.Y = 8.000000000000000000
-    TabOrder = 5
-    Text = 'ButtonSell'
-    OnClick = ButtonSellClick
-  end
-  object ButtonBuy2: TButton
-    Position.X = 700.000000000000000000
-    Position.Y = 8.000000000000000000
-    TabOrder = 2
-    Text = 'ButtonBuy2'
-    OnClick = ButtonBuy2Click
-  end
-  object ButtonSell2: TButton
-    Position.X = 784.000000000000000000
-    Position.Y = 8.000000000000000000
-    TabOrder = 3
-    Text = 'ButtonSell2'
-    OnClick = ButtonSell2Click
-  end
   object ButtonStop: TButton
     Position.X = 92.000000000000000000
     Position.Y = 8.000000000000000000
-    TabOrder = 6
+    TabOrder = 2
     Text = 'ButtonStop'
     OnClick = ButtonStopClick
   end
   object TabControl: TTabControl
     Anchors = [akLeft, akTop, akRight, akBottom]
     Position.X = 8.000000000000000000
-    Position.Y = 64.000000000000000000
+    Position.Y = 36.000000000000000000
     Size.Width = 858.000000000000000000
-    Size.Height = 793.000000000000000000
+    Size.Height = 821.000000000000000000
     Size.PlatformDefault = False
     TabIndex = 0
-    TabOrder = 7
+    TabOrder = 3
     TabPosition = PlatformDefault
     Sizes = (
       858s
-      767s
-      858s
-      767s)
+      795s)
     object TabItemLog: TTabItem
       CustomIcon = <
         item
@@ -87,7 +57,7 @@ object MainForm: TMainForm
         Margins.Right = 10.000000000000000000
         Margins.Bottom = 10.000000000000000000
         Position.X = 10.000000000000000000
-        Position.Y = 374.000000000000000000
+        Position.Y = 402.000000000000000000
         Size.Width = 838.000000000000000000
         Size.Height = 383.000000000000000000
         Size.PlatformDefault = False
@@ -103,82 +73,20 @@ object MainForm: TMainForm
         Margins.Top = 10.000000000000000000
         Margins.Right = 10.000000000000000000
         Size.Width = 838.000000000000000000
-        Size.Height = 354.000000000000000000
+        Size.Height = 382.000000000000000000
         Size.PlatformDefault = False
         TabOrder = 1
         Options = [Editing, ColumnResize, ColumnMove, ColLines, RowLines, RowSelect, Tabs, Header, HeaderClick, AutoDisplacement]
         Viewport.Width = 834.000000000000000000
-        Viewport.Height = 329.000000000000000000
-      end
-    end
-    object TabItemFrame: TTabItem
-      CustomIcon = <
-        item
-        end>
-      IsSelected = False
-      Size.Width = 95.000000000000000000
-      Size.Height = 26.000000000000000000
-      Size.PlatformDefault = False
-      StyleLookup = ''
-      TabOrder = 0
-      Text = 'TabItemFrame'
-      ExplicitSize.cx = 95.000000000000000000
-      ExplicitSize.cy = 26.000000000000000000
-      object GridLayout: TGridPanelLayout
-        Position.X = 12.000000000000000000
-        Position.Y = 18.000000000000000000
-        Size.Width = 513.000000000000000000
-        Size.Height = 439.000000000000000000
-        Size.PlatformDefault = False
-        TabOrder = 0
-        ColumnCollection = <
-          item
-            Value = 100.000000000000000000
-          end>
-        ControlCollection = <
-          item
-            Column = 0
-            Control = LayoutSell
-            Row = 0
-          end
-          item
-            Column = 0
-            Control = LayoutBuy
-            Row = 1
-          end>
-        RowCollection = <
-          item
-            Value = 50.000000000000000000
-          end
-          item
-            Value = 50.000000000000000000
-          end>
-        object LayoutSell: TLayout
-          Align = Client
-          Margins.Top = 6.000000000000000000
-          Margins.Bottom = 3.000000000000000000
-          Size.Width = 513.000000000000000000
-          Size.Height = 210.500000000000000000
-          Size.PlatformDefault = False
-          TabOrder = 1
-        end
-        object LayoutBuy: TLayout
-          Align = Client
-          Margins.Top = 3.000000000000000000
-          Margins.Bottom = 6.000000000000000000
-          Size.Width = 513.000000000000000000
-          Size.Height = 210.500000000000000000
-          Size.PlatformDefault = False
-          TabOrder = 0
-        end
+        Viewport.Height = 357.000000000000000000
       end
     end
   end
   object Text1: TText
-    Position.X = 8.000000000000000000
-    Position.Y = 36.000000000000000000
-    Size.Width = 329.000000000000000000
-    Size.Height = 25.000000000000000000
+    Position.X = 488.000000000000000000
+    Position.Y = 4.000000000000000000
+    Size.Width = 377.000000000000000000
+    Size.Height = 21.000000000000000000
     Size.PlatformDefault = False
     TextSettings.HorzAlign = Leading
   end
@@ -188,5 +96,19 @@ object MainForm: TMainForm
     OnTimer = TimerTimer
     Left = 437
     Top = 192
+  end
+  object TextStatus: TText
+    Position.X = 176.000000000000000000
+    Position.Y = 8.000000000000000000
+    Size.Width = 81.000000000000000000
+    Size.Height = 21.000000000000000000
+    Size.PlatformDefault = False
+    TextSettings.HorzAlign = Leading
+  end
+  object Button1: TButton
+    Position.X = 288.000000000000000000
+    Position.Y = 8.000000000000000000
+    TabOrder = 6
+    Text = 'Button1'
   end
 end

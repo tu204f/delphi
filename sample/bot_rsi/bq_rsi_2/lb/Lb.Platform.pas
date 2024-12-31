@@ -10,7 +10,7 @@ uses
   System.Variants,
   FMX.Types,
   Lb.SysUtils,
-  Lb.Buffer.Trading;
+  Lb.Journal.Trading;
 
 type
   TEventOnStart        = procedure(ASender: TObject) of object;

@@ -1,4 +1,4 @@
-unit Lb.Category;
+unit Lb.TradeBox;
 
 interface
 
@@ -63,20 +63,6 @@ type
 
 type
   TTradeBox = class;
-
-  ///<summary>Состояние сделки</summary>
-  TTypeTrade = (
-    ttNull,
-    ttOpen,
-    ttClose
-  );
-
-  ///<summary>Напровление сделки</summary>
-  TTypeDirection = (
-    tdNull,
-    tdLong,
-    tdShort
-  );
 
   ///<summary>Событие коробки</summary>
   TEventTradeBox = procedure(
@@ -150,11 +136,6 @@ function GetStrToTypeDirection(const ADirection: TTypeDirection): String;
 function GetStrToTypeTrade(const ATypeTrade: TTypeTrade): String;
 
 implementation
-
-{$IFDEF DEBUG}
-uses
-  Lb.Logger;
-{$ENDIF}
 
 function GetStrToTypeTradeLevel(ATypeTradeLevel: TTypeTradeLevel): String;
 begin

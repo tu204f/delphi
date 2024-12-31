@@ -9,6 +9,9 @@
         <Projects Include="bq_rsi_2\rsi_bq_2.dproj">
             <Dependencies/>
         </Projects>
+        <Projects Include="sample\trade_box\trade_box.dproj">
+            <Dependencies/>
+        </Projects>
     </ItemGroup>
     <ProjectExtensions>
         <Borland.Personality>Default.Personality.12</Borland.Personality>
@@ -35,14 +38,23 @@
     <Target Name="rsi_bq_2:Make">
         <MSBuild Projects="bq_rsi_2\rsi_bq_2.dproj" Targets="Make"/>
     </Target>
+    <Target Name="trade_box">
+        <MSBuild Projects="sample\trade_box\trade_box.dproj"/>
+    </Target>
+    <Target Name="trade_box:Clean">
+        <MSBuild Projects="sample\trade_box\trade_box.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="trade_box:Make">
+        <MSBuild Projects="sample\trade_box\trade_box.dproj" Targets="Make"/>
+    </Target>
     <Target Name="Build">
-        <CallTarget Targets="rsi_bq;rsi_bq_2"/>
+        <CallTarget Targets="rsi_bq;rsi_bq_2;trade_box"/>
     </Target>
     <Target Name="Clean">
-        <CallTarget Targets="rsi_bq:Clean;rsi_bq_2:Clean"/>
+        <CallTarget Targets="rsi_bq:Clean;rsi_bq_2:Clean;trade_box:Clean"/>
     </Target>
     <Target Name="Make">
-        <CallTarget Targets="rsi_bq:Make;rsi_bq_2:Make"/>
+        <CallTarget Targets="rsi_bq:Make;rsi_bq_2:Make;trade_box:Make"/>
     </Target>
     <Import Project="$(BDS)\Bin\CodeGear.Group.Targets" Condition="Exists('$(BDS)\Bin\CodeGear.Group.Targets')"/>
 </Project>
