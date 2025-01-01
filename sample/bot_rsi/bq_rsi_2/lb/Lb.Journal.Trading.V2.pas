@@ -92,6 +92,11 @@ type
     property Side: TTypeBuySell read GetSide;
     property OnNewPositionTrade: TEventOnNewPositionTrade write FOnNewPositionTrade;
     property Manager: TJournalManager read FManager write FManager;
+  public
+    property Profit: Double read FProfit;
+    property MaxProfit: Double read FMaxProfit;
+    property MinProfit: Double read FMinProfit;
+    property Profits: TDoubleList read FProfits;
   end;
 
   ///<summary>Список позиций</summary>
@@ -114,6 +119,9 @@ type
 
     ///<summary>Закрытие позиции</summary>
     procedure CloseTrade(ATime: TDateTime; APrice: Double; ACandels: TCandelList);
+
+    ///<summary>Закрытие позиции</summary>
+    procedure ReverseTrade(ATime: TDateTime; APrice: Double; ACandels: TCandelList);
 
     ///<summary>Проверяет существование позиции</summary>
     property IsCurrentPosition: Boolean read GetIsCurrentPosition;
@@ -347,6 +355,9 @@ begin
   else
     xProfit := 0;
 
+  if not (xProfit = 0) then
+    xProfit := GetRound(xProfit);
+
   if FMaxProfit < xProfit then
     FMaxProfit := xProfit;
 
@@ -425,6 +436,25 @@ begin
     xJournalPosition.Manager := Self;
     FPositions.Add(xJournalPosition);
     xJournalPosition.OpenTrade(ATime, APrice, AQty, ASide, ACandels);
+  end;
+end;
+
+procedure TJournalManager.ReverseTrade(ATime: TDateTime; APrice: Double; ACandels: TCandelList);
+var
+  xQty: Double;
+  xSide: TTypeBuySell;
+begin
+  if IsCurrentPosition then
+  begin
+    xQty := CurrentPosition.Qty;
+    xSide := CurrentPosition.Side;
+    Self.CurrentPosition.OpenTrade(
+      ATime,
+      APrice,
+      2 * xQty,
+      GetCrossSide(xSide),
+      ACandels
+    );
   end;
 end;
 

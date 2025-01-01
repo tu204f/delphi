@@ -14,7 +14,7 @@ uses
   Lb.SysUtils,
   Lb.Platform,
   Lb.TradeBox,
-  Lb.Journal.Trading;
+  Lb.Journal.Trading.V2;
 
 type
   ///<summary>
@@ -42,7 +42,7 @@ type
   TCustomTraginBot = class(TObject)
   private
     FTradeBox: TTradeBox;
-    FJournalTrading: TJournalTrading;
+    FManager: TJournalManager;
     procedure TradeBoxOnTradeBox(ASender: TObject; ATypeDirection: TTypeDirection; ATypeTrade: TTypeTrade);
   protected
     procedure DoTradeBox(ATypeDirection: TTypeDirection; ATypeTrade: TTypeTrade); virtual;
@@ -56,7 +56,7 @@ type
     ///<summary>
     /// Журнал торговых операций
     ///</summary>
-    property JournalTrading: TJournalTrading read FJournalTrading;
+    property Manager: TJournalManager read FManager;
     ///<summary>
     /// Настройка бокса
     ///</summary>
@@ -269,12 +269,12 @@ begin
   FTradeBox.CloseShort := 20;
   FTradeBox.OnTradeBox := TradeBoxOnTradeBox;
 
-  FJournalTrading := TJournalTrading.Create;
+  FManager := TJournalManager.Create;
 end;
 
 destructor TCustomTraginBot.Destroy;
 begin
-  FreeAndNil(FJournalTrading);
+  FreeAndNil(FManager);
   FreeAndNil(FTradeBox);
   inherited;
 end;
@@ -347,9 +347,9 @@ procedure TBot.DoTradeBox(ATypeDirection: TTypeDirection; ATypeTrade: TTypeTrade
   {$ENDIF}
     case ATypeTrade of
       ttOpen: begin
-        if JournalTrading.IsPosition then
+        if Manager.IsCurrentPosition then
         begin
-          if JournalTrading.CurrentPosition.Side = TTypeBuySell.tsSell then
+          if Manager.CurrentPosition.Side = TTypeBuySell.tsSell then
           begin
             var xCurrentDateTime := GetNewDateTime;
             {$IFDEF DEBUG}
@@ -358,9 +358,10 @@ procedure TBot.DoTradeBox(ATypeDirection: TTypeDirection; ATypeTrade: TTypeTrade
                 ' price: ' + ABid.ToString;
             TLogger.LogTreeText(3,xS);
             {$ENDIF}
-            JournalTrading.ReverseTrade(
+            Manager.ReverseTrade(
               xCurrentDateTime,
-              ABid
+              ABid,
+              FTradingPlatform.StateMarket.Candels
             );
           end;
         end
@@ -375,17 +376,18 @@ procedure TBot.DoTradeBox(ATypeDirection: TTypeDirection; ATypeTrade: TTypeTrade
               ' side: buy';
           TLogger.LogTreeText(3,xS);
           {$ENDIF}
-          JournalTrading.OpenTrade(
+          Manager.OpenTrade(
             xCurrentDateTime,
             AAsk,
             AQty,
-            TTypeBuySell.tsBuy
+            TTypeBuySell.tsBuy,
+            FTradingPlatform.StateMarket.Candels
           );
         end;
       end;
       ttClose: begin
-        if JournalTrading.IsPosition then
-          if JournalTrading.CurrentPosition.Side = TTypeBuySell.tsBuy then
+        if Manager.IsCurrentPosition then
+          if Manager.CurrentPosition.Side = TTypeBuySell.tsBuy then
           begin
             var xCurrentDateTime := GetNewDateTime;
             {$IFDEF DEBUG}
@@ -394,13 +396,15 @@ procedure TBot.DoTradeBox(ATypeDirection: TTypeDirection; ATypeTrade: TTypeTrade
                 ' price: ' + ABid.ToString;
             TLogger.LogTreeText(3,xS);
             {$ENDIF}
-            JournalTrading.ReverseTrade(
+            Manager.ReverseTrade(
               xCurrentDateTime,
-              ABid
+              ABid,
+              FTradingPlatform.StateMarket.Candels
             );
-            JournalTrading.CloseTrade(
+            Manager.CloseTrade(
               xCurrentDateTime,
-              ABid
+              ABid,
+              FTradingPlatform.StateMarket.Candels
             );
           end;
       end;
@@ -414,7 +418,7 @@ procedure TBot.DoTradeBox(ATypeDirection: TTypeDirection; ATypeTrade: TTypeTrade
   {$ENDIF}
     case ATypeTrade of
       ttOpen: begin
-        if JournalTrading.IsPosition then
+        if Manager.IsCurrentPosition then
         begin
           var xCurrentDateTime := GetNewDateTime;
           {$IFDEF DEBUG}
@@ -423,11 +427,12 @@ procedure TBot.DoTradeBox(ATypeDirection: TTypeDirection; ATypeTrade: TTypeTrade
               ' price: ' + AAsk.ToString;
           TLogger.LogTreeText(3,xS);
           {$ENDIF}
-          if JournalTrading.CurrentPosition.Side = TTypeBuySell.tsBuy then
+          if Manager.CurrentPosition.Side = TTypeBuySell.tsBuy then
           begin
-            JournalTrading.ReverseTrade(
+            Manager.ReverseTrade(
               xCurrentDateTime,
-              AAsk
+              AAsk,
+              FTradingPlatform.StateMarket.Candels
             );
           end;
         end
@@ -442,17 +447,18 @@ procedure TBot.DoTradeBox(ATypeDirection: TTypeDirection; ATypeTrade: TTypeTrade
               ' side: sell';
           TLogger.LogTreeText(3,xS);
           {$ENDIF}
-          JournalTrading.OpenTrade(
+          Manager.OpenTrade(
             GetNewDateTime,
             ABid,
             AQty,
-            TTypeBuySell.tsSell
+            TTypeBuySell.tsSell,
+            FTradingPlatform.StateMarket.Candels
           );
         end;
       end;
       ttClose: begin
-        if JournalTrading.IsPosition then
-          if JournalTrading.CurrentPosition.Side = TTypeBuySell.tsSell then
+        if Manager.IsCurrentPosition then
+          if Manager.CurrentPosition.Side = TTypeBuySell.tsSell then
           begin
             var xCurrentDateTime := GetNewDateTime;
             {$IFDEF DEBUG}
@@ -461,9 +467,10 @@ procedure TBot.DoTradeBox(ATypeDirection: TTypeDirection; ATypeTrade: TTypeTrade
                 ' price: ' + AAsk.ToString;
             TLogger.LogTreeText(3,xS);
             {$ENDIF}
-            JournalTrading.CloseTrade(
+            Manager.CloseTrade(
               xCurrentDateTime,
-              AAsk
+              AAsk,
+              FTradingPlatform.StateMarket.Candels
             );
           end;
       end;

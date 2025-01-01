@@ -19,7 +19,8 @@ uses
   FMX.Memo,
   FMX.StdCtrls,
 
-  Lb.Journal.Trading,
+  Lb.Journal.Trading.V2,
+
   Lb.SysUtils,
   Lb.Bot,
   Lb.Platform,
@@ -116,10 +117,11 @@ begin
   SetAddColumn('[4]open_short');
   SetAddColumn('[5]close_short');
   SetAddColumn('[6]PosCount');
-  SetAddColumn('[7]info.qty');
-  SetAddColumn('[8]info.profit');
-  SetAddColumn('[9]max_profit');
-  SetAddColumn('[10]min_profit');
+  SetAddColumn('[7]info.side');
+  SetAddColumn('[8]info.qty');
+  SetAddColumn('[9]info.profit');
+  SetAddColumn('[10]max_profit');
+  SetAddColumn('[11]min_profit');
 end;
 
 destructor TMainForm.Destroy;
@@ -232,16 +234,17 @@ begin
       xBot := ManagerBot.Items[i];
 
       (*
-        SetAddColumn('[0]id');
-        SetAddColumn('[1]open_long');
-        SetAddColumn('[2]close_long');
-        SetAddColumn('[3]open_short');
-        SetAddColumn('[4]close_short');
-        SetAddColumn('[5]PosCount');
-        SetAddColumn('[6]info.qty');
-        SetAddColumn('[7]info.profit');;
-        SetAddColumn('[8]max_profit');
-        SetAddColumn('[9]min_profit');
+        SetAddColumn('[1]id');
+        SetAddColumn('[2]open_long');
+        SetAddColumn('[3]close_long');
+        SetAddColumn('[4]open_short');
+        SetAddColumn('[5]close_short');
+        SetAddColumn('[6]PosCount');
+        SetAddColumn('[7]info.side');
+        SetAddColumn('[8]info.qty');
+        SetAddColumn('[9]info.profit');
+        SetAddColumn('[10]max_profit');
+        SetAddColumn('[11]min_profit');
       *)
 
       StrGrid.Cells[0,i] := i.ToString;
@@ -249,40 +252,31 @@ begin
       StrGrid.Cells[2,i] := xBot.TradeBox.CloseLong.ToString;
       StrGrid.Cells[3,i] := xBot.TradeBox.OpenShort.ToString;
       StrGrid.Cells[4,i] := xBot.TradeBox.CloseShort.ToString;
-      StrGrid.Cells[5,i] := xBot.JournalTrading.Positions.Count.ToString;
 
-      if xBot.JournalTrading.IsPosition then
+
+      if xBot.Manager.IsCurrentPosition then
       begin
-        StrGrid.Cells[6,i] := xBot.JournalTrading.CurrentPosition.Qty.ToString;
+        StrGrid.Cells[5,i] := xBot.Manager.CurrentPosition.Trades.Count.ToString;
+        StrGrid.Cells[6,i] := GetStrToSide(xBot.Manager.CurrentPosition.Side);
+        StrGrid.Cells[7,i] := xBot.Manager.CurrentPosition.Qty.ToString;
 
         var xLast := xBot.TradingPlatform.StateMarket.Last;
-        xBot.JournalTrading.CurrentPosition.SetProfit(xLast);
-        StrGrid.Cells[7,i] := xBot.JournalTrading.CurrentPosition.Profit.ToString;
-        StrGrid.Cells[8,i] := xBot.JournalTrading.CurrentPosition.MaxProfit.ToString;
-        StrGrid.Cells[9,i] := xBot.JournalTrading.CurrentPosition.MinProfit.ToString;
+        xBot.Manager.CurrentPosition.GetProfit(xLast);
+        StrGrid.Cells[8,i] := xBot.Manager.CurrentPosition.Profit.ToString;
+        StrGrid.Cells[9,i] := xBot.Manager.CurrentPosition.MaxProfit.ToString;
+        StrGrid.Cells[10,i] := xBot.Manager.CurrentPosition.MinProfit.ToString;
 
       end
       else
       begin
+        StrGrid.Cells[5,i] := '';
+        StrGrid.Cells[6,i] := '';
         StrGrid.Cells[6,i] := '';
         StrGrid.Cells[7,i] := '';
         StrGrid.Cells[8,i] := '';
         StrGrid.Cells[9,i] := '';
       end;
 
-//      StrGrid.Cells[6,i] := xInfo.Qty.ToString;
-//      StrGrid.Cells[7,i] := xInfo.Profit.ToString;
-//      StrGrid.Cells[3,i] := xBot.Trading.ProfitClosePosition.ToString;
-//      StrGrid.Cells[4,i] := xBot.CrossTrading.ProfitClosePosition.ToString;
-//      StrGrid.Cells[8,i] := (xInfo.Profit + xBot.CrossTrading.ProfitClosePosition).ToString;
-
-      xBot.JournalTrading.SaveTrading(
-        xPath + 'bot_position_' + i.ToString + '.txt'
-      );
-
-//      xBot.CrossTrading.SaveTrading(
-//        xPath + 'bot_cross_position_' + i.ToString + '.txt'
-//      );
     end;
 end;
 
