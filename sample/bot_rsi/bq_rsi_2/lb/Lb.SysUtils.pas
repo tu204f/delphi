@@ -222,8 +222,11 @@ end;
 procedure TCandelList.CopyCandels(const ACandels: TCandelList);
 begin
   Self.Clear;
-  for var xC in ACandels do
+  if Assigned(ACandels) then
+  begin
+    for var xC in ACandels do
       Self.Add(xC);
+  end;
 end;
 
 { TStateMarket }
