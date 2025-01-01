@@ -19,12 +19,13 @@ uses
   FMX.Memo,
   FMX.StdCtrls,
 
-  Lb.Buffer.Trading,
+  Lb.Journal.Trading.V2,
+
   Lb.SysUtils,
   Lb.Bot,
   Lb.Platform,
   Lb.Platform.Bybit,
-  Lb.Category,
+  Lb.TradeBox,
   FMX.TabControl,
   FMX.Layouts,
 
@@ -35,26 +36,16 @@ uses
 type
   TMainForm = class(TForm)
     ButtonStart: TButton;
-    ButtonBuy: TButton;
-    ButtonSell: TButton;
-    ButtonBuy2: TButton;
-    ButtonSell2: TButton;
     ButtonStop: TButton;
     TabControl: TTabControl;
     TabItemLog: TTabItem;
-    TabItemFrame: TTabItem;
     MemoInfo: TMemo;
-    GridLayout: TGridPanelLayout;
-    LayoutSell: TLayout;
-    LayoutBuy: TLayout;
     StrGrid: TStringGrid;
     Text1: TText;
     Timer: TTimer;
+    TextStatus: TText;
+    Button1: TButton;
     procedure ButtonStartClick(Sender: TObject);
-    procedure ButtonBuyClick(Sender: TObject);
-    procedure ButtonSellClick(Sender: TObject);
-    procedure ButtonBuy2Click(Sender: TObject);
-    procedure ButtonSell2Click(Sender: TObject);
     procedure ButtonStopClick(Sender: TObject);
     procedure TimerTimer(Sender: TObject);
   private
@@ -81,28 +72,6 @@ uses
 
 { TMainForm }
 
-procedure TMainForm.ButtonStartClick(Sender: TObject);
-begin
-  // Запускаем сканирование рынка bybit
-  if not TradingPlatform.IsActive then
-  begin
-    IndexTrade := 0;
-
-    TradingPlatform.Symbol := 'ETHUSDT';
-    TradingPlatform.StateMarket.Qty := 0.2;
-    TradingPlatform.Start;
-
-    Timer.Enabled := True;
-
-  end;
-end;
-
-procedure TMainForm.ButtonStopClick(Sender: TObject);
-begin
-  if TradingPlatform.IsActive then
-    TradingPlatform.Stop;
-  Timer.Enabled := False;
-end;
 
 constructor TMainForm.Create(AOwner: TComponent);
 
@@ -113,13 +82,7 @@ constructor TMainForm.Create(AOwner: TComponent);
     for var i := 0 to 0 do
     begin
       xBot := ManagerBot.AddBot;
-      with xBot.TradeBox do
-      begin
-        OpenLong   := 50;// 50 + (10 - Random(20));
-        CloseLong  := 80;// OpenLong + (20 + Random(10));
-        OpenShort  := 50;// OpenLong - Random(10);
-        CloseShort := 20;// OpenShort - (10 + Random(20));
-      end;
+      xBot.SetTradeBox(20,80,80,20);
     end;
   end;
 
@@ -148,16 +111,17 @@ begin
 
   _InitManagerBot;
 
-  SetAddColumn('id');
-  SetAddColumn('open_long');
-  SetAddColumn('close_long');
-  SetAddColumn('open_short');
-  SetAddColumn('close_short');
-
-  SetAddColumn('PosCount');
-  SetAddColumn('info.qty');
-  SetAddColumn('info.profit');
-  SetAddColumn('curr.profit');
+  SetAddColumn('[1]id');
+  SetAddColumn('[2]open_long');
+  SetAddColumn('[3]close_long');
+  SetAddColumn('[4]open_short');
+  SetAddColumn('[5]close_short');
+  SetAddColumn('[6]PosCount');
+  SetAddColumn('[7]info.side');
+  SetAddColumn('[8]info.qty');
+  SetAddColumn('[9]info.profit');
+  SetAddColumn('[10]max_profit');
+  SetAddColumn('[11]min_profit');
 end;
 
 destructor TMainForm.Destroy;
@@ -165,6 +129,31 @@ begin
   FreeAndNil(TradingPlatform);
   FreeAndNil(ManagerBot);
   inherited;
+end;
+
+procedure TMainForm.ButtonStartClick(Sender: TObject);
+begin
+  // Запускаем сканирование рынка bybit
+  if not TradingPlatform.IsActive then
+  begin
+    IndexTrade := 0;
+
+    TradingPlatform.Symbol := 'ETHUSDT';
+    TradingPlatform.StateMarket.Qty := 0.2;
+    TradingPlatform.Start;
+
+    Timer.Enabled := True;
+
+    TextStatus.Text := 'Активно';
+  end;
+end;
+
+procedure TMainForm.ButtonStopClick(Sender: TObject);
+begin
+  if TradingPlatform.IsActive then
+    TradingPlatform.Stop;
+  Timer.Enabled := False;
+  TextStatus.Text := 'Остановка';
 end;
 
 
@@ -179,8 +168,6 @@ procedure TMainForm.TradingPlatformOnStateMarket(ASender: TObject; AStateMarket:
   end;
 
 var
-  xBot: TBot;
-  xInfo: TInfoPositionTrading;
   xS: String;
 begin
   MemoInfo.BeginUpdate;
@@ -227,16 +214,6 @@ begin
     ManagerBot.SetSelected;
     SetShowGrid;
 
-    if ManagerBot.Items.Count > 0 then
-    begin
-      MemoInfo.Lines.Add('****************************************************');
-      xBot := ManagerBot.Items[0];
-
-
-      MemoInfo.Lines.Add('  :: >> qty = ' + xInfo.Qty.ToString);
-      MemoInfo.Lines.Add('  :: >> profit = ' + xInfo.Profit.ToString);
-
-    end;
   finally
     MemoInfo.EndUpdate;
   end;
@@ -247,7 +224,6 @@ var
   xPath: String;
   xBot: TBot;
   i, iCount: Integer;
-  xInfo: TInfoPositionTrading;
 begin
   xPath := 'd:\work\git\delphi\sample\bot_rsi\bq_rsi_2\app\bin\data\';
   iCount := ManagerBot.Items.Count;
@@ -256,6 +232,21 @@ begin
     for i := 0 to iCount - 1 do
     begin
       xBot := ManagerBot.Items[i];
+
+      (*
+        SetAddColumn('[1]id');
+        SetAddColumn('[2]open_long');
+        SetAddColumn('[3]close_long');
+        SetAddColumn('[4]open_short');
+        SetAddColumn('[5]close_short');
+        SetAddColumn('[6]PosCount');
+        SetAddColumn('[7]info.side');
+        SetAddColumn('[8]info.qty');
+        SetAddColumn('[9]info.profit');
+        SetAddColumn('[10]max_profit');
+        SetAddColumn('[11]min_profit');
+      *)
+
       StrGrid.Cells[0,i] := i.ToString;
       StrGrid.Cells[1,i] := xBot.TradeBox.OpenLong.ToString;
       StrGrid.Cells[2,i] := xBot.TradeBox.CloseLong.ToString;
@@ -263,98 +254,37 @@ begin
       StrGrid.Cells[4,i] := xBot.TradeBox.CloseShort.ToString;
 
 
+      if xBot.Manager.IsCurrentPosition then
+      begin
+        StrGrid.Cells[5,i] := xBot.Manager.CurrentPosition.Trades.Count.ToString;
+        StrGrid.Cells[6,i] := GetStrToSide(xBot.Manager.CurrentPosition.Side);
+        StrGrid.Cells[7,i] := xBot.Manager.CurrentPosition.Qty.ToString;
 
-//      StrGrid.Cells[3,i] := xBot.Trading.ProfitClosePosition.ToString;
-//      StrGrid.Cells[4,i] := xBot.CrossTrading.ProfitClosePosition.ToString;
+        var xLast := xBot.TradingPlatform.StateMarket.Last;
+        xBot.Manager.CurrentPosition.GetProfit(xLast);
+        StrGrid.Cells[8,i] := xBot.Manager.CurrentPosition.Profit.ToString;
+        StrGrid.Cells[9,i] := xBot.Manager.CurrentPosition.MaxProfit.ToString;
+        StrGrid.Cells[10,i] := xBot.Manager.CurrentPosition.MinProfit.ToString;
 
-      StrGrid.Cells[5,i] := xBot.Trading.Positions.Count.ToString;
-
-      StrGrid.Cells[6,i] := xInfo.Qty.ToString;
-      StrGrid.Cells[7,i] := xInfo.Profit.ToString;
-
-
-//      StrGrid.Cells[8,i] := (xInfo.Profit + xBot.CrossTrading.ProfitClosePosition).ToString;
-
-
-      xBot.Trading.SaveTrading(
-        xPath + 'bot_position_' + i.ToString + '.txt'
-      );
-
-//      xBot.CrossTrading.SaveTrading(
-//        xPath + 'bot_cross_position_' + i.ToString + '.txt'
-//      );
+      end
+      else
+      begin
+        StrGrid.Cells[5,i] := '';
+        StrGrid.Cells[6,i] := '';
+        StrGrid.Cells[6,i] := '';
+        StrGrid.Cells[7,i] := '';
+        StrGrid.Cells[8,i] := '';
+        StrGrid.Cells[9,i] := '';
+      end;
 
     end;
 end;
 
-procedure TMainForm.ButtonBuy2Click(Sender: TObject);
-begin
-  TradingPlatform.SendTrade(
-    Time,
-    TradingPlatform.StateMarket.Ask,
-    0.02,
-    TTypeBuySell.tsBuy
-  );
-end;
-
-procedure TMainForm.ButtonBuyClick(Sender: TObject);
-begin
-  TradingPlatform.SendTrade(
-    Time,
-    TradingPlatform.StateMarket.Ask,
-    0.01,
-    TTypeBuySell.tsBuy
-  );
-end;
-
-procedure TMainForm.ButtonSell2Click(Sender: TObject);
-begin
-  TradingPlatform.SendTrade(
-    Time,
-    TradingPlatform.StateMarket.Bid,
-    0.02,
-    TTypeBuySell.tsSell
-  );
-end;
-
-procedure TMainForm.ButtonSellClick(Sender: TObject);
-begin
-  TradingPlatform.SendTrade(
-    Time,
-    TradingPlatform.StateMarket.Bid,
-    0.01,
-    TTypeBuySell.tsSell
-  );
-end;
-
-var
-  localValueRSI: Double = 0;
-  localStepValue: Double = 5;
-  localTrade: Integer = 0;
-
 procedure TMainForm.TimerTimer(Sender: TObject);
 begin
-//  case localTrade of
-//    0: begin
-//      localValueRSI := localValueRSI + localStepValue;
-//      if localValueRSI >= 60 then
-//      begin
-//        localValueRSI := 60;
-//        localTrade := 1;
-//      end;
-//    end;
-//    1: begin
-//      localValueRSI := localValueRSI - localStepValue;
-//      if localValueRSI <= 40 then
-//      begin
-//        localValueRSI := 40;
-//        localTrade := 0;
-//      end;
-//    end;
-//  end;
-//
-//  for var xBot in ManagerBot.Items do
-//    xBot.SetSelected(localValueRSI);
+  // Перебираем списко ботов для работы
+  for var xBot in ManagerBot.Items do
+    xBot.SetSelected;
 end;
 
 

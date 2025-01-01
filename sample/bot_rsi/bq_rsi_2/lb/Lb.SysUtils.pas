@@ -12,6 +12,20 @@ uses
   System.Generics.Collections;
 
 type
+  ///<summary>Состояние сделки</summary>
+  TTypeTrade = (
+    ttNull,
+    ttOpen,
+    ttClose
+  );
+
+  ///<summary>Напровление сделки</summary>
+  TTypeDirection = (
+    tdNull,
+    tdLong,
+    tdShort
+  );
+
   TTypeBuySell = (
     tsNull, {добавлено новое значение}
     tsBuy,
@@ -36,7 +50,10 @@ type
   ///<summary>
   /// Массив свячей
   ///</summary>
-  TCandelList = TList<TCandel>;
+  TCandelList = class(TList<TCandel>)
+  public
+    procedure CopyCandels(const ACandels: TCandelList);
+  end;
 
   ///<summary>
   /// Состояние рынка
@@ -50,6 +67,7 @@ type
     FFirstCandelTime: Int64;
     FIsNewCandel: Boolean;
     FOnNewCandel: TNotifyEvent;
+    function GetLast: Double;
   protected
     procedure DoNewCandel;
   public
@@ -68,6 +86,10 @@ type
     /// Цена покупателя - который может взять Qty
     ///</summary>
     property Bid: Double read FBid;
+    ///<summary>
+    /// Последния цена
+    ///</summary>
+    property Last: Double read GetLast;
   public
     procedure SetUpDataCandels;
     property Candels: TCandelList read FCandels;
@@ -91,7 +113,31 @@ type
 function GetCrossSide(ASide: TTypeBuySell): TTypeBuySell;
 function GetStrToSide(ASide: TTypeBuySell): String;
 
+///<summary>
+/// Текущая дата и время
+///</summary>
+function GetNewDateTime: TDateTime;
+
+function GetTimeToInt64(const AValue: TDateTime): Int64;
+function GetInt64ToTime(const AValue: Int64): TDateTime;
+
+function GetRound(const AValue: Double): Double; inline;
+
 implementation
+
+const
+  ///<summary>
+  /// Количество миллисекунд в секунде
+  ///</summary>
+  SEC_COUNT_MSEC  = 1000;
+  ///<summary>
+  /// Количество миллисекунд в минуте
+  ///</summary>
+  MIN_COUNT_MSEC  = 60 * SEC_COUNT_MSEC;
+  ///<summary>
+  /// Количество миллисекунд в одном часе
+  ///</summary>
+  HOUR_COUNT_MSEC = 60 * MIN_COUNT_MSEC;
 
 function GetStrToSide(ASide: TTypeBuySell): String;
 begin
@@ -109,6 +155,77 @@ begin
     tsSell: Result := TTypeBuySell.tsBuy;
   else
     Result := ASide;
+  end;
+end;
+
+function GetNewDateTime: TDateTime;
+begin
+  Result := System.SysUtils.Date + System.SysUtils.Time;
+end;
+
+function GetTimeToInt64(const AValue: TDateTime): Int64;
+var
+  xHour, xMin, xSec, xMSec: Word;
+begin
+  DecodeTime(AValue, xHour, xMin, xSec, xMSec);
+  Result :=
+    xHour * HOUR_COUNT_MSEC +
+    xMin  * MIN_COUNT_MSEC +
+    xSec  * SEC_COUNT_MSEC +
+    xMSec;
+end;
+
+function GetInt64ToTime(const AValue: Int64): TDateTime;
+
+  function _Hour(AValue: Int64): Word;
+  var
+    xResult: Integer;
+  begin
+    xResult := Trunc(AValue / HOUR_COUNT_MSEC);
+    if xResult > 24 then
+      xResult := Trunc(24 * Frac(xResult/24));
+    Result := xResult;
+  end;
+
+  function _Min(AValue: Int64): Word;
+  begin
+    Result := Trunc(AValue / MIN_COUNT_MSEC);
+  end;
+
+  function _Sec(AValue: Int64): Word;
+  begin
+    Result := Trunc(AValue / SEC_COUNT_MSEC);
+  end;
+
+var
+  xValue: Int64;
+  xHour, xMin, xSec, xMSec: Word;
+begin
+  {todo: Есть уже заложденый баг}
+  xHour  := _Hour(AValue);
+  xValue := AValue - xHour * HOUR_COUNT_MSEC;
+  xMin   := _Min(xValue);
+  xValue := xValue - xMin * MIN_COUNT_MSEC;
+  xSec   := _Sec(xValue);
+  xMSec  := xValue - xSec * SEC_COUNT_MSEC;
+
+  Result := EncodeTime(xHour, xMin, xSec, xMSec);
+end;
+
+function GetRound(const AValue: Double): Double;
+begin
+  Result := Trunc(AValue * 1000)/1000;
+end;
+
+{ TCandelList }
+
+procedure TCandelList.CopyCandels(const ACandels: TCandelList);
+begin
+  Self.Clear;
+  if Assigned(ACandels) then
+  begin
+    for var xC in ACandels do
+      Self.Add(xC);
   end;
 end;
 
@@ -132,6 +249,13 @@ procedure TStateMarket.DoNewCandel;
 begin
   if Assigned(FOnNewCandel) then
     FOnNewCandel(Self);
+end;
+
+function TStateMarket.GetLast: Double;
+begin
+  Result := 0;
+  if FCandels.Count > 0 then
+    Result := FCandels[0].Close;
 end;
 
 procedure TStateMarket.SetPrice(const AAsk, ABid: Double);
@@ -163,5 +287,6 @@ begin
     end;
   end;
 end;
+
 
 end.

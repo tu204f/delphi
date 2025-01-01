@@ -10,7 +10,7 @@ uses
   System.Variants,
   FMX.Types,
   Lb.SysUtils,
-  Lb.Buffer.Trading;
+  Lb.Journal.Trading.V2;
 
 type
   TEventOnStart        = procedure(ASender: TObject) of object;
@@ -28,6 +28,7 @@ type
     function GetIsActive: Boolean;
     procedure TimerTimer(Sender: TObject);
   private
+    FEventOnNewCandel: TNotifyEvent;
     FEventOnStart: TEventOnStart;
     FEventOnStop: TEventOnStop;
     FEventOnSelected: TEventOnSelected;
@@ -37,6 +38,7 @@ type
     procedure DoStop; virtual;
     procedure DoSelected; virtual;
     procedure DoMsgInfo(S: String); virtual;
+    procedure DoNewCandel; virtual;
   public
     constructor Create; virtual;
     destructor Destroy; override;
@@ -49,6 +51,7 @@ type
     property OnStop: TEventOnStop write FEventOnStop;
     property OnSelected: TEventOnSelected write FEventOnSelected;
     property OnMsgInfo: TEventOnMsgInfo write FEventOnMsgInfo;
+    property OnNewCandel: TNotifyEvent write FEventOnNewCandel;
   end;
 
   ///<summary>
@@ -165,6 +168,12 @@ procedure TCustomTradingPlatform.DoMsgInfo(S: String);
 begin
   if Assigned(FEventOnMsgInfo) then
     FEventOnMsgInfo(Self,S);
+end;
+
+procedure TCustomTradingPlatform.DoNewCandel;
+begin
+  if Assigned(FEventOnNewCandel) then
+    FEventOnNewCandel(Self);
 end;
 
 { TTradingPlatform }
