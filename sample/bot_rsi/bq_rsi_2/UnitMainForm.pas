@@ -82,7 +82,7 @@ constructor TMainForm.Create(AOwner: TComponent);
     for var i := 0 to 0 do
     begin
       xBot := ManagerBot.AddBot;
-      xBot.SetTradeBox(20,80,80,20);
+      xBot.SetTradeBox(50,80,50,20);
     end;
   end;
 
