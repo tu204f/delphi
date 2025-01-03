@@ -119,7 +119,9 @@ type
     FPositions: TJournalPositionList;
     function GetCurrentPosition: TJournalPosition;
     function GetIsCurrentPosition: Boolean;
+    function GetProfit: Double;
   protected
+    function GetCreateJournalPosition: TJournalPosition;
     procedure DoNewTrade(ATime: TDateTime; APrice, AQty: Double; ASide: TTypeBuySell; ACandels: TCandelList);
   public
     constructor Create; virtual;
@@ -140,9 +142,16 @@ type
     property CurrentPosition: TJournalPosition read GetCurrentPosition;
     ///<summary>Список позиций</summary>
     property Positions: TJournalPositionList read FPositions;
+    ///<summary>Сумарный профит повсем позициям</summary>
+    property Profit: Double read GetProfit;
   end;
 
 implementation
+
+{$IFDEF DEBUG}
+uses
+  Lb.Logger;
+{$ENDIF}
 
 procedure SaveJournalPosition(AJournalPosition: TJournalPosition; AJournal: TStrings);
 
@@ -558,6 +567,21 @@ begin
   inherited;
 end;
 
+function TJournalManager.GetCreateJournalPosition: TJournalPosition;
+var
+  xJournalPosition: TJournalPosition;
+begin
+{$IFDEF DBG_JOURNAL_MANAGER}
+  TLogger.LogTree(0,'TJournalManager.GetCreateJournalPosition:');
+  TLogger.LogTreeText(3,'>> Создание Жернал сделок в позиции');
+{$ENDIF}
+  xJournalPosition := TJournalPosition.Create;
+  xJournalPosition.Manager := Self;
+  xJournalPosition.ID := FPositions.Count;
+  FPositions.Add(xJournalPosition);
+  Result := xJournalPosition;
+end;
+
 function TJournalManager.GetCurrentPosition: TJournalPosition;
 var
   iCount: Integer;
@@ -582,20 +606,35 @@ begin
     Result := xJournalPosition.IsActive;
 end;
 
+function TJournalManager.GetProfit: Double;
+var
+  xSum: Double;
+begin
+  xSum := 0;
+  for var xP in FPositions do
+    xSum := xSum + xP.Profit;
+  Result := xSum;
+end;
+
 procedure TJournalManager.OpenTrade(ATime: TDateTime; APrice, AQty: Double; ASide: TTypeBuySell; ACandels: TCandelList);
 var
   xJournalPosition: TJournalPosition;
 begin
+{$IFDEF DBG_JOURNAL_MANAGER}
+  TLogger.LogTree(0,'TJournalManager.OpenTrade:');
+  TLogger.LogTreeText(3,'>> Открытие позиция');
+  TLogger.LogTreeText(3,'>> Time := ' + DateTimeToStr(ATime));
+  TLogger.LogTreeText(3,'>> Price := ' + FloatToStr(APrice));
+  TLogger.LogTreeText(3,'>> Qty := ' + FloatToStr(AQty));
+  TLogger.LogTreeText(3,'>> Side := ' + GetStrToSide(ASide));
+{$ENDIF}
   if IsCurrentPosition then
   begin
     Self.CurrentPosition.OpenTrade(ATime, APrice, AQty, ASide, ACandels)
   end
   else
   begin
-    xJournalPosition := TJournalPosition.Create;
-    xJournalPosition.Manager := Self;
-    xJournalPosition.ID := FPositions.Count;
-    FPositions.Add(xJournalPosition);
+    xJournalPosition := GetCreateJournalPosition;
     xJournalPosition.OpenTrade(ATime, APrice, AQty, ASide, ACandels);
   end;
 end;
@@ -605,6 +644,12 @@ var
   xQty: Double;
   xSide: TTypeBuySell;
 begin
+{$IFDEF DBG_JOURNAL_MANAGER}
+  TLogger.LogTree(0,'TJournalManager.ReverseTrade:');
+  TLogger.LogTreeText(3,'>> Реверс позиции');
+  TLogger.LogTreeText(3,'>> Time := ' + DateTimeToStr(ATime));
+  TLogger.LogTreeText(3,'>> Price := ' + FloatToStr(APrice));
+{$ENDIF}
   if IsCurrentPosition then
   begin
     xQty := CurrentPosition.Qty;
@@ -621,6 +666,12 @@ end;
 
 procedure TJournalManager.CloseTrade(ATime: TDateTime; APrice: Double; ACandels: TCandelList);
 begin
+{$IFDEF DBG_JOURNAL_MANAGER}
+  TLogger.LogTree(0,'TJournalManager.CloseTrade:');
+  TLogger.LogTreeText(3,'>> Закрытие позиции');
+  TLogger.LogTreeText(3,'>> Time := ' + DateTimeToStr(ATime));
+  TLogger.LogTreeText(3,'>> Price := ' + FloatToStr(APrice));
+{$ENDIF}
   if IsCurrentPosition then
     Self.CurrentPosition.CloseTrade(ATime, APrice, ACandels)
 end;
@@ -629,10 +680,15 @@ procedure TJournalManager.DoNewTrade(ATime: TDateTime; APrice, AQty: Double; ASi
 var
   xJournalPosition: TJournalPosition;
 begin
-  xJournalPosition := TJournalPosition.Create;
-  xJournalPosition.Manager := Self;
-  xJournalPosition.ID := FPositions.Count;
-  FPositions.Add(xJournalPosition);
+{$IFDEF DBG_JOURNAL_MANAGER}
+  TLogger.LogTree(0,'TJournalManager.DoNewTrade:');
+  TLogger.LogTreeText(3,'>> Продолжаем открытие позиции');
+  TLogger.LogTreeText(3,'>> Time := ' + DateTimeToStr(ATime));
+  TLogger.LogTreeText(3,'>> Price := ' + FloatToStr(APrice));
+  TLogger.LogTreeText(3,'>> Qty := ' + FloatToStr(AQty));
+  TLogger.LogTreeText(3,'>> Side := ' + GetStrToSide(ASide));
+{$ENDIF}
+  xJournalPosition := GetCreateJournalPosition;
   xJournalPosition.OpenTrade(ATime, APrice, AQty, ASide, ACandels);
 end;
 

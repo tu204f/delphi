@@ -41,7 +41,7 @@ type
     TabItemLog: TTabItem;
     MemoInfo: TMemo;
     StrGrid: TStringGrid;
-    Text1: TText;
+    TextSumProfit: TText;
     Timer: TTimer;
     TextStatus: TText;
     Button1: TButton;
@@ -122,6 +122,7 @@ begin
   SetAddColumn('[9]info.profit');
   SetAddColumn('[10]max_profit');
   SetAddColumn('[11]min_profit');
+  SetAddColumn('[12]sum_profit');
 end;
 
 destructor TMainForm.Destroy;
@@ -211,7 +212,6 @@ begin
        'ValueATR: ' + TradingPlatform.ValueATR.ToString + ' ';
     MemoInfo.Lines.Add(xS);
 
-    ManagerBot.SetSelected;
     SetShowGrid;
 
   finally
@@ -245,6 +245,7 @@ begin
         SetAddColumn('[9]info.profit');
         SetAddColumn('[10]max_profit');
         SetAddColumn('[11]min_profit');
+        SetAddColumn('[12]sum_profit');
       *)
 
       StrGrid.Cells[0,i] := i.ToString;
@@ -265,7 +266,7 @@ begin
         StrGrid.Cells[8,i] := xBot.Manager.CurrentPosition.Profit.ToString;
         StrGrid.Cells[9,i] := xBot.Manager.CurrentPosition.MaxProfit.ToString;
         StrGrid.Cells[10,i] := xBot.Manager.CurrentPosition.MinProfit.ToString;
-
+        StrGrid.Cells[11,i] := xBot.Manager.Profit.ToString;
       end
       else
       begin
@@ -275,6 +276,8 @@ begin
         StrGrid.Cells[7,i] := '';
         StrGrid.Cells[8,i] := '';
         StrGrid.Cells[9,i] := '';
+        StrGrid.Cells[10,i] := '';
+        StrGrid.Cells[11,i] := '';
       end;
 
     end;
@@ -283,8 +286,8 @@ end;
 procedure TMainForm.TimerTimer(Sender: TObject);
 begin
   // Перебираем списко ботов для работы
-  for var xBot in ManagerBot.Items do
-    xBot.SetSelected;
+  //for var xBot in ManagerBot.Items do
+  //  xBot.SetSelected;
 end;
 
 
