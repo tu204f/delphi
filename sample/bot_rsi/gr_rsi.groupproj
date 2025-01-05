@@ -9,6 +9,9 @@
         <Projects Include="sample\virtual_trade_2\vt.dproj">
             <Dependencies/>
         </Projects>
+        <Projects Include="sample\result_pos\rp.dproj">
+            <Dependencies/>
+        </Projects>
         <Projects Include="bybit_quik\rsi_bq.dproj">
             <Dependencies/>
         </Projects>
@@ -41,6 +44,15 @@
     <Target Name="vt:Make">
         <MSBuild Projects="sample\virtual_trade_2\vt.dproj" Targets="Make"/>
     </Target>
+    <Target Name="rp">
+        <MSBuild Projects="sample\result_pos\rp.dproj"/>
+    </Target>
+    <Target Name="rp:Clean">
+        <MSBuild Projects="sample\result_pos\rp.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="rp:Make">
+        <MSBuild Projects="sample\result_pos\rp.dproj" Targets="Make"/>
+    </Target>
     <Target Name="rsi_bq">
         <MSBuild Projects="bybit_quik\rsi_bq.dproj"/>
     </Target>
@@ -60,13 +72,13 @@
         <MSBuild Projects="bq_rsi_2\rsi_bq_2.dproj" Targets="Make"/>
     </Target>
     <Target Name="Build">
-        <CallTarget Targets="trade_box;vt;rsi_bq;rsi_bq_2"/>
+        <CallTarget Targets="trade_box;vt;rp;rsi_bq;rsi_bq_2"/>
     </Target>
     <Target Name="Clean">
-        <CallTarget Targets="trade_box:Clean;vt:Clean;rsi_bq:Clean;rsi_bq_2:Clean"/>
+        <CallTarget Targets="trade_box:Clean;vt:Clean;rp:Clean;rsi_bq:Clean;rsi_bq_2:Clean"/>
     </Target>
     <Target Name="Make">
-        <CallTarget Targets="trade_box:Make;vt:Make;rsi_bq:Make;rsi_bq_2:Make"/>
+        <CallTarget Targets="trade_box:Make;vt:Make;rp:Make;rsi_bq:Make;rsi_bq_2:Make"/>
     </Target>
     <Import Project="$(BDS)\Bin\CodeGear.Group.Targets" Condition="Exists('$(BDS)\Bin\CodeGear.Group.Targets')"/>
 </Project>

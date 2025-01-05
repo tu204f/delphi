@@ -1,12 +1,12 @@
-program vt;
+program rp;
 
 uses
   System.StartUpCopy,
   FMX.Forms,
   UnitMainForm in 'UnitMainForm.pas' {MainForm},
-  Lb.Journal.Trading.V2 in '..\..\bq_rsi_2\lb\Lb.Journal.Trading.V2.pas',
   Lb.SysUtils in '..\..\bq_rsi_2\lb\Lb.SysUtils.pas',
-  Lb.Logger in '..\..\..\..\library\Lb.Logger.pas';
+  Lb.ParamPosition in '..\..\bq_rsi_2\lb\Lb.ParamPosition.pas',
+  UnitParamPositionFrame in 'UnitParamPositionFrame.pas' {ParamPositionFrame: TFrame};
 
 {$R *.res}
 

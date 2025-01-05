@@ -112,6 +112,7 @@ type
 
 function GetCrossSide(ASide: TTypeBuySell): TTypeBuySell;
 function GetStrToSide(ASide: TTypeBuySell): String;
+function GetSiseToStr(AValue: String): TTypeBuySell;
 
 ///<summary>
 /// Текущая дата и время
@@ -145,6 +146,21 @@ begin
     tsNull: Result := 'N';
     tsBuy: Result := 'B';
     tsSell: Result := 'S';
+  end;
+end;
+
+function GetSiseToStr(AValue: String): TTypeBuySell;
+var
+  xC: Char;
+begin
+  xC := #0;
+  if AValue.Length > 0 then
+    xC := AValue[1];
+  case xC of
+    'B': Result := TTypeBuySell.tsBuy;
+    'S': Result := TTypeBuySell.tsSell;
+  else
+    Result :=  TTypeBuySell.tsNull;
   end;
 end;
 

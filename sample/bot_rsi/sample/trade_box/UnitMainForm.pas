@@ -312,7 +312,8 @@ begin
       else
         StrGrid.Cells[9,i] := 'Нет';
 
-      StrGrid.Cells[10,i] := xPosition.GetProfit(FValue).ToString;
+      xPosition.SetProfit(FValue);
+      StrGrid.Cells[10,i] := xPosition.Profit.ToString;
 
     end;
   end;
