@@ -86,7 +86,7 @@ begin
 //  for var S in NameFiles do
 //    ListBoxPosition.Items.Add(ExtractFileName(S));
 
-  for var i := 0 to 66 do
+  for var i := 0 to 3 do
     ListBoxPosition.Items.Add('posiotn_' + i.ToString + '.txt');
 end;
 

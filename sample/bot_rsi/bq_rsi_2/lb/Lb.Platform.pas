@@ -62,8 +62,11 @@ type
     FSymbol: String;
     FOnStateMarket: TEventOnStateMarket;
   private
-    FPeriod: Integer;
+    FPeriodRSI: Integer;
+    FPeriodSMA: Integer;
+    FPeriodATR: Integer;
     FValueRSI: Double;
+    FValueAveragRSI: Double;
     FValueATR: Double;
   protected
     FStateMarket: TStateMarket;
@@ -83,8 +86,14 @@ type
     ///</summary>
     procedure SendTrade(const ATime: TDateTime; const APrice, AQty: Double; ASide: TTypeBuySell); virtual;
   public {торговые правильа }
-    property Period: Integer read FPeriod write FPeriod;
+    ///<summary>Период расчета RSI</summary>
+    property PeriodRSI: Integer read FPeriodRSI write FPeriodRSI;
+    ///<summary>Период усреднение RSI</summary>
+    property PeriodSMA: Integer read FPeriodSMA write FPeriodSMA;
+    ///<summary>Период расчета ART</summary>
+    property PeriodATR: Integer read FPeriodATR write FPeriodATR;
     property ValueRSI: Double read FValueRSI;
+    property ValueAveragRSI: Double read FValueAveragRSI;
     property ValueATR: Double read FValueATR;
   end;
 
@@ -181,7 +190,10 @@ end;
 constructor TTradingPlatform.Create;
 begin
   inherited Create;
-  FPeriod := 14;
+  FPeriodRSI := 14;
+  FPeriodSMA := 14;
+  FPeriodATR := 7;
+
   FStateMarket := TStateMarket.Create;
 end;
 
@@ -195,11 +207,17 @@ procedure TTradingPlatform.DoSelected;
 begin
   inherited;
 
-  FValueATR := GetATR(FPeriod,StateMarket.Candels);
+  FValueATR := GetATR(FPeriodATR,StateMarket.Candels);
   FValueATR := Round(FValueATR * 100)/100;
 
-  FValueRSI := GetRSI(FPeriod,StateMarket.Candels);
-  FValueRSI := Round(FValueRSI * 100)/100;
+  SetAveragRSI(
+    FPeriodRSI,
+    FPeriodSMA,
+    StateMarket.Candels,
+    FValueRSI,
+    FValueAveragRSI
+  );
+
 end;
 
 procedure TTradingPlatform.DoStateMarke;

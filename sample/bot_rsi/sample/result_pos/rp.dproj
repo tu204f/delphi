@@ -202,6 +202,16 @@
             <FormType>fmx</FormType>
             <DesignClass>TFrame</DesignClass>
         </DCCReference>
+        <DCCReference Include="..\..\bq_rsi_2\lb\chart\UnitBarFrame.pas">
+            <Form>BarFrame</Form>
+            <FormType>fmx</FormType>
+            <DesignClass>TFrame</DesignClass>
+        </DCCReference>
+        <DCCReference Include="..\..\bq_rsi_2\lb\chart\UnitBarsFrame.pas">
+            <Form>BarsFrame</Form>
+            <FormType>fmx</FormType>
+            <DesignClass>TFrame</DesignClass>
+        </DCCReference>
         <BuildConfiguration Include="Release">
             <Key>Cfg_2</Key>
             <CfgParent>Base</CfgParent>

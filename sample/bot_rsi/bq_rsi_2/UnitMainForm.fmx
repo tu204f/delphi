@@ -62,8 +62,8 @@ object MainForm: TMainForm
         Size.Height = 383.000000000000000000
         Size.PlatformDefault = False
         TabOrder = 0
-        Viewport.Width = 834.000000000000000000
-        Viewport.Height = 379.000000000000000000
+        Viewport.Width = 838.000000000000000000
+        Viewport.Height = 383.000000000000000000
       end
       object StrGrid: TStringGrid
         Align = Client
@@ -77,8 +77,8 @@ object MainForm: TMainForm
         Size.PlatformDefault = False
         TabOrder = 1
         Options = [Editing, ColumnResize, ColumnMove, ColLines, RowLines, RowSelect, Tabs, Header, HeaderClick, AutoDisplacement]
-        Viewport.Width = 834.000000000000000000
-        Viewport.Height = 357.000000000000000000
+        Viewport.Width = 838.000000000000000000
+        Viewport.Height = 382.000000000000000000
       end
     end
   end

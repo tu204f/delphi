@@ -114,6 +114,8 @@ type
 function GetSMA(const AValue: TDoubleList): Double;
 function GetATR(const APeriod: Integer; ACandels: TCandelList): Double;
 function GetRSI(const APeriod: Integer; ACandels: TCandelList): Double;
+procedure SetAveragRSI(const APeriodRSI, APeriodSMA: Integer; const ACandels: TCandelList; var AValueRSI, AValueAveragRSI: Double);
+
 function GetStrToTypeBot(const ATypeBot: TTypeBot): String;
 
 implementation
@@ -259,6 +261,39 @@ begin
   end;
 end;
 
+procedure SetAveragRSI(const APeriodRSI, APeriodSMA: Integer; const ACandels: TCandelList; var AValueRSI, AValueAveragRSI: Double);
+var
+  xCandels: TCandelList;
+  i, j: Integer;
+  xValues: TDoubleList;
+begin
+  AValueRSI := 0;
+  AValueAveragRSI := 0;
+  xCandels := TCandelList.Create;
+  xValues := TDoubleList.Create;
+  try
+    if ACandels.Count >= (APeriodRSI + APeriodSMA) then
+    begin
+      for j := 0 to APeriodSMA - 1 do
+      begin
+        xCandels.Clear;
+        for i := 0 to APeriodRSI - 1 do
+        begin
+          var xCandel := ACandels[j + i];
+          xCandels.Add(xCandel);
+        end;
+        var xValueRSI := GetRSI(APeriodRSI,xCandels);
+        xValues.Add(xValueRSI);
+      end;
+      AValueRSI := GetRound(xValues[0]);
+      AValueAveragRSI := GetRound(GetSMA(xValues));
+    end;
+  finally
+    FreeAndNil(xValues);
+    FreeAndNil(xCandels);
+  end;
+end;
+
 (******************************************************************************)
 
 { TCustomTraginBot }
@@ -337,7 +372,7 @@ begin
     Exit;
   end;
 
-  FValueRSI := FTradingPlatform.ValueRSI;
+  FValueRSI := FTradingPlatform.ValueAveragRSI;
   FTradeBox.SetUpDateValue(FValueRSI);
 end;
 

@@ -45,6 +45,8 @@ type
     Low: Double;    // Минимальная цена
     Close: Double;  // Закрытие цены
     Vol: Double;    // Объем который прошол
+  public
+    function GetToStr: String;
   end;
 
   ///<summary>
@@ -231,6 +233,19 @@ end;
 function GetRound(const AValue: Double): Double;
 begin
   Result := Trunc(AValue * 1000)/1000;
+end;
+
+{ TCandel }
+
+function TCandel.GetToStr: String;
+begin
+  Result :=
+    Time.ToString + ';' +
+    Open.ToString + ';' +
+    High.ToString + ';' +
+    Low.ToString + ';' +
+    Close.ToString + ';' +
+    Vol.ToString;
 end;
 
 { TCandelList }

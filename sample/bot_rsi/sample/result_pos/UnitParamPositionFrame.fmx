@@ -51,4 +51,13 @@ object ParamPositionFrame: TParamPositionFrame
       YValues.Order = loNone
     end
   end
+  object LayoutCandels: TLayout
+    Align = Client
+    Margins.Top = 5.000000000000000000
+    Margins.Bottom = 5.000000000000000000
+    Size.Width = 695.000000000000000000
+    Size.Height = 209.000000000000000000
+    Size.PlatformDefault = False
+    TabOrder = 3
+  end
 end

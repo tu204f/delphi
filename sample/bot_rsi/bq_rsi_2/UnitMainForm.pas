@@ -208,8 +208,9 @@ begin
 
     MemoInfo.Lines.Add('****************************************************');
     xS :=
-       'ValueRSI: ' + TradingPlatform.ValueRSI.ToString + ' ' +
-       'ValueATR: ' + TradingPlatform.ValueATR.ToString + ' ';
+       'ValueRSI: ' + TradingPlatform.ValueRSI.ToString + '; ' +
+       'ValueAveragRSI: ' + TradingPlatform.ValueAveragRSI.ToString + '; ' +
+       'ValueATR: ' + TradingPlatform.ValueATR.ToString + ';';
     MemoInfo.Lines.Add(xS);
 
     SetShowGrid;

@@ -8,7 +8,8 @@ uses
   Lb.SysUtils,
   Lb.ParamPosition, FMX.Objects, System.Rtti, FMX.Grid.Style,
   FMX.Controls.Presentation, FMX.ScrollBox, FMX.Grid, FMXTee.Engine,
-  FMXTee.Series, FMXTee.Procs, FMXTee.Chart;
+  FMXTee.Series, FMXTee.Procs, FMXTee.Chart, FMX.Layouts,
+  UnitBarsFrame;
 
 type
   TParamPositionFrame = class(TFrame)
@@ -16,7 +17,9 @@ type
     StrGridTrades: TStringGrid;
     Chart: TChart;
     SeriesLine: TLineSeries;
+    LayoutCandels: TLayout;
   private
+    FBarsFrame: TBarsFrame;
     FParamPosition: TParamPosition;
     procedure SetParamPosition(const Value: TParamPosition);
   protected
@@ -53,11 +56,16 @@ begin
   SetAddColumn(StrGridTrades,'[3]price',80);
   SetAddColumn(StrGridTrades,'[4]qty',80);
   SetAddColumn(StrGridTrades,'[5]side',80);
+
+  FBarsFrame := TBarsFrame.Create(nil);
+  FBarsFrame.Parent := LayoutCandels;
+  FBarsFrame.Align := TAlignLayout.Client;
+
 end;
 
 destructor TParamPositionFrame.Destroy;
 begin
-
+  FreeAndNil(FBarsFrame);
   inherited;
 end;
 
@@ -88,6 +96,23 @@ begin
     StrGridTrades.Cells[2,i] := xParamTrade.Price.ToString;
     StrGridTrades.Cells[3,i] := xParamTrade.Qty.ToString;
     StrGridTrades.Cells[4,i] := GetStrToSide(xParamTrade.Side);
+  end;
+
+  if iCount > 0 then
+  begin
+    FBarsFrame.Clear;
+    FBarsFrame.IsActive := False;
+    xParamTrade := FParamPosition.Trades[0];
+    for var xC in xParamTrade.Candels do
+    begin
+      FBarsFrame.AddCandel(
+        xC.Open,
+        xC.High,
+        xC.Low,
+        xC.Close
+      );
+    end;
+    FBarsFrame.IsActive := True;
   end;
 
   SeriesLine.Clear;

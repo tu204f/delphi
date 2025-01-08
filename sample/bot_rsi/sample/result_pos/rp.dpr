@@ -6,7 +6,9 @@ uses
   UnitMainForm in 'UnitMainForm.pas' {MainForm},
   Lb.SysUtils in '..\..\bq_rsi_2\lb\Lb.SysUtils.pas',
   Lb.ParamPosition in '..\..\bq_rsi_2\lb\Lb.ParamPosition.pas',
-  UnitParamPositionFrame in 'UnitParamPositionFrame.pas' {ParamPositionFrame: TFrame};
+  UnitParamPositionFrame in 'UnitParamPositionFrame.pas' {ParamPositionFrame: TFrame},
+  UnitBarFrame in '..\..\bq_rsi_2\lb\chart\UnitBarFrame.pas' {BarFrame: TFrame},
+  UnitBarsFrame in '..\..\bq_rsi_2\lb\chart\UnitBarsFrame.pas' {BarsFrame: TFrame};
 
 {$R *.res}
 
