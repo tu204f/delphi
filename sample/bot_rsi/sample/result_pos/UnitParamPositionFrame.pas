@@ -98,10 +98,13 @@ begin
     StrGridTrades.Cells[4,i] := GetStrToSide(xParamTrade.Side);
   end;
 
+
+
   if iCount > 0 then
   begin
     FBarsFrame.Clear;
     FBarsFrame.IsActive := False;
+
     xParamTrade := FParamPosition.Trades[0];
     for var xC in xParamTrade.Candels do
     begin

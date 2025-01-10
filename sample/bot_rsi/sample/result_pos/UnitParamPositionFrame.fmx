@@ -18,6 +18,7 @@ object ParamPositionFrame: TParamPositionFrame
     Size.Height = 84.000000000000000000
     Size.PlatformDefault = False
     TabOrder = 1
+    Options = [Editing, ColumnResize, ColumnMove, ColLines, RowLines, RowSelect, Tabs, Header, HeaderClick, AutoDisplacement]
     Viewport.Width = 691.000000000000000000
     Viewport.Height = 59.000000000000000000
   end

@@ -89,8 +89,8 @@ type
     ///<summary>Закрытие позиции</summary>
     procedure CloseTrade(ATime: TDateTime; APrice: Double; ACandels: TCandelList);
 
-    ///<summary>Вычисляем профит попозции</summary>
-    function GetProfit(const APrice: Double = 0): Double;
+    ///<summary>Обновление параметров</summary>
+    procedure SetUpDateValue(const APrice, AValueRIS, AValueAveragRSI, AValueART: Double);
 
     ///<summary>Список сделок</summary>
     property Trades: TJournalTradeList read FTrades;
@@ -481,7 +481,7 @@ begin
     Result := TTypeBuySell.tsNull;
 end;
 
-function TJournalPosition.GetProfit(const APrice: Double): Double;
+procedure TJournalPosition.SetUpDateValue(const APrice, AValueRIS, AValueAveragRSI, AValueART: Double);
 
   function _ProfitSumm: Double;
   var
@@ -501,7 +501,6 @@ function TJournalPosition.GetProfit(const APrice: Double): Double;
 var
   xProfit: Double;
 begin
-
   if FTrades.Count > 0 then
   begin
     if FQty = 0 then
@@ -537,8 +536,6 @@ begin
     FProfits.Add(xProfit);
     FProfit := xProfit;
   end;
-
-  Result := xProfit;
 end;
 
 procedure TJournalPosition.CloseTrade(ATime: TDateTime; APrice: Double; ACandels: TCandelList);

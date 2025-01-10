@@ -29,17 +29,19 @@ object MainForm: TMainForm
     Size.Width = 858.000000000000000000
     Size.Height = 821.000000000000000000
     Size.PlatformDefault = False
-    TabIndex = 0
+    TabIndex = 1
     TabOrder = 3
     TabPosition = PlatformDefault
     Sizes = (
+      858s
+      795s
       858s
       795s)
     object TabItemLog: TTabItem
       CustomIcon = <
         item
         end>
-      IsSelected = True
+      IsSelected = False
       Size.Width = 82.000000000000000000
       Size.Height = 26.000000000000000000
       Size.PlatformDefault = False
@@ -62,8 +64,8 @@ object MainForm: TMainForm
         Size.Height = 383.000000000000000000
         Size.PlatformDefault = False
         TabOrder = 0
-        Viewport.Width = 838.000000000000000000
-        Viewport.Height = 383.000000000000000000
+        Viewport.Width = 834.000000000000000000
+        Viewport.Height = 379.000000000000000000
       end
       object StrGrid: TStringGrid
         Align = Client
@@ -77,9 +79,21 @@ object MainForm: TMainForm
         Size.PlatformDefault = False
         TabOrder = 1
         Options = [Editing, ColumnResize, ColumnMove, ColLines, RowLines, RowSelect, Tabs, Header, HeaderClick, AutoDisplacement]
-        Viewport.Width = 838.000000000000000000
-        Viewport.Height = 382.000000000000000000
+        Viewport.Width = 834.000000000000000000
+        Viewport.Height = 357.000000000000000000
       end
+    end
+    object TabItemPosition: TTabItem
+      CustomIcon = <
+        item
+        end>
+      IsSelected = True
+      Size.Width = 126.000000000000000000
+      Size.Height = 26.000000000000000000
+      Size.PlatformDefault = False
+      StyleLookup = ''
+      TabOrder = 0
+      Text = #1058#1077#1082#1091#1097#1072#1103' - '#1055#1086#1079#1080#1094#1080#1103
     end
   end
   object TextSumProfit: TText

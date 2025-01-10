@@ -43,8 +43,8 @@ object MainForm: TMainForm
         DefaultItemStyles.GroupHeaderStyle = ''
         DefaultItemStyles.GroupFooterStyle = ''
         OnChange = ListBoxPositionChange
-        Viewport.Width = 209.000000000000000000
-        Viewport.Height = 501.000000000000000000
+        Viewport.Width = 205.000000000000000000
+        Viewport.Height = 497.000000000000000000
       end
     end
     object TabControl: TTabControl
@@ -72,6 +72,8 @@ object MainForm: TMainForm
         StyleLookup = ''
         TabOrder = 0
         Text = #1048#1089#1093#1086#1076#1085#1099#1077' '#1076#1072#1085#1085#1099#1077
+        ExplicitSize.cx = 120.000000000000000000
+        ExplicitSize.cy = 26.000000000000000000
         object MemoSource: TMemo
           Touch.InteractiveGestures = [Pan, LongTap, DoubleTap]
           DataDetectorTypes = []
@@ -80,8 +82,8 @@ object MainForm: TMainForm
           Size.Height = 496.000000000000000000
           Size.PlatformDefault = False
           TabOrder = 0
-          Viewport.Width = 649.000000000000000000
-          Viewport.Height = 496.000000000000000000
+          Viewport.Width = 645.000000000000000000
+          Viewport.Height = 492.000000000000000000
         end
       end
       object TabItemParamPosition: TTabItem
@@ -95,6 +97,8 @@ object MainForm: TMainForm
         StyleLookup = ''
         TabOrder = 0
         Text = #1055#1072#1088#1072#1084#1077#1090#1088#1099' '#1087#1086#1079#1080#1094#1080#1080
+        ExplicitSize.cx = 134.000000000000000000
+        ExplicitSize.cy = 26.000000000000000000
         object LayoutParamPosition: TLayout
           Align = Client
           Margins.Left = 5.000000000000000000

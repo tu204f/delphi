@@ -45,6 +45,7 @@ type
     Timer: TTimer;
     TextStatus: TText;
     Button1: TButton;
+    TabItemPosition: TTabItem;
     procedure ButtonStartClick(Sender: TObject);
     procedure ButtonStopClick(Sender: TObject);
     procedure TimerTimer(Sender: TObject);
@@ -263,7 +264,14 @@ begin
         StrGrid.Cells[7,i] := xBot.Manager.CurrentPosition.Qty.ToString;
 
         var xLast := xBot.TradingPlatform.StateMarket.Last;
-        xBot.Manager.CurrentPosition.GetProfit(xLast);
+
+        xBot.Manager.CurrentPosition.SetUpDateValue(
+          xLast,
+          xBot.TradingPlatform.ValueRSI,
+          xBot.TradingPlatform.ValueAveragRSI,
+          xBot.TradingPlatform.ValueATR
+        );
+
         StrGrid.Cells[8,i] := xBot.Manager.CurrentPosition.Profit.ToString;
         StrGrid.Cells[9,i] := xBot.Manager.CurrentPosition.MaxProfit.ToString;
         StrGrid.Cells[10,i] := xBot.Manager.CurrentPosition.MinProfit.ToString;
