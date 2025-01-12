@@ -55,6 +55,14 @@ type
   /// Позиция считается открытой пока есть хоть одна не нулевая позиция
   ///</remarks>
   TJournalPosition = class(TObject)
+  public type
+    TConditionParam = record
+      Profit: Double;
+      RSI: Double;
+      AveragRSI: Double;
+      ART: Double;
+    end;
+    TConditionParamList = TList<TConditionParam>;
   private
     FID: Integer;
     FPrice: Double;
@@ -67,7 +75,7 @@ type
     FProfit: Double;
     FMaxProfit: Double;
     FMinProfit: Double;
-    FProfits: TDoubleList;
+    FConditionParams: TConditionParamList;
   private
     FManager: TJournalManager;
     FOnNewPositionTrade: TEventOnNewPositionTrade;
@@ -107,7 +115,7 @@ type
     property Profit: Double read FProfit;
     property MaxProfit: Double read FMaxProfit;
     property MinProfit: Double read FMinProfit;
-    property Profits: TDoubleList read FProfits;
+    property ConditionParams: TConditionParamList read FConditionParams;
   end;
 
   ///<summary>Список позиций</summary>
@@ -148,10 +156,28 @@ type
 
 implementation
 
-{$IFDEF DEBUG}
 uses
-  Lb.Logger;
+{$IFDEF DEBUG}
+  Lb.Logger,
 {$ENDIF}
+  Lb.DataModuleDB;
+
+var
+  localDB: TDataModuleDB = nil;
+
+function GetDB: TDataModuleDB;
+var
+  xFileNameDB: String;
+begin
+  if not Assigned(localDB) then
+  begin
+    localDB := TDataModuleDB.Create(nil);
+    xFileNameDB := ExtractFilePath(ParamStr(0)) + 'journal.db';
+  end;
+  Result := localDB;
+end;
+
+
 
 procedure SaveJournalPosition(AJournalPosition: TJournalPosition; AJournal: TStrings);
 
@@ -221,7 +247,7 @@ procedure SaveJournalPosition(AJournalPosition: TJournalPosition; AJournal: TStr
     end;
   end;
 
-  procedure _Profits(AProfits: TDoubleList);
+  procedure _Profits(AConditionParams: TJournalPosition.TConditionParamList);
   var
     xS: String;
     xF: TFormatSettings;
@@ -234,13 +260,16 @@ procedure SaveJournalPosition(AJournalPosition: TJournalPosition; AJournal: TStr
     AJournal.Add('[profits]');
     AJournal.Add('ID;Value;');
 
-    iCount := AProfits.Count;
+    iCount := AConditionParams.Count;
     for i := 0 to iCount - 1 do
     begin
-      var xValue := AProfits[i];
+      var xValue := AConditionParams[i];
       xS :=
         i.ToString + ';' +
-        FloatToStr(xValue,xF) + ';';
+        FloatToStr(xValue.Profit,xF) + ';' +
+        FloatToStr(xValue.RSI,xF) + ';' +
+        FloatToStr(xValue.AveragRSI,xF) + ';' +
+        FloatToStr(xValue.ART,xF);
       AJournal.Add(xS);
     end;
   end;
@@ -269,7 +298,7 @@ begin
 
   _Trades(AJournalPosition.Trades);
   _TradeCandes(AJournalPosition.Trades);
-  _Profits(AJournalPosition.Profits);
+  _Profits(AJournalPosition.ConditionParams);
 end;
 
 
@@ -300,12 +329,12 @@ begin
 
   FMaxProfit := 0;
   FMinProfit := 0;
-  FProfits:= TDoubleList.Create;
+  FConditionParams := TConditionParamList.Create;
 end;
 
 destructor TJournalPosition.Destroy;
 begin
-  FreeAndNil(FProfits);
+  FreeAndNil(FConditionParams);
   FreeAndNil(FTrades);
   inherited;
 end;
@@ -500,6 +529,7 @@ procedure TJournalPosition.SetUpDateValue(const APrice, AValueRIS, AValueAveragR
 
 var
   xProfit: Double;
+  xParam: TConditionParam;
 begin
   if FTrades.Count > 0 then
   begin
@@ -533,7 +563,13 @@ begin
 
   if not SameValue(FProfit,xProfit,0.01) then
   begin
-    FProfits.Add(xProfit);
+
+    xParam.Profit := xProfit;
+    xParam.RSI := AValueRIS;
+    xParam.AveragRSI := AValueAveragRSI;
+    xParam.ART := AValueART;
+
+    FConditionParams.Add(xParam);
     FProfit := xProfit;
   end;
 end;
@@ -688,5 +724,12 @@ begin
   xJournalPosition := GetCreateJournalPosition;
   xJournalPosition.OpenTrade(ATime, APrice, AQty, ASide, ACandels);
 end;
+
+initialization
+  {todo: Реализовать возможность создание базы данных}
+
+finalization
+  FreeAndNil(localDB);
+
 
 end.

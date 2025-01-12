@@ -31,7 +31,10 @@ uses
 
   System.Rtti,
   FMX.Grid.Style,
-  FMX.Grid, FMX.Objects;
+  FMX.Grid,
+  FMX.Objects,
+
+  UnitJournalPositionFrame;
 
 type
   TMainForm = class(TForm)
@@ -46,12 +49,14 @@ type
     TextStatus: TText;
     Button1: TButton;
     TabItemPosition: TTabItem;
+    LayoutJournalPosition: TLayout;
     procedure ButtonStartClick(Sender: TObject);
     procedure ButtonStopClick(Sender: TObject);
     procedure TimerTimer(Sender: TObject);
   private
     procedure SetShowGrid;
   private
+    JournalPositionFrame: TJournalPositionFrame;
     procedure TradingPlatformOnStateMarket(ASender: TObject; AStateMarket: TStateMarket);
   public
     IndexTrade: Integer;
@@ -124,10 +129,15 @@ begin
   SetAddColumn('[10]max_profit');
   SetAddColumn('[11]min_profit');
   SetAddColumn('[12]sum_profit');
+
+  JournalPositionFrame := TJournalPositionFrame.Create(nil);
+  JournalPositionFrame.Parent := LayoutJournalPosition;
+  JournalPositionFrame.Align := TAlignLayout.Client;
 end;
 
 destructor TMainForm.Destroy;
 begin
+  FreeAndNil(JournalPositionFrame);
   FreeAndNil(TradingPlatform);
   FreeAndNil(ManagerBot);
   inherited;
@@ -289,6 +299,8 @@ begin
         StrGrid.Cells[11,i] := '';
       end;
 
+      // Показывать текушие стояние бота
+      JournalPositionFrame.SetDateJournalPosition(xBot.Manager.CurrentPosition);
     end;
 end;
 

@@ -27,7 +27,8 @@ uses
   Lb.Journal.Trading in 'lb\Lb.Journal.Trading.pas',
   Lb.ParamClose in 'lb\Lb.ParamClose.pas',
   Lb.Bybit.Trade in '..\..\..\library\trade\bybit\trade\Lb.Bybit.Trade.pas',
-  Lb.Journal.Trading.V2 in 'lb\Lb.Journal.Trading.V2.pas';
+  Lb.Journal.Trading.V2 in 'lb\Lb.Journal.Trading.V2.pas',
+  UnitJournalPositionFrame in 'UnitJournalPositionFrame.pas' {JournalPositionFrame: TFrame};
 
 {$R *.res}
 

@@ -219,6 +219,11 @@
         <DCCReference Include="lb\Lb.ParamClose.pas"/>
         <DCCReference Include="..\..\..\library\trade\bybit\trade\Lb.Bybit.Trade.pas"/>
         <DCCReference Include="lb\Lb.Journal.Trading.V2.pas"/>
+        <DCCReference Include="UnitJournalPositionFrame.pas">
+            <Form>JournalPositionFrame</Form>
+            <FormType>fmx</FormType>
+            <DesignClass>TFrame</DesignClass>
+        </DCCReference>
         <None Include="..\..\..\library\trade\quik\quik_connect.inc"/>
         <None Include="lb\debug.inc"/>
         <BuildConfiguration Include="Release">
