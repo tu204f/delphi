@@ -45,6 +45,8 @@ type
     Low: Double;    // Минимальная цена
     Close: Double;  // Закрытие цены
     Vol: Double;    // Объем который прошол
+  public
+    function GetToStr: String;
   end;
 
   ///<summary>
@@ -112,6 +114,7 @@ type
 
 function GetCrossSide(ASide: TTypeBuySell): TTypeBuySell;
 function GetStrToSide(ASide: TTypeBuySell): String;
+function GetSiseToStr(AValue: String): TTypeBuySell;
 
 ///<summary>
 /// Текущая дата и время
@@ -145,6 +148,21 @@ begin
     tsNull: Result := 'N';
     tsBuy: Result := 'B';
     tsSell: Result := 'S';
+  end;
+end;
+
+function GetSiseToStr(AValue: String): TTypeBuySell;
+var
+  xC: Char;
+begin
+  xC := #0;
+  if AValue.Length > 0 then
+    xC := AValue[1];
+  case xC of
+    'B': Result := TTypeBuySell.tsBuy;
+    'S': Result := TTypeBuySell.tsSell;
+  else
+    Result :=  TTypeBuySell.tsNull;
   end;
 end;
 
@@ -215,6 +233,19 @@ end;
 function GetRound(const AValue: Double): Double;
 begin
   Result := Trunc(AValue * 1000)/1000;
+end;
+
+{ TCandel }
+
+function TCandel.GetToStr: String;
+begin
+  Result :=
+    Time.ToString + ';' +
+    Open.ToString + ';' +
+    High.ToString + ';' +
+    Low.ToString + ';' +
+    Close.ToString + ';' +
+    Vol.ToString;
 end;
 
 { TCandelList }

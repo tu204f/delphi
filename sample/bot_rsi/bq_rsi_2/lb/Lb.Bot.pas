@@ -98,6 +98,9 @@ type
   private
     FItems: TBotList;
     FTradingPlatform: TTradingPlatform;
+    ///<summary>Событие нового бара</summary>
+    procedure TradingPlatformOnNewCandel(Sender: TObject);
+    procedure SetTradingPlatform(const Value: TTradingPlatform);
   public
     constructor Create; virtual;
     destructor Destroy; override;
@@ -105,12 +108,14 @@ type
     procedure SetSelected;
     function AddBot: TBot;
     property Items: TBotList read FItems;
-    property TradingPlatform: TTradingPlatform read FTradingPlatform write FTradingPlatform;
+    property TradingPlatform: TTradingPlatform read FTradingPlatform write SetTradingPlatform;
   end;
 
 function GetSMA(const AValue: TDoubleList): Double;
 function GetATR(const APeriod: Integer; ACandels: TCandelList): Double;
 function GetRSI(const APeriod: Integer; ACandels: TCandelList): Double;
+procedure SetAveragRSI(const APeriodRSI, APeriodSMA: Integer; const ACandels: TCandelList; var AValueRSI, AValueAveragRSI: Double);
+
 function GetStrToTypeBot(const ATypeBot: TTypeBot): String;
 
 implementation
@@ -256,6 +261,39 @@ begin
   end;
 end;
 
+procedure SetAveragRSI(const APeriodRSI, APeriodSMA: Integer; const ACandels: TCandelList; var AValueRSI, AValueAveragRSI: Double);
+var
+  xCandels: TCandelList;
+  i, j: Integer;
+  xValues: TDoubleList;
+begin
+  AValueRSI := 0;
+  AValueAveragRSI := 0;
+  xCandels := TCandelList.Create;
+  xValues := TDoubleList.Create;
+  try
+    if ACandels.Count >= (APeriodRSI + APeriodSMA) then
+    begin
+      for j := 0 to APeriodSMA - 1 do
+      begin
+        xCandels.Clear;
+        for i := 0 to APeriodRSI - 1 do
+        begin
+          var xCandel := ACandels[j + i];
+          xCandels.Add(xCandel);
+        end;
+        var xValueRSI := GetRSI(APeriodRSI,xCandels);
+        xValues.Add(xValueRSI);
+      end;
+      AValueRSI := GetRound(xValues[0]);
+      AValueAveragRSI := GetRound(GetSMA(xValues));
+    end;
+  finally
+    FreeAndNil(xValues);
+    FreeAndNil(xCandels);
+  end;
+end;
+
 (******************************************************************************)
 
 { TCustomTraginBot }
@@ -334,7 +372,7 @@ begin
     Exit;
   end;
 
-  FValueRSI := FTradingPlatform.ValueRSI;
+  FValueRSI := FTradingPlatform.ValueAveragRSI;
   FTradeBox.SetUpDateValue(FValueRSI);
 end;
 
@@ -530,6 +568,17 @@ begin
   if iCount > 0 then
     for i := 0 to iCount - 1 do
       FItems[i].SetSelected;
+end;
+
+procedure TManagerBot.SetTradingPlatform(const Value: TTradingPlatform);
+begin
+  FTradingPlatform := Value;
+  FTradingPlatform.OnNewCandel := TradingPlatformOnNewCandel;
+end;
+
+procedure TManagerBot.TradingPlatformOnNewCandel(Sender: TObject);
+begin
+  Self.SetSelected;
 end;
 
 end.

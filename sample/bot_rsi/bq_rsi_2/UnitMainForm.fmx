@@ -2,8 +2,8 @@ object MainForm: TMainForm
   Left = 0
   Top = 0
   Caption = 'Form4'
-  ClientHeight = 863
-  ClientWidth = 872
+  ClientHeight = 1085
+  ClientWidth = 931
   FormFactor.Width = 320
   FormFactor.Height = 480
   FormFactor.Devices = [Desktop]
@@ -26,20 +26,22 @@ object MainForm: TMainForm
     Anchors = [akLeft, akTop, akRight, akBottom]
     Position.X = 8.000000000000000000
     Position.Y = 36.000000000000000000
-    Size.Width = 858.000000000000000000
-    Size.Height = 821.000000000000000000
+    Size.Width = 917.000000000000000000
+    Size.Height = 1043.000000000000000000
     Size.PlatformDefault = False
-    TabIndex = 0
+    TabIndex = 1
     TabOrder = 3
     TabPosition = PlatformDefault
     Sizes = (
-      858s
-      795s)
+      917s
+      1017s
+      917s
+      1017s)
     object TabItemLog: TTabItem
       CustomIcon = <
         item
         end>
-      IsSelected = True
+      IsSelected = False
       Size.Width = 82.000000000000000000
       Size.Height = 26.000000000000000000
       Size.PlatformDefault = False
@@ -57,12 +59,12 @@ object MainForm: TMainForm
         Margins.Right = 10.000000000000000000
         Margins.Bottom = 10.000000000000000000
         Position.X = 10.000000000000000000
-        Position.Y = 402.000000000000000000
-        Size.Width = 838.000000000000000000
+        Position.Y = 624.000000000000000000
+        Size.Width = 897.000000000000000000
         Size.Height = 383.000000000000000000
         Size.PlatformDefault = False
         TabOrder = 0
-        Viewport.Width = 834.000000000000000000
+        Viewport.Width = 893.000000000000000000
         Viewport.Height = 379.000000000000000000
       end
       object StrGrid: TStringGrid
@@ -72,17 +74,40 @@ object MainForm: TMainForm
         Margins.Left = 10.000000000000000000
         Margins.Top = 10.000000000000000000
         Margins.Right = 10.000000000000000000
-        Size.Width = 838.000000000000000000
-        Size.Height = 382.000000000000000000
+        Size.Width = 897.000000000000000000
+        Size.Height = 604.000000000000000000
         Size.PlatformDefault = False
         TabOrder = 1
         Options = [Editing, ColumnResize, ColumnMove, ColLines, RowLines, RowSelect, Tabs, Header, HeaderClick, AutoDisplacement]
-        Viewport.Width = 834.000000000000000000
-        Viewport.Height = 357.000000000000000000
+        Viewport.Width = 893.000000000000000000
+        Viewport.Height = 579.000000000000000000
+      end
+    end
+    object TabItemPosition: TTabItem
+      CustomIcon = <
+        item
+        end>
+      IsSelected = True
+      Size.Width = 126.000000000000000000
+      Size.Height = 26.000000000000000000
+      Size.PlatformDefault = False
+      StyleLookup = ''
+      TabOrder = 0
+      Text = #1058#1077#1082#1091#1097#1072#1103' - '#1055#1086#1079#1080#1094#1080#1103
+      object LayoutJournalPosition: TLayout
+        Align = Client
+        Margins.Left = 5.000000000000000000
+        Margins.Top = 5.000000000000000000
+        Margins.Right = 5.000000000000000000
+        Margins.Bottom = 5.000000000000000000
+        Size.Width = 907.000000000000000000
+        Size.Height = 1007.000000000000000000
+        Size.PlatformDefault = False
+        TabOrder = 0
       end
     end
   end
-  object Text1: TText
+  object TextSumProfit: TText
     Position.X = 488.000000000000000000
     Position.Y = 4.000000000000000000
     Size.Width = 377.000000000000000000

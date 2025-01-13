@@ -31,7 +31,10 @@ uses
 
   System.Rtti,
   FMX.Grid.Style,
-  FMX.Grid, FMX.Objects;
+  FMX.Grid,
+  FMX.Objects,
+
+  UnitJournalPositionFrame;
 
 type
   TMainForm = class(TForm)
@@ -41,16 +44,19 @@ type
     TabItemLog: TTabItem;
     MemoInfo: TMemo;
     StrGrid: TStringGrid;
-    Text1: TText;
+    TextSumProfit: TText;
     Timer: TTimer;
     TextStatus: TText;
     Button1: TButton;
+    TabItemPosition: TTabItem;
+    LayoutJournalPosition: TLayout;
     procedure ButtonStartClick(Sender: TObject);
     procedure ButtonStopClick(Sender: TObject);
     procedure TimerTimer(Sender: TObject);
   private
     procedure SetShowGrid;
   private
+    JournalPositionFrame: TJournalPositionFrame;
     procedure TradingPlatformOnStateMarket(ASender: TObject; AStateMarket: TStateMarket);
   public
     IndexTrade: Integer;
@@ -82,7 +88,7 @@ constructor TMainForm.Create(AOwner: TComponent);
     for var i := 0 to 0 do
     begin
       xBot := ManagerBot.AddBot;
-      xBot.SetTradeBox(20,80,80,20);
+      xBot.SetTradeBox(50,80,50,20);
     end;
   end;
 
@@ -122,10 +128,16 @@ begin
   SetAddColumn('[9]info.profit');
   SetAddColumn('[10]max_profit');
   SetAddColumn('[11]min_profit');
+  SetAddColumn('[12]sum_profit');
+
+  JournalPositionFrame := TJournalPositionFrame.Create(nil);
+  JournalPositionFrame.Parent := LayoutJournalPosition;
+  JournalPositionFrame.Align := TAlignLayout.Client;
 end;
 
 destructor TMainForm.Destroy;
 begin
+  FreeAndNil(JournalPositionFrame);
   FreeAndNil(TradingPlatform);
   FreeAndNil(ManagerBot);
   inherited;
@@ -207,11 +219,11 @@ begin
 
     MemoInfo.Lines.Add('****************************************************');
     xS :=
-       'ValueRSI: ' + TradingPlatform.ValueRSI.ToString + ' ' +
-       'ValueATR: ' + TradingPlatform.ValueATR.ToString + ' ';
+       'ValueRSI: ' + TradingPlatform.ValueRSI.ToString + '; ' +
+       'ValueAveragRSI: ' + TradingPlatform.ValueAveragRSI.ToString + '; ' +
+       'ValueATR: ' + TradingPlatform.ValueATR.ToString + ';';
     MemoInfo.Lines.Add(xS);
 
-    ManagerBot.SetSelected;
     SetShowGrid;
 
   finally
@@ -245,6 +257,7 @@ begin
         SetAddColumn('[9]info.profit');
         SetAddColumn('[10]max_profit');
         SetAddColumn('[11]min_profit');
+        SetAddColumn('[12]sum_profit');
       *)
 
       StrGrid.Cells[0,i] := i.ToString;
@@ -261,11 +274,18 @@ begin
         StrGrid.Cells[7,i] := xBot.Manager.CurrentPosition.Qty.ToString;
 
         var xLast := xBot.TradingPlatform.StateMarket.Last;
-        xBot.Manager.CurrentPosition.GetProfit(xLast);
+
+        xBot.Manager.CurrentPosition.SetUpDateValue(
+          xLast,
+          xBot.TradingPlatform.ValueRSI,
+          xBot.TradingPlatform.ValueAveragRSI,
+          xBot.TradingPlatform.ValueATR
+        );
+
         StrGrid.Cells[8,i] := xBot.Manager.CurrentPosition.Profit.ToString;
         StrGrid.Cells[9,i] := xBot.Manager.CurrentPosition.MaxProfit.ToString;
         StrGrid.Cells[10,i] := xBot.Manager.CurrentPosition.MinProfit.ToString;
-
+        StrGrid.Cells[11,i] := xBot.Manager.Profit.ToString;
       end
       else
       begin
@@ -275,16 +295,20 @@ begin
         StrGrid.Cells[7,i] := '';
         StrGrid.Cells[8,i] := '';
         StrGrid.Cells[9,i] := '';
+        StrGrid.Cells[10,i] := '';
+        StrGrid.Cells[11,i] := '';
       end;
 
+      // Показывать текушие стояние бота
+      JournalPositionFrame.SetDateJournalPosition(xBot.Manager.CurrentPosition);
     end;
 end;
 
 procedure TMainForm.TimerTimer(Sender: TObject);
 begin
   // Перебираем списко ботов для работы
-  for var xBot in ManagerBot.Items do
-    xBot.SetSelected;
+  //for var xBot in ManagerBot.Items do
+  //  xBot.SetSelected;
 end;
 
 

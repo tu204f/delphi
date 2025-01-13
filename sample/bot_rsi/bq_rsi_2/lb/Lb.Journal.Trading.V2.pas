@@ -24,6 +24,9 @@ type
   ///<summary>Когда позиция открывает новую сделку</summary>
   TEventOnNewPositionTrade = procedure(ASander: TObject; ATime: TDateTime; APrice, AQty: Double; ASide: TTypeBuySell; ACandels: TCandelList) of object;
 
+  TEventOnOpen = procedure(ASander: TObject) of object;
+  TEventOnClose = procedure(ASander: TObject) of object;
+
   ///<summary>Сделка</summary>
   TJournalTrade = class(TObject)
   private
@@ -52,7 +55,16 @@ type
   /// Позиция считается открытой пока есть хоть одна не нулевая позиция
   ///</remarks>
   TJournalPosition = class(TObject)
+  public type
+    TConditionParam = record
+      Profit: Double;
+      RSI: Double;
+      AveragRSI: Double;
+      ART: Double;
+    end;
+    TConditionParamList = TList<TConditionParam>;
   private
+    FID: Integer;
     FPrice: Double;
     FQty: Double;
     FTrades: TJournalTradeList;
@@ -63,13 +75,17 @@ type
     FProfit: Double;
     FMaxProfit: Double;
     FMinProfit: Double;
-    FProfits: TDoubleList;
+    FConditionParams: TConditionParamList;
   private
     FManager: TJournalManager;
     FOnNewPositionTrade: TEventOnNewPositionTrade;
+    FOnOpen: TEventOnOpen;
+    FOnClose: TEventOnClose;
   protected
     ///<summary>Обновить информацию по сделке</summary>
     procedure SetUpDate;
+    procedure DoOpen;
+    procedure DoClose;
     procedure DoNewPositionTrade(ATime: TDateTime; APrice, AQty: Double; ASide: TTypeBuySell; ACandels: TCandelList);
   public
     constructor Create; virtual;
@@ -81,8 +97,8 @@ type
     ///<summary>Закрытие позиции</summary>
     procedure CloseTrade(ATime: TDateTime; APrice: Double; ACandels: TCandelList);
 
-    ///<summary>Вычисляем профит попозции</summary>
-    function GetProfit(const APrice: Double = 0): Double;
+    ///<summary>Обновление параметров</summary>
+    procedure SetUpDateValue(const APrice, AValueRIS, AValueAveragRSI, AValueART: Double);
 
     ///<summary>Список сделок</summary>
     property Trades: TJournalTradeList read FTrades;
@@ -91,12 +107,15 @@ type
     property Qty: Double read GetQty;
     property Side: TTypeBuySell read GetSide;
     property OnNewPositionTrade: TEventOnNewPositionTrade write FOnNewPositionTrade;
+    property OnOpen: TEventOnOpen write FOnOpen;
+    property OnClose: TEventOnClose write FOnClose;
     property Manager: TJournalManager read FManager write FManager;
+    property ID: Integer read FID write FID;
   public
     property Profit: Double read FProfit;
     property MaxProfit: Double read FMaxProfit;
     property MinProfit: Double read FMinProfit;
-    property Profits: TDoubleList read FProfits;
+    property ConditionParams: TConditionParamList read FConditionParams;
   end;
 
   ///<summary>Список позиций</summary>
@@ -108,7 +127,9 @@ type
     FPositions: TJournalPositionList;
     function GetCurrentPosition: TJournalPosition;
     function GetIsCurrentPosition: Boolean;
+    function GetProfit: Double;
   protected
+    function GetCreateJournalPosition: TJournalPosition;
     procedure DoNewTrade(ATime: TDateTime; APrice, AQty: Double; ASide: TTypeBuySell; ACandels: TCandelList);
   public
     constructor Create; virtual;
@@ -129,9 +150,189 @@ type
     property CurrentPosition: TJournalPosition read GetCurrentPosition;
     ///<summary>Список позиций</summary>
     property Positions: TJournalPositionList read FPositions;
+    ///<summary>Сумарный профит повсем позициям</summary>
+    property Profit: Double read GetProfit;
   end;
 
+///<summary>Создание ключа</summary>
+function GetCreateKey(const ACount: Integer = 20): String;
+
 implementation
+
+uses
+{$IFDEF DEBUG}
+  Lb.Logger,
+{$ENDIF}
+  Lb.DataModuleDB;
+
+var
+  localDB: TDataModuleDB = nil;
+
+function GetDB: TDataModuleDB;
+var
+  xFileNameDB: String;
+begin
+  if not Assigned(localDB) then
+  begin
+    localDB := TDataModuleDB.Create(nil);
+    xFileNameDB := ExtractFilePath(ParamStr(0)) + 'journal.db';
+  end;
+  Result := localDB;
+end;
+
+function GetCreateKey(const ACount: Integer): String;
+const
+  TO_CHAR = '0123456789abcdefghijklmnopqrstuvwxyz';
+var
+  i: Integer;
+  xS: String;
+begin
+  xS := '';
+  for i := 0 to 4 do
+    xS := xS + TO_CHAR[Random(36) + 1];
+  xS := xS + '-';
+  for i := 0 to 9 do
+    xS := xS + TO_CHAR[Random(36) + 1];
+  xS := xS + '-';
+  for i := 0 to ACount - 13 do
+    xS := xS + TO_CHAR[Random(36) + 1];
+  Result := xS;
+end;
+
+procedure SaveJournalPositionDB(AJournalPosition: TJournalPosition);
+var
+  xSQL, xKey: String;
+  xDateTime: TDateTime;
+begin
+  xDateTime := GetNewDateTime;
+  xKey := GetCreateKey;
+  xSQL := 'insert into position(journal_key,time) values(:journal_key,:time) returning id';
+  GetDB.GetCommandSQL(xSQL,[xKey,xDateTime]);
+  //GetDB.Returnings.
+end;
+
+procedure SaveJournalPosition(AJournalPosition: TJournalPosition; AJournal: TStrings);
+
+  procedure _Trades(ATrades: TJournalTradeList);
+  var
+    xS: String;
+    xTrade: TJournalTrade;
+    xF: TFormatSettings;
+    i, iCount: Integer;
+  begin
+    xF := FormatSettings;
+    xF.DecimalSeparator := '.';
+
+    AJournal.Add('## Список сделок');
+    AJournal.Add('[trades]');
+    AJournal.Add('ID;Time;Price;Qty;Side;');
+
+    iCount := ATrades.Count;
+    for i := 0 to iCount - 1 do
+    begin
+      xTrade := ATrades[i];
+      xS :=
+        IntToStr(i) + ';' +
+        DateTimeToStr(xTrade.Time) + ';' +
+        FloatToStr(xTrade.Price,xF) + ';' +
+        FloatToStr(xTrade.Qty,xF) + ';' +
+        GetStrToSide(xTrade.Side) + ';';
+      AJournal.Add(xS);
+    end;
+  end;
+
+  procedure _TradeCandes(ATrades: TJournalTradeList);
+  var
+    xS: String;
+    xTrade: TJournalTrade;
+    xF: TFormatSettings;
+    i, iCount: Integer;
+    j, jCount: Integer;
+    xCandel: TCandel;
+  begin
+    xF := FormatSettings;
+    xF.DecimalSeparator := '.';
+
+    AJournal.Add('## Список сделок');
+    AJournal.Add('[candels]');
+    AJournal.Add('TradeID;CandelID;Time;Open;High;Low;Close;Vol;');
+
+    iCount := ATrades.Count;
+    for i := 0 to iCount - 1 do
+    begin
+      xTrade := ATrades[i];
+      jCount := xTrade.Candels.Count;
+      for j := 0 to jCount - 1 do
+      begin
+        xCandel := xTrade.Candels[j];
+        xS :=
+          i.ToString + ';' +
+          j.ToString + ';' +
+          IntToStr(xCandel.Time) + ';' +
+          FloatToStr(xCandel.Open,xF) + ';' +
+          FloatToStr(xCandel.High,xF) + ';' +
+          FloatToStr(xCandel.Low,xF) + ';' +
+          FloatToStr(xCandel.Close,xF) + ';' +
+          FloatToStr(xCandel.Vol,xF) + ';';
+        AJournal.Add(xS);
+      end;
+    end;
+  end;
+
+  procedure _Profits(AConditionParams: TJournalPosition.TConditionParamList);
+  var
+    xS: String;
+    xF: TFormatSettings;
+    i, iCount: Integer;
+  begin
+    xF := FormatSettings;
+    xF.DecimalSeparator := '.';
+
+    AJournal.Add('## динамика профита');
+    AJournal.Add('[profits]');
+    AJournal.Add('ID;Value;');
+
+    iCount := AConditionParams.Count;
+    for i := 0 to iCount - 1 do
+    begin
+      var xValue := AConditionParams[i];
+      xS :=
+        i.ToString + ';' +
+        FloatToStr(xValue.Profit,xF) + ';' +
+        FloatToStr(xValue.RSI,xF) + ';' +
+        FloatToStr(xValue.AveragRSI,xF) + ';' +
+        FloatToStr(xValue.ART,xF);
+      AJournal.Add(xS);
+    end;
+  end;
+
+var
+  xF: TFormatSettings;
+begin
+  if not Assigned(AJournal) then
+    Exit;
+
+  xF := FormatSettings;
+  xF.DecimalSeparator := '.';
+  AJournal.Add('## Позиция по сделкам');
+  AJournal.Add('[journal]');
+  AJournal.Add('id;is_active;price;qty;side;profit;max_profit;min_profit;');
+  var xS :=
+    '0;' +
+    BoolToStr(AJournalPosition.IsActive) + ';' +
+    FloatToStr(AJournalPosition.Price,xF) + ';' +
+    FloatToStr(AJournalPosition.Price,xF) + ';' +
+    GetStrToSide(AJournalPosition.Side) + ';' +
+    FloatToStr(AJournalPosition.Profit,xF) + ';' +
+    FloatToStr(AJournalPosition.MaxProfit,xF) + ';' +
+    FloatToStr(AJournalPosition.MinProfit,xF) + ';';
+  AJournal.Add(xS);
+
+  _Trades(AJournalPosition.Trades);
+  _TradeCandes(AJournalPosition.Trades);
+  _Profits(AJournalPosition.ConditionParams);
+end;
+
 
 { TJournalTrade }
 
@@ -160,12 +361,12 @@ begin
 
   FMaxProfit := 0;
   FMinProfit := 0;
-  FProfits:= TDoubleList.Create;
+  FConditionParams := TConditionParamList.Create;
 end;
 
 destructor TJournalPosition.Destroy;
 begin
-  FreeAndNil(FProfits);
+  FreeAndNil(FConditionParams);
   FreeAndNil(FTrades);
   inherited;
 end;
@@ -176,6 +377,31 @@ begin
     FOnNewPositionTrade(Self, ATime, APrice, AQty, ASide, ACandels);
   if Assigned(FManager) then
     FManager.DoNewTrade(ATime, APrice, AQty, ASide, ACandels)
+end;
+
+procedure TJournalPosition.DoOpen;
+begin
+  if Assigned(FOnOpen) then
+    FOnOpen(Self);
+end;
+
+procedure TJournalPosition.DoClose;
+var
+  xFN: string;
+  xStr: TStrings;
+begin
+  if Assigned(FOnClose) then
+    FOnClose(Self);
+  {todo: сохранить информция о позии}
+
+  xStr := TStringList.Create;
+  try
+    SaveJournalPosition(Self,xStr);
+    xFN := ExtractFilePath(ParamStr(0)) + 'data' + PathDelim + 'posiotn_' + FID.ToString + '.txt';
+    xStr.SaveToFile(xFN,TEncoding.ANSI);
+  finally
+    FreeAndNil(xStr);
+  end;
 end;
 
 procedure TJournalPosition.OpenTrade(ATime: TDateTime; APrice, AQty: Double; ASide: TTypeBuySell; ACandels: TCandelList);
@@ -198,7 +424,8 @@ procedure TJournalPosition.OpenTrade(ATime: TDateTime; APrice, AQty: Double; ASi
 begin
   if Self.Qty = 0 then
   begin
-    _CreateJournalTrade(ATime, APrice, AQty, ASide, ACandels)
+    _CreateJournalTrade(ATime, APrice, AQty, ASide, ACandels);
+    DoOpen;
   end
   else
   begin
@@ -211,13 +438,15 @@ begin
       if Self.Qty >= AQty then
       begin
         _CreateJournalTrade(ATime, APrice, AQty, ASide, ACandels);
+        if GetRound(Self.Qty - AQty) < 0 then
+          DoClose;
       end
       else
       begin
-        // Открываем новую позицию
-        var xQty := AQty - Self.Qty;
+        var xQty := GetRound(AQty - Self.Qty);
         _CreateJournalTrade(ATime, APrice, Self.Qty, ASide, ACandels);
-        DoNewPositionTrade(ATime, APrice, xQty, ASide, ACandels)
+        DoClose;
+        DoNewPositionTrade(ATime, APrice, xQty, ASide, ACandels);
       end
     end;
   end;
@@ -313,7 +542,7 @@ begin
     Result := TTypeBuySell.tsNull;
 end;
 
-function TJournalPosition.GetProfit(const APrice: Double): Double;
+procedure TJournalPosition.SetUpDateValue(const APrice, AValueRIS, AValueAveragRSI, AValueART: Double);
 
   function _ProfitSumm: Double;
   var
@@ -332,8 +561,8 @@ function TJournalPosition.GetProfit(const APrice: Double): Double;
 
 var
   xProfit: Double;
+  xParam: TConditionParam;
 begin
-
   if FTrades.Count > 0 then
   begin
     if FQty = 0 then
@@ -366,11 +595,15 @@ begin
 
   if not SameValue(FProfit,xProfit,0.01) then
   begin
-    FProfits.Add(xProfit);
+
+    xParam.Profit := xProfit;
+    xParam.RSI := AValueRIS;
+    xParam.AveragRSI := AValueAveragRSI;
+    xParam.ART := AValueART;
+
+    FConditionParams.Add(xParam);
     FProfit := xProfit;
   end;
-
-  Result := xProfit;
 end;
 
 procedure TJournalPosition.CloseTrade(ATime: TDateTime; APrice: Double; ACandels: TCandelList);
@@ -382,6 +615,7 @@ begin
     GetCrossSide(Self.Side),
     ACandels
   );
+  DoClose;
 end;
 
 { TJournalManager }
@@ -396,6 +630,21 @@ begin
   FPositions.Clear;
   FreeAndNil(FPositions);
   inherited;
+end;
+
+function TJournalManager.GetCreateJournalPosition: TJournalPosition;
+var
+  xJournalPosition: TJournalPosition;
+begin
+{$IFDEF DBG_JOURNAL_MANAGER}
+  TLogger.LogTree(0,'TJournalManager.GetCreateJournalPosition:');
+  TLogger.LogTreeText(3,'>> Создание Жернал сделок в позиции');
+{$ENDIF}
+  xJournalPosition := TJournalPosition.Create;
+  xJournalPosition.Manager := Self;
+  xJournalPosition.ID := FPositions.Count;
+  FPositions.Add(xJournalPosition);
+  Result := xJournalPosition;
 end;
 
 function TJournalManager.GetCurrentPosition: TJournalPosition;
@@ -422,19 +671,35 @@ begin
     Result := xJournalPosition.IsActive;
 end;
 
+function TJournalManager.GetProfit: Double;
+var
+  xSum: Double;
+begin
+  xSum := 0;
+  for var xP in FPositions do
+    xSum := xSum + xP.Profit;
+  Result := xSum;
+end;
+
 procedure TJournalManager.OpenTrade(ATime: TDateTime; APrice, AQty: Double; ASide: TTypeBuySell; ACandels: TCandelList);
 var
   xJournalPosition: TJournalPosition;
 begin
+{$IFDEF DBG_JOURNAL_MANAGER}
+  TLogger.LogTree(0,'TJournalManager.OpenTrade:');
+  TLogger.LogTreeText(3,'>> Открытие позиция');
+  TLogger.LogTreeText(3,'>> Time := ' + DateTimeToStr(ATime));
+  TLogger.LogTreeText(3,'>> Price := ' + FloatToStr(APrice));
+  TLogger.LogTreeText(3,'>> Qty := ' + FloatToStr(AQty));
+  TLogger.LogTreeText(3,'>> Side := ' + GetStrToSide(ASide));
+{$ENDIF}
   if IsCurrentPosition then
   begin
     Self.CurrentPosition.OpenTrade(ATime, APrice, AQty, ASide, ACandels)
   end
   else
   begin
-    xJournalPosition := TJournalPosition.Create;
-    xJournalPosition.Manager := Self;
-    FPositions.Add(xJournalPosition);
+    xJournalPosition := GetCreateJournalPosition;
     xJournalPosition.OpenTrade(ATime, APrice, AQty, ASide, ACandels);
   end;
 end;
@@ -444,6 +709,12 @@ var
   xQty: Double;
   xSide: TTypeBuySell;
 begin
+{$IFDEF DBG_JOURNAL_MANAGER}
+  TLogger.LogTree(0,'TJournalManager.ReverseTrade:');
+  TLogger.LogTreeText(3,'>> Реверс позиции');
+  TLogger.LogTreeText(3,'>> Time := ' + DateTimeToStr(ATime));
+  TLogger.LogTreeText(3,'>> Price := ' + FloatToStr(APrice));
+{$ENDIF}
   if IsCurrentPosition then
   begin
     xQty := CurrentPosition.Qty;
@@ -460,6 +731,12 @@ end;
 
 procedure TJournalManager.CloseTrade(ATime: TDateTime; APrice: Double; ACandels: TCandelList);
 begin
+{$IFDEF DBG_JOURNAL_MANAGER}
+  TLogger.LogTree(0,'TJournalManager.CloseTrade:');
+  TLogger.LogTreeText(3,'>> Закрытие позиции');
+  TLogger.LogTreeText(3,'>> Time := ' + DateTimeToStr(ATime));
+  TLogger.LogTreeText(3,'>> Price := ' + FloatToStr(APrice));
+{$ENDIF}
   if IsCurrentPosition then
     Self.CurrentPosition.CloseTrade(ATime, APrice, ACandels)
 end;
@@ -468,10 +745,23 @@ procedure TJournalManager.DoNewTrade(ATime: TDateTime; APrice, AQty: Double; ASi
 var
   xJournalPosition: TJournalPosition;
 begin
-  xJournalPosition := TJournalPosition.Create;
-  xJournalPosition.Manager := Self;
-  FPositions.Add(xJournalPosition);
+{$IFDEF DBG_JOURNAL_MANAGER}
+  TLogger.LogTree(0,'TJournalManager.DoNewTrade:');
+  TLogger.LogTreeText(3,'>> Продолжаем открытие позиции');
+  TLogger.LogTreeText(3,'>> Time := ' + DateTimeToStr(ATime));
+  TLogger.LogTreeText(3,'>> Price := ' + FloatToStr(APrice));
+  TLogger.LogTreeText(3,'>> Qty := ' + FloatToStr(AQty));
+  TLogger.LogTreeText(3,'>> Side := ' + GetStrToSide(ASide));
+{$ENDIF}
+  xJournalPosition := GetCreateJournalPosition;
   xJournalPosition.OpenTrade(ATime, APrice, AQty, ASide, ACandels);
 end;
+
+initialization
+  {todo: Реализовать возможность создание базы данных}
+
+finalization
+  FreeAndNil(localDB);
+
 
 end.

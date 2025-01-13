@@ -5,7 +5,8 @@ uses
   FMX.Forms,
   UnitMainForm in 'UnitMainForm.pas' {MainForm},
   Lb.Journal.Trading.V2 in '..\..\bq_rsi_2\lb\Lb.Journal.Trading.V2.pas',
-  Lb.SysUtils in '..\..\bq_rsi_2\lb\Lb.SysUtils.pas';
+  Lb.SysUtils in '..\..\bq_rsi_2\lb\Lb.SysUtils.pas',
+  Lb.Logger in '..\..\..\..\library\Lb.Logger.pas';
 
 {$R *.res}
 
