@@ -57,7 +57,14 @@ type
     ValueType: TFieldType;
     Value: Variant;
   end;
-  TReturningList = TList<TReturning>;
+
+  TReturningList = class(TList<TReturning>)
+  public
+    function GetIndexOfName(const AName: String): Integer;
+    function GetIsName(const AName: String): Boolean;
+    function GetValueByName(const AName: String): Variant;
+  end;
+
   TOnDataSetCallBack = procedure(Sender: TObject; ATransID: Integer; ADataSet: TDataSet) of object;
   TOnEventDataSet = procedure(Sender: TObject; ADataSet: TDataSet) of object;
 
@@ -174,6 +181,43 @@ implementation
 {%CLASSGROUP 'System.Classes.TPersistent'}
 
 {$R *.dfm}
+
+{ TReturningList }
+
+function TReturningList.GetIndexOfName(const AName: String): Integer;
+var
+  xReturning: TReturning;
+  i, iCount: Integer;
+begin
+  Result := -1;
+  iCount := Self.Count;
+  if iCount > 0 then
+    for i := 0 to iCount - 1 do
+    begin
+      xReturning := Self.Items[i];
+      if SameText(xReturning.Name,AName) then
+      begin
+        Result := i;
+        Break;
+      end;
+    end;
+end;
+
+function TReturningList.GetIsName(const AName: String): Boolean;
+begin
+  Result := (GetIndexOfName(AName) >= 0);
+end;
+
+function TReturningList.GetValueByName(const AName: String): Variant;
+var
+  xIndex: Integer;
+begin
+  xIndex := GetIndexOfName(AName);
+  if xIndex >= 0 then
+    Result := Self.Items[xIndex].Value
+  else
+    Result := null;
+end;
 
 { TDataModuleDB.TAsyncQuery }
 
@@ -662,5 +706,7 @@ begin
     end;
   end;
 end;
+
+
 
 end.

@@ -154,6 +154,9 @@ type
     property Profit: Double read GetProfit;
   end;
 
+///<summary>Создание ключа</summary>
+function GetCreateKey(const ACount: Integer = 20): String;
+
 implementation
 
 uses
@@ -177,7 +180,36 @@ begin
   Result := localDB;
 end;
 
+function GetCreateKey(const ACount: Integer): String;
+const
+  TO_CHAR = '0123456789abcdefghijklmnopqrstuvwxyz';
+var
+  i: Integer;
+  xS: String;
+begin
+  xS := '';
+  for i := 0 to 4 do
+    xS := xS + TO_CHAR[Random(36) + 1];
+  xS := xS + '-';
+  for i := 0 to 9 do
+    xS := xS + TO_CHAR[Random(36) + 1];
+  xS := xS + '-';
+  for i := 0 to ACount - 13 do
+    xS := xS + TO_CHAR[Random(36) + 1];
+  Result := xS;
+end;
 
+procedure SaveJournalPositionDB(AJournalPosition: TJournalPosition);
+var
+  xSQL, xKey: String;
+  xDateTime: TDateTime;
+begin
+  xDateTime := GetNewDateTime;
+  xKey := GetCreateKey;
+  xSQL := 'insert into position(journal_key,time) values(:journal_key,:time) returning id';
+  GetDB.GetCommandSQL(xSQL,[xKey,xDateTime]);
+  //GetDB.Returnings.
+end;
 
 procedure SaveJournalPosition(AJournalPosition: TJournalPosition; AJournal: TStrings);
 
