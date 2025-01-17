@@ -29,7 +29,8 @@ uses
   Lb.Bybit.Trade in '..\..\..\library\trade\bybit\trade\Lb.Bybit.Trade.pas',
   Lb.Journal.Trading.V2 in 'lb\Lb.Journal.Trading.V2.pas',
   UnitJournalPositionFrame in 'UnitJournalPositionFrame.pas' {JournalPositionFrame: TFrame},
-  Lb.DataModuleDB in '..\..\..\library\db\Lb.DataModuleDB.pas' {DataModuleDB: TDataModule};
+  Lb.DataModuleDB in '..\..\..\library\db\Lb.DataModuleDB.pas' {DataModuleDB: TDataModule},
+  Lb.Journal.DB in 'lb\Lb.Journal.DB.pas';
 
 {$R *.res}
 

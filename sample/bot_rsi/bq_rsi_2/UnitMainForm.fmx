@@ -29,7 +29,7 @@ object MainForm: TMainForm
     Size.Width = 917.000000000000000000
     Size.Height = 1043.000000000000000000
     Size.PlatformDefault = False
-    TabIndex = 1
+    TabIndex = 0
     TabOrder = 3
     TabPosition = PlatformDefault
     Sizes = (
@@ -41,7 +41,7 @@ object MainForm: TMainForm
       CustomIcon = <
         item
         end>
-      IsSelected = False
+      IsSelected = True
       Size.Width = 82.000000000000000000
       Size.Height = 26.000000000000000000
       Size.PlatformDefault = False
@@ -87,13 +87,15 @@ object MainForm: TMainForm
       CustomIcon = <
         item
         end>
-      IsSelected = True
+      IsSelected = False
       Size.Width = 126.000000000000000000
       Size.Height = 26.000000000000000000
       Size.PlatformDefault = False
       StyleLookup = ''
       TabOrder = 0
       Text = #1058#1077#1082#1091#1097#1072#1103' - '#1055#1086#1079#1080#1094#1080#1103
+      ExplicitSize.cx = 126.000000000000000000
+      ExplicitSize.cy = 26.000000000000000000
       object LayoutJournalPosition: TLayout
         Align = Client
         Margins.Left = 5.000000000000000000
@@ -130,10 +132,18 @@ object MainForm: TMainForm
     Size.PlatformDefault = False
     TextSettings.HorzAlign = Leading
   end
-  object Button1: TButton
+  object ButtonBuy: TButton
     Position.X = 288.000000000000000000
     Position.Y = 8.000000000000000000
     TabOrder = 6
-    Text = 'Button1'
+    Text = 'ButtonBuy'
+    OnClick = ButtonBuyClick
+  end
+  object ButtonSell: TButton
+    Position.X = 288.000000000000000000
+    Position.Y = 32.000000000000000000
+    TabOrder = 8
+    Text = 'ButtonSell'
+    OnClick = ButtonSellClick
   end
 end

@@ -47,12 +47,15 @@ type
     TextSumProfit: TText;
     Timer: TTimer;
     TextStatus: TText;
-    Button1: TButton;
+    ButtonBuy: TButton;
     TabItemPosition: TTabItem;
     LayoutJournalPosition: TLayout;
+    ButtonSell: TButton;
     procedure ButtonStartClick(Sender: TObject);
     procedure ButtonStopClick(Sender: TObject);
     procedure TimerTimer(Sender: TObject);
+    procedure ButtonBuyClick(Sender: TObject);
+    procedure ButtonSellClick(Sender: TObject);
   private
     procedure SetShowGrid;
   private
@@ -310,6 +313,42 @@ begin
   //for var xBot in ManagerBot.Items do
   //  xBot.SetSelected;
 end;
+
+
+procedure TMainForm.ButtonBuyClick(Sender: TObject);
+var
+  xBot: TBot;
+begin
+  // Покупка
+  xBot := ManagerBot.Items[0];
+  var xPrice := xBot.TradingPlatform.StateMarket.Ask;
+  var xCurrentDateTime := GetNewDateTime;
+  xBot.Manager.OpenTrade(
+    xCurrentDateTime,
+    xPrice,
+    1,
+    TTypeBuySell.tsBuy,
+    xBot.TradingPlatform.StateMarket.Candels
+  );
+end;
+
+procedure TMainForm.ButtonSellClick(Sender: TObject);
+var
+  xBot: TBot;
+begin
+  // Продажа
+  xBot := ManagerBot.Items[0];
+  var xPrice := xBot.TradingPlatform.StateMarket.Bid;
+  var xCurrentDateTime := GetNewDateTime;
+  xBot.Manager.OpenTrade(
+    xCurrentDateTime,
+    xPrice,
+    1,
+    TTypeBuySell.tsSell,
+    xBot.TradingPlatform.StateMarket.Candels
+  );
+end;
+
 
 
 end.
