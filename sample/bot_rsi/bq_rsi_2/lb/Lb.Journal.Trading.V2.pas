@@ -154,184 +154,136 @@ type
     property Profit: Double read GetProfit;
   end;
 
-///<summary>Создание ключа</summary>
-function GetCreateKey(const ACount: Integer = 20): String;
-
 implementation
 
 uses
 {$IFDEF DEBUG}
   Lb.Logger,
 {$ENDIF}
-  Lb.DataModuleDB;
+  Lb.Journal.DB;
 
-var
-  localDB: TDataModuleDB = nil;
 
-function GetDB: TDataModuleDB;
-var
-  xFileNameDB: String;
-begin
-  if not Assigned(localDB) then
-  begin
-    localDB := TDataModuleDB.Create(nil);
-    xFileNameDB := ExtractFilePath(ParamStr(0)) + 'journal.db';
-  end;
-  Result := localDB;
-end;
-
-function GetCreateKey(const ACount: Integer): String;
-const
-  TO_CHAR = '0123456789abcdefghijklmnopqrstuvwxyz';
-var
-  i: Integer;
-  xS: String;
-begin
-  xS := '';
-  for i := 0 to 4 do
-    xS := xS + TO_CHAR[Random(36) + 1];
-  xS := xS + '-';
-  for i := 0 to 9 do
-    xS := xS + TO_CHAR[Random(36) + 1];
-  xS := xS + '-';
-  for i := 0 to ACount - 13 do
-    xS := xS + TO_CHAR[Random(36) + 1];
-  Result := xS;
-end;
-
-procedure SaveJournalPositionDB(AJournalPosition: TJournalPosition);
-var
-  xSQL, xKey: String;
-  xDateTime: TDateTime;
-begin
-  xDateTime := GetNewDateTime;
-  xKey := GetCreateKey;
-  xSQL := 'insert into position(journal_key,time) values(:journal_key,:time) returning id';
-  GetDB.GetCommandSQL(xSQL,[xKey,xDateTime]);
-  //GetDB.Returnings.
-end;
-
-procedure SaveJournalPosition(AJournalPosition: TJournalPosition; AJournal: TStrings);
-
-  procedure _Trades(ATrades: TJournalTradeList);
-  var
-    xS: String;
-    xTrade: TJournalTrade;
-    xF: TFormatSettings;
-    i, iCount: Integer;
-  begin
-    xF := FormatSettings;
-    xF.DecimalSeparator := '.';
-
-    AJournal.Add('## Список сделок');
-    AJournal.Add('[trades]');
-    AJournal.Add('ID;Time;Price;Qty;Side;');
-
-    iCount := ATrades.Count;
-    for i := 0 to iCount - 1 do
-    begin
-      xTrade := ATrades[i];
-      xS :=
-        IntToStr(i) + ';' +
-        DateTimeToStr(xTrade.Time) + ';' +
-        FloatToStr(xTrade.Price,xF) + ';' +
-        FloatToStr(xTrade.Qty,xF) + ';' +
-        GetStrToSide(xTrade.Side) + ';';
-      AJournal.Add(xS);
-    end;
-  end;
-
-  procedure _TradeCandes(ATrades: TJournalTradeList);
-  var
-    xS: String;
-    xTrade: TJournalTrade;
-    xF: TFormatSettings;
-    i, iCount: Integer;
-    j, jCount: Integer;
-    xCandel: TCandel;
-  begin
-    xF := FormatSettings;
-    xF.DecimalSeparator := '.';
-
-    AJournal.Add('## Список сделок');
-    AJournal.Add('[candels]');
-    AJournal.Add('TradeID;CandelID;Time;Open;High;Low;Close;Vol;');
-
-    iCount := ATrades.Count;
-    for i := 0 to iCount - 1 do
-    begin
-      xTrade := ATrades[i];
-      jCount := xTrade.Candels.Count;
-      for j := 0 to jCount - 1 do
-      begin
-        xCandel := xTrade.Candels[j];
-        xS :=
-          i.ToString + ';' +
-          j.ToString + ';' +
-          IntToStr(xCandel.Time) + ';' +
-          FloatToStr(xCandel.Open,xF) + ';' +
-          FloatToStr(xCandel.High,xF) + ';' +
-          FloatToStr(xCandel.Low,xF) + ';' +
-          FloatToStr(xCandel.Close,xF) + ';' +
-          FloatToStr(xCandel.Vol,xF) + ';';
-        AJournal.Add(xS);
-      end;
-    end;
-  end;
-
-  procedure _Profits(AConditionParams: TJournalPosition.TConditionParamList);
-  var
-    xS: String;
-    xF: TFormatSettings;
-    i, iCount: Integer;
-  begin
-    xF := FormatSettings;
-    xF.DecimalSeparator := '.';
-
-    AJournal.Add('## динамика профита');
-    AJournal.Add('[profits]');
-    AJournal.Add('ID;Value;');
-
-    iCount := AConditionParams.Count;
-    for i := 0 to iCount - 1 do
-    begin
-      var xValue := AConditionParams[i];
-      xS :=
-        i.ToString + ';' +
-        FloatToStr(xValue.Profit,xF) + ';' +
-        FloatToStr(xValue.RSI,xF) + ';' +
-        FloatToStr(xValue.AveragRSI,xF) + ';' +
-        FloatToStr(xValue.ART,xF);
-      AJournal.Add(xS);
-    end;
-  end;
-
-var
-  xF: TFormatSettings;
-begin
-  if not Assigned(AJournal) then
-    Exit;
-
-  xF := FormatSettings;
-  xF.DecimalSeparator := '.';
-  AJournal.Add('## Позиция по сделкам');
-  AJournal.Add('[journal]');
-  AJournal.Add('id;is_active;price;qty;side;profit;max_profit;min_profit;');
-  var xS :=
-    '0;' +
-    BoolToStr(AJournalPosition.IsActive) + ';' +
-    FloatToStr(AJournalPosition.Price,xF) + ';' +
-    FloatToStr(AJournalPosition.Price,xF) + ';' +
-    GetStrToSide(AJournalPosition.Side) + ';' +
-    FloatToStr(AJournalPosition.Profit,xF) + ';' +
-    FloatToStr(AJournalPosition.MaxProfit,xF) + ';' +
-    FloatToStr(AJournalPosition.MinProfit,xF) + ';';
-  AJournal.Add(xS);
-
-  _Trades(AJournalPosition.Trades);
-  _TradeCandes(AJournalPosition.Trades);
-  _Profits(AJournalPosition.ConditionParams);
-end;
+//procedure SaveJournalPosition(AJournalPosition: TJournalPosition; AJournal: TStrings);
+//
+//  procedure _Trades(ATrades: TJournalTradeList);
+//  var
+//    xS: String;
+//    xTrade: TJournalTrade;
+//    xF: TFormatSettings;
+//    i, iCount: Integer;
+//  begin
+//    xF := FormatSettings;
+//    xF.DecimalSeparator := '.';
+//
+//    AJournal.Add('## Список сделок');
+//    AJournal.Add('[trades]');
+//    AJournal.Add('ID;Time;Price;Qty;Side;');
+//
+//    iCount := ATrades.Count;
+//    for i := 0 to iCount - 1 do
+//    begin
+//      xTrade := ATrades[i];
+//      xS :=
+//        IntToStr(i) + ';' +
+//        DateTimeToStr(xTrade.Time) + ';' +
+//        FloatToStr(xTrade.Price,xF) + ';' +
+//        FloatToStr(xTrade.Qty,xF) + ';' +
+//        GetStrToSide(xTrade.Side) + ';';
+//      AJournal.Add(xS);
+//    end;
+//  end;
+//
+//  procedure _TradeCandes(ATrades: TJournalTradeList);
+//  var
+//    xS: String;
+//    xTrade: TJournalTrade;
+//    xF: TFormatSettings;
+//    i, iCount: Integer;
+//    j, jCount: Integer;
+//    xCandel: TCandel;
+//  begin
+//    xF := FormatSettings;
+//    xF.DecimalSeparator := '.';
+//
+//    AJournal.Add('## Список сделок');
+//    AJournal.Add('[candels]');
+//    AJournal.Add('TradeID;CandelID;Time;Open;High;Low;Close;Vol;');
+//
+//    iCount := ATrades.Count;
+//    for i := 0 to iCount - 1 do
+//    begin
+//      xTrade := ATrades[i];
+//      jCount := xTrade.Candels.Count;
+//      for j := 0 to jCount - 1 do
+//      begin
+//        xCandel := xTrade.Candels[j];
+//        xS :=
+//          i.ToString + ';' +
+//          j.ToString + ';' +
+//          IntToStr(xCandel.Time) + ';' +
+//          FloatToStr(xCandel.Open,xF) + ';' +
+//          FloatToStr(xCandel.High,xF) + ';' +
+//          FloatToStr(xCandel.Low,xF) + ';' +
+//          FloatToStr(xCandel.Close,xF) + ';' +
+//          FloatToStr(xCandel.Vol,xF) + ';';
+//        AJournal.Add(xS);
+//      end;
+//    end;
+//  end;
+//
+//  procedure _Profits(AConditionParams: TJournalPosition.TConditionParamList);
+//  var
+//    xS: String;
+//    xF: TFormatSettings;
+//    i, iCount: Integer;
+//  begin
+//    xF := FormatSettings;
+//    xF.DecimalSeparator := '.';
+//
+//    AJournal.Add('## динамика профита');
+//    AJournal.Add('[profits]');
+//    AJournal.Add('ID;Value;');
+//
+//    iCount := AConditionParams.Count;
+//    for i := 0 to iCount - 1 do
+//    begin
+//      var xValue := AConditionParams[i];
+//      xS :=
+//        i.ToString + ';' +
+//        FloatToStr(xValue.Profit,xF) + ';' +
+//        FloatToStr(xValue.RSI,xF) + ';' +
+//        FloatToStr(xValue.AveragRSI,xF) + ';' +
+//        FloatToStr(xValue.ART,xF);
+//      AJournal.Add(xS);
+//    end;
+//  end;
+//
+//var
+//  xF: TFormatSettings;
+//begin
+//  if not Assigned(AJournal) then
+//    Exit;
+//
+//  xF := FormatSettings;
+//  xF.DecimalSeparator := '.';
+//  AJournal.Add('## Позиция по сделкам');
+//  AJournal.Add('[journal]');
+//  AJournal.Add('id;is_active;price;qty;side;profit;max_profit;min_profit;');
+//  var xS :=
+//    '0;' +
+//    BoolToStr(AJournalPosition.IsActive) + ';' +
+//    FloatToStr(AJournalPosition.Price,xF) + ';' +
+//    FloatToStr(AJournalPosition.Price,xF) + ';' +
+//    GetStrToSide(AJournalPosition.Side) + ';' +
+//    FloatToStr(AJournalPosition.Profit,xF) + ';' +
+//    FloatToStr(AJournalPosition.MaxProfit,xF) + ';' +
+//    FloatToStr(AJournalPosition.MinProfit,xF) + ';';
+//  AJournal.Add(xS);
+//
+//  _Trades(AJournalPosition.Trades);
+//  _TradeCandes(AJournalPosition.Trades);
+//  _Profits(AJournalPosition.ConditionParams);
+//end;
 
 
 { TJournalTrade }
@@ -393,15 +345,7 @@ begin
   if Assigned(FOnClose) then
     FOnClose(Self);
   {todo: сохранить информция о позии}
-
-  xStr := TStringList.Create;
-  try
-    SaveJournalPosition(Self,xStr);
-    xFN := ExtractFilePath(ParamStr(0)) + 'data' + PathDelim + 'posiotn_' + FID.ToString + '.txt';
-    xStr.SaveToFile(xFN,TEncoding.ANSI);
-  finally
-    FreeAndNil(xStr);
-  end;
+  TJournalDataBase.SaveJournalPositionDB(Self);
 end;
 
 procedure TJournalPosition.OpenTrade(ATime: TDateTime; APrice, AQty: Double; ASide: TTypeBuySell; ACandels: TCandelList);
@@ -756,12 +700,5 @@ begin
   xJournalPosition := GetCreateJournalPosition;
   xJournalPosition.OpenTrade(ATime, APrice, AQty, ASide, ACandels);
 end;
-
-initialization
-  {todo: Реализовать возможность создание базы данных}
-
-finalization
-  FreeAndNil(localDB);
-
 
 end.

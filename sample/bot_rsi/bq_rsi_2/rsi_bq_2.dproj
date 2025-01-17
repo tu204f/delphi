@@ -230,6 +230,7 @@
             <FormType>dfm</FormType>
             <DesignClass>TDataModule</DesignClass>
         </DCCReference>
+        <DCCReference Include="lb\Lb.Journal.DB.pas"/>
         <None Include="..\..\..\library\trade\quik\quik_connect.inc"/>
         <None Include="lb\debug.inc"/>
         <BuildConfiguration Include="Release">
