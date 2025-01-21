@@ -12,6 +12,8 @@ uses
   System.Generics.Collections;
 
 type
+  TFunctionActive = function(const AValue: Double): Double;
+
   TDoubleList = array of Double;
   TDoubleMarix = array of array of Double;
 
@@ -86,7 +88,6 @@ type
   end;
 
 implementation
-
 
 { TNeoron }
 

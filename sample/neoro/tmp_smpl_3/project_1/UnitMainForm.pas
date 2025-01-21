@@ -47,7 +47,7 @@ implementation
 procedure TForm4.FormCreate(Sender: TObject);
 begin
   NeuronNet := TNeuronNet.Create;
-  NeuronNet.CreatingNeuralNetwork([2,3,1]);
+  NeuronNet.CreatingNeuralNetwork([2,5,1]);
 end;
 
 procedure TForm4.FormShow(Sender: TObject);
