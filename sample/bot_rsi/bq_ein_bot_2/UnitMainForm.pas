@@ -38,7 +38,7 @@ type
     procedure DoStart;
     procedure DoStop;
   public
-    JournalPosition: TJournalPosition;
+    Position: TJournalPosition;
     JournalManager: TJournalManager;
     TradingPlatform: TTradingPlatform;
     constructor Create(AOwner: TComponent); override;
@@ -70,16 +70,17 @@ constructor TMainForm.Create(AOwner: TComponent);
 begin
   inherited;
 
-  SetAddColumn(StrGrid,'Time',150);
-  SetAddColumn(StrGrid,'Open');
-  SetAddColumn(StrGrid,'High');
-  SetAddColumn(StrGrid,'Low');
-  SetAddColumn(StrGrid,'Close');
-  SetAddColumn(StrGrid,'Vol');
-
-  SetAddColumn(StrGrid,'RSI');
-  SetAddColumn(StrGrid,'MaRSI');
-  SetAddColumn(StrGrid,'ATR');
+  SetAddColumn(StrGrid,'id',50);
+  SetAddColumn(StrGrid,'OpenTime',120);
+  SetAddColumn(StrGrid,'OpenPrice');
+  SetAddColumn(StrGrid,'CloseTime',120);
+  SetAddColumn(StrGrid,'ClosePrice');
+  SetAddColumn(StrGrid,'Qty');
+  SetAddColumn(StrGrid,'Side');
+  SetAddColumn(StrGrid,'SL');
+  SetAddColumn(StrGrid,'TK');
+  SetAddColumn(StrGrid,'Profit');
+  SetAddColumn(StrGrid,'TypeTrade');
 
   TradingPlatform := TPlatfomBybit.Create;
   TradingPlatform.OnStateMarket := TradingPlatformOnStateMarket;
@@ -88,7 +89,7 @@ begin
   TPlatfomBybit(TradingPlatform).ApiSecret := 'YtpORO6EYWTESXWwCyLiOBm75c1Tv6GSOzqJ';
   TPlatfomBybit(TradingPlatform).Interval  := TTypeInterval.ti_5;
 
-  JournalPosition := nil;
+  Position := nil;
   JournalManager := TJournalManager.Create;
 
 end;
@@ -129,41 +130,119 @@ begin
 end;
 
 procedure TMainForm.TradingPlatformOnStateMarket(ASender: TObject; AStateMarket: TStateMarket);
+
+  procedure _ShowPosition;
+  var
+    i, Count: Integer;
+    xPosition: TJournalPosition;
+  begin
+    Count := JournalManager.Positions.Count;
+    StrGrid.RowCount := Count;
+
+    if Count > 0 then
+      for i := 0 to Count - 1 do
+      begin
+        xPosition := JournalManager.Positions[i];
+        if xPosition.TypeTrade = TTypeTrade.ttClose then
+          xPosition.SetUpdata;
+
+        StrGrid.Cells[0,i] := (i + 1).ToString;
+        StrGrid.Cells[1,i] := DateTimeToStr(xPosition.OpenTime);
+        StrGrid.Cells[2,i] := FloatToStr(xPosition.OpenPrice);
+
+        if xPosition.ClosePrice = 0 then
+        begin
+          StrGrid.Cells[3,i] := '';
+          StrGrid.Cells[4,i] := '';
+        end else
+        begin
+          StrGrid.Cells[3,i] := DateTimeToStr(xPosition.CloseTime);
+          StrGrid.Cells[4,i] := FloatToStr(xPosition.ClosePrice);
+        end;
+
+        StrGrid.Cells[5,i] := FloatToStr(xPosition.Qty);
+        StrGrid.Cells[6,i] := GetStrToSide(xPosition.Side);
+        StrGrid.Cells[7,i] := FloatToStr(xPosition.StopLoss);
+        StrGrid.Cells[8,i] := FloatToStr(xPosition.TakeProfit);
+        StrGrid.Cells[9,i] := FloatToStr(xPosition.Profit);
+        StrGrid.Cells[10,i] := GetStrToTypeTrade(xPosition.TypeTrade);
+      end;
+  end;
+
 begin
   // ***********************************************
   // Оценка состояния рынка
   TextStatus.Text :=
+    'Price: ' + TradingPlatform.StateMarket.Ask.ToString + '/' + TradingPlatform.StateMarket.Bid.ToString + '; ' +
     'ValueRSI: ' + TradingPlatform.ValueRSI.RSI.ToString + '; ' +
     'ValueAveragRSI: ' + TradingPlatform.ValueRSI.MovingAveragRSI.ToString + '; ' +
     'ValueATR: ' + TradingPlatform.ValueATR.ATR.ToString  + ';';
+
+  if Assigned(Position) then
+  begin
+    case Position.Side of
+      TTypeBuySell.tsBuy: Position.SetUpData(TradingPlatform.StateMarket.Bid);
+      TTypeBuySell.tsSell: Position.SetUpData(TradingPlatform.StateMarket.Ask);
+    end;
+
+  end;
+  _ShowPosition;
 end;
 
 procedure TMainForm.ButtonBuyClick(Sender: TObject);
 begin
   // Купить
-  if not Assigned(JournalPosition) then
+  if not Assigned(Position) then
   begin
-    JournalPosition := JournalManager.GetCreateJournalPosition;
-
+    Position := JournalManager.GetCreateJournalPosition;
+    with Position do
+    begin
+      OpenTime := GetNewDateTime;
+      OpenPrice := TradingPlatform.StateMarket.Ask;
+      Qty := 1;
+      Side := TTypeBuySell.tsBuy;
+      IsActive := True;
+      TypeTrade := TTypeTrade.ttOpen;
+      Triling := 15;
+    end;
   end;
 end;
 
 procedure TMainForm.ButtonSellClick(Sender: TObject);
 begin
   // Продать
-  if not Assigned(JournalPosition) then
+  if not Assigned(Position) then
   begin
-    JournalPosition := JournalManager.GetCreateJournalPosition;
-
+    Position := JournalManager.GetCreateJournalPosition;
+    with Position do
+    begin
+      OpenTime := GetNewDateTime;
+      OpenPrice := TradingPlatform.StateMarket.Bid;
+      Qty := 1;
+      Side := TTypeBuySell.tsSell;
+      IsActive := True;
+      TypeTrade := TTypeTrade.ttOpen;
+      Triling := 15;
+    end;
   end;
 end;
 
 procedure TMainForm.ButtonCloseClick(Sender: TObject);
 begin
   // Закрыть позицию
-  if Assigned(JournalPosition) then
+  if Assigned(Position) then
   begin
-    JournalPosition.C
+    with Position do
+    begin
+      CloseTime := GetNewDateTime;
+      case Side of
+        TTypeBuySell.tsBuy: ClosePrice := TradingPlatform.StateMarket.Bid;
+        TTypeBuySell.tsSell: ClosePrice := TradingPlatform.StateMarket.Ask;
+      end;
+      IsActive := False;
+      TypeTrade := TTypeTrade.ttClose;
+    end;
+    Position := nil;
   end;
 end;
 

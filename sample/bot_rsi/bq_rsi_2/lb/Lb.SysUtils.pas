@@ -115,6 +115,7 @@ type
 function GetCrossSide(ASide: TTypeBuySell): TTypeBuySell;
 function GetStrToSide(ASide: TTypeBuySell): String;
 function GetSiseToStr(AValue: String): TTypeBuySell;
+function GetStrToTypeTrade(const ATypeTrade: TTypeTrade): String;
 
 ///<summary>
 /// Текущая дата и время
@@ -141,6 +142,15 @@ const
   /// Количество миллисекунд в одном часе
   ///</summary>
   HOUR_COUNT_MSEC = 60 * MIN_COUNT_MSEC;
+
+function GetStrToTypeTrade(const ATypeTrade: TTypeTrade): String;
+begin
+  case ATypeTrade of
+    ttNull: Result := 'null';
+    ttOpen: Result := 'open';
+    ttClose: Result := 'close';
+  end;
+end;
 
 function GetStrToSide(ASide: TTypeBuySell): String;
 begin
