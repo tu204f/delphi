@@ -15,12 +15,11 @@ uses
   Lb.Platform.Bybit,
   FMX.Objects,
   FMX.Layouts,
-  Lb.Journal.Trading.v2;
+  Lb.Journal.Trading.v2, FMX.TabControl;
 
 type
   TMainForm = class(TForm)
     ButtonStartOrStop: TButton;
-    StrGrid: TStringGrid;
     Rectangle: TRectangle;
     TextStatus: TText;
     Layout: TLayout;
@@ -28,6 +27,11 @@ type
     ButtonBuy: TButton;
     ButtonSell: TButton;
     ButtonClose: TButton;
+    TabControl1: TTabControl;
+    TabItemTrade: TTabItem;
+    TabItemPosition: TTabItem;
+    StrGrid: TStringGrid;
+    StringGridCandel: TStringGrid;
     procedure ButtonStartOrStopClick(Sender: TObject);
     procedure ButtonBuyClick(Sender: TObject);
     procedure ButtonSellClick(Sender: TObject);
@@ -69,6 +73,16 @@ constructor TMainForm.Create(AOwner: TComponent);
 
 begin
   inherited;
+
+  SetAddColumn(StringGridCandel,'Time',150);
+  SetAddColumn(StringGridCandel,'Open');
+  SetAddColumn(StringGridCandel,'High');
+  SetAddColumn(StringGridCandel,'Low');
+  SetAddColumn(StringGridCandel,'Close');
+  SetAddColumn(StringGridCandel,'Vol');
+  SetAddColumn(StringGridCandel,'RSI');
+  SetAddColumn(StringGridCandel,'MaRSI');
+  SetAddColumn(StringGridCandel,'ATR');
 
   SetAddColumn(StrGrid,'id',50);
   SetAddColumn(StrGrid,'OpenTime',120);
@@ -131,6 +145,29 @@ end;
 
 procedure TMainForm.TradingPlatformOnStateMarket(ASender: TObject; AStateMarket: TStateMarket);
 
+  procedure _ShowCandel;
+  var
+    xCandel: TCandel;
+    i, iCount: Integer;
+  begin
+    iCount := AStateMarket.Candels.Count;
+    StringGridCandel.RowCount := iCount;
+    if iCount > 0 then
+      for i := 0 to iCount - 1 do
+      begin
+        xCandel := AStateMarket.Candels[i];
+        StringGridCandel.Cells[0,i] := DateTimeToStr(UnixToDateTime(xCandel.Time));
+        StringGridCandel.Cells[1,i] := xCandel.Open.ToString;
+        StringGridCandel.Cells[2,i] := xCandel.High.ToString;
+        StringGridCandel.Cells[3,i] := xCandel.Low.ToString;
+        StringGridCandel.Cells[4,i] := xCandel.Close.ToString;
+        StringGridCandel.Cells[5,i] := xCandel.Vol.ToString;
+        StringGridCandel.Cells[6,i] := TradingPlatform.ValueRSI.ValueRSI[i].ToString;
+        StringGridCandel.Cells[7,i] := TradingPlatform.ValueRSI.ValueMaRSI[i].ToString;
+        StringGridCandel.Cells[8,i] := TradingPlatform.ValueATR.Values[i].ToString;
+      end;
+  end;
+
   procedure _ShowPosition;
   var
     i, Count: Integer;
@@ -178,13 +215,14 @@ begin
     'ValueAveragRSI: ' + TradingPlatform.ValueRSI.MovingAveragRSI.ToString + '; ' +
     'ValueATR: ' + TradingPlatform.ValueATR.ATR.ToString  + ';';
 
+  _ShowCandel;
+
   if Assigned(Position) then
   begin
     case Position.Side of
       TTypeBuySell.tsBuy: Position.SetUpData(TradingPlatform.StateMarket.Bid);
       TTypeBuySell.tsSell: Position.SetUpData(TradingPlatform.StateMarket.Ask);
     end;
-
   end;
   _ShowPosition;
 end;

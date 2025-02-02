@@ -18,20 +18,6 @@ object MainForm: TMainForm
     Text = #1057#1090#1072#1088#1090
     OnClick = ButtonStartOrStopClick
   end
-  object StrGrid: TStringGrid
-    Anchors = [akLeft, akTop, akRight, akBottom]
-    CanFocus = True
-    ClipChildren = True
-    Position.X = 8.000000000000000000
-    Position.Y = 60.000000000000000000
-    Size.Width = 621.000000000000000000
-    Size.Height = 409.000000000000000000
-    Size.PlatformDefault = False
-    TabOrder = 1
-    Options = [Editing, ColumnResize, ColumnMove, ColLines, RowLines, RowSelect, Tabs, Header, HeaderClick, AutoDisplacement]
-    Viewport.Width = 617.000000000000000000
-    Viewport.Height = 384.000000000000000000
-  end
   object Rectangle: TRectangle
     Anchors = [akLeft, akTop, akRight]
     Position.X = 120.000000000000000000
@@ -128,6 +114,70 @@ object MainForm: TMainForm
           Text = #1047#1072#1082#1088#1099#1090#1100
           OnClick = ButtonCloseClick
         end
+      end
+    end
+  end
+  object TabControl1: TTabControl
+    Anchors = [akLeft, akTop, akRight, akBottom]
+    Position.X = 8.000000000000000000
+    Position.Y = 60.000000000000000000
+    Size.Width = 621.000000000000000000
+    Size.Height = 409.000000000000000000
+    Size.PlatformDefault = False
+    TabIndex = 0
+    TabOrder = 1
+    TabPosition = PlatformDefault
+    Sizes = (
+      621s
+      383s
+      621s
+      383s)
+    object TabItemTrade: TTabItem
+      CustomIcon = <
+        item
+        end>
+      IsSelected = True
+      Size.Width = 54.000000000000000000
+      Size.Height = 26.000000000000000000
+      Size.PlatformDefault = False
+      StyleLookup = ''
+      TabOrder = 0
+      Text = #1057#1074#1077#1095#1080
+      object StringGridCandel: TStringGrid
+        Align = Client
+        CanFocus = True
+        ClipChildren = True
+        Size.Width = 621.000000000000000000
+        Size.Height = 383.000000000000000000
+        Size.PlatformDefault = False
+        TabOrder = 1
+        Options = [Editing, ColumnResize, ColumnMove, ColLines, RowLines, RowSelect, Tabs, Header, HeaderClick, AutoDisplacement]
+        Viewport.Width = 617.000000000000000000
+        Viewport.Height = 358.000000000000000000
+      end
+    end
+    object TabItemPosition: TTabItem
+      CustomIcon = <
+        item
+        end>
+      IsSelected = False
+      Size.Width = 69.000000000000000000
+      Size.Height = 26.000000000000000000
+      Size.PlatformDefault = False
+      StyleLookup = ''
+      TabOrder = 0
+      Text = #1055#1086#1079#1080#1094#1080#1103
+      object StrGrid: TStringGrid
+        Align = Client
+        CanFocus = True
+        ClipChildren = True
+        Size.Width = 621.000000000000000000
+        Size.Height = 383.000000000000000000
+        Size.PlatformDefault = False
+        TabOrder = 1
+        Options = [Editing, ColumnResize, ColumnMove, ColLines, RowLines, RowSelect, Tabs, Header, HeaderClick, AutoDisplacement]
+        Viewport.Width = 617.000000000000000000
+        Viewport.Height = 358.000000000000000000
       end
     end
   end
