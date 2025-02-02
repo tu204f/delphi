@@ -14,7 +14,7 @@ uses
   FMX.Forms,
   FMX.Dialogs,
   FMX.StdCtrls,
-  Lb.Journal.Trading.V2, System.Rtti, FMX.Grid.Style, FMX.Layouts,
+  Lb.Journal.Trading, System.Rtti, FMX.Grid.Style, FMX.Layouts,
   FMXTee.Engine, FMXTee.Series, FMXTee.Procs, FMXTee.Chart,
   FMX.Controls.Presentation, FMX.ScrollBox, FMX.Grid, FMX.Objects;
 

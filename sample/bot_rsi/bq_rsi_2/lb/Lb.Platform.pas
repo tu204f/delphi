@@ -10,7 +10,7 @@ uses
   System.Variants,
   FMX.Types,
   Lb.SysUtils,
-  Lb.Journal.Trading.V2;
+  Lb.Indiсator;
 
 type
   TEventOnStart        = procedure(ASender: TObject) of object;
@@ -62,12 +62,8 @@ type
     FSymbol: String;
     FOnStateMarket: TEventOnStateMarket;
   private
-    FPeriodRSI: Integer;
-    FPeriodSMA: Integer;
-    FPeriodATR: Integer;
-    FValueRSI: Double;
-    FValueAveragRSI: Double;
-    FValueATR: Double;
+    FValueRSI: TValueRSI;
+    FValueATR: TValueATR;
   protected
     FStateMarket: TStateMarket;
     procedure DoStateMarke; virtual;
@@ -79,6 +75,7 @@ type
     property Symbol: String read FSymbol write FSymbol;
     ///<summary>Состояние рынка</summary>
     property StateMarket: TStateMarket read FStateMarket;
+    ///<summary>Обновление объекта состояние рынка</summary>
     property OnStateMarket: TEventOnStateMarket write FOnStateMarket;
   public
     ///<summary>
@@ -86,22 +83,11 @@ type
     ///</summary>
     procedure SendTrade(const ATime: TDateTime; const APrice, AQty: Double; ASide: TTypeBuySell); virtual;
   public {торговые правильа }
-    ///<summary>Период расчета RSI</summary>
-    property PeriodRSI: Integer read FPeriodRSI write FPeriodRSI;
-    ///<summary>Период усреднение RSI</summary>
-    property PeriodSMA: Integer read FPeriodSMA write FPeriodSMA;
-    ///<summary>Период расчета ART</summary>
-    property PeriodATR: Integer read FPeriodATR write FPeriodATR;
-    property ValueRSI: Double read FValueRSI;
-    property ValueAveragRSI: Double read FValueAveragRSI;
-    property ValueATR: Double read FValueATR;
+    property ValueRSI: TValueRSI read FValueRSI;
+    property ValueATR: TValueATR read FValueATR;
   end;
 
-
 implementation
-
-uses
-  Lb.Bot;
 
 { TCustomTradingPlatform }
 
@@ -190,15 +176,15 @@ end;
 constructor TTradingPlatform.Create;
 begin
   inherited Create;
-  FPeriodRSI := 14;
-  FPeriodSMA := 14;
-  FPeriodATR := 7;
-
+  FValueRSI := TValueRSI.Create;
+  FValueATR := TValueATR.Create;
   FStateMarket := TStateMarket.Create;
 end;
 
 destructor TTradingPlatform.Destroy;
 begin
+  FreeAndNil(FValueATR);
+  FreeAndNil(FValueRSI);
   FreeAndNil(FStateMarket);
   inherited Destroy;
 end;
@@ -207,21 +193,12 @@ procedure TTradingPlatform.DoSelected;
 begin
   inherited;
 
-  FValueATR := GetATR(FPeriodATR,StateMarket.Candels);
-  FValueATR := Round(FValueATR * 100)/100;
-
-  SetAveragRSI(
-    FPeriodRSI,
-    FPeriodSMA,
-    StateMarket.Candels,
-    FValueRSI,
-    FValueAveragRSI
-  );
-
 end;
 
 procedure TTradingPlatform.DoStateMarke;
 begin
+  FValueATR.SetCandels(FStateMarket.Candels);
+  FValueRSI.SetCandels(FStateMarket.Candels);
   if Assigned(FOnStateMarket) then
     FOnStateMarket(Self,FStateMarket);
 end;
