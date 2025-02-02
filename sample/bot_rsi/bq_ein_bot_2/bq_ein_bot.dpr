@@ -14,7 +14,8 @@ uses
   Lb.Bybit.OrderBook in '..\..\..\library\trade\bybit\market\Lb.Bybit.OrderBook.pas',
   Lb.Bybit.ServerTime in '..\..\..\library\trade\bybit\market\Lb.Bybit.ServerTime.pas',
   Lb.Indiñator in '..\bq_rsi_2\lb\Lb.Indiñator.pas',
-  Lb.Logger in '..\..\..\library\Lb.Logger.pas';
+  Lb.Logger in '..\..\..\library\Lb.Logger.pas',
+  Lb.Journal.Trading.v2 in '..\bq_rsi_2\lb\Lb.Journal.Trading.v2.pas';
 
 {$R *.res}
 

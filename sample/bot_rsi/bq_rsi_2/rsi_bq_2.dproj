@@ -219,7 +219,6 @@
         <DCCReference Include="lb\Lb.Journal.Trading_Old.pas"/>
         <DCCReference Include="lb\Lb.ParamClose.pas"/>
         <DCCReference Include="..\..\..\library\trade\bybit\trade\Lb.Bybit.Trade.pas"/>
-        <DCCReference Include="lb\Lb.Journal.Trading.pas"/>
         <DCCReference Include="UnitJournalPositionFrame.pas">
             <Form>JournalPositionFrame</Form>
             <FormType>fmx</FormType>
@@ -232,6 +231,7 @@
         </DCCReference>
         <DCCReference Include="lb\Lb.Journal.DB.pas"/>
         <DCCReference Include="lb\Lb.Indiсator.pas"/>
+        <DCCReference Include="lb\Lb.Journal.Trading.v2.pas"/>
         <None Include="..\..\..\library\trade\quik\quik_connect.inc"/>
         <None Include="lb\debug.inc"/>
         <BuildConfiguration Include="Release">

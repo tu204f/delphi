@@ -27,11 +27,11 @@ uses
   Lb.Journal.Trading_Old in 'lb\Lb.Journal.Trading_Old.pas',
   Lb.ParamClose in 'lb\Lb.ParamClose.pas',
   Lb.Bybit.Trade in '..\..\..\library\trade\bybit\trade\Lb.Bybit.Trade.pas',
-  Lb.Journal.Trading in 'lb\Lb.Journal.Trading.pas',
   UnitJournalPositionFrame in 'UnitJournalPositionFrame.pas' {JournalPositionFrame: TFrame},
   Lb.DataModuleDB in '..\..\..\library\db\Lb.DataModuleDB.pas' {DataModuleDB: TDataModule},
   Lb.Journal.DB in 'lb\Lb.Journal.DB.pas',
-  Lb.Indiñator in 'lb\Lb.Indiñator.pas';
+  Lb.Indiñator in 'lb\Lb.Indiñator.pas',
+  Lb.Journal.Trading.v2 in 'lb\Lb.Journal.Trading.v2.pas';
 
 {$R *.res}
 

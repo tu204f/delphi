@@ -13,7 +13,9 @@ uses
   Lb.Platform,
   Lb.Bybit.SysUtils,
   Lb.Platform.Bybit,
-  FMX.Objects, FMX.Layouts;
+  FMX.Objects,
+  FMX.Layouts,
+  Lb.Journal.Trading.v2;
 
 type
   TMainForm = class(TForm)
@@ -25,13 +27,19 @@ type
     GridLayout: TGridPanelLayout;
     ButtonBuy: TButton;
     ButtonSell: TButton;
+    ButtonClose: TButton;
     procedure ButtonStartOrStopClick(Sender: TObject);
+    procedure ButtonBuyClick(Sender: TObject);
+    procedure ButtonSellClick(Sender: TObject);
+    procedure ButtonCloseClick(Sender: TObject);
   private
     procedure TradingPlatformOnStateMarket(ASender: TObject; AStateMarket: TStateMarket);
   protected
     procedure DoStart;
     procedure DoStop;
   public
+    JournalPosition: TJournalPosition;
+    JournalManager: TJournalManager;
     TradingPlatform: TTradingPlatform;
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
@@ -79,10 +87,15 @@ begin
   TPlatfomBybit(TradingPlatform).ApiKey := '3bvDxJnKzjkIg8y0RV';
   TPlatfomBybit(TradingPlatform).ApiSecret := 'YtpORO6EYWTESXWwCyLiOBm75c1Tv6GSOzqJ';
   TPlatfomBybit(TradingPlatform).Interval  := TTypeInterval.ti_5;
+
+  JournalPosition := nil;
+  JournalManager := TJournalManager.Create;
+
 end;
 
 destructor TMainForm.Destroy;
 begin
+  FreeAndNil(JournalManager);
   FreeAndNil(TradingPlatform);
   inherited;
 end;
@@ -124,5 +137,35 @@ begin
     'ValueAveragRSI: ' + TradingPlatform.ValueRSI.MovingAveragRSI.ToString + '; ' +
     'ValueATR: ' + TradingPlatform.ValueATR.ATR.ToString  + ';';
 end;
+
+procedure TMainForm.ButtonBuyClick(Sender: TObject);
+begin
+  // Купить
+  if not Assigned(JournalPosition) then
+  begin
+    JournalPosition := JournalManager.GetCreateJournalPosition;
+
+  end;
+end;
+
+procedure TMainForm.ButtonSellClick(Sender: TObject);
+begin
+  // Продать
+  if not Assigned(JournalPosition) then
+  begin
+    JournalPosition := JournalManager.GetCreateJournalPosition;
+
+  end;
+end;
+
+procedure TMainForm.ButtonCloseClick(Sender: TObject);
+begin
+  // Закрыть позицию
+  if Assigned(JournalPosition) then
+  begin
+    JournalPosition.C
+  end;
+end;
+
 
 end.
