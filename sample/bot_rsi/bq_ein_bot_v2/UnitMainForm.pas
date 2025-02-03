@@ -142,7 +142,7 @@ begin
 
   TPlatfomBybit(TradingPlatform).ApiKey := '3bvDxJnKzjkIg8y0RV';
   TPlatfomBybit(TradingPlatform).ApiSecret := 'YtpORO6EYWTESXWwCyLiOBm75c1Tv6GSOzqJ';
-  TPlatfomBybit(TradingPlatform).Interval  := TTypeInterval.ti_5;
+  TPlatfomBybit(TradingPlatform).Interval  := TTypeInterval.ti_1;
 
   Position := nil;
   JournalManager := TJournalManager.Create;
@@ -359,6 +359,15 @@ begin
       TTypeBuySell.tsSell: Position.SetUpData(TradingPlatform.StateMarket.Ask);
     end;
   end;
+
+  if Assigned(MirrorPosition) then
+  begin
+    case MirrorPosition.Side of
+      TTypeBuySell.tsBuy: MirrorPosition.SetUpData(TradingPlatform.StateMarket.Bid);
+      TTypeBuySell.tsSell: MirrorPosition.SetUpData(TradingPlatform.StateMarket.Ask);
+    end;
+  end;
+
   _ShowPosition;
   _ShowMirrorPosition;
 end;
@@ -419,7 +428,7 @@ end;
 
 function TMainForm.GetQuantity: Double;
 var
-  i, Count: Integer;
+  Count: Integer;
   xPosition: TJournalPosition;
 begin
   // Вслучае получение отрицательного профита прошлый раз значение удваевыем
@@ -435,7 +444,7 @@ end;
 
 function TMainForm.GetMirrorQuantity: Double;
 var
-  i, Count: Integer;
+  Count: Integer;
   xPosition: TJournalPosition;
 begin
   // Вслучае получение отрицательного профита прошлый раз значение удваевыем
@@ -554,8 +563,6 @@ procedure TMainForm.ButtonSellClick(Sender: TObject);
     end;
   end;
 
-var
-  xQuantity: Double;
 begin
   {$IFDEF DBG_STRATEGY}
   TLogger.LogTree(0,'TMainForm.ButtonBuyClick: Продажа');
