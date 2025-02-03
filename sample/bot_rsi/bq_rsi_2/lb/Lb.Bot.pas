@@ -14,7 +14,7 @@ uses
   Lb.SysUtils,
   Lb.Platform,
   Lb.TradeBox,
-  Lb.Journal.Trading;
+  Lb.Journal.Trading_OLD;
 
 type
   ///<summary>

@@ -19,7 +19,7 @@ uses
   FMX.Memo,
   FMX.StdCtrls,
 
-  Lb.Journal.Trading,
+  Lb.Journal.Trading_Old,
 
   Lb.SysUtils,
   Lb.Bot,

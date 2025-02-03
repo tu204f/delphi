@@ -3,13 +3,13 @@
         <ProjectGuid>{8B944645-728E-47C9-874B-4E14DBA394F2}</ProjectGuid>
     </PropertyGroup>
     <ItemGroup>
-        <Projects Include="bq_rsi_2\rsi_bq_2.dproj">
-            <Dependencies/>
-        </Projects>
         <Projects Include="bq_history_2\bq_history.dproj">
             <Dependencies/>
         </Projects>
         <Projects Include="bq_ein_bot_2\bq_ein_bot.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="bq_ein_bot_v2\bq_bot_v2.dproj">
             <Dependencies/>
         </Projects>
     </ItemGroup>
@@ -20,15 +20,6 @@
             <Default.Personality/>
         </BorlandProject>
     </ProjectExtensions>
-    <Target Name="rsi_bq_2">
-        <MSBuild Projects="bq_rsi_2\rsi_bq_2.dproj"/>
-    </Target>
-    <Target Name="rsi_bq_2:Clean">
-        <MSBuild Projects="bq_rsi_2\rsi_bq_2.dproj" Targets="Clean"/>
-    </Target>
-    <Target Name="rsi_bq_2:Make">
-        <MSBuild Projects="bq_rsi_2\rsi_bq_2.dproj" Targets="Make"/>
-    </Target>
     <Target Name="bq_history">
         <MSBuild Projects="bq_history_2\bq_history.dproj"/>
     </Target>
@@ -47,14 +38,23 @@
     <Target Name="bq_ein_bot:Make">
         <MSBuild Projects="bq_ein_bot_2\bq_ein_bot.dproj" Targets="Make"/>
     </Target>
+    <Target Name="bq_bot_v2">
+        <MSBuild Projects="bq_ein_bot_v2\bq_bot_v2.dproj"/>
+    </Target>
+    <Target Name="bq_bot_v2:Clean">
+        <MSBuild Projects="bq_ein_bot_v2\bq_bot_v2.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="bq_bot_v2:Make">
+        <MSBuild Projects="bq_ein_bot_v2\bq_bot_v2.dproj" Targets="Make"/>
+    </Target>
     <Target Name="Build">
-        <CallTarget Targets="rsi_bq_2;bq_history;bq_ein_bot"/>
+        <CallTarget Targets="bq_history;bq_ein_bot;bq_bot_v2"/>
     </Target>
     <Target Name="Clean">
-        <CallTarget Targets="rsi_bq_2:Clean;bq_history:Clean;bq_ein_bot:Clean"/>
+        <CallTarget Targets="bq_history:Clean;bq_ein_bot:Clean;bq_bot_v2:Clean"/>
     </Target>
     <Target Name="Make">
-        <CallTarget Targets="rsi_bq_2:Make;bq_history:Make;bq_ein_bot:Make"/>
+        <CallTarget Targets="bq_history:Make;bq_ein_bot:Make;bq_bot_v2:Make"/>
     </Target>
     <Import Project="$(BDS)\Bin\CodeGear.Group.Targets" Condition="Exists('$(BDS)\Bin\CodeGear.Group.Targets')"/>
 </Project>

@@ -171,18 +171,90 @@ object MainForm: TMainForm
       Text = #1055#1086#1079#1080#1094#1080#1103
       ExplicitSize.cx = 69.000000000000000000
       ExplicitSize.cy = 26.000000000000000000
-      object StrGrid: TStringGrid
+      object GridPanelLayout: TGridPanelLayout
         Align = Client
-        CanFocus = True
-        ClipChildren = True
-        PopupMenu = PopupMenu
         Size.Width = 621.000000000000000000
         Size.Height = 383.000000000000000000
         Size.PlatformDefault = False
         TabOrder = 1
-        Options = [Editing, ColumnResize, ColumnMove, ColLines, RowLines, RowSelect, Tabs, Header, HeaderClick, AutoDisplacement]
-        Viewport.Width = 617.000000000000000000
-        Viewport.Height = 358.000000000000000000
+        ColumnCollection = <
+          item
+            Value = 100.000000000000000000
+          end>
+        ControlCollection = <
+          item
+            Column = 0
+            Control = Layout1
+            Row = 0
+          end
+          item
+            Column = 0
+            Control = Layout2
+            Row = 1
+          end>
+        RowCollection = <
+          item
+            Value = 50.000000000000000000
+          end
+          item
+            Value = 50.000000000000000000
+          end>
+        object Layout1: TLayout
+          Align = Client
+          Size.Width = 621.000000000000000000
+          Size.Height = 191.500000000000000000
+          Size.PlatformDefault = False
+          TabOrder = 0
+          object Text1: TText
+            Align = Top
+            Size.Width = 621.000000000000000000
+            Size.Height = 21.000000000000000000
+            Size.PlatformDefault = False
+            Text = #1053#1072#1090#1091#1088#1072#1083#1100#1085#1086#1077' '#1085#1072#1087#1088#1086#1074#1083#1077#1085#1080#1077':'
+            TextSettings.HorzAlign = Leading
+          end
+          object StrGrid: TStringGrid
+            Align = Client
+            CanFocus = True
+            ClipChildren = True
+            PopupMenu = PopupMenu
+            Size.Width = 621.000000000000000000
+            Size.Height = 170.500000000000000000
+            Size.PlatformDefault = False
+            TabOrder = 1
+            Options = [Editing, ColumnResize, ColumnMove, ColLines, RowLines, RowSelect, Tabs, Header, HeaderClick, AutoDisplacement]
+            Viewport.Width = 617.000000000000000000
+            Viewport.Height = 145.500000000000000000
+          end
+        end
+        object Layout2: TLayout
+          Align = Client
+          Size.Width = 621.000000000000000000
+          Size.Height = 191.500000000000000000
+          Size.PlatformDefault = False
+          TabOrder = 1
+          object Text2: TText
+            Align = Top
+            Size.Width = 621.000000000000000000
+            Size.Height = 21.000000000000000000
+            Size.PlatformDefault = False
+            Text = #1053#1072#1090#1091#1088#1072#1083#1100#1085#1086#1077' '#1085#1072#1087#1088#1086#1074#1083#1077#1085#1080#1077':'
+            TextSettings.HorzAlign = Leading
+          end
+          object StrGrid_V2: TStringGrid
+            Align = Client
+            CanFocus = True
+            ClipChildren = True
+            PopupMenu = PopupMenu
+            Size.Width = 621.000000000000000000
+            Size.Height = 170.500000000000000000
+            Size.PlatformDefault = False
+            TabOrder = 1
+            Options = [Editing, ColumnResize, ColumnMove, ColLines, RowLines, RowSelect, Tabs, Header, HeaderClick, AutoDisplacement]
+            Viewport.Width = 617.000000000000000000
+            Viewport.Height = 145.500000000000000000
+          end
+        end
       end
     end
   end

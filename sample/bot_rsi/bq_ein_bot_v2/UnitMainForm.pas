@@ -38,6 +38,12 @@ type
     StringGridCandel: TStringGrid;
     PopupMenu: TPopupMenu;
     MenuItemSaveFile: TMenuItem;
+    GridPanelLayout: TGridPanelLayout;
+    Layout1: TLayout;
+    Layout2: TLayout;
+    Text1: TText;
+    Text2: TText;
+    StrGrid_V2: TStringGrid;
     procedure ButtonStartOrStopClick(Sender: TObject);
     procedure ButtonBuyClick(Sender: TObject);
     procedure ButtonSellClick(Sender: TObject);
@@ -45,16 +51,25 @@ type
     procedure MenuItemSaveFileClick(Sender: TObject);
   private
     procedure TradingPlatformOnStateMarket(ASender: TObject; AStateMarket: TStateMarket);
+    procedure _MirrorCloseOrder;
   protected
     procedure DoStart;
     procedure DoStop;
     procedure Strategy;
     procedure PositionClose(ASander: TObject);
+    procedure MirrorPositionClose(ASander: TObject);
     function GetQuantity: Double;
+    function GetMirrorQuantity: Double;
+  protected
   public
     TypeDirection: TTypeDirection;
+
     Position: TJournalPosition;
     JournalManager: TJournalManager;
+
+    MirrorPosition: TJournalPosition;
+    MirrorJournalManager: TJournalManager;
+
     TradingPlatform: TTradingPlatform;
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
@@ -110,6 +125,18 @@ begin
   SetAddColumn(StrGrid,'Profit');
   SetAddColumn(StrGrid,'TypeTrade');
 
+  SetAddColumn(StrGrid_V2,'id',50);
+  SetAddColumn(StrGrid_V2,'OpenTime',120);
+  SetAddColumn(StrGrid_V2,'OpenPrice');
+  SetAddColumn(StrGrid_V2,'CloseTime',120);
+  SetAddColumn(StrGrid_V2,'ClosePrice');
+  SetAddColumn(StrGrid_V2,'Qty');
+  SetAddColumn(StrGrid_V2,'Side');
+  SetAddColumn(StrGrid_V2,'SL');
+  SetAddColumn(StrGrid_V2,'TK');
+  SetAddColumn(StrGrid_V2,'Profit');
+  SetAddColumn(StrGrid_V2,'TypeTrade');
+
   TradingPlatform := TPlatfomBybit.Create;
   TradingPlatform.OnStateMarket := TradingPlatformOnStateMarket;
 
@@ -120,10 +147,14 @@ begin
   Position := nil;
   JournalManager := TJournalManager.Create;
 
+  MirrorPosition := nil;
+  MirrorJournalManager := TJournalManager.Create;
+
 end;
 
 destructor TMainForm.Destroy;
 begin
+  FreeAndNil(MirrorJournalManager);
   FreeAndNil(JournalManager);
   FreeAndNil(TradingPlatform);
   inherited;
@@ -197,7 +228,16 @@ begin
   TLogger.LogTree(0,'TMainForm.PositionClose');
   {$ENDIF}
   Position := nil;
+
+  // Закрываем зиркальную позицию
+  Self._MirrorCloseOrder();
 end;
+
+procedure TMainForm.MirrorPositionClose(ASander: TObject);
+begin
+  MirrorPosition := nil;
+end;
+
 
 procedure TMainForm.TradingPlatformOnStateMarket(ASender: TObject; AStateMarket: TStateMarket);
 
@@ -262,6 +302,44 @@ procedure TMainForm.TradingPlatformOnStateMarket(ASender: TObject; AStateMarket:
       end;
   end;
 
+  procedure _ShowMirrorPosition;
+  var
+    i, Count: Integer;
+    xPosition: TJournalPosition;
+  begin
+    Count := MirrorJournalManager.Positions.Count;
+    StrGrid_v2.RowCount := Count;
+
+    if Count > 0 then
+      for i := 0 to Count - 1 do
+      begin
+        xPosition := MirrorJournalManager.Positions[i];
+        if xPosition.TypeTrade = TTypeTrade.ttClose then
+          xPosition.SetUpdata;
+
+        StrGrid_v2.Cells[0,i] := (i + 1).ToString;
+        StrGrid_v2.Cells[1,i] := DateTimeToStr(xPosition.OpenTime);
+        StrGrid_v2.Cells[2,i] := FloatToStr(xPosition.OpenPrice);
+
+        if xPosition.ClosePrice = 0 then
+        begin
+          StrGrid_v2.Cells[3,i] := '';
+          StrGrid_v2.Cells[4,i] := '';
+        end else
+        begin
+          StrGrid_v2.Cells[3,i] := DateTimeToStr(xPosition.CloseTime);
+          StrGrid_v2.Cells[4,i] := FloatToStr(xPosition.ClosePrice);
+        end;
+
+        StrGrid_v2.Cells[5,i] := FloatToStr(xPosition.Qty);
+        StrGrid_v2.Cells[6,i] := GetStrToSide(xPosition.Side);
+        StrGrid_v2.Cells[7,i] := FloatToStr(xPosition.StopLoss);
+        StrGrid_v2.Cells[8,i] := FloatToStr(xPosition.TakeProfit);
+        StrGrid_v2.Cells[9,i] := FloatToStr(xPosition.Profit);
+        StrGrid_v2.Cells[10,i] := GetStrToTypeTrade(xPosition.TypeTrade);
+      end;
+  end;
+
 begin
   // ***********************************************
   // Оценка состояния рынка
@@ -282,6 +360,7 @@ begin
     end;
   end;
   _ShowPosition;
+  _ShowMirrorPosition;
 end;
 
 procedure TMainForm.MenuItemSaveFileClick(Sender: TObject);
@@ -337,6 +416,7 @@ begin
   end;
 end;
 
+
 function TMainForm.GetQuantity: Double;
 var
   i, Count: Integer;
@@ -348,63 +428,149 @@ begin
   if Count > 0 then
   begin
     xPosition := JournalManager.Positions[Count - 1];
-    if xPosition.Profit < 0 then
+    if xPosition.Profit <= 0 then
+      Result := 2 * xPosition.Qty;
+  end;
+end;
+
+function TMainForm.GetMirrorQuantity: Double;
+var
+  i, Count: Integer;
+  xPosition: TJournalPosition;
+begin
+  // Вслучае получение отрицательного профита прошлый раз значение удваевыем
+  Result := 1;
+  Count := MirrorJournalManager.Positions.Count;
+  if Count > 0 then
+  begin
+    xPosition := MirrorJournalManager.Positions[Count - 1];
+    if xPosition.Profit <= 0 then
       Result := 2 * xPosition.Qty;
   end;
 end;
 
 procedure TMainForm.ButtonBuyClick(Sender: TObject);
+
+  procedure _Order();
+  var
+    xQuantity: Double;
+  begin
+    xQuantity := GetQuantity;
+    if not Assigned(Position) then
+    begin
+      Position := JournalManager.GetCreateJournalPosition;
+      Position.OnClose := PositionClose;
+      with Position do
+      begin
+        OpenTime := GetNewDateTime;
+        OpenPrice := TradingPlatform.StateMarket.Ask;
+        Qty := xQuantity;
+        Side := TTypeBuySell.tsBuy;
+        IsActive := True;
+        TypeTrade := TTypeTrade.ttOpen;
+        Triling := 15;
+        DoOpen;
+      end;
+    end;
+  end;
+
+  procedure _MirrorOrder();
+  var
+    xQuantity: Double;
+  begin
+    xQuantity := GetMirrorQuantity;
+    if not Assigned(MirrorPosition) then
+    begin
+      MirrorPosition := MirrorJournalManager.GetCreateJournalPosition;
+      MirrorPosition.OnClose := MirrorPositionClose;
+      with MirrorPosition do
+      begin
+        OpenTime := GetNewDateTime;
+        OpenPrice := TradingPlatform.StateMarket.Bid;
+        Qty := xQuantity;
+        Side := TTypeBuySell.tsSell;
+        IsActive := True;
+        TypeTrade := TTypeTrade.ttOpen;
+        Triling := 20;
+        DoOpen;
+      end;
+    end;
+  end;
+
 begin
   {$IFDEF DBG_STRATEGY}
   TLogger.LogTree(0,'TMainForm.ButtonBuyClick: Покупка');
   {$ENDIF}
-  if not Assigned(Position) then
-  begin
-    Position := JournalManager.GetCreateJournalPosition;
-    Position.OnClose := PositionClose;
-    with Position do
-    begin
-      OpenTime := GetNewDateTime;
-      OpenPrice := TradingPlatform.StateMarket.Ask;
-      Qty := GetQuantity;
-      Side := TTypeBuySell.tsBuy;
-      IsActive := True;
-      TypeTrade := TTypeTrade.ttOpen;
-      Triling := 15;
-      DoOpen;
-    end;
-  end;
+
+  _Order();
+  _MirrorOrder();
 end;
 
 procedure TMainForm.ButtonSellClick(Sender: TObject);
+
+  procedure _Order();
+  var
+    xQuantity: Double;
+  begin
+    xQuantity := GetQuantity;
+    if not Assigned(Position) then
+    begin
+      Position := JournalManager.GetCreateJournalPosition;
+      Position.OnClose := PositionClose;
+      with Position do
+      begin
+        OpenTime := GetNewDateTime;
+        OpenPrice := TradingPlatform.StateMarket.Bid;
+        Qty := xQuantity;
+        Side := TTypeBuySell.tsSell;
+        IsActive := True;
+        TypeTrade := TTypeTrade.ttOpen;
+        Triling := 15;
+        DoOpen;
+      end;
+    end;
+  end;
+
+  procedure _MirrorOrder();
+  var
+    xQuantity: Double;
+  begin
+    xQuantity := GetMirrorQuantity;
+    if not Assigned(MirrorPosition) then
+    begin
+      Position := MirrorJournalManager.GetCreateJournalPosition;
+      Position.OnClose := MirrorPositionClose;
+      with Position do
+      begin
+        OpenTime := GetNewDateTime;
+        OpenPrice := TradingPlatform.StateMarket.Ask;
+        Qty := xQuantity;
+        Side := TTypeBuySell.tsBuy;
+        IsActive := True;
+        TypeTrade := TTypeTrade.ttOpen;
+        Triling := 20;
+        DoOpen;
+      end;
+    end;
+  end;
+
+var
+  xQuantity: Double;
 begin
   {$IFDEF DBG_STRATEGY}
   TLogger.LogTree(0,'TMainForm.ButtonBuyClick: Продажа');
   {$ENDIF}
-  if not Assigned(Position) then
-  begin
-    Position := JournalManager.GetCreateJournalPosition;
-    Position.OnClose := PositionClose;
-    with Position do
-    begin
-      OpenTime := GetNewDateTime;
-      OpenPrice := TradingPlatform.StateMarket.Bid;
-      Qty := GetQuantity;
-      Side := TTypeBuySell.tsSell;
-      IsActive := True;
-      TypeTrade := TTypeTrade.ttOpen;
-      Triling := 15;
-      DoOpen;
-    end;
-  end;
+  _Order();
+  _MirrorOrder();
 end;
 
-procedure TMainForm.ButtonCloseClick(Sender: TObject);
+procedure TMainForm._MirrorCloseOrder();
+var
+  xQuantity: Double;
 begin
-  // Закрыть позицию
-  if Assigned(Position) then
+  if Assigned(MirrorPosition) then
   begin
-    with Position do
+    with MirrorPosition do
     begin
       CloseTime := GetNewDateTime;
       case Side of
@@ -416,6 +582,32 @@ begin
       DoClose;
     end;
   end;
+end;
+
+procedure TMainForm.ButtonCloseClick(Sender: TObject);
+
+  procedure _CloseOrder();
+  begin
+    if Assigned(Position) then
+    begin
+      with Position do
+      begin
+        CloseTime := GetNewDateTime;
+        case Side of
+          TTypeBuySell.tsBuy: ClosePrice := TradingPlatform.StateMarket.Bid;
+          TTypeBuySell.tsSell: ClosePrice := TradingPlatform.StateMarket.Ask;
+        end;
+        IsActive := False;
+        TypeTrade := TTypeTrade.ttClose;
+        DoClose;
+      end;
+    end;
+  end;
+
+begin
+  // Закрыть позицию
+  _CloseOrder();
+  _MirrorCloseOrder();
 end;
 
 

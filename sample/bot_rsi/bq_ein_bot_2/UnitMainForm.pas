@@ -2,7 +2,9 @@ unit UnitMainForm;
 
 interface
 
-{$I D:\work\git\delphi\sample\bot_rsi\bq_rsi_2\lb\debug.inc}
+{$IFDEF DEBUG}
+  {$DEFINE DBG_MAIN}
+{$ENDIF}
 
 uses
   System.SysUtils, System.Types, System.UITypes, System.Classes, System.Variants,
@@ -114,7 +116,7 @@ begin
 
   TPlatfomBybit(TradingPlatform).ApiKey := '3bvDxJnKzjkIg8y0RV';
   TPlatfomBybit(TradingPlatform).ApiSecret := 'YtpORO6EYWTESXWwCyLiOBm75c1Tv6GSOzqJ';
-  TPlatfomBybit(TradingPlatform).Interval  := TTypeInterval.ti_5;
+  TPlatfomBybit(TradingPlatform).Interval  := TTypeInterval.ti_1;
 
   Position := nil;
   JournalManager := TJournalManager.Create;
@@ -166,9 +168,6 @@ begin
   if not Assigned(Position) then
   begin
     xRSI := TradingPlatform.ValueRSI.MovingAveragRSI;
-    {$IFDEF DBG_STRATEGY}
-    TLogger.LogTree(0,'TMainForm.Strategy: RSI: ' + xRSI.ToString);
-    {$ENDIF}
     if xRSI > 50 then
     begin
       case TypeDirection of
@@ -193,7 +192,7 @@ end;
 
 procedure TMainForm.PositionClose(ASander: TObject);
 begin
-  {$IFDEF DBG_STRATEGY}
+  {$IFDEF DBG_MAIN}
   TLogger.LogTree(0,'TMainForm.PositionClose');
   {$ENDIF}
   Position := nil;
@@ -339,7 +338,7 @@ end;
 
 procedure TMainForm.ButtonBuyClick(Sender: TObject);
 begin
-  {$IFDEF DBG_STRATEGY}
+  {$IFDEF DBG_MAIN}
   TLogger.LogTree(0,'TMainForm.ButtonBuyClick: Покупка');
   {$ENDIF}
   if not Assigned(Position) then
@@ -362,7 +361,7 @@ end;
 
 procedure TMainForm.ButtonSellClick(Sender: TObject);
 begin
-  {$IFDEF DBG_STRATEGY}
+  {$IFDEF DBG_MAIN}
   TLogger.LogTree(0,'TMainForm.ButtonBuyClick: Продажа');
   {$ENDIF}
   if not Assigned(Position) then

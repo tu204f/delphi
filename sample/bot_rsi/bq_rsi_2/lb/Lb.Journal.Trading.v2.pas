@@ -186,6 +186,9 @@ procedure TJournalPosition.SetUpData(const APrice: Double);
 
   procedure _CalcProfit(const APrice: Double);
   begin
+    {$IFDEF DEBUG}
+    TLogger.LogTree(0,'TJournalPosition.SetUpData._CalcProfit:');
+    {$ENDIF}
     case FTypeTrade of
       ttOpen: begin
         case FSide of
@@ -207,6 +210,9 @@ procedure TJournalPosition.SetUpData(const APrice: Double);
   var
     xStopLoss: Double;
   begin
+    {$IFDEF DEBUG}
+    TLogger.LogTree(0,'TJournalPosition.SetUpData._CalcTrelingStopLoss:');
+    {$ENDIF}
     if FTypeTrade = TTypeTrade.ttOpen then
     begin
       case FSide of
@@ -223,11 +229,17 @@ procedure TJournalPosition.SetUpData(const APrice: Double);
             FStopLoss := xStopLoss;
         end;
       end;
+      {$IFDEF DEBUG}
+      TLogger.LogTreeText(3,'>> StopLoss');
+      {$ENDIF}
     end;
   end;
 
   procedure _ActiveStopLoss(APrice: Double);
   begin
+    {$IFDEF DEBUG}
+    TLogger.LogTree(0,'TJournalPosition.SetUpData._ActiveStopLoss:');
+    {$ENDIF}
     if FTypeTrade = TTypeTrade.ttOpen then
     begin
       case FSide of
@@ -256,6 +268,9 @@ procedure TJournalPosition.SetUpData(const APrice: Double);
   end;
 
 begin
+  {$IFDEF DEBUG}
+  TLogger.LogTree(0,'TJournalPosition.SetUpData:');
+  {$ENDIF}
   _CalcProfit(APrice);
   _CalcTrelingStopLoss(APrice);
   _ActiveStopLoss(APrice);
