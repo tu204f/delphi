@@ -73,13 +73,12 @@ type
     FTriling: Double;
     FStopLoss: Double;
     FTakeProfit: Double;
-  protected
-    procedure DoOpen;
-    procedure DoClose;
   public
     constructor Create; virtual;
     destructor Destroy; override;
     procedure SetUpData(const APrice: Double = 0);
+    procedure DoOpen;
+    procedure DoClose;
   public
     property TypeTrade: TTypeTrade read FTypeTrade write FTypeTrade;
     property IsActive: Boolean read FIsActive write FIsActive;
@@ -217,7 +216,7 @@ procedure TJournalPosition.SetUpData(const APrice: Double);
             FStopLoss := xStopLoss;
         end;
         tsSell: begin
-          xStopLoss := APrice - FTriling;
+          xStopLoss := APrice + FTriling;
           if FStopLoss = 0  then
             FStopLoss := xStopLoss;
           if xStopLoss < FStopLoss then
@@ -239,6 +238,7 @@ procedure TJournalPosition.SetUpData(const APrice: Double);
             ClosePrice := APrice;
             IsActive := False;
             TypeTrade := TTypeTrade.ttClose;
+            DoClose;
           end;
         end;
         tsSell: begin
@@ -248,6 +248,7 @@ procedure TJournalPosition.SetUpData(const APrice: Double);
             ClosePrice := APrice;
             IsActive := False;
             TypeTrade := TTypeTrade.ttClose;
+            DoClose;
           end;
         end;
       end;

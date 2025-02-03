@@ -50,6 +50,7 @@ type
     procedure DoStop;
     procedure Strategy;
     procedure PositionClose(ASander: TObject);
+    function GetQuantity: Double;
   public
     TypeDirection: TTypeDirection;
     Position: TJournalPosition;
@@ -149,7 +150,6 @@ begin
     TradingPlatform.Stop;
   end;
 end;
-
 
 procedure TMainForm.ButtonStartOrStopClick(Sender: TObject);
 begin
@@ -337,6 +337,22 @@ begin
   end;
 end;
 
+function TMainForm.GetQuantity: Double;
+var
+  i, Count: Integer;
+  xPosition: TJournalPosition;
+begin
+  // ¬случае получение отрицательного профита прошлый раз значение удваевыем
+  Result := 1;
+  Count := JournalManager.Positions.Count;
+  if Count > 0 then
+  begin
+    xPosition := JournalManager.Positions[Count - 1];
+    if xPosition.Profit < 0 then
+      Result := 2 * xPosition.Qty;
+  end;
+end;
+
 procedure TMainForm.ButtonBuyClick(Sender: TObject);
 begin
   {$IFDEF DBG_STRATEGY}
@@ -350,7 +366,7 @@ begin
     begin
       OpenTime := GetNewDateTime;
       OpenPrice := TradingPlatform.StateMarket.Ask;
-      Qty := 1;
+      Qty := GetQuantity;
       Side := TTypeBuySell.tsBuy;
       IsActive := True;
       TypeTrade := TTypeTrade.ttOpen;
@@ -373,7 +389,7 @@ begin
     begin
       OpenTime := GetNewDateTime;
       OpenPrice := TradingPlatform.StateMarket.Bid;
-      Qty := 1;
+      Qty := GetQuantity;
       Side := TTypeBuySell.tsSell;
       IsActive := True;
       TypeTrade := TTypeTrade.ttOpen;
