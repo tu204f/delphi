@@ -245,7 +245,7 @@ object MainForm: TMainForm
             Align = Client
             CanFocus = True
             ClipChildren = True
-            PopupMenu = PopupMenu
+            PopupMenu = PopupMenu1
             Size.Width = 1121.000000000000000000
             Size.Height = 299.500000000000000000
             Size.PlatformDefault = False
@@ -254,13 +254,21 @@ object MainForm: TMainForm
             Viewport.Width = 1117.000000000000000000
             Viewport.Height = 274.500000000000000000
           end
+          object PopupMenu1: TPopupMenu
+            Left = 327
+            Top = 532
+            object MenuItem1: TMenuItem
+              Text = 'MenuItem1'
+              OnClick = MenuItem1Click
+            end
+          end
         end
       end
     end
   end
   object PopupMenu: TPopupMenu
-    Left = 219
-    Top = 228
+    Left = 311
+    Top = 240
     object MenuItemSaveFile: TMenuItem
       Text = 'MenuItemSaveFile'
       OnClick = MenuItemSaveFileClick

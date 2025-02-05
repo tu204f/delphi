@@ -44,11 +44,14 @@ type
     TextManager: TText;
     TextMirrorManager: TText;
     StrGrid_V2: TStringGrid;
+    PopupMenu1: TPopupMenu;
+    MenuItem1: TMenuItem;
     procedure ButtonStartOrStopClick(Sender: TObject);
     procedure ButtonBuyClick(Sender: TObject);
     procedure ButtonSellClick(Sender: TObject);
     procedure ButtonCloseClick(Sender: TObject);
     procedure MenuItemSaveFileClick(Sender: TObject);
+    procedure MenuItem1Click(Sender: TObject);
   private
     procedure TradingPlatformOnStateMarket(ASender: TObject; AStateMarket: TStateMarket);
     procedure _MirrorCloseOrder;
@@ -403,6 +406,59 @@ begin
 
   _ShowPosition;
   _ShowMirrorPosition;
+end;
+
+procedure TMainForm.MenuItem1Click(Sender: TObject);
+
+  function _Add(S: String): String;
+  begin
+    Result := S + ';';
+  end;
+
+var
+  xS: String;
+  xStr: TStrings;
+  i, Count: Integer;
+  xPosition: TJournalPosition;
+begin
+  xStr := TStringList.Create;
+  try
+    Count := JournalManager.Positions.Count;
+    StrGrid.RowCount := Count;
+
+    if Count > 0 then
+      for i := 0 to Count - 1 do
+      begin
+        xPosition := JournalManager.Positions[i];
+
+        xS := _Add((i + 1).ToString);
+        xS := _Add(DateTimeToStr(xPosition.OpenTime));
+        xS := _Add(FloatToStr(xPosition.OpenPrice));
+
+        if xPosition.ClosePrice = 0 then
+        begin
+          xS := _Add('');
+          xS := _Add('');
+        end else
+        begin
+          xS := _Add(DateTimeToStr(xPosition.CloseTime));
+          xS := _Add(FloatToStr(xPosition.ClosePrice));
+        end;
+
+        xS := _Add(FloatToStr(xPosition.Qty));
+        xS := _Add(GetStrToSide(xPosition.Side));
+        xS := _Add(FloatToStr(xPosition.StopLoss));
+        xS := _Add(FloatToStr(xPosition.TakeProfit));
+        xS := _Add(FloatToStr(xPosition.Profit));
+        xS := _Add(GetStrToTypeTrade(xPosition.TypeTrade));
+
+        xStr.Add(xS);
+      end;
+
+    xStr.SaveToFile('mirror_positions.csv');
+  finally
+    FreeAndNil(xStr);
+  end;
 end;
 
 procedure TMainForm.MenuItemSaveFileClick(Sender: TObject);
