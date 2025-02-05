@@ -2,8 +2,8 @@ object MainForm: TMainForm
   Left = 0
   Top = 0
   Caption = 'Form4'
-  ClientHeight = 480
-  ClientWidth = 640
+  ClientHeight = 738
+  ClientWidth = 1141
   FormFactor.Width = 320
   FormFactor.Height = 480
   FormFactor.Devices = [Desktop]
@@ -22,7 +22,7 @@ object MainForm: TMainForm
     Anchors = [akLeft, akTop, akRight]
     Position.X = 120.000000000000000000
     Position.Y = 8.000000000000000000
-    Size.Width = 509.000000000000000000
+    Size.Width = 1011.000000000000000000
     Size.Height = 45.000000000000000000
     Size.PlatformDefault = False
     object TextStatus: TText
@@ -30,7 +30,7 @@ object MainForm: TMainForm
       Margins.Left = 5.000000000000000000
       Margins.Top = 5.000000000000000000
       Margins.Bottom = 5.000000000000000000
-      Size.Width = 265.000000000000000000
+      Size.Width = 767.000000000000000000
       Size.Height = 35.000000000000000000
       Size.PlatformDefault = False
       TextSettings.HorzAlign = Leading
@@ -41,7 +41,7 @@ object MainForm: TMainForm
       Margins.Top = 5.000000000000000000
       Margins.Right = 5.000000000000000000
       Margins.Bottom = 5.000000000000000000
-      Position.X = 275.000000000000000000
+      Position.X = 777.000000000000000000
       Position.Y = 5.000000000000000000
       Size.Width = 229.000000000000000000
       Size.Height = 35.000000000000000000
@@ -121,17 +121,17 @@ object MainForm: TMainForm
     Anchors = [akLeft, akTop, akRight, akBottom]
     Position.X = 8.000000000000000000
     Position.Y = 60.000000000000000000
-    Size.Width = 621.000000000000000000
-    Size.Height = 409.000000000000000000
+    Size.Width = 1121.000000000000000000
+    Size.Height = 667.000000000000000000
     Size.PlatformDefault = False
     TabIndex = 1
     TabOrder = 1
     TabPosition = PlatformDefault
     Sizes = (
-      621s
-      383s
-      621s
-      383s)
+      1121s
+      641s
+      1121s
+      641s)
     object TabItemTrade: TTabItem
       CustomIcon = <
         item
@@ -149,13 +149,13 @@ object MainForm: TMainForm
         Align = Client
         CanFocus = True
         ClipChildren = True
-        Size.Width = 621.000000000000000000
-        Size.Height = 383.000000000000000000
+        Size.Width = 1121.000000000000000000
+        Size.Height = 641.000000000000000000
         Size.PlatformDefault = False
         TabOrder = 1
         Options = [Editing, ColumnResize, ColumnMove, ColLines, RowLines, RowSelect, Tabs, Header, HeaderClick, AutoDisplacement]
-        Viewport.Width = 617.000000000000000000
-        Viewport.Height = 358.000000000000000000
+        Viewport.Width = 1117.000000000000000000
+        Viewport.Height = 616.000000000000000000
       end
     end
     object TabItemPosition: TTabItem
@@ -173,8 +173,8 @@ object MainForm: TMainForm
       ExplicitSize.cy = 26.000000000000000000
       object GridPanelLayout: TGridPanelLayout
         Align = Client
-        Size.Width = 621.000000000000000000
-        Size.Height = 383.000000000000000000
+        Size.Width = 1121.000000000000000000
+        Size.Height = 641.000000000000000000
         Size.PlatformDefault = False
         TabOrder = 1
         ColumnCollection = <
@@ -201,13 +201,13 @@ object MainForm: TMainForm
           end>
         object Layout1: TLayout
           Align = Client
-          Size.Width = 621.000000000000000000
-          Size.Height = 191.500000000000000000
+          Size.Width = 1121.000000000000000000
+          Size.Height = 320.500000000000000000
           Size.PlatformDefault = False
           TabOrder = 0
-          object Text1: TText
+          object TextManager: TText
             Align = Top
-            Size.Width = 621.000000000000000000
+            Size.Width = 1121.000000000000000000
             Size.Height = 21.000000000000000000
             Size.PlatformDefault = False
             Text = #1053#1072#1090#1091#1088#1072#1083#1100#1085#1086#1077' '#1085#1072#1087#1088#1086#1074#1083#1077#1085#1080#1077':'
@@ -218,27 +218,27 @@ object MainForm: TMainForm
             CanFocus = True
             ClipChildren = True
             PopupMenu = PopupMenu
-            Size.Width = 621.000000000000000000
-            Size.Height = 170.500000000000000000
+            Size.Width = 1121.000000000000000000
+            Size.Height = 299.500000000000000000
             Size.PlatformDefault = False
             TabOrder = 1
             Options = [Editing, ColumnResize, ColumnMove, ColLines, RowLines, RowSelect, Tabs, Header, HeaderClick, AutoDisplacement]
-            Viewport.Width = 617.000000000000000000
-            Viewport.Height = 145.500000000000000000
+            Viewport.Width = 1117.000000000000000000
+            Viewport.Height = 274.500000000000000000
           end
         end
         object Layout2: TLayout
           Align = Client
-          Size.Width = 621.000000000000000000
-          Size.Height = 191.500000000000000000
+          Size.Width = 1121.000000000000000000
+          Size.Height = 320.500000000000000000
           Size.PlatformDefault = False
           TabOrder = 1
-          object Text2: TText
+          object TextMirrorManager: TText
             Align = Top
-            Size.Width = 621.000000000000000000
+            Size.Width = 1121.000000000000000000
             Size.Height = 21.000000000000000000
             Size.PlatformDefault = False
-            Text = #1053#1072#1090#1091#1088#1072#1083#1100#1085#1086#1077' '#1085#1072#1087#1088#1086#1074#1083#1077#1085#1080#1077':'
+            Text = #1047#1077#1088#1082#1072#1083#1100#1085#1072#1103' '#1087#1089#1080#1093#1086#1083#1086#1075#1080#1103':'
             TextSettings.HorzAlign = Leading
           end
           object StrGrid_V2: TStringGrid
@@ -246,13 +246,13 @@ object MainForm: TMainForm
             CanFocus = True
             ClipChildren = True
             PopupMenu = PopupMenu
-            Size.Width = 621.000000000000000000
-            Size.Height = 170.500000000000000000
+            Size.Width = 1121.000000000000000000
+            Size.Height = 299.500000000000000000
             Size.PlatformDefault = False
             TabOrder = 1
             Options = [Editing, ColumnResize, ColumnMove, ColLines, RowLines, RowSelect, Tabs, Header, HeaderClick, AutoDisplacement]
-            Viewport.Width = 617.000000000000000000
-            Viewport.Height = 145.500000000000000000
+            Viewport.Width = 1117.000000000000000000
+            Viewport.Height = 274.500000000000000000
           end
         end
       end

@@ -16,6 +16,10 @@ uses
   System.Generics.Collections,
   Lb.SysUtils;
 
+const
+  FEE_RATES_TAKER = 0.1;
+  FEE_RATES_MAKER = 0.036;
+
 type
   TJournalTrade = class;
   TJournalPosition = class;
@@ -73,6 +77,10 @@ type
     FTriling: Double;
     FStopLoss: Double;
     FTakeProfit: Double;
+    function GetFeeRatesMaker: Double;
+    function GetFeeRatesTaker: Double;
+    function GetProfitFeeRatesMaker: Double;
+    function GetProfitFeeRatesTaker: Double;
   public
     constructor Create; virtual;
     destructor Destroy; override;
@@ -93,6 +101,11 @@ type
     property StopLoss: Double read FStopLoss write FStopLoss;
     property TakeProfit: Double read FTakeProfit write FTakeProfit;
   public
+    property FeeRatesTaker: Double read GetFeeRatesTaker;
+    property FeeRatesMaker: Double read GetFeeRatesMaker;
+    property ProfitFeeRatesTaker: Double read GetProfitFeeRatesTaker;
+    property ProfitFeeRatesMaker: Double read GetProfitFeeRatesMaker;
+  public
     property OnOpen: TEventOnOpen write FOnOpen;
     property OnClose: TEventOnClose write FOnClose;
     property Manager: TJournalManager read FManager write FManager;
@@ -107,6 +120,8 @@ type
   private
     FPositions: TJournalPositionList;
     function GetProfit: Double;
+    function GetProfitFeeRatesMaker: Double;
+    function GetProfitFeeRatesTaker: Double;
   public
     constructor Create; virtual;
     destructor Destroy; override;
@@ -118,6 +133,8 @@ type
     property Positions: TJournalPositionList read FPositions;
     ///<summary>Сумарный профит повсем позициям</summary>
     property Profit: Double read GetProfit;
+    property ProfitFeeRatesTaker: Double read GetProfitFeeRatesTaker;
+    property ProfitFeeRatesMaker: Double read GetProfitFeeRatesMaker;
   end;
 
 implementation
@@ -175,7 +192,6 @@ begin
     FOnOpen(Self);
 end;
 
-
 procedure TJournalPosition.DoClose;
 begin
   if Assigned(FOnClose) then
@@ -197,6 +213,9 @@ procedure TJournalPosition.SetUpData(const APrice: Double);
         end;
       end;
       ttClose: begin
+        if FClosePrice <= 0 then
+          raise Exception.Create('Error Message: Цена закрытие не может быть нулейо ');
+
         case FSide of
           tsBuy: FProfit := (FClosePrice - FOpenPrice) * FQty;
           tsSell: FProfit := (FOpenPrice - FClosePrice) * FQty;
@@ -227,6 +246,8 @@ procedure TJournalPosition.SetUpData(const APrice: Double);
             FStopLoss := xStopLoss;
           if xStopLoss < FStopLoss then
             FStopLoss := xStopLoss;
+          if FStopLoss <= 0 then
+            raise Exception.Create('Error Message: Стоп лосс не может быть нулевым');
         end;
       end;
       {$IFDEF DEBUG}
@@ -271,9 +292,43 @@ begin
   {$IFDEF DEBUG}
   TLogger.LogTree(0,'TJournalPosition.SetUpData:');
   {$ENDIF}
+
+  if FOpenPrice <= 0 then
+    raise Exception.Create('Error Message: Нет цены открытие');
+
   _CalcProfit(APrice);
   _CalcTrelingStopLoss(APrice);
   _ActiveStopLoss(APrice);
+end;
+
+
+function GetFeeRates(const APrice, AQty, AFeeRates: Double): Double;
+begin
+  Result := APrice * AQty * AFeeRates / 100;
+end;
+
+function TJournalPosition.GetFeeRatesMaker: Double;
+begin
+  Result :=
+    GetFeeRates(FOpenPrice,FQty,FEE_RATES_MAKER) +
+    GetFeeRates(FClosePrice,FQty,FEE_RATES_MAKER);
+end;
+
+function TJournalPosition.GetFeeRatesTaker: Double;
+begin
+  Result :=
+    GetFeeRates(FOpenPrice,FQty,FEE_RATES_TAKER) +
+    GetFeeRates(FClosePrice,FQty,FEE_RATES_TAKER);
+end;
+
+function TJournalPosition.GetProfitFeeRatesMaker: Double;
+begin
+  Result := Self.Profit - Self.FeeRatesMaker;
+end;
+
+function TJournalPosition.GetProfitFeeRatesTaker: Double;
+begin
+  Result := Self.Profit - Self.FeeRatesTaker;
 end;
 
 { TJournalManager }
@@ -307,8 +362,24 @@ var
   xSum: Double;
 begin
   xSum := 0;
-//  for var xP in FPositions do
-//    xSum := xSum + xP.Profit;
+  for var xP in FPositions do
+    xSum := xSum + xP.Profit;
+  Result := xSum;
+end;
+
+function TJournalManager.GetProfitFeeRatesMaker: Double;
+begin
+  var xSum := 0.0;
+  for var xP in FPositions do
+    xSum := xSum + xP.GetProfitFeeRatesMaker;
+  Result := xSum;
+end;
+
+function TJournalManager.GetProfitFeeRatesTaker: Double;
+begin
+  var xSum := 0.0;
+  for var xP in FPositions do
+    xSum := xSum + xP.GetProfitFeeRatesTaker;
   Result := xSum;
 end;
 

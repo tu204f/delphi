@@ -19,7 +19,7 @@ uses
   FMX.Layouts,
   Lb.Journal.Trading.v2,
   FMX.TabControl,
-  FMX.Menus;
+  FMX.Menus, FMX.ListBox;
 
 type
   TMainForm = class(TForm)
@@ -41,8 +41,8 @@ type
     GridPanelLayout: TGridPanelLayout;
     Layout1: TLayout;
     Layout2: TLayout;
-    Text1: TText;
-    Text2: TText;
+    TextManager: TText;
+    TextMirrorManager: TText;
     StrGrid_V2: TStringGrid;
     procedure ButtonStartOrStopClick(Sender: TObject);
     procedure ButtonBuyClick(Sender: TObject);
@@ -61,6 +61,7 @@ type
     function GetQuantity: Double;
     function GetMirrorQuantity: Double;
   protected
+    procedure SetLogOp(S: String);
   public
     TypeDirection: TTypeDirection;
 
@@ -124,6 +125,10 @@ begin
   SetAddColumn(StrGrid,'TK');
   SetAddColumn(StrGrid,'Profit');
   SetAddColumn(StrGrid,'TypeTrade');
+  SetAddColumn(StrGrid,'FeeRatesTaker');
+  SetAddColumn(StrGrid,'FeeRatesMaker');
+  SetAddColumn(StrGrid,'ProfitFeeRatesTaker');
+  SetAddColumn(StrGrid,'ProfitFeeRatesMaker');
 
   SetAddColumn(StrGrid_V2,'id',50);
   SetAddColumn(StrGrid_V2,'OpenTime',120);
@@ -136,13 +141,17 @@ begin
   SetAddColumn(StrGrid_V2,'TK');
   SetAddColumn(StrGrid_V2,'Profit');
   SetAddColumn(StrGrid_V2,'TypeTrade');
+  SetAddColumn(StrGrid_V2,'FeeRatesTaker');
+  SetAddColumn(StrGrid_V2,'FeeRatesMaker');
+  SetAddColumn(StrGrid_V2,'ProfitFeeRatesTaker');
+  SetAddColumn(StrGrid_V2,'ProfitFeeRatesMaker');
 
   TradingPlatform := TPlatfomBybit.Create;
   TradingPlatform.OnStateMarket := TradingPlatformOnStateMarket;
 
   TPlatfomBybit(TradingPlatform).ApiKey := '3bvDxJnKzjkIg8y0RV';
   TPlatfomBybit(TradingPlatform).ApiSecret := 'YtpORO6EYWTESXWwCyLiOBm75c1Tv6GSOzqJ';
-  TPlatfomBybit(TradingPlatform).Interval  := TTypeInterval.ti_1;
+  TPlatfomBybit(TradingPlatform).Interval  := TTypeInterval.ti_5;
 
   Position := nil;
   JournalManager := TJournalManager.Create;
@@ -190,13 +199,18 @@ begin
     DoStart;
 end;
 
+procedure TMainForm.SetLogOp(S: String);
+begin
+  {лог операции}
+end;
+
 procedure TMainForm.Strategy;
 var
   xRSI: Double;
 begin
   if not Assigned(Position) then
   begin
-    xRSI := TradingPlatform.ValueRSI.MovingAveragRSI;
+    xRSI := TradingPlatform.ValueRSI.RSI;
     {$IFDEF DBG_STRATEGY}
     TLogger.LogTree(0,'TMainForm.Strategy: RSI: ' + xRSI.ToString);
     {$ENDIF}
@@ -299,6 +313,11 @@ procedure TMainForm.TradingPlatformOnStateMarket(ASender: TObject; AStateMarket:
         StrGrid.Cells[8,i] := FloatToStr(xPosition.TakeProfit);
         StrGrid.Cells[9,i] := FloatToStr(xPosition.Profit);
         StrGrid.Cells[10,i] := GetStrToTypeTrade(xPosition.TypeTrade);
+
+        StrGrid.Cells[11,i] := FloatToStr(xPosition.FeeRatesTaker);
+        StrGrid.Cells[12,i] := FloatToStr(xPosition.FeeRatesMaker);
+        StrGrid.Cells[13,i] := FloatToStr(xPosition.ProfitFeeRatesTaker);
+        StrGrid.Cells[14,i] := FloatToStr(xPosition.ProfitFeeRatesMaker);
       end;
   end;
 
@@ -337,6 +356,11 @@ procedure TMainForm.TradingPlatformOnStateMarket(ASender: TObject; AStateMarket:
         StrGrid_v2.Cells[8,i] := FloatToStr(xPosition.TakeProfit);
         StrGrid_v2.Cells[9,i] := FloatToStr(xPosition.Profit);
         StrGrid_v2.Cells[10,i] := GetStrToTypeTrade(xPosition.TypeTrade);
+
+        StrGrid_v2.Cells[11,i] := FloatToStr(xPosition.FeeRatesTaker);
+        StrGrid_v2.Cells[12,i] := FloatToStr(xPosition.FeeRatesMaker);
+        StrGrid_v2.Cells[13,i] := FloatToStr(xPosition.ProfitFeeRatesTaker);
+        StrGrid_v2.Cells[14,i] := FloatToStr(xPosition.ProfitFeeRatesMaker);
       end;
   end;
 
@@ -359,6 +383,11 @@ begin
       TTypeBuySell.tsSell: Position.SetUpData(TradingPlatform.StateMarket.Ask);
     end;
   end;
+  TextManager.Text := 'Прямое направление торговли: Profit := ' +
+    JournalManager.Profit.ToString + '//' +
+    JournalManager.ProfitFeeRatesTaker.ToString + '//' +
+    JournalManager.ProfitFeeRatesMaker.ToString + ';';
+
 
   if Assigned(MirrorPosition) then
   begin
@@ -367,6 +396,10 @@ begin
       TTypeBuySell.tsSell: MirrorPosition.SetUpData(TradingPlatform.StateMarket.Ask);
     end;
   end;
+  TextMirrorManager.Text := 'Зеркальное направление торговли: Profit := ' +
+    MirrorJournalManager.Profit.ToString + '//' +
+    MirrorJournalManager.ProfitFeeRatesTaker.ToString + '//' +
+    MirrorJournalManager.ProfitFeeRatesMaker.ToString + ';';
 
   _ShowPosition;
   _ShowMirrorPosition;
@@ -507,10 +540,9 @@ procedure TMainForm.ButtonBuyClick(Sender: TObject);
   end;
 
 begin
-  {$IFDEF DBG_STRATEGY}
+  {$IFDEF RSI_BQ_2}
   TLogger.LogTree(0,'TMainForm.ButtonBuyClick: Покупка');
   {$ENDIF}
-
   _Order();
   _MirrorOrder();
 end;
@@ -547,9 +579,9 @@ procedure TMainForm.ButtonSellClick(Sender: TObject);
     xQuantity := GetMirrorQuantity;
     if not Assigned(MirrorPosition) then
     begin
-      Position := MirrorJournalManager.GetCreateJournalPosition;
-      Position.OnClose := MirrorPositionClose;
-      with Position do
+      MirrorPosition := MirrorJournalManager.GetCreateJournalPosition;
+      MirrorPosition.OnClose := MirrorPositionClose;
+      with MirrorPosition do
       begin
         OpenTime := GetNewDateTime;
         OpenPrice := TradingPlatform.StateMarket.Ask;
@@ -564,16 +596,19 @@ procedure TMainForm.ButtonSellClick(Sender: TObject);
   end;
 
 begin
-  {$IFDEF DBG_STRATEGY}
+  {$IFDEF RSI_BQ_2}
   TLogger.LogTree(0,'TMainForm.ButtonBuyClick: Продажа');
   {$ENDIF}
   _Order();
   _MirrorOrder();
 end;
 
+
+(* ************************************************************************** *)
+(* Закрытие позицию                                                           *)
+(* ************************************************************************** *)
+
 procedure TMainForm._MirrorCloseOrder();
-var
-  xQuantity: Double;
 begin
   if Assigned(MirrorPosition) then
   begin
