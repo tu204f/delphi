@@ -81,6 +81,9 @@ type
     function GetFeeRatesTaker: Double;
     function GetProfitFeeRatesMaker: Double;
     function GetProfitFeeRatesTaker: Double;
+  private
+    FRSI: Double;
+    FMaRSI: Double;
   public
     constructor Create; virtual;
     destructor Destroy; override;
@@ -110,6 +113,9 @@ type
     property OnClose: TEventOnClose write FOnClose;
     property Manager: TJournalManager read FManager write FManager;
     property ID: Integer read FID write FID;
+  public
+    property RSI: Double read FRSI write FRSI;
+    property MaRSI: Double read FMaRSI write FMaRSI;
   end;
 
   ///<summary>Список позиций</summary>
@@ -129,12 +135,15 @@ type
     ///<summary>Создание журнала позиции</summary>
     function GetCreateJournalPosition: TJournalPosition;
 
+    function GetSumCountIsActive: Integer;
+
     ///<summary>Список позиций</summary>
     property Positions: TJournalPositionList read FPositions;
     ///<summary>Сумарный профит повсем позициям</summary>
     property Profit: Double read GetProfit;
     property ProfitFeeRatesTaker: Double read GetProfitFeeRatesTaker;
     property ProfitFeeRatesMaker: Double read GetProfitFeeRatesMaker;
+
   end;
 
 implementation
@@ -397,6 +406,26 @@ begin
   for var xP in FPositions do
     xSum := xSum + xP.GetProfitFeeRatesTaker;
   Result := xSum;
+end;
+
+function TJournalManager.GetSumCountIsActive: Integer;
+var
+  xCnt: Integer;
+  i, iCount: Integer;
+  xPosition: TJournalPosition;
+begin
+  xCnt := 0;
+  iCount := FPositions.Count;
+  if iCount > 0 then
+  begin
+    for i := iCount - 1 downto 0 do
+    begin
+      xPosition := FPositions[i];
+      if xPosition.IsActive then
+        Inc(xCnt);
+    end;
+  end;
+  Result := xCnt;
 end;
 
 end.

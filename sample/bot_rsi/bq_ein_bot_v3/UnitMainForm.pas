@@ -2,8 +2,6 @@ unit UnitMainForm;
 
 interface
 
-{$I D:\work\git\delphi\sample\bot_rsi\bq_rsi_2\lb\debug.inc}
-
 uses
   System.SysUtils, System.Types, System.UITypes, System.Classes, System.Variants,
   FMX.Types, FMX.Controls, FMX.Forms, FMX.Graphics, FMX.Dialogs,
@@ -50,12 +48,16 @@ type
     Chart: TChart;
     SeriesValueRSI: TLineSeries;
     SeriesValueMaRSI: TLineSeries;
+    TimerTrade: TTimer;
+    ButtonStartTime: TButton;
     procedure ButtonStartOrStopClick(Sender: TObject);
     procedure ButtonBuyClick(Sender: TObject);
     procedure ButtonSellClick(Sender: TObject);
     procedure ButtonCloseClick(Sender: TObject);
     procedure MenuItemSaveFileClick(Sender: TObject);
     procedure MenuItem1Click(Sender: TObject);
+    procedure ButtonStartTimeClick(Sender: TObject);
+    procedure TimerTradeTimer(Sender: TObject);
   private
     procedure TradingPlatformOnStateMarket(ASender: TObject; AStateMarket: TStateMarket);
     procedure _MirrorCloseOrder;
@@ -204,38 +206,52 @@ begin
     DoStart;
 end;
 
+procedure TMainForm.ButtonStartTimeClick(Sender: TObject);
+begin
+  if TimerTrade.Enabled then
+  begin
+    ButtonStartTime.Text := 'Старт';
+    TimerTrade.Enabled := False;
+  end
+  else
+  begin
+    ButtonStartTime.Text := 'Стоп';
+    TimerTrade.Enabled := True;
+  end;
+end;
+
 procedure TMainForm.SetLogOp(S: String);
 begin
   {лог операции}
 end;
 
 procedure TMainForm.Strategy;
-var
-  xRSI: Double;
+//var
+//  xRSI: Double;
 begin
-  if not Assigned(Position) then
-  begin
-    xRSI := TradingPlatform.ValueRSI.RSI;
-    if xRSI > 50 then
-    begin
-      case TypeDirection of
-        tdNull: TypeDirection := TTypeDirection.tdLong;
-        tdShort: begin
-          TypeDirection := TTypeDirection.tdLong;
-          ButtonBuyClick(nil);
-        end;
-      end;
-    end else if xRSI < 50 then
-    begin
-      case TypeDirection of
-        tdNull: TypeDirection := TTypeDirection.tdShort;
-        tdLong: begin
-          TypeDirection := TTypeDirection.tdShort;
-          ButtonSellClick(nil);
-        end;
-      end;
-    end;
-  end;
+//  if not Assigned(Position) then
+//  begin
+//    xRSI := TradingPlatform.ValueRSI.RSI;
+//    if xRSI > 50 then
+//    begin
+//      case TypeDirection of
+//        tdNull: TypeDirection := TTypeDirection.tdLong;
+//        tdShort: begin
+//          TypeDirection := TTypeDirection.tdLong;
+//          ButtonBuyClick(nil);
+//        end;
+//      end;
+//    end else if xRSI < 50 then
+//    begin
+//      case TypeDirection of
+//        tdNull: TypeDirection := TTypeDirection.tdShort;
+//        tdLong: begin
+//          TypeDirection := TTypeDirection.tdShort;
+//          ButtonSellClick(nil);
+//        end;
+//      end;
+//    end;
+//  end;
 end;
 
 procedure TMainForm.PositionClose(ASander: TObject);
@@ -249,7 +265,6 @@ procedure TMainForm.MirrorPositionClose(ASander: TObject);
 begin
   MirrorPosition := nil;
 end;
-
 
 procedure TMainForm.TradingPlatformOnStateMarket(ASender: TObject; AStateMarket: TStateMarket);
 
@@ -370,6 +385,50 @@ procedure TMainForm.TradingPlatformOnStateMarket(ASender: TObject; AStateMarket:
       end;
   end;
 
+  procedure _SetUpDatePosition;
+  var
+    i, Count: Integer;
+    xPosition: TJournalPosition;
+  begin
+    Count := JournalManager.Positions.Count;
+    if Count > 0 then
+      for i := 0 to Count - 1 do
+      begin
+        xPosition := JournalManager.Positions[i];
+        case xPosition.TypeTrade of
+          TTypeTrade.ttOpen: begin
+            case xPosition.Side of
+              TTypeBuySell.tsBuy: xPosition.SetUpData(TradingPlatform.StateMarket.Bid);
+              TTypeBuySell.tsSell: xPosition.SetUpData(TradingPlatform.StateMarket.Ask);
+            end;
+          end;
+          TTypeTrade.ttClose: xPosition.SetUpdata;
+        end;
+       end;
+  end;
+
+  procedure _SetUpDateMirrorPosition;
+  var
+    i, Count: Integer;
+    xPosition: TJournalPosition;
+  begin
+    Count := MirrorJournalManager.Positions.Count;
+    if Count > 0 then
+      for i := 0 to Count - 1 do
+      begin
+        xPosition := MirrorJournalManager.Positions[i];
+        case xPosition.TypeTrade of
+          TTypeTrade.ttOpen: begin
+            case xPosition.Side of
+              TTypeBuySell.tsBuy: xPosition.SetUpData(TradingPlatform.StateMarket.Bid);
+              TTypeBuySell.tsSell: xPosition.SetUpData(TradingPlatform.StateMarket.Ask);
+            end;
+          end;
+          TTypeTrade.ttClose: xPosition.SetUpdata;
+        end;
+       end;
+  end;
+
 begin
   // ***********************************************
   // Оценка состояния рынка
@@ -382,26 +441,16 @@ begin
   _ShowCandel;
 
   Strategy;
-  if Assigned(Position) then
-  begin
-    case Position.Side of
-      TTypeBuySell.tsBuy: Position.SetUpData(TradingPlatform.StateMarket.Bid);
-      TTypeBuySell.tsSell: Position.SetUpData(TradingPlatform.StateMarket.Ask);
-    end;
-  end;
+  _SetUpDatePosition;
+
   TextManager.Text := 'Прямое направление торговли: Profit := ' +
     JournalManager.Profit.ToString + '//' +
     JournalManager.ProfitFeeRatesTaker.ToString + '//' +
     JournalManager.ProfitFeeRatesMaker.ToString + ';';
 
 
-  if Assigned(MirrorPosition) then
-  begin
-    case MirrorPosition.Side of
-      TTypeBuySell.tsBuy: MirrorPosition.SetUpData(TradingPlatform.StateMarket.Bid);
-      TTypeBuySell.tsSell: MirrorPosition.SetUpData(TradingPlatform.StateMarket.Ask);
-    end;
-  end;
+  _SetUpDateMirrorPosition;
+
   TextMirrorManager.Text := 'Зеркальное направление торговли: Profit := ' +
     MirrorJournalManager.Profit.ToString + '//' +
     MirrorJournalManager.ProfitFeeRatesTaker.ToString + '//' +
@@ -433,27 +482,30 @@ begin
       for i := 0 to Count - 1 do
       begin
         xPosition := JournalManager.Positions[i];
-
-        xS := _Add((i + 1).ToString);
-        xS := _Add(DateTimeToStr(xPosition.OpenTime));
-        xS := _Add(FloatToStr(xPosition.OpenPrice));
+        xS := '';
+        xS := xS + _Add((i + 1).ToString);
+        xS := xS + _Add(DateTimeToStr(xPosition.OpenTime));
+        xS := xS + _Add(FloatToStr(xPosition.OpenPrice));
 
         if xPosition.ClosePrice = 0 then
         begin
-          xS := _Add('');
-          xS := _Add('');
+          xS := xS + _Add('');
+          xS := xS + _Add('');
         end else
         begin
-          xS := _Add(DateTimeToStr(xPosition.CloseTime));
-          xS := _Add(FloatToStr(xPosition.ClosePrice));
+          xS := xS + _Add(DateTimeToStr(xPosition.CloseTime));
+          xS := xS + _Add(FloatToStr(xPosition.ClosePrice));
         end;
 
-        xS := _Add(FloatToStr(xPosition.Qty));
-        xS := _Add(GetStrToSide(xPosition.Side));
-        xS := _Add(FloatToStr(xPosition.StopLoss));
-        xS := _Add(FloatToStr(xPosition.TakeProfit));
-        xS := _Add(FloatToStr(xPosition.Profit));
-        xS := _Add(GetStrToTypeTrade(xPosition.TypeTrade));
+        xS := xS + _Add(FloatToStr(xPosition.Qty));
+        xS := xS + _Add(GetStrToSide(xPosition.Side));
+        xS := xS + _Add(FloatToStr(xPosition.StopLoss));
+        xS := xS + _Add(FloatToStr(xPosition.TakeProfit));
+        xS := xS + _Add(FloatToStr(xPosition.Profit));
+        xS := xS + _Add(GetStrToTypeTrade(xPosition.TypeTrade));
+
+        xS := xS + _Add(FloatToStr(xPosition.RSI));
+        xS := xS + _Add(FloatToStr(xPosition.MaRSI));
 
         xStr.Add(xS);
       end;
@@ -486,27 +538,30 @@ begin
       for i := 0 to Count - 1 do
       begin
         xPosition := JournalManager.Positions[i];
-
-        xS := _Add((i + 1).ToString);
-        xS := _Add(DateTimeToStr(xPosition.OpenTime));
-        xS := _Add(FloatToStr(xPosition.OpenPrice));
+        xS := '';
+        xS := xS + _Add((i + 1).ToString);
+        xS := xS + _Add(DateTimeToStr(xPosition.OpenTime));
+        xS := xS + _Add(FloatToStr(xPosition.OpenPrice));
 
         if xPosition.ClosePrice = 0 then
         begin
-          xS := _Add('');
-          xS := _Add('');
+          xS := xS + _Add('');
+          xS := xS + _Add('');
         end else
         begin
-          xS := _Add(DateTimeToStr(xPosition.CloseTime));
-          xS := _Add(FloatToStr(xPosition.ClosePrice));
+          xS := xS + _Add(DateTimeToStr(xPosition.CloseTime));
+          xS := xS + _Add(FloatToStr(xPosition.ClosePrice));
         end;
 
-        xS := _Add(FloatToStr(xPosition.Qty));
-        xS := _Add(GetStrToSide(xPosition.Side));
-        xS := _Add(FloatToStr(xPosition.StopLoss));
-        xS := _Add(FloatToStr(xPosition.TakeProfit));
-        xS := _Add(FloatToStr(xPosition.Profit));
-        xS := _Add(GetStrToTypeTrade(xPosition.TypeTrade));
+        xS := xS + _Add(FloatToStr(xPosition.Qty));
+        xS := xS + _Add(GetStrToSide(xPosition.Side));
+        xS := xS + _Add(FloatToStr(xPosition.StopLoss));
+        xS := xS + _Add(FloatToStr(xPosition.TakeProfit));
+        xS := xS + _Add(FloatToStr(xPosition.Profit));
+        xS := xS + _Add(GetStrToTypeTrade(xPosition.TypeTrade));
+
+        xS := xS + _Add(FloatToStr(xPosition.RSI));
+        xS := xS + _Add(FloatToStr(xPosition.MaRSI));
 
         xStr.Add(xS);
       end;
@@ -535,19 +590,19 @@ begin
 end;
 
 function TMainForm.GetMirrorQuantity: Double;
-var
-  Count: Integer;
-  xPosition: TJournalPosition;
+//var
+//  Count: Integer;
+//  xPosition: TJournalPosition;
 begin
   // Вслучае получение отрицательного профита прошлый раз значение удваевыем
   Result := 1;
-  Count := MirrorJournalManager.Positions.Count;
-  if Count > 0 then
-  begin
-    xPosition := MirrorJournalManager.Positions[Count - 1];
-    if xPosition.Profit <= 0 then
-      Result := 2 * xPosition.Qty;
-  end;
+//  Count := MirrorJournalManager.Positions.Count;
+//  if Count > 0 then
+//  begin
+//    xPosition := MirrorJournalManager.Positions[Count - 1];
+//    if xPosition.Profit <= 0 then
+//      Result := 2 * xPosition.Qty;
+//  end;
 end;
 
 procedure TMainForm.ButtonBuyClick(Sender: TObject);
@@ -557,8 +612,8 @@ procedure TMainForm.ButtonBuyClick(Sender: TObject);
     xQuantity: Double;
   begin
     xQuantity := GetQuantity;
-    if not Assigned(Position) then
-    begin
+//    if not Assigned(Position) then
+//    begin
       Position := JournalManager.GetCreateJournalPosition;
       Position.OnClose := PositionClose;
       with Position do
@@ -571,9 +626,11 @@ procedure TMainForm.ButtonBuyClick(Sender: TObject);
         TypeTrade := TTypeTrade.ttOpen;
         Triling := 15;
         TakeProfit := OpenPrice + 10;
+        RSI := TradingPlatform.ValueRSI.RSI;
+        MaRSI := TradingPlatform.ValueRSI.MovingAveragRSI;
         DoOpen;
       end;
-    end;
+//    end;
   end;
 
   procedure _MirrorOrder();
@@ -581,8 +638,8 @@ procedure TMainForm.ButtonBuyClick(Sender: TObject);
     xQuantity: Double;
   begin
     xQuantity := GetMirrorQuantity;
-    if not Assigned(MirrorPosition) then
-    begin
+//    if not Assigned(MirrorPosition) then
+//    begin
       MirrorPosition := MirrorJournalManager.GetCreateJournalPosition;
       MirrorPosition.OnClose := MirrorPositionClose;
       with MirrorPosition do
@@ -595,9 +652,11 @@ procedure TMainForm.ButtonBuyClick(Sender: TObject);
         TypeTrade := TTypeTrade.ttOpen;
         Triling := 20;
         TakeProfit := OpenPrice - 10;
+        RSI := TradingPlatform.ValueRSI.RSI;
+        MaRSI := TradingPlatform.ValueRSI.MovingAveragRSI;
         DoOpen;
       end;
-    end;
+//    end;
   end;
 
 begin
@@ -612,8 +671,8 @@ procedure TMainForm.ButtonSellClick(Sender: TObject);
     xQuantity: Double;
   begin
     xQuantity := GetQuantity;
-    if not Assigned(Position) then
-    begin
+//    if not Assigned(Position) then
+//    begin
       Position := JournalManager.GetCreateJournalPosition;
       Position.OnClose := PositionClose;
       with Position do
@@ -626,9 +685,11 @@ procedure TMainForm.ButtonSellClick(Sender: TObject);
         TypeTrade := TTypeTrade.ttOpen;
         Triling := 15;
         TakeProfit := OpenPrice - 10;
+        RSI := TradingPlatform.ValueRSI.RSI;
+        MaRSI := TradingPlatform.ValueRSI.MovingAveragRSI;
         DoOpen;
       end;
-    end;
+//    end;
   end;
 
   procedure _MirrorOrder();
@@ -636,8 +697,8 @@ procedure TMainForm.ButtonSellClick(Sender: TObject);
     xQuantity: Double;
   begin
     xQuantity := GetMirrorQuantity;
-    if not Assigned(MirrorPosition) then
-    begin
+//    if not Assigned(MirrorPosition) then
+//    begin
       MirrorPosition := MirrorJournalManager.GetCreateJournalPosition;
       MirrorPosition.OnClose := MirrorPositionClose;
       with MirrorPosition do
@@ -650,9 +711,11 @@ procedure TMainForm.ButtonSellClick(Sender: TObject);
         TypeTrade := TTypeTrade.ttOpen;
         Triling := 20;
         TakeProfit := OpenPrice + 10;
+        RSI := TradingPlatform.ValueRSI.RSI;
+        MaRSI := TradingPlatform.ValueRSI.MovingAveragRSI;
         DoOpen;
       end;
-    end;
+//    end;
   end;
 
 begin
@@ -709,5 +772,16 @@ begin
   _MirrorCloseOrder();
 end;
 
+procedure TMainForm.TimerTradeTimer(Sender: TObject);
+begin
+  if JournalManager.GetSumCountIsActive < 20 then
+  begin
+    ButtonBuyClick(nil);
+    ButtonSellClick(nil);
+
+    MenuItem1Click(nil);
+    MenuItemSaveFileClick(nil);
+  end;
+end;
 
 end.
