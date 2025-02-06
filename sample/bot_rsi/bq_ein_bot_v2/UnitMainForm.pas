@@ -19,7 +19,8 @@ uses
   FMX.Layouts,
   Lb.Journal.Trading.v2,
   FMX.TabControl,
-  FMX.Menus, FMX.ListBox;
+  FMX.Menus, FMX.ListBox, FMXTee.Engine, FMXTee.Series, FMXTee.Procs,
+  FMXTee.Chart;
 
 type
   TMainForm = class(TForm)
@@ -46,6 +47,9 @@ type
     StrGrid_V2: TStringGrid;
     PopupMenu1: TPopupMenu;
     MenuItem1: TMenuItem;
+    Chart: TChart;
+    SeriesValueRSI: TLineSeries;
+    SeriesValueMaRSI: TLineSeries;
     procedure ButtonStartOrStopClick(Sender: TObject);
     procedure ButtonBuyClick(Sender: TObject);
     procedure ButtonSellClick(Sender: TObject);
@@ -87,9 +91,6 @@ implementation
 {$R *.fmx}
 
 uses
-{$IFDEF DEBUG}
-  Lb.Logger,
-{$ENDIF}
   System.DateUtils;
 
 constructor TMainForm.Create(AOwner: TComponent);
@@ -115,6 +116,7 @@ begin
   SetAddColumn(StringGridCandel,'Vol');
   SetAddColumn(StringGridCandel,'RSI');
   SetAddColumn(StringGridCandel,'MaRSI');
+  SetAddColumn(StringGridCandel,'RSI_ATR');
   SetAddColumn(StringGridCandel,'ATR');
 
   SetAddColumn(StrGrid,'id',50);
@@ -214,9 +216,6 @@ begin
   if not Assigned(Position) then
   begin
     xRSI := TradingPlatform.ValueRSI.RSI;
-    {$IFDEF DBG_STRATEGY}
-    TLogger.LogTree(0,'TMainForm.Strategy: RSI: ' + xRSI.ToString);
-    {$ENDIF}
     if xRSI > 50 then
     begin
       case TypeDirection of
@@ -241,11 +240,7 @@ end;
 
 procedure TMainForm.PositionClose(ASander: TObject);
 begin
-  {$IFDEF DBG_STRATEGY}
-  TLogger.LogTree(0,'TMainForm.PositionClose');
-  {$ENDIF}
   Position := nil;
-
   // Закрываем зиркальную позицию
   Self._MirrorCloseOrder();
 end;
@@ -263,6 +258,9 @@ procedure TMainForm.TradingPlatformOnStateMarket(ASender: TObject; AStateMarket:
     xCandel: TCandel;
     i, iCount: Integer;
   begin
+    SeriesValueRSI.Clear;
+    SeriesValueMaRSI.Clear;
+
     iCount := AStateMarket.Candels.Count;
     StringGridCandel.RowCount := iCount;
     if iCount > 0 then
@@ -277,7 +275,12 @@ procedure TMainForm.TradingPlatformOnStateMarket(ASender: TObject; AStateMarket:
         StringGridCandel.Cells[5,i] := xCandel.Vol.ToString;
         StringGridCandel.Cells[6,i] := TradingPlatform.ValueRSI.ValueRSI[i].ToString;
         StringGridCandel.Cells[7,i] := TradingPlatform.ValueRSI.ValueMaRSI[i].ToString;
-        StringGridCandel.Cells[8,i] := TradingPlatform.ValueATR.Values[i].ToString;
+        StringGridCandel.Cells[8,i] := TradingPlatform.ValueRSI.ValueATR[i].ToString;
+        StringGridCandel.Cells[9,i] := TradingPlatform.ValueATR.Values[i].ToString;
+
+        SeriesValueRSI.Add(TradingPlatform.ValueRSI.ValueRSI[(iCount - 1) - i]);
+        SeriesValueMaRSI.Add(TradingPlatform.ValueRSI.ValueMaRSI[(iCount- 1) - i]);
+
       end;
   end;
 
@@ -567,6 +570,7 @@ procedure TMainForm.ButtonBuyClick(Sender: TObject);
         IsActive := True;
         TypeTrade := TTypeTrade.ttOpen;
         Triling := 15;
+        TakeProfit := OpenPrice + 10;
         DoOpen;
       end;
     end;
@@ -590,15 +594,13 @@ procedure TMainForm.ButtonBuyClick(Sender: TObject);
         IsActive := True;
         TypeTrade := TTypeTrade.ttOpen;
         Triling := 20;
+        TakeProfit := OpenPrice - 10;
         DoOpen;
       end;
     end;
   end;
 
 begin
-  {$IFDEF RSI_BQ_2}
-  TLogger.LogTree(0,'TMainForm.ButtonBuyClick: Покупка');
-  {$ENDIF}
   _Order();
   _MirrorOrder();
 end;
@@ -623,6 +625,7 @@ procedure TMainForm.ButtonSellClick(Sender: TObject);
         IsActive := True;
         TypeTrade := TTypeTrade.ttOpen;
         Triling := 15;
+        TakeProfit := OpenPrice - 10;
         DoOpen;
       end;
     end;
@@ -646,15 +649,13 @@ procedure TMainForm.ButtonSellClick(Sender: TObject);
         IsActive := True;
         TypeTrade := TTypeTrade.ttOpen;
         Triling := 20;
+        TakeProfit := OpenPrice + 10;
         DoOpen;
       end;
     end;
   end;
 
 begin
-  {$IFDEF RSI_BQ_2}
-  TLogger.LogTree(0,'TMainForm.ButtonBuyClick: Продажа');
-  {$ENDIF}
   _Order();
   _MirrorOrder();
 end;

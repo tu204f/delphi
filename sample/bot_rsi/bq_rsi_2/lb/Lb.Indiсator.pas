@@ -21,22 +21,29 @@ type
     FValueMaD: TDoubleList;
     FValueRSI: TDoubleList;
     FValueMaRSI: TDoubleList;
+    FValueTR: TDoubleList;
+    FValueATR: TDoubleList;
     FCandels: TCandelList;
     FPeriod: Integer;
     FPeriodMovingAverag: Integer;
+    FPeriodATR: Integer;
     function GetRSI: Double;
     function GetMovingAveragRSI: Double;
+    function GetATR: Double;
   public
     constructor Create; virtual;
     destructor Destroy; override;
     procedure SetCandels(ACandels: TCandelList);
     property ValueRSI: TDoubleList read FValueRSI;
     property ValueMaRSI: TDoubleList read FValueMaRSI;
+    property ValueATR: TDoubleList read FValueATR;
     property Period: Integer read FPeriod write FPeriod;
     property PeriodMovingAverag: Integer read FPeriodMovingAverag write FPeriodMovingAverag;
+    property PeriodATR: Integer read FPeriodATR write FPeriodATR;
   public
     property RSI: Double read GetRSI;
     property MovingAveragRSI: Double read GetMovingAveragRSI;
+    property ATR: Double read GetATR;
   end;
 
   TValueATR = class(TObject)
@@ -278,6 +285,7 @@ begin
 
   FPeriod := 14;
   FPeriodMovingAverag := 9;
+  FPeriodATR := 9;
 
   FValuesU := TDoubleList.Create;
   FValuesD := TDoubleList.Create;
@@ -285,10 +293,14 @@ begin
   FValueMaD := TDoubleList.Create;
   FValueRSI := TDoubleList.Create;
   FValueMaRSI := TDoubleList.Create;
+  FValueTR := TDoubleList.Create;
+  FValueATR := TDoubleList.Create;
 end;
 
 destructor TValueRSI.Destroy;
 begin
+  FreeAndNil(FValueATR);
+  FreeAndNil(FValueTR);
   FreeAndNil(FValueMaRSI);
   FreeAndNil(FValueRSI);
   FreeAndNil(FValueMaD);
@@ -380,6 +392,35 @@ procedure TValueRSI.SetCandels(ACandels: TCandelList);
         FValueMaRSI.Add(GetValueSMA(FPeriodMovingAverag,i,FValueRSI));
   end;
 
+  procedure _ValueTR;
+  var
+    xTR: Double;
+    i, Count: Integer;
+  begin
+    FValueTR.Clear;
+    Count := FCandels.Count;
+    if Count > 0 then
+    begin
+      for i := 1 to Count - 1 do
+      begin
+        xTR := FValueRSI[i - 1] - FValueRSI[i];
+        FValueTR.Add(xTR);
+      end;
+      FValueTR.Add(0);
+    end;
+  end;
+
+  procedure _ValueMovingAveragRSI_ART;
+  var
+    i, Count: Integer;
+  begin
+    FValueATR.Clear;
+    Count := FCandels.Count;
+    if Count > 0 then
+      for i := 0 to Count - 1 do
+        FValueATR.Add(GetValueSMA(FPeriodATR,i,FValueTR));
+  end;
+
 begin
   FCandels := ACandels;
   if Assigned(FCandels) then
@@ -388,6 +429,8 @@ begin
     _ValueMovingAverag;
     _ValueRSI;
     _ValueMovingAveragRSI;
+    _ValueTR;
+    _ValueMovingAveragRSI_ART;
   end;
 end;
 
@@ -403,6 +446,13 @@ begin
   Result := 0;
   if FValueMaRSI.Count > 0 then
     Result := GetRound(FValueMaRSI[0]);
+end;
+
+function TValueRSI.GetATR: Double;
+begin
+  Result := 0;
+  if FValueMaRSI.Count > 0 then
+    Result := GetRound(FValueATR[0]);
 end;
 
 { TValueATR }

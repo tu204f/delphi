@@ -141,7 +141,6 @@ implementation
 
 uses
 {$IFDEF DEBUG}
-  Lb.Logger,
 {$ENDIF}
   System.Math;
 
@@ -202,9 +201,6 @@ procedure TJournalPosition.SetUpData(const APrice: Double);
 
   procedure _CalcProfit(const APrice: Double);
   begin
-    {$IFDEF DEBUG}
-    TLogger.LogTree(0,'TJournalPosition.SetUpData._CalcProfit:');
-    {$ENDIF}
     case FTypeTrade of
       ttOpen: begin
         case FSide of
@@ -229,9 +225,6 @@ procedure TJournalPosition.SetUpData(const APrice: Double);
   var
     xStopLoss: Double;
   begin
-    {$IFDEF DEBUG}
-    TLogger.LogTree(0,'TJournalPosition.SetUpData._CalcTrelingStopLoss:');
-    {$ENDIF}
     if FTypeTrade = TTypeTrade.ttOpen then
     begin
       case FSide of
@@ -250,17 +243,43 @@ procedure TJournalPosition.SetUpData(const APrice: Double);
             raise Exception.Create('Error Message: Стоп лосс не может быть нулевым');
         end;
       end;
-      {$IFDEF DEBUG}
-      TLogger.LogTreeText(3,'>> StopLoss');
-      {$ENDIF}
+    end;
+  end;
+
+  procedure _ActiveTakeProfit(APrice: Double);
+  begin
+    if FTakeProfit <= 0 then
+      Exit;
+
+    if FTypeTrade = TTypeTrade.ttOpen then
+    begin
+      case FSide of
+        tsBuy: begin
+          if APrice > FTakeProfit then
+          begin
+            CloseTime := GetNewDateTime;
+            ClosePrice := APrice;
+            IsActive := False;
+            TypeTrade := TTypeTrade.ttClose;
+            DoClose;
+          end;
+        end;
+        tsSell: begin
+          if APrice < FTakeProfit then
+          begin
+            CloseTime := GetNewDateTime;
+            ClosePrice := APrice;
+            IsActive := False;
+            TypeTrade := TTypeTrade.ttClose;
+            DoClose;
+          end;
+        end;
+      end;
     end;
   end;
 
   procedure _ActiveStopLoss(APrice: Double);
   begin
-    {$IFDEF DEBUG}
-    TLogger.LogTree(0,'TJournalPosition.SetUpData._ActiveStopLoss:');
-    {$ENDIF}
     if FTypeTrade = TTypeTrade.ttOpen then
     begin
       case FSide of
@@ -289,15 +308,12 @@ procedure TJournalPosition.SetUpData(const APrice: Double);
   end;
 
 begin
-  {$IFDEF DEBUG}
-  TLogger.LogTree(0,'TJournalPosition.SetUpData:');
-  {$ENDIF}
-
   if FOpenPrice <= 0 then
     raise Exception.Create('Error Message: Нет цены открытие');
 
   _CalcProfit(APrice);
   _CalcTrelingStopLoss(APrice);
+  _ActiveTakeProfit(APrice);
   _ActiveStopLoss(APrice);
 end;
 
