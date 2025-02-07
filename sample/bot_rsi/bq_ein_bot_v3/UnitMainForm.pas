@@ -379,6 +379,22 @@ procedure TMainForm.TradingPlatformOnStateMarket(ASender: TObject; AStateMarket:
        end;
   end;
 
+  procedure _SetClosePosition(const AJournalManager: TJournalManager);
+  var
+    i, iCount: Integer;
+    xPosition: TJournalPosition;
+  begin
+    iCount := AJournalManager.Positions.Count;
+    if iCount > 0 then
+      for i := (iCount - 1) downto 0 do
+      begin
+        xPosition := AJournalManager.Positions[i];
+        if xPosition.TypeTrade = TTypeTrade.ttClose then
+          AJournalManager.Positions.Delete(i);
+      end;
+  end;
+
+
 begin
   // ***********************************************
   // ќценка состо€ни€ рынка
@@ -406,118 +422,117 @@ begin
 
   _ShowPosition;
   _ShowMirrorPosition;
+
+  _SetClosePosition(JournalManager);
+  _SetClosePosition(MirrorJournalManager);
 end;
 
 procedure TMainForm.MenuItem1Click(Sender: TObject);
-
-  function _Add(S: String): String;
-  begin
-    Result := S + ';';
-  end;
-
-var
-  xS: String;
-  xStr: TStrings;
-  i, Count: Integer;
-  xPosition: TJournalPosition;
+//  function _Add(S: String): String;
+//  begin
+//    Result := S + ';';
+//  end;
+//
+//var
+//  xS: String;
+//  xStr: TStrings;
+//  i, Count: Integer;
+//  xPosition: TJournalPosition;
 begin
-  xStr := TStringList.Create;
-  try
-    Count := JournalManager.Positions.Count;
-    StrGrid.RowCount := Count;
-
-    if Count > 0 then
-      for i := 0 to Count - 1 do
-      begin
-        xPosition := JournalManager.Positions[i];
-        xS := '';
-        xS := xS + _Add((i + 1).ToString);
-        xS := xS + _Add(DateTimeToStr(xPosition.OpenTime));
-        xS := xS + _Add(FloatToStr(xPosition.OpenPrice));
-
-        if xPosition.ClosePrice = 0 then
-        begin
-          xS := xS + _Add('');
-          xS := xS + _Add('');
-        end else
-        begin
-          xS := xS + _Add(DateTimeToStr(xPosition.CloseTime));
-          xS := xS + _Add(FloatToStr(xPosition.ClosePrice));
-        end;
-
-        xS := xS + _Add(FloatToStr(xPosition.Qty));
-        xS := xS + _Add(GetStrToSide(xPosition.Side));
-        xS := xS + _Add(FloatToStr(xPosition.StopLoss));
-        xS := xS + _Add(FloatToStr(xPosition.TakeProfit));
-        xS := xS + _Add(FloatToStr(xPosition.Profit));
-        xS := xS + _Add(GetStrToTypeTrade(xPosition.TypeTrade));
-
-        xS := xS + _Add(FloatToStr(xPosition.RSI));
-        xS := xS + _Add(FloatToStr(xPosition.MaRSI));
-
-        xStr.Add(xS);
-      end;
-
-    xStr.SaveToFile('mirror_positions.csv');
-  finally
-    FreeAndNil(xStr);
-  end;
+//  xStr := TStringList.Create;
+//  try
+//    Count := JournalManager.Positions.Count;
+//    if Count > 0 then
+//      for i := 0 to Count - 1 do
+//      begin
+//        xPosition := JournalManager.Positions[i];
+//        xS := '';
+//        xS := xS + _Add((i + 1).ToString);
+//        xS := xS + _Add(DateTimeToStr(xPosition.OpenTime));
+//        xS := xS + _Add(FloatToStr(xPosition.OpenPrice));
+//
+//        if xPosition.ClosePrice = 0 then
+//        begin
+//          xS := xS + _Add('');
+//          xS := xS + _Add('');
+//        end else
+//        begin
+//          xS := xS + _Add(DateTimeToStr(xPosition.CloseTime));
+//          xS := xS + _Add(FloatToStr(xPosition.ClosePrice));
+//        end;
+//
+//        xS := xS + _Add(FloatToStr(xPosition.Qty));
+//        xS := xS + _Add(GetStrToSide(xPosition.Side));
+//        xS := xS + _Add(FloatToStr(xPosition.StopLoss));
+//        xS := xS + _Add(FloatToStr(xPosition.TakeProfit));
+//        xS := xS + _Add(FloatToStr(xPosition.Profit));
+//        xS := xS + _Add(GetStrToTypeTrade(xPosition.TypeTrade));
+//
+//        xS := xS + _Add(FloatToStr(xPosition.RSI));
+//        xS := xS + _Add(FloatToStr(xPosition.MaRSI));
+//
+//        xStr.Add(xS);
+//      end;
+//
+//    xStr.SaveToFile('mirror_positions.csv');
+//  finally
+//    FreeAndNil(xStr);
+//  end;
 end;
 
 procedure TMainForm.MenuItemSaveFileClick(Sender: TObject);
-
-  function _Add(S: String): String;
-  begin
-    Result := S + ';';
-  end;
-
-var
-  xS: String;
-  xStr: TStrings;
-  i, Count: Integer;
-  xPosition: TJournalPosition;
+//  function _Add(S: String): String;
+//  begin
+//    Result := S + ';';
+//  end;
+//
+//var
+//  xS: String;
+//  xStr: TStrings;
+//  i, Count: Integer;
+//  xPosition: TJournalPosition;
 begin
-  xStr := TStringList.Create;
-  try
-    Count := JournalManager.Positions.Count;
-    StrGrid.RowCount := Count;
-
-    if Count > 0 then
-      for i := 0 to Count - 1 do
-      begin
-        xPosition := JournalManager.Positions[i];
-        xS := '';
-        xS := xS + _Add((i + 1).ToString);
-        xS := xS + _Add(DateTimeToStr(xPosition.OpenTime));
-        xS := xS + _Add(FloatToStr(xPosition.OpenPrice));
-
-        if xPosition.ClosePrice = 0 then
-        begin
-          xS := xS + _Add('');
-          xS := xS + _Add('');
-        end else
-        begin
-          xS := xS + _Add(DateTimeToStr(xPosition.CloseTime));
-          xS := xS + _Add(FloatToStr(xPosition.ClosePrice));
-        end;
-
-        xS := xS + _Add(FloatToStr(xPosition.Qty));
-        xS := xS + _Add(GetStrToSide(xPosition.Side));
-        xS := xS + _Add(FloatToStr(xPosition.StopLoss));
-        xS := xS + _Add(FloatToStr(xPosition.TakeProfit));
-        xS := xS + _Add(FloatToStr(xPosition.Profit));
-        xS := xS + _Add(GetStrToTypeTrade(xPosition.TypeTrade));
-
-        xS := xS + _Add(FloatToStr(xPosition.RSI));
-        xS := xS + _Add(FloatToStr(xPosition.MaRSI));
-
-        xStr.Add(xS);
-      end;
-
-    xStr.SaveToFile('positions.csv');
-  finally
-    FreeAndNil(xStr);
-  end;
+//  xStr := TStringList.Create;
+//  try
+//    Count := JournalManager.Positions.Count;
+//    StrGrid.RowCount := Count;
+//
+//    if Count > 0 then
+//      for i := 0 to Count - 1 do
+//      begin
+//        xPosition := JournalManager.Positions[i];
+//        xS := '';
+//        xS := xS + _Add((i + 1).ToString);
+//        xS := xS + _Add(DateTimeToStr(xPosition.OpenTime));
+//        xS := xS + _Add(FloatToStr(xPosition.OpenPrice));
+//
+//        if xPosition.ClosePrice = 0 then
+//        begin
+//          xS := xS + _Add('');
+//          xS := xS + _Add('');
+//        end else
+//        begin
+//          xS := xS + _Add(DateTimeToStr(xPosition.CloseTime));
+//          xS := xS + _Add(FloatToStr(xPosition.ClosePrice));
+//        end;
+//
+//        xS := xS + _Add(FloatToStr(xPosition.Qty));
+//        xS := xS + _Add(GetStrToSide(xPosition.Side));
+//        xS := xS + _Add(FloatToStr(xPosition.StopLoss));
+//        xS := xS + _Add(FloatToStr(xPosition.TakeProfit));
+//        xS := xS + _Add(FloatToStr(xPosition.Profit));
+//        xS := xS + _Add(GetStrToTypeTrade(xPosition.TypeTrade));
+//
+//        xS := xS + _Add(FloatToStr(xPosition.RSI));
+//        xS := xS + _Add(FloatToStr(xPosition.MaRSI));
+//
+//        xStr.Add(xS);
+//      end;
+//
+//    xStr.SaveToFile('positions.csv');
+//  finally
+//    FreeAndNil(xStr);
+//  end;
 end;
 
 

@@ -131,14 +131,12 @@ type
   public
     constructor Create; virtual;
     destructor Destroy; override;
-
     ///<summary>Создание журнала позиции</summary>
     function GetCreateJournalPosition: TJournalPosition;
-
     function GetSumCountIsActive: Integer;
-
     ///<summary>Список позиций</summary>
     property Positions: TJournalPositionList read FPositions;
+
     ///<summary>Сумарный профит повсем позициям</summary>
     property Profit: Double read GetProfit;
     property ProfitFeeRatesTaker: Double read GetProfitFeeRatesTaker;
@@ -149,9 +147,32 @@ type
 implementation
 
 uses
-{$IFDEF DEBUG}
-{$ENDIF}
   System.Math;
+
+var
+  localID: Integer = 0;
+  LogCS: TCriticalSection;
+
+
+procedure PositionText(S: String);
+var
+  F: TextFile;
+  xPath: String;
+begin
+  LogCS.Enter;
+  try
+    xPath := ExtractFilePath(ParamStr(0)) + 'position.csv';
+    AssignFile(f,xPath);
+    if FileExists(xPath) then
+      Append(F)
+    else
+      Rewrite(F);
+    WriteLn(F, S);
+    CloseFile(F);
+  finally
+    LogCS.Leave;
+  end;
+end;
 
 { TJournalTrade }
 
@@ -201,7 +222,47 @@ begin
 end;
 
 procedure TJournalPosition.DoClose;
+
+  function _Add(S: String): String;
+  begin
+    Result := S + ';';
+  end;
+
+var
+  xS: String;
 begin
+  if Self.Profit > 0 then
+  begin
+    Inc(localID);
+
+    xS := '';
+    xS := xS + _Add(localID.ToString);
+    xS := xS + _Add(DateTimeToStr(Self.OpenTime));
+    xS := xS + _Add(FloatToStr(Self.OpenPrice));
+
+    if Self.ClosePrice = 0 then
+    begin
+      xS := xS + _Add('');
+      xS := xS + _Add('');
+    end else
+    begin
+      xS := xS + _Add(DateTimeToStr(Self.CloseTime));
+      xS := xS + _Add(FloatToStr(Self.ClosePrice));
+    end;
+
+    xS := xS + _Add(FloatToStr(Self.Qty));
+    xS := xS + _Add(GetStrToSide(Self.Side));
+    xS := xS + _Add(FloatToStr(Self.StopLoss));
+    xS := xS + _Add(FloatToStr(Self.TakeProfit));
+    xS := xS + _Add(FloatToStr(Self.Profit));
+    xS := xS + _Add(GetStrToTypeTrade(Self.TypeTrade));
+
+    xS := xS + _Add(FloatToStr(Self.RSI));
+    xS := xS + _Add(FloatToStr(Self.MaRSI));
+
+    PositionText(xS);
+  end;
+
   if Assigned(FOnClose) then
     FOnClose(Self);
 end;
@@ -220,7 +281,6 @@ procedure TJournalPosition.SetUpData(const APrice: Double);
       ttClose: begin
         if FClosePrice <= 0 then
           raise Exception.Create('Error Message: Цена закрытие не может быть нулейо ');
-
         case FSide of
           tsBuy: FProfit := (FClosePrice - FOpenPrice) * FQty;
           tsSell: FProfit := (FOpenPrice - FClosePrice) * FQty;
@@ -427,5 +487,12 @@ begin
   end;
   Result := xCnt;
 end;
+
+initialization
+  localID := 0;
+  LogCS := TCriticalSection.Create;
+
+finalization
+  FreeAndNil(LogCS);
 
 end.

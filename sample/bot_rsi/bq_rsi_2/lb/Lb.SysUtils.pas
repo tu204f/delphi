@@ -116,6 +116,7 @@ function GetCrossSide(ASide: TTypeBuySell): TTypeBuySell;
 function GetStrToSide(ASide: TTypeBuySell): String;
 function GetSiseToStr(AValue: String): TTypeBuySell;
 function GetStrToTypeTrade(const ATypeTrade: TTypeTrade): String;
+function GetTypeTradeToStr(const AValue: String): TTypeTrade;
 
 ///<summary>
 /// Текущая дата и время
@@ -149,6 +150,24 @@ begin
     ttNull: Result := 'null';
     ttOpen: Result := 'open';
     ttClose: Result := 'close';
+  end;
+end;
+
+function GetTypeTradeToStr(const AValue: String): TTypeTrade;
+var
+  xC: Char;
+begin
+  if AValue.IsEmpty then
+  begin
+    xC := 'n';
+    Exit;
+  end;
+  xC := AValue[1];
+
+  case xC of
+    'n': Result := TTypeTrade.ttNull;
+    'o': Result := TTypeTrade.ttOpen;
+    'c': Result := TTypeTrade.ttClose;
   end;
 end;
 
