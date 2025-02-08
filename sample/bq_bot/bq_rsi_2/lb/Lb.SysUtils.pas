@@ -157,13 +157,13 @@ function GetTypeTradeToStr(const AValue: String): TTypeTrade;
 var
   xC: Char;
 begin
+  xC := 'n';
   if AValue.IsEmpty then
   begin
-    xC := 'n';
+    Result := TTypeTrade.ttNull;
     Exit;
   end;
   xC := AValue[1];
-
   case xC of
     'n': Result := TTypeTrade.ttNull;
     'o': Result := TTypeTrade.ttOpen;

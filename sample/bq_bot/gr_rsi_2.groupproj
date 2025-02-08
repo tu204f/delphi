@@ -15,6 +15,9 @@
         <Projects Include="bq_ein_bot_v3\bq_bot_v3.dproj">
             <Dependencies/>
         </Projects>
+        <Projects Include="bq_neuron_2\bq_neuron.dproj">
+            <Dependencies/>
+        </Projects>
     </ItemGroup>
     <ProjectExtensions>
         <Borland.Personality>Default.Personality.12</Borland.Personality>
@@ -59,14 +62,23 @@
     <Target Name="bq_bot_v3:Make">
         <MSBuild Projects="bq_ein_bot_v3\bq_bot_v3.dproj" Targets="Make"/>
     </Target>
+    <Target Name="bq_neuron">
+        <MSBuild Projects="bq_neuron_2\bq_neuron.dproj"/>
+    </Target>
+    <Target Name="bq_neuron:Clean">
+        <MSBuild Projects="bq_neuron_2\bq_neuron.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="bq_neuron:Make">
+        <MSBuild Projects="bq_neuron_2\bq_neuron.dproj" Targets="Make"/>
+    </Target>
     <Target Name="Build">
-        <CallTarget Targets="bq_history;bq_ein_bot;bq_bot_v2;bq_bot_v3"/>
+        <CallTarget Targets="bq_history;bq_ein_bot;bq_bot_v2;bq_bot_v3;bq_neuron"/>
     </Target>
     <Target Name="Clean">
-        <CallTarget Targets="bq_history:Clean;bq_ein_bot:Clean;bq_bot_v2:Clean;bq_bot_v3:Clean"/>
+        <CallTarget Targets="bq_history:Clean;bq_ein_bot:Clean;bq_bot_v2:Clean;bq_bot_v3:Clean;bq_neuron:Clean"/>
     </Target>
     <Target Name="Make">
-        <CallTarget Targets="bq_history:Make;bq_ein_bot:Make;bq_bot_v2:Make;bq_bot_v3:Make"/>
+        <CallTarget Targets="bq_history:Make;bq_ein_bot:Make;bq_bot_v2:Make;bq_bot_v3:Make;bq_neuron:Make"/>
     </Target>
     <Import Project="$(BDS)\Bin\CodeGear.Group.Targets" Condition="Exists('$(BDS)\Bin\CodeGear.Group.Targets')"/>
 </Project>

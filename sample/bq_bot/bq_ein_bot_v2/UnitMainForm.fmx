@@ -124,7 +124,7 @@ object MainForm: TMainForm
     Size.Width = 1117.000000000000000000
     Size.Height = 718.000000000000000000
     Size.PlatformDefault = False
-    TabIndex = 0
+    TabIndex = 1
     TabOrder = 1
     TabPosition = PlatformDefault
     Sizes = (
@@ -136,7 +136,7 @@ object MainForm: TMainForm
       CustomIcon = <
         item
         end>
-      IsSelected = True
+      IsSelected = False
       Size.Width = 54.000000000000000000
       Size.Height = 26.000000000000000000
       Size.PlatformDefault = False
@@ -154,8 +154,8 @@ object MainForm: TMainForm
         Size.PlatformDefault = False
         TabOrder = 1
         Options = [Editing, ColumnResize, ColumnMove, ColLines, RowLines, RowSelect, Tabs, Header, HeaderClick, AutoDisplacement]
-        Viewport.Width = 1113.000000000000000000
-        Viewport.Height = 417.000000000000000000
+        Viewport.Width = 1117.000000000000000000
+        Viewport.Height = 442.000000000000000000
       end
       object Chart: TChart
         Position.Y = 442.000000000000000000
@@ -199,7 +199,7 @@ object MainForm: TMainForm
       CustomIcon = <
         item
         end>
-      IsSelected = False
+      IsSelected = True
       Size.Width = 69.000000000000000000
       Size.Height = 26.000000000000000000
       Size.PlatformDefault = False

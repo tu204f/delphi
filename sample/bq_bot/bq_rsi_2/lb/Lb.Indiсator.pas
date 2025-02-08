@@ -116,7 +116,9 @@ begin
         else
           Break;
       end;
-      Result := GetMovingAverag(xValues);
+      xValue := GetMovingAverag(xValues);
+      xValue := GetRound(xValue);
+      Result := xValue;
     finally
       FreeAndNil(xValues);
     end;
@@ -376,6 +378,7 @@ procedure TValueRSI.SetCandels(ACandels: TCandelList);
         else
           xRS := 0;
         xRS := 100 - 100/(1 + xRS);
+        xRS := GetRound(xRS);
         FValueRSI.Add(xRS);
       end;
     end;
@@ -539,5 +542,6 @@ begin
   if FValues.Count > 0 then
     Result := GetRound(FValues[0]);
 end;
+
 
 end.

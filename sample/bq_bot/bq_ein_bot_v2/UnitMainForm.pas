@@ -2,8 +2,6 @@ unit UnitMainForm;
 
 interface
 
-{$I D:\work\git\delphi\sample\bot_rsi\bq_rsi_2\lb\debug.inc}
-
 uses
   System.SysUtils, System.Types, System.UITypes, System.Classes, System.Variants,
   FMX.Types, FMX.Controls, FMX.Forms, FMX.Graphics, FMX.Dialogs,
