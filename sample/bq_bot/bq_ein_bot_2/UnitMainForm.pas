@@ -2,10 +2,6 @@ unit UnitMainForm;
 
 interface
 
-{$IFDEF DEBUG}
-  {$DEFINE DBG_MAIN}
-{$ENDIF}
-
 uses
   System.SysUtils, System.Types, System.UITypes, System.Classes, System.Variants,
   FMX.Types, FMX.Controls, FMX.Forms, FMX.Graphics, FMX.Dialogs,
@@ -69,9 +65,6 @@ implementation
 {$R *.fmx}
 
 uses
-{$IFDEF DEBUG}
-  Lb.Logger,
-{$ENDIF}
   System.DateUtils;
 
 constructor TMainForm.Create(AOwner: TComponent);
@@ -98,6 +91,9 @@ begin
   SetAddColumn(StringGridCandel,'RSI');
   SetAddColumn(StringGridCandel,'MaRSI');
   SetAddColumn(StringGridCandel,'ATR');
+  SetAddColumn(StringGridCandel,'Momentum');
+  SetAddColumn(StringGridCandel,'MomentumMA');
+
 
   SetAddColumn(StrGrid,'id',50);
   SetAddColumn(StrGrid,'OpenTime',120);
@@ -110,13 +106,15 @@ begin
   SetAddColumn(StrGrid,'TK');
   SetAddColumn(StrGrid,'Profit');
   SetAddColumn(StrGrid,'TypeTrade');
+  SetAddColumn(StrGrid,'FeeRatesTaker');
+  SetAddColumn(StrGrid,'FeeRatesMaker');
 
   TradingPlatform := TPlatfomBybit.Create;
   TradingPlatform.OnStateMarket := TradingPlatformOnStateMarket;
 
   TPlatfomBybit(TradingPlatform).ApiKey := '3bvDxJnKzjkIg8y0RV';
   TPlatfomBybit(TradingPlatform).ApiSecret := 'YtpORO6EYWTESXWwCyLiOBm75c1Tv6GSOzqJ';
-  TPlatfomBybit(TradingPlatform).Interval  := TTypeInterval.ti_1;
+  TPlatfomBybit(TradingPlatform).Interval  := TTypeInterval.ti_15;
 
   Position := nil;
   JournalManager := TJournalManager.Create;
@@ -220,6 +218,8 @@ procedure TMainForm.TradingPlatformOnStateMarket(ASender: TObject; AStateMarket:
         StringGridCandel.Cells[6,i] := TradingPlatform.ValueRSI.ValueRSI[i].ToString;
         StringGridCandel.Cells[7,i] := TradingPlatform.ValueRSI.ValueMaRSI[i].ToString;
         StringGridCandel.Cells[8,i] := TradingPlatform.ValueATR.Values[i].ToString;
+        StringGridCandel.Cells[9,i]  := TradingPlatform.ValueMomentum.Values[i].ToString;
+        StringGridCandel.Cells[10,i] := TradingPlatform.ValueMomentum.ValuesMA[i].ToString;
       end;
   end;
 
@@ -258,6 +258,8 @@ procedure TMainForm.TradingPlatformOnStateMarket(ASender: TObject; AStateMarket:
         StrGrid.Cells[8,i] := FloatToStr(xPosition.TakeProfit);
         StrGrid.Cells[9,i] := FloatToStr(xPosition.Profit);
         StrGrid.Cells[10,i] := GetStrToTypeTrade(xPosition.TypeTrade);
+        StrGrid.Cells[11,i] := FloatToStr(xPosition.ProfitFeeRatesTaker);
+        StrGrid.Cells[12,i] := FloatToStr(xPosition.ProfitFeeRatesMaker);
       end;
   end;
 
@@ -337,63 +339,78 @@ begin
 end;
 
 procedure TMainForm.ButtonBuyClick(Sender: TObject);
+var
+  xPrice: Double;
 begin
-  {$IFDEF DBG_MAIN}
-  TLogger.LogTree(0,'TMainForm.ButtonBuyClick: Покупка');
-  {$ENDIF}
   if not Assigned(Position) then
   begin
-    Position := JournalManager.GetCreateJournalPosition;
-    Position.OnClose := PositionClose;
-    with Position do
+    xPrice := TradingPlatform.StateMarket.Ask;
+    if xPrice > 0 then
     begin
-      OpenTime := GetNewDateTime;
-      OpenPrice := TradingPlatform.StateMarket.Ask;
-      Qty := 1;
-      Side := TTypeBuySell.tsBuy;
-      IsActive := True;
-      TypeTrade := TTypeTrade.ttOpen;
-      Triling := 15;
-      DoOpen;
+      Position := JournalManager.GetCreateJournalPosition;
+      Position.OnClose := PositionClose;
+      with Position do
+      begin
+        OpenTime := GetNewDateTime;
+        OpenPrice := xPrice;
+        Qty := 1;
+        Side := TTypeBuySell.tsBuy;
+        IsActive := True;
+        TypeTrade := TTypeTrade.ttOpen;
+        Triling := 15;
+        DoOpen;
+      end;
     end;
   end;
 end;
 
 procedure TMainForm.ButtonSellClick(Sender: TObject);
+var
+  xPrice: Double;
 begin
-  {$IFDEF DBG_MAIN}
-  TLogger.LogTree(0,'TMainForm.ButtonBuyClick: Продажа');
-  {$ENDIF}
   if not Assigned(Position) then
   begin
-    Position := JournalManager.GetCreateJournalPosition;
-    Position.OnClose := PositionClose;
-    with Position do
+    xPrice := TradingPlatform.StateMarket.Bid;
+    if xPrice > 0 then
     begin
-      OpenTime := GetNewDateTime;
-      OpenPrice := TradingPlatform.StateMarket.Bid;
-      Qty := 1;
-      Side := TTypeBuySell.tsSell;
-      IsActive := True;
-      TypeTrade := TTypeTrade.ttOpen;
-      Triling := 15;
-      DoOpen;
+      Position := JournalManager.GetCreateJournalPosition;
+      Position.OnClose := PositionClose;
+      with Position do
+      begin
+        OpenTime := GetNewDateTime;
+        OpenPrice := xPrice;
+        Qty := 1;
+        Side := TTypeBuySell.tsSell;
+        IsActive := True;
+        TypeTrade := TTypeTrade.ttOpen;
+        Triling := 15;
+        DoOpen;
+      end;
     end;
   end;
 end;
 
 procedure TMainForm.ButtonCloseClick(Sender: TObject);
+var
+  xPrice: Double;
 begin
   // Закрыть позицию
   if Assigned(Position) then
   begin
     with Position do
     begin
-      CloseTime := GetNewDateTime;
       case Side of
-        TTypeBuySell.tsBuy: ClosePrice := TradingPlatform.StateMarket.Bid;
-        TTypeBuySell.tsSell: ClosePrice := TradingPlatform.StateMarket.Ask;
+        TTypeBuySell.tsBuy: xPrice := TradingPlatform.StateMarket.Bid;
+        TTypeBuySell.tsSell: xPrice := TradingPlatform.StateMarket.Ask;
+      else
+        xPrice := 0;
       end;
+
+      if xPrice <= 0 then
+        Exit;
+
+      CloseTime := GetNewDateTime;
+      ClosePrice := xPrice;
       IsActive := False;
       TypeTrade := TTypeTrade.ttClose;
       DoClose;

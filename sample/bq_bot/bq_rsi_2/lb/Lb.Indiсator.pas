@@ -12,8 +12,18 @@ uses
   Lb.SysUtils;
 
 type
+  ///<summary>
+  /// Базовый индикатор
+  ///</summary>
+  TCustomIndicator = class(TObject)
+  private
+    FCandels: TCandelList;
+  public
+    procedure SetCandels(ACandels: TCandelList); virtual; abstract;
+  end;
+
   ///<summary>Объект для расчета значение RSI</summary>
-  TValueRSI = class(TObject)
+  TValueRSI = class(TCustomIndicator)
   private
     FValuesU: TDoubleList;
     FValuesD: TDoubleList;
@@ -23,7 +33,6 @@ type
     FValueMaRSI: TDoubleList;
     FValueTR: TDoubleList;
     FValueATR: TDoubleList;
-    FCandels: TCandelList;
     FPeriod: Integer;
     FPeriodMovingAverag: Integer;
     FPeriodATR: Integer;
@@ -33,7 +42,7 @@ type
   public
     constructor Create; virtual;
     destructor Destroy; override;
-    procedure SetCandels(ACandels: TCandelList);
+    procedure SetCandels(ACandels: TCandelList); override;
     property ValueRSI: TDoubleList read FValueRSI;
     property ValueMaRSI: TDoubleList read FValueMaRSI;
     property ValueATR: TDoubleList read FValueATR;
@@ -46,22 +55,41 @@ type
     property ATR: Double read GetATR;
   end;
 
-  TValueATR = class(TObject)
+  TValueATR = class(TCustomIndicator)
   private
     FValueTR: TDoubleList;
     FValues: TDoubleList;
     FPeriod: Integer;
-    FCandels: TCandelList;
     function GetATR: Double;
   public
     constructor Create; virtual;
     destructor Destroy; override;
-    procedure SetCandels(ACandels: TCandelList);
+    procedure SetCandels(ACandels: TCandelList); override;
     property ValueTR: TDoubleList read FValueTR;
     property Values: TDoubleList read FValues;
     property Period: Integer read FPeriod write FPeriod;
   public
     property ATR: Double read GetATR;
+  end;
+
+  TValueMomentum = class(TCustomIndicator)
+  private
+    FValues: TDoubleList;
+    FValuesMA: TDoubleList;
+    FPeriod: Integer;
+    FPeriodMA: Integer;
+    function GetMomentum: Double;
+    function GetMomentumMA: Double;
+  public
+    constructor Create; virtual;
+    destructor Destroy; override;
+    procedure SetCandels(ACandels: TCandelList); override;
+    property Period: Integer read FPeriod write FPeriod;
+    property Values: TDoubleList read FValues;
+    property ValuesMA: TDoubleList read FValuesMA;
+  public
+    property Momentum: Double read GetMomentum;
+    property MomentumMA: Double read GetMomentumMA;
   end;
 
 
@@ -543,5 +571,82 @@ begin
     Result := GetRound(FValues[0]);
 end;
 
+
+{ TValueMomentum }
+
+constructor TValueMomentum.Create;
+begin
+  FPeriod := 14;
+  FPeriodMA := 3;
+  FValues := TDoubleList.Create;
+  FValuesMA := TDoubleList.Create;
+end;
+
+destructor TValueMomentum.Destroy;
+begin
+  FreeAndNil(FValuesMA);
+  FreeAndNil(FValues);
+  inherited;
+end;
+
+procedure TValueMomentum.SetCandels(ACandels: TCandelList);
+
+  procedure _Momentum;
+  var
+    xValue: Double;
+    xC1, xC2: TCandel;
+    i, iCount, xIndex: Integer;
+  begin
+    FValues.Clear;
+    iCount := FCandels.Count;
+    if iCount > 0 then
+      for i := 0 to iCount - 1 do
+      begin
+        xIndex := i + (FPeriod - 1);
+        if xIndex < (iCount - 1) then
+        begin
+          xC1 := FCandels[i];
+          xC2 := FCandels[xIndex];
+          xValue := GetRound(xC1.Close - xC2.Close);
+          FValues.Add(xValue);
+        end
+        else
+          FValues.Add(0);
+      end;
+  end;
+
+  procedure _ValueMovingAverag;
+  var
+    i, Count: Integer;
+  begin
+    FValuesMA.Clear;
+    Count := FCandels.Count;
+    if Count > 0 then
+      for i := 0 to Count - 1 do
+        FValuesMA.Add(GetValueSMA(FPeriodMA,i,FValues))
+  end;
+
+begin
+  FCandels := ACandels;
+  if Assigned(FCandels) then
+  begin
+    _Momentum;
+    _ValueMovingAverag;
+  end;
+end;
+
+function TValueMomentum.GetMomentum: Double;
+begin
+  Result := 0;
+  if FCandels.Count > 0 then
+    Result := FValues[0];
+end;
+
+function TValueMomentum.GetMomentumMA: Double;
+begin
+  Result := 0;
+  if FCandels.Count > 0 then
+    Result := FValuesMA[0];
+end;
 
 end.

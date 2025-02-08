@@ -64,6 +64,7 @@ type
   private
     FValueRSI: TValueRSI;
     FValueATR: TValueATR;
+    FValueMomentum: TValueMomentum;
   protected
     FStateMarket: TStateMarket;
     procedure DoStateMarke; virtual;
@@ -85,6 +86,7 @@ type
   public {торговые правильа }
     property ValueRSI: TValueRSI read FValueRSI;
     property ValueATR: TValueATR read FValueATR;
+    property ValueMomentum: TValueMomentum read FValueMomentum;
   end;
 
 implementation
@@ -178,11 +180,13 @@ begin
   inherited Create;
   FValueRSI := TValueRSI.Create;
   FValueATR := TValueATR.Create;
+  FValueMomentum := TValueMomentum.Create;
   FStateMarket := TStateMarket.Create;
 end;
 
 destructor TTradingPlatform.Destroy;
 begin
+  FreeAndNil(FValueMomentum);
   FreeAndNil(FValueATR);
   FreeAndNil(FValueRSI);
   FreeAndNil(FStateMarket);
@@ -199,6 +203,7 @@ procedure TTradingPlatform.DoStateMarke;
 begin
   FValueATR.SetCandels(FStateMarket.Candels);
   FValueRSI.SetCandels(FStateMarket.Candels);
+  FValueMomentum.SetCandels(FStateMarket.Candels);
   if Assigned(FOnStateMarket) then
     FOnStateMarket(Self,FStateMarket);
 end;

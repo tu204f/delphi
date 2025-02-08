@@ -157,7 +157,6 @@ function GetTypeTradeToStr(const AValue: String): TTypeTrade;
 var
   xC: Char;
 begin
-  xC := 'n';
   if AValue.IsEmpty then
   begin
     Result := TTypeTrade.ttNull;
@@ -165,9 +164,10 @@ begin
   end;
   xC := AValue[1];
   case xC of
-    'n': Result := TTypeTrade.ttNull;
     'o': Result := TTypeTrade.ttOpen;
     'c': Result := TTypeTrade.ttClose;
+  else
+    Result := TTypeTrade.ttNull;
   end;
 end;
 

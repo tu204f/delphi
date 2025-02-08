@@ -647,7 +647,7 @@ procedure TMainForm.ButtonSellClick(Sender: TObject);
         IsActive := True;
         TypeTrade := TTypeTrade.ttOpen;
         Triling := 20;
-        TakeProfit := OpenPrice + 10;
+        TakeProfit := OpenPrice + 60;
         DoOpen;
       end;
     end;
