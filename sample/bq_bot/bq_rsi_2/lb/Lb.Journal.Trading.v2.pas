@@ -49,7 +49,6 @@ type
     property Value: Double        read GetValue;
     property Candels: TCandelList read FCandels;
   end;
-
   ///<summary>Список сделок</summary>
   TJournalTradeList = TObjectList<TJournalTrade>;
 
@@ -81,9 +80,6 @@ type
     function GetFeeRatesTaker: Double;
     function GetProfitFeeRatesMaker: Double;
     function GetProfitFeeRatesTaker: Double;
-  private
-    FRSI: Double;
-    FMaRSI: Double;
   public
     constructor Create; virtual;
     destructor Destroy; override;
@@ -113,9 +109,6 @@ type
     property OnClose: TEventOnClose write FOnClose;
     property Manager: TJournalManager read FManager write FManager;
     property ID: Integer read FID write FID;
-  public
-    property RSI: Double read FRSI write FRSI;
-    property MaRSI: Double read FMaRSI write FMaRSI;
   end;
 
   ///<summary>Список позиций</summary>
@@ -143,8 +136,6 @@ type
     property ProfitFeeRatesMaker: Double read GetProfitFeeRatesMaker;
 
   end;
-
-
 
 implementation
 
@@ -254,15 +245,14 @@ begin
   xS := xS + _Add(FloatToStr(Self.Qty));
   xS := xS + _Add(GetStrToSide(Self.Side));
   xS := xS + _Add(FloatToStr(Self.StopLoss));
+  xS := xS + _Add(FloatToStr(Self.Triling));
   xS := xS + _Add(FloatToStr(Self.TakeProfit));
   xS := xS + _Add(FloatToStr(Self.Profit));
   xS := xS + _Add(GetStrToTypeTrade(Self.TypeTrade));
-
-  xS := xS + _Add(FloatToStr(Self.RSI));
-  xS := xS + _Add(FloatToStr(Self.MaRSI));
+  xS := xS + _Add(FloatToStr(Self.ProfitFeeRatesTaker));
+  xS := xS + _Add(FloatToStr(Self.ProfitFeeRatesMaker));
 
   PositionText(xS);
-
 
   if Assigned(FOnClose) then
     FOnClose(Self);
@@ -390,7 +380,7 @@ end;
 
 function GetFeeRates(const APrice, AQty, AFeeRates: Double): Double;
 begin
-  Result := APrice * AQty * AFeeRates / 100;
+  Result := GetRound(APrice * AQty * AFeeRates / 100);
 end;
 
 function TJournalPosition.GetFeeRatesMaker: Double;
@@ -488,6 +478,8 @@ begin
   end;
   Result := xCnt;
 end;
+
+
 
 initialization
   localID := 0;

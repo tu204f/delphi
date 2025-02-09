@@ -94,7 +94,7 @@ type
     ///</summary>
     property Last: Double read GetLast;
     ///<summary>
-    /// ѕоказать сервисный врем€
+    /// ѕоказать сервисный врем€, наданный момоент показывает врем€ (свечи)
     ///</summary>
     property ServerTime: TDateTime read GetServerTime;
   public
