@@ -233,37 +233,36 @@ procedure TJournalPosition.DoClose;
 var
   xS: String;
 begin
-  if Self.Profit > 0 then
+
+  Inc(localID);
+
+  xS := '';
+  xS := xS + _Add(localID.ToString);
+  xS := xS + _Add(DateTimeToStr(Self.OpenTime));
+  xS := xS + _Add(FloatToStr(Self.OpenPrice));
+
+  if Self.ClosePrice = 0 then
   begin
-    Inc(localID);
-
-    xS := '';
-    xS := xS + _Add(localID.ToString);
-    xS := xS + _Add(DateTimeToStr(Self.OpenTime));
-    xS := xS + _Add(FloatToStr(Self.OpenPrice));
-
-    if Self.ClosePrice = 0 then
-    begin
-      xS := xS + _Add('');
-      xS := xS + _Add('');
-    end else
-    begin
-      xS := xS + _Add(DateTimeToStr(Self.CloseTime));
-      xS := xS + _Add(FloatToStr(Self.ClosePrice));
-    end;
-
-    xS := xS + _Add(FloatToStr(Self.Qty));
-    xS := xS + _Add(GetStrToSide(Self.Side));
-    xS := xS + _Add(FloatToStr(Self.StopLoss));
-    xS := xS + _Add(FloatToStr(Self.TakeProfit));
-    xS := xS + _Add(FloatToStr(Self.Profit));
-    xS := xS + _Add(GetStrToTypeTrade(Self.TypeTrade));
-
-    xS := xS + _Add(FloatToStr(Self.RSI));
-    xS := xS + _Add(FloatToStr(Self.MaRSI));
-
-    PositionText(xS);
+    xS := xS + _Add('');
+    xS := xS + _Add('');
+  end else
+  begin
+    xS := xS + _Add(DateTimeToStr(Self.CloseTime));
+    xS := xS + _Add(FloatToStr(Self.ClosePrice));
   end;
+
+  xS := xS + _Add(FloatToStr(Self.Qty));
+  xS := xS + _Add(GetStrToSide(Self.Side));
+  xS := xS + _Add(FloatToStr(Self.StopLoss));
+  xS := xS + _Add(FloatToStr(Self.TakeProfit));
+  xS := xS + _Add(FloatToStr(Self.Profit));
+  xS := xS + _Add(GetStrToTypeTrade(Self.TypeTrade));
+
+  xS := xS + _Add(FloatToStr(Self.RSI));
+  xS := xS + _Add(FloatToStr(Self.MaRSI));
+
+  PositionText(xS);
+
 
   if Assigned(FOnClose) then
     FOnClose(Self);

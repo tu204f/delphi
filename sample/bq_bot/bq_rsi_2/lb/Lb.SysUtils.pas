@@ -70,6 +70,7 @@ type
     FIsNewCandel: Boolean;
     FOnNewCandel: TNotifyEvent;
     function GetLast: Double;
+    function GetServerTime: TDateTime;
   protected
     procedure DoNewCandel;
   public
@@ -92,6 +93,10 @@ type
     /// Последния цена
     ///</summary>
     property Last: Double read GetLast;
+    ///<summary>
+    /// Показать сервисный время
+    ///</summary>
+    property ServerTime: TDateTime read GetServerTime;
   public
     procedure SetUpDataCandels;
     property Candels: TCandelList read FCandels;
@@ -348,5 +353,17 @@ begin
   end;
 end;
 
+function TStateMarket.GetServerTime: TDateTime;
+var
+  xCandel: TCandel;
+begin
+  if FCandels.Count > 0 then
+  begin
+    xCandel := FCandels[0];
+    Result := UnixToDateTime(xCandel.Time);
+  end
+  else
+    Result := 0;
+end;
 
 end.
