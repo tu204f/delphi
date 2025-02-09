@@ -13,7 +13,7 @@ uses
   Data.DB,
   Lb.SysUtils,
   Lb.DataModuleDB,
-  Lb.Journal.Trading.V2,
+  Lb.Journal.Trading,
   FMX.Dialogs;
 
 type

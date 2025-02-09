@@ -70,6 +70,7 @@ type
     FIsNewCandel: Boolean;
     FOnNewCandel: TNotifyEvent;
     function GetLast: Double;
+    function GetServerTime: TDateTime;
   protected
     procedure DoNewCandel;
   public
@@ -92,6 +93,10 @@ type
     /// Последния цена
     ///</summary>
     property Last: Double read GetLast;
+    ///<summary>
+    /// Показать сервисный время
+    ///</summary>
+    property ServerTime: TDateTime read GetServerTime;
   public
     procedure SetUpDataCandels;
     property Candels: TCandelList read FCandels;
@@ -115,6 +120,8 @@ type
 function GetCrossSide(ASide: TTypeBuySell): TTypeBuySell;
 function GetStrToSide(ASide: TTypeBuySell): String;
 function GetSiseToStr(AValue: String): TTypeBuySell;
+function GetStrToTypeTrade(const ATypeTrade: TTypeTrade): String;
+function GetTypeTradeToStr(const AValue: String): TTypeTrade;
 
 ///<summary>
 /// Текущая дата и время
@@ -141,6 +148,33 @@ const
   /// Количество миллисекунд в одном часе
   ///</summary>
   HOUR_COUNT_MSEC = 60 * MIN_COUNT_MSEC;
+
+function GetStrToTypeTrade(const ATypeTrade: TTypeTrade): String;
+begin
+  case ATypeTrade of
+    ttNull: Result := 'null';
+    ttOpen: Result := 'open';
+    ttClose: Result := 'close';
+  end;
+end;
+
+function GetTypeTradeToStr(const AValue: String): TTypeTrade;
+var
+  xC: Char;
+begin
+  if AValue.IsEmpty then
+  begin
+    Result := TTypeTrade.ttNull;
+    Exit;
+  end;
+  xC := AValue[1];
+  case xC of
+    'o': Result := TTypeTrade.ttOpen;
+    'c': Result := TTypeTrade.ttClose;
+  else
+    Result := TTypeTrade.ttNull;
+  end;
+end;
 
 function GetStrToSide(ASide: TTypeBuySell): String;
 begin
@@ -319,5 +353,17 @@ begin
   end;
 end;
 
+function TStateMarket.GetServerTime: TDateTime;
+var
+  xCandel: TCandel;
+begin
+  if FCandels.Count > 0 then
+  begin
+    xCandel := FCandels[0];
+    Result := UnixToDateTime(xCandel.Time);
+  end
+  else
+    Result := 0;
+end;
 
 end.

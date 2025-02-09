@@ -14,7 +14,7 @@ uses
   Lb.SysUtils,
   Lb.Platform,
   Lb.TradeBox,
-  Lb.Journal.Trading.V2;
+  Lb.Journal.Trading_OLD;
 
 type
   ///<summary>
@@ -111,20 +111,16 @@ type
     property TradingPlatform: TTradingPlatform read FTradingPlatform write SetTradingPlatform;
   end;
 
-function GetSMA(const AValue: TDoubleList): Double;
-function GetATR(const APeriod: Integer; ACandels: TCandelList): Double;
-function GetRSI(const APeriod: Integer; ACandels: TCandelList): Double;
-procedure SetAveragRSI(const APeriodRSI, APeriodSMA: Integer; const ACandels: TCandelList; var AValueRSI, AValueAveragRSI: Double);
 
 function GetStrToTypeBot(const ATypeBot: TTypeBot): String;
 
 implementation
 
-
-{$IFDEF DEBUG}
 uses
-  Lb.Logger;
+{$IFDEF DEBUG}
+  Lb.Logger,
 {$ENDIF}
+  Lb.Indiсator;
 
 (******************************************************************************)
 (* *)
@@ -139,162 +135,6 @@ begin
   end;
 end;
 
-
-(******************************************************************************)
-(* Процедуры которые помогают оценить состояние рынка                         *)
-
-function GetSMA(const AValue: TDoubleList): Double;
-var
-  xSum: Double;
-  i, iCount: Integer;
-begin
-  Result := 0;
-  iCount := AValue.Count;
-  if iCount > 0 then
-  begin
-    xSum := 0;
-    for i := 0 to iCount - 1 do
-      xSum := xSum + AValue[i];
-    Result := xSum/iCount;
-  end;
-end;
-
-///<summary>Определяем валатиность рынка</summary>
-function GetATR(const APeriod: Integer; ACandels: TCandelList): Double;
-
-  function _MAX(const AValue1, AValue2, AValue3: Double): Double;
-  var
-    xValue: Double;
-  begin
-    xValue := AValue1;
-    if xValue < AValue2 then
-      xValue := AValue2;
-    if xValue < AValue3 then
-      xValue := AValue3;
-    Result := xValue;
-  end;
-
-var
-  xDelta: Double;
-  xCandel1, xCandel2: TCandel;
-  xTR: TDoubleList;
-begin
-  Result := 0;
-  if APeriod > ACandels.Count then
-    Exit;
-
-  if APeriod > 0 then
-  begin
-    xTR := TDoubleList.Create;
-    try
-      for var i := 0 to APeriod - 1 do
-      begin
-        if i > 0 then
-        begin
-          xCandel1 := ACandels[i - 1];
-          xCandel2 := ACandels[i];
-          xDelta := _MAX(
-            xCandel2.High - xCandel2.Low,
-            xCandel2.High - xCandel1.Close,
-            xCandel1.Close - xCandel2.Low
-          );
-          xTR.Add(xDelta);
-        end
-        else
-        begin
-          xCandel1 := ACandels[i];
-          xDelta := xCandel1.High - xCandel1.Low;
-          xTR.Add(xDelta);
-        end;
-      end;
-      Result := GetSMA(xTR);
-    finally
-      FreeAndNil(xTR);
-    end;
-  end;
-end;
-
-///<summary>Расчет индикатора</summary>
-function GetRSI(const APeriod: Integer; ACandels: TCandelList): Double;
-var
-  xDelta: Double;
-  xCandel1, xCandel2: TCandel;
-  xU, xD: TDoubleList;
-  xMaU, xMaD, xRS: Double;
-begin
-  Result := 0;
-  if APeriod > ACandels.Count then
-    Exit;
-
-  if APeriod > 0 then
-  begin
-    xU := TDoubleList.Create;
-    xD := TDoubleList.Create;
-    try
-      xU.Add(0);
-      xD.Add(0);
-      for var i := 1 to APeriod - 1 do
-      begin
-        xCandel1 := ACandels[i - 1];
-        xCandel2 := ACandels[i];
-        xDelta := xCandel1.Close - xCandel2.Close;
-        if xDelta > 0 then
-        begin
-          xU.Add(xDelta);
-          xD.Add(0);
-        end
-        else
-        begin
-          xU.Add(0);
-          xD.Add(Abs(xDelta));
-        end;
-      end;
-
-      xMaU := GetSMA(xU);
-      xMaD := GetSMA(xD);
-      xRS  := xMaU/xMaD;
-      Result := 100 - 100/(1 + xRS);
-    finally
-      FreeAndNil(xD);
-      FreeAndNil(xU);
-    end;
-  end;
-end;
-
-procedure SetAveragRSI(const APeriodRSI, APeriodSMA: Integer; const ACandels: TCandelList; var AValueRSI, AValueAveragRSI: Double);
-var
-  xCandels: TCandelList;
-  i, j: Integer;
-  xValues: TDoubleList;
-begin
-  AValueRSI := 0;
-  AValueAveragRSI := 0;
-  xCandels := TCandelList.Create;
-  xValues := TDoubleList.Create;
-  try
-    if ACandels.Count >= (APeriodRSI + APeriodSMA) then
-    begin
-      for j := 0 to APeriodSMA - 1 do
-      begin
-        xCandels.Clear;
-        for i := 0 to APeriodRSI - 1 do
-        begin
-          var xCandel := ACandels[j + i];
-          xCandels.Add(xCandel);
-        end;
-        var xValueRSI := GetRSI(APeriodRSI,xCandels);
-        xValues.Add(xValueRSI);
-      end;
-      AValueRSI := GetRound(xValues[0]);
-      AValueAveragRSI := GetRound(GetSMA(xValues));
-    end;
-  finally
-    FreeAndNil(xValues);
-    FreeAndNil(xCandels);
-  end;
-end;
-
-(******************************************************************************)
 
 { TCustomTraginBot }
 
@@ -372,7 +212,7 @@ begin
     Exit;
   end;
 
-  FValueRSI := FTradingPlatform.ValueAveragRSI;
+  FValueRSI := FTradingPlatform.ValueRSI.RSI;
   FTradeBox.SetUpDateValue(FValueRSI);
 end;
 

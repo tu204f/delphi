@@ -33,6 +33,7 @@ type
     procedure BybitOrderBookOnEventEndLoading(ASender: TObject);
     procedure BybitOnEventException(ASender: TObject);
     procedure BybitKlineOnNewCandel(ASender: TObject);
+    procedure SetInterval(const Value: TTypeInterval);
   protected
     procedure DoSelected; override;
     procedure DoMsgInfo(S: String); override;
@@ -43,6 +44,8 @@ type
     /// Есть потенциальная ошибка зависание заявки
     ///</summary>
     procedure SendTrade(const ATime: TDateTime; const APrice, AQty: Double; ASide: TTypeBuySell); override;
+
+    property Interval: TTypeInterval write SetInterval;
   public
     property ApiKey: String read FApiKey write FApiKey;
     property ApiSecret: String read FApiSecret write FApiSecret;
@@ -101,7 +104,7 @@ begin
 
   {todo: Перевести эти параметры в найстроки}
   FBybitKline.Category := TTypeCategory.tcLinear;
-  FBybitKline.Interval := TTypeInterval.ti_1;
+  //FBybitKline.Interval := TTypeInterval.ti_1;
   FBybitKline.Limit    := 100;
   FBybitKline.Selected;
 
@@ -255,6 +258,11 @@ begin
     on E: Exception do
       raise Exception.Create('Error Message:' + E.Message);
   end;
+end;
+
+procedure TPlatfomBybit.SetInterval(const Value: TTypeInterval);
+begin
+  FBybitKline.Interval := Value;
 end;
 
 procedure TPlatfomBybit.BybitKlineOnNewCandel(ASender: TObject);

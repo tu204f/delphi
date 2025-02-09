@@ -19,8 +19,8 @@ object JournalPositionFrame: TJournalPositionFrame
     Size.PlatformDefault = False
     TabOrder = 1
     Options = [Editing, ColumnResize, ColumnMove, ColLines, RowLines, RowSelect, Tabs, Header, HeaderClick, AutoDisplacement]
-    Viewport.Width = 866.000000000000000000
-    Viewport.Height = 84.000000000000000000
+    Viewport.Width = 862.000000000000000000
+    Viewport.Height = 59.000000000000000000
   end
   object ChartProfit: TChart
     Position.Y = 770.000000000000000000

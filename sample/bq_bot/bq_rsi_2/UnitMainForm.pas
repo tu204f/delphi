@@ -19,7 +19,7 @@ uses
   FMX.Memo,
   FMX.StdCtrls,
 
-  Lb.Journal.Trading.V2,
+  Lb.Journal.Trading_Old,
 
   Lb.SysUtils,
   Lb.Bot,
@@ -223,7 +223,7 @@ begin
     MemoInfo.Lines.Add('****************************************************');
     xS :=
        'ValueRSI: ' + TradingPlatform.ValueRSI.ToString + '; ' +
-       'ValueAveragRSI: ' + TradingPlatform.ValueAveragRSI.ToString + '; ' +
+       'ValueAveragRSI: ' + TradingPlatform.ValueRSI.RSI.ToString + '; ' +
        'ValueATR: ' + TradingPlatform.ValueATR.ToString + ';';
     MemoInfo.Lines.Add(xS);
 
@@ -280,9 +280,9 @@ begin
 
         xBot.Manager.CurrentPosition.SetUpDateValue(
           xLast,
-          xBot.TradingPlatform.ValueRSI,
-          xBot.TradingPlatform.ValueAveragRSI,
-          xBot.TradingPlatform.ValueATR
+          xBot.TradingPlatform.ValueRSI.RSI,
+          xBot.TradingPlatform.ValueRSI.MovingAveragRSI,
+          xBot.TradingPlatform.ValueATR.ATR
         );
 
         StrGrid.Cells[8,i] := xBot.Manager.CurrentPosition.Profit.ToString;
