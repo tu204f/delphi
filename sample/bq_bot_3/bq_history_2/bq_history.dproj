@@ -195,17 +195,17 @@
             <Form>MainForm</Form>
             <FormType>fmx</FormType>
         </DCCReference>
-        <DCCReference Include="..\bq_rsi_2\lb\Lb.Platform.Bybit.pas"/>
-        <DCCReference Include="..\bq_rsi_2\lb\Lb.Platform.pas"/>
-        <DCCReference Include="..\bq_rsi_2\lb\Lb.SysUtils.pas"/>
         <DCCReference Include="..\..\..\library\trade\bybit\Lb.Bybit.Encryption.pas"/>
         <DCCReference Include="..\..\..\library\trade\bybit\Lb.Bybit.SysUtils.pas"/>
         <DCCReference Include="..\..\..\library\trade\bybit\trade\Lb.Bybit.Trade.pas"/>
         <DCCReference Include="..\..\..\library\trade\bybit\market\Lb.Bybit.Kline.pas"/>
         <DCCReference Include="..\..\..\library\trade\bybit\market\Lb.Bybit.OrderBook.pas"/>
         <DCCReference Include="..\..\..\library\trade\bybit\market\Lb.Bybit.ServerTime.pas"/>
-        <DCCReference Include="..\bq_rsi_2\lb\Lb.Indiсator.pas"/>
         <DCCReference Include="..\..\..\library\Lb.Logger.pas"/>
+        <DCCReference Include="..\lb\Lb.Platform.Bybit.pas"/>
+        <DCCReference Include="..\lb\Lb.Platform.pas"/>
+        <DCCReference Include="..\lb\Lb.SysUtils.pas"/>
+        <DCCReference Include="..\lb\Lb.Indiсator.pas"/>
         <BuildConfiguration Include="Release">
             <Key>Cfg_2</Key>
             <CfgParent>Base</CfgParent>

@@ -8,7 +8,7 @@ uses
   FMX.Controls.Presentation, FMX.StdCtrls,
   System.Rtti, FMX.Grid.Style, FMX.ScrollBox, FMX.Grid,
 
-  Lb.Indiñator,
+  Lb.Indicator,
   Lb.SysUtils,
   Lb.Platform,
   Lb.Bybit.SysUtils,

@@ -1,4 +1,4 @@
-unit Lb.Indiñator;
+unit Lb.Indicator;
 
 interface
 
