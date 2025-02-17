@@ -1,0 +1,36 @@
+﻿<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+    <PropertyGroup>
+        <ProjectGuid>{8B944645-728E-47C9-874B-4E14DBA394F2}</ProjectGuid>
+    </PropertyGroup>
+    <ItemGroup>
+        <Projects Include="bq_history_2\bq_history.dproj">
+            <Dependencies/>
+        </Projects>
+    </ItemGroup>
+    <ProjectExtensions>
+        <Borland.Personality>Default.Personality.12</Borland.Personality>
+        <Borland.ProjectType/>
+        <BorlandProject>
+            <Default.Personality/>
+        </BorlandProject>
+    </ProjectExtensions>
+    <Target Name="bq_history">
+        <MSBuild Projects="bq_history_2\bq_history.dproj"/>
+    </Target>
+    <Target Name="bq_history:Clean">
+        <MSBuild Projects="bq_history_2\bq_history.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="bq_history:Make">
+        <MSBuild Projects="bq_history_2\bq_history.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="Build">
+        <CallTarget Targets="bq_history"/>
+    </Target>
+    <Target Name="Clean">
+        <CallTarget Targets="bq_history:Clean"/>
+    </Target>
+    <Target Name="Make">
+        <CallTarget Targets="bq_history:Make"/>
+    </Target>
+    <Import Project="$(BDS)\Bin\CodeGear.Group.Targets" Condition="Exists('$(BDS)\Bin\CodeGear.Group.Targets')"/>
+</Project>

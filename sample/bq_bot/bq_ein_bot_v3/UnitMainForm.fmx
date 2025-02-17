@@ -282,8 +282,8 @@ object MainForm: TMainForm
             Size.PlatformDefault = False
             TabOrder = 1
             Options = [Editing, ColumnResize, ColumnMove, ColLines, RowLines, RowSelect, Tabs, Header, HeaderClick, AutoDisplacement]
-            Viewport.Width = 1113.000000000000000000
-            Viewport.Height = 300.000000000000000000
+            Viewport.Width = 1117.000000000000000000
+            Viewport.Height = 325.000000000000000000
           end
         end
         object Layout2: TLayout
@@ -310,8 +310,8 @@ object MainForm: TMainForm
             Size.PlatformDefault = False
             TabOrder = 1
             Options = [Editing, ColumnResize, ColumnMove, ColLines, RowLines, RowSelect, Tabs, Header, HeaderClick, AutoDisplacement]
-            Viewport.Width = 1113.000000000000000000
-            Viewport.Height = 300.000000000000000000
+            Viewport.Width = 1117.000000000000000000
+            Viewport.Height = 325.000000000000000000
           end
           object PopupMenu1: TPopupMenu
             Left = 327
