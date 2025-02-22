@@ -9,25 +9,10 @@
         <Projects Include="sample_1\nr_1.dproj">
             <Dependencies/>
         </Projects>
-        <Projects Include="samlpe_2\nr_2.dproj">
+        <Projects Include="samlpe_2\nr_ga.dproj">
             <Dependencies/>
         </Projects>
-        <Projects Include="sample_3\nr_3.dproj">
-            <Dependencies/>
-        </Projects>
-        <Projects Include="sample_4\nr_4.dproj">
-            <Dependencies/>
-        </Projects>
-        <Projects Include="matrix\matrix.dproj">
-            <Dependencies/>
-        </Projects>
-        <Projects Include="sample_5\nr_5.dproj">
-            <Dependencies/>
-        </Projects>
-        <Projects Include="sample_6\block_6.dproj">
-            <Dependencies/>
-        </Projects>
-        <Projects Include="sample_10\nr_10.dproj">
+        <Projects Include="sample_10\nr_xor.dproj">
             <Dependencies/>
         </Projects>
     </ItemGroup>
@@ -56,77 +41,32 @@
     <Target Name="nr_1:Make">
         <MSBuild Projects="sample_1\nr_1.dproj" Targets="Make"/>
     </Target>
-    <Target Name="nr_2">
-        <MSBuild Projects="samlpe_2\nr_2.dproj"/>
+    <Target Name="nr_ga">
+        <MSBuild Projects="samlpe_2\nr_ga.dproj"/>
     </Target>
-    <Target Name="nr_2:Clean">
-        <MSBuild Projects="samlpe_2\nr_2.dproj" Targets="Clean"/>
+    <Target Name="nr_ga:Clean">
+        <MSBuild Projects="samlpe_2\nr_ga.dproj" Targets="Clean"/>
     </Target>
-    <Target Name="nr_2:Make">
-        <MSBuild Projects="samlpe_2\nr_2.dproj" Targets="Make"/>
+    <Target Name="nr_ga:Make">
+        <MSBuild Projects="samlpe_2\nr_ga.dproj" Targets="Make"/>
     </Target>
-    <Target Name="nr_3">
-        <MSBuild Projects="sample_3\nr_3.dproj"/>
+    <Target Name="nr_xor">
+        <MSBuild Projects="sample_10\nr_xor.dproj"/>
     </Target>
-    <Target Name="nr_3:Clean">
-        <MSBuild Projects="sample_3\nr_3.dproj" Targets="Clean"/>
+    <Target Name="nr_xor:Clean">
+        <MSBuild Projects="sample_10\nr_xor.dproj" Targets="Clean"/>
     </Target>
-    <Target Name="nr_3:Make">
-        <MSBuild Projects="sample_3\nr_3.dproj" Targets="Make"/>
-    </Target>
-    <Target Name="nr_4">
-        <MSBuild Projects="sample_4\nr_4.dproj"/>
-    </Target>
-    <Target Name="nr_4:Clean">
-        <MSBuild Projects="sample_4\nr_4.dproj" Targets="Clean"/>
-    </Target>
-    <Target Name="nr_4:Make">
-        <MSBuild Projects="sample_4\nr_4.dproj" Targets="Make"/>
-    </Target>
-    <Target Name="matrix">
-        <MSBuild Projects="matrix\matrix.dproj"/>
-    </Target>
-    <Target Name="matrix:Clean">
-        <MSBuild Projects="matrix\matrix.dproj" Targets="Clean"/>
-    </Target>
-    <Target Name="matrix:Make">
-        <MSBuild Projects="matrix\matrix.dproj" Targets="Make"/>
-    </Target>
-    <Target Name="nr_5">
-        <MSBuild Projects="sample_5\nr_5.dproj"/>
-    </Target>
-    <Target Name="nr_5:Clean">
-        <MSBuild Projects="sample_5\nr_5.dproj" Targets="Clean"/>
-    </Target>
-    <Target Name="nr_5:Make">
-        <MSBuild Projects="sample_5\nr_5.dproj" Targets="Make"/>
-    </Target>
-    <Target Name="block_6">
-        <MSBuild Projects="sample_6\block_6.dproj"/>
-    </Target>
-    <Target Name="block_6:Clean">
-        <MSBuild Projects="sample_6\block_6.dproj" Targets="Clean"/>
-    </Target>
-    <Target Name="block_6:Make">
-        <MSBuild Projects="sample_6\block_6.dproj" Targets="Make"/>
-    </Target>
-    <Target Name="nr_10">
-        <MSBuild Projects="sample_10\nr_10.dproj"/>
-    </Target>
-    <Target Name="nr_10:Clean">
-        <MSBuild Projects="sample_10\nr_10.dproj" Targets="Clean"/>
-    </Target>
-    <Target Name="nr_10:Make">
-        <MSBuild Projects="sample_10\nr_10.dproj" Targets="Make"/>
+    <Target Name="nr_xor:Make">
+        <MSBuild Projects="sample_10\nr_xor.dproj" Targets="Make"/>
     </Target>
     <Target Name="Build">
-        <CallTarget Targets="Project1;nr_1;nr_2;nr_3;nr_4;matrix;nr_5;block_6;nr_10"/>
+        <CallTarget Targets="Project1;nr_1;nr_ga;nr_xor"/>
     </Target>
     <Target Name="Clean">
-        <CallTarget Targets="Project1:Clean;nr_1:Clean;nr_2:Clean;nr_3:Clean;nr_4:Clean;matrix:Clean;nr_5:Clean;block_6:Clean;nr_10:Clean"/>
+        <CallTarget Targets="Project1:Clean;nr_1:Clean;nr_ga:Clean;nr_xor:Clean"/>
     </Target>
     <Target Name="Make">
-        <CallTarget Targets="Project1:Make;nr_1:Make;nr_2:Make;nr_3:Make;nr_4:Make;matrix:Make;nr_5:Make;block_6:Make;nr_10:Make"/>
+        <CallTarget Targets="Project1:Make;nr_1:Make;nr_ga:Make;nr_xor:Make"/>
     </Target>
     <Import Project="$(BDS)\Bin\CodeGear.Group.Targets" Condition="Exists('$(BDS)\Bin\CodeGear.Group.Targets')"/>
 </Project>
