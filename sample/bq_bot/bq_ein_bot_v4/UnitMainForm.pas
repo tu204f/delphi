@@ -120,7 +120,7 @@ begin
 
   TPlatfomBybit(TradingPlatform).ApiKey := '3bvDxJnKzjkIg8y0RV';
   TPlatfomBybit(TradingPlatform).ApiSecret := 'YtpORO6EYWTESXWwCyLiOBm75c1Tv6GSOzqJ';
-  TPlatfomBybit(TradingPlatform).Interval  := TTypeInterval.ti_15;
+  TPlatfomBybit(TradingPlatform).Interval  := TTypeInterval.ti_5;
 
   JournalManager := TJournalManager.Create;
 end;
@@ -179,10 +179,12 @@ end;
 
 procedure TMainForm.TimerTimer(Sender: TObject);
 begin
-  if TradingPlatform.ValueMomentum.MomentumMA > 0 then
-    ButtonBuyClick(nil)
-  else if TradingPlatform.ValueMomentum.MomentumMA < 0 then
-    ButtonSellClick(nil);
+//  if TradingPlatform.ValueMomentum.MomentumMA > 0 then
+//    ButtonBuyClick(nil)
+//  else if TradingPlatform.ValueMomentum.MomentumMA < 0 then
+//    ButtonSellClick(nil);
+  ButtonBuyClick(nil);
+  ButtonSellClick(nil);
 end;
 
 procedure TMainForm.TradingPlatformOnStateMarket(ASender: TObject; AStateMarket: TStateMarket);
@@ -372,13 +374,15 @@ begin
     xPosition.OnClose := PositionClose;
     with xPosition do
     begin
-      OpenTime := GetNewDateTime;
+      //OpenTime := GetNewDateTime;
+      OpenTime := TradingPlatform.StateMarket.ServerTime;
       OpenPrice := xPrice;
       Qty := 1;
       Side := TTypeBuySell.tsBuy;
       IsActive := True;
       TypeTrade := TTypeTrade.ttOpen;
-      Triling := 15;
+      Triling := 5;
+      TakeProfit := OpenPrice + 5;
       DoOpen;
     end;
   end;
@@ -396,13 +400,15 @@ begin
     xPosition.OnClose := PositionClose;
     with xPosition do
     begin
-      OpenTime := GetNewDateTime;
+      //OpenTime := GetNewDateTime;
+      OpenTime := TradingPlatform.StateMarket.ServerTime;
       OpenPrice := xPrice;
       Qty := 1;
       Side := TTypeBuySell.tsSell;
       IsActive := True;
       TypeTrade := TTypeTrade.ttOpen;
-      Triling := 15;
+      Triling := 5;
+      TakeProfit := OpenPrice + 5;
       DoOpen;
     end;
   end;
@@ -434,7 +440,8 @@ begin
         if xPrice <= 0 then
           Exit;
 
-        CloseTime := GetNewDateTime;
+        //CloseTime := GetNewDateTime;
+        CloseTime := TradingPlatform.StateMarket.ServerTime;
         ClosePrice := xPrice;
         IsActive := False;
         TypeTrade := TTypeTrade.ttClose;

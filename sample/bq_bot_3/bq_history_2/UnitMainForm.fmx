@@ -1,0 +1,43 @@
+object MainForm: TMainForm
+  Left = 0
+  Top = 0
+  Caption = 'Form4'
+  ClientHeight = 480
+  ClientWidth = 640
+  FormFactor.Width = 320
+  FormFactor.Height = 480
+  FormFactor.Devices = [Desktop]
+  DesignerMasterStyle = 0
+  object ButtonStartOrStop: TButton
+    Position.X = 8.000000000000000000
+    Position.Y = 8.000000000000000000
+    Size.Width = 109.000000000000000000
+    Size.Height = 45.000000000000000000
+    Size.PlatformDefault = False
+    TabOrder = 0
+    Text = #1057#1090#1072#1088#1090
+    OnClick = ButtonStartOrStopClick
+  end
+  object StrGrid: TStringGrid
+    Anchors = [akLeft, akTop, akRight, akBottom]
+    CanFocus = True
+    ClipChildren = True
+    Position.X = 8.000000000000000000
+    Position.Y = 60.000000000000000000
+    Size.Width = 621.000000000000000000
+    Size.Height = 409.000000000000000000
+    Size.PlatformDefault = False
+    TabOrder = 1
+    Options = [Editing, ColumnResize, ColumnMove, ColLines, RowLines, RowSelect, Tabs, Header, HeaderClick, AutoDisplacement]
+    Viewport.Width = 617.000000000000000000
+    Viewport.Height = 384.000000000000000000
+  end
+  object TextStatus: TText
+    Position.X = 120.000000000000000000
+    Position.Y = 8.000000000000000000
+    Size.Width = 509.000000000000000000
+    Size.Height = 45.000000000000000000
+    Size.PlatformDefault = False
+    TextSettings.HorzAlign = Leading
+  end
+end

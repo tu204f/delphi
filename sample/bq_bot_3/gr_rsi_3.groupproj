@@ -1,0 +1,72 @@
+﻿<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+    <PropertyGroup>
+        <ProjectGuid>{8B944645-728E-47C9-874B-4E14DBA394F2}</ProjectGuid>
+    </PropertyGroup>
+    <ItemGroup>
+        <Projects Include="bq_history_2\bq_history.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="bq_ein_bot_2\bq_ein_bot.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="bq_ein_bot_3\bq_ein_bot_v3.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="bq_bot\bq_bot.dproj">
+            <Dependencies/>
+        </Projects>
+    </ItemGroup>
+    <ProjectExtensions>
+        <Borland.Personality>Default.Personality.12</Borland.Personality>
+        <Borland.ProjectType/>
+        <BorlandProject>
+            <Default.Personality/>
+        </BorlandProject>
+    </ProjectExtensions>
+    <Target Name="bq_history">
+        <MSBuild Projects="bq_history_2\bq_history.dproj"/>
+    </Target>
+    <Target Name="bq_history:Clean">
+        <MSBuild Projects="bq_history_2\bq_history.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="bq_history:Make">
+        <MSBuild Projects="bq_history_2\bq_history.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="bq_ein_bot">
+        <MSBuild Projects="bq_ein_bot_2\bq_ein_bot.dproj"/>
+    </Target>
+    <Target Name="bq_ein_bot:Clean">
+        <MSBuild Projects="bq_ein_bot_2\bq_ein_bot.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="bq_ein_bot:Make">
+        <MSBuild Projects="bq_ein_bot_2\bq_ein_bot.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="bq_ein_bot_v3">
+        <MSBuild Projects="bq_ein_bot_3\bq_ein_bot_v3.dproj"/>
+    </Target>
+    <Target Name="bq_ein_bot_v3:Clean">
+        <MSBuild Projects="bq_ein_bot_3\bq_ein_bot_v3.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="bq_ein_bot_v3:Make">
+        <MSBuild Projects="bq_ein_bot_3\bq_ein_bot_v3.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="bq_bot">
+        <MSBuild Projects="bq_bot\bq_bot.dproj"/>
+    </Target>
+    <Target Name="bq_bot:Clean">
+        <MSBuild Projects="bq_bot\bq_bot.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="bq_bot:Make">
+        <MSBuild Projects="bq_bot\bq_bot.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="Build">
+        <CallTarget Targets="bq_history;bq_ein_bot;bq_ein_bot_v3;bq_bot"/>
+    </Target>
+    <Target Name="Clean">
+        <CallTarget Targets="bq_history:Clean;bq_ein_bot:Clean;bq_ein_bot_v3:Clean;bq_bot:Clean"/>
+    </Target>
+    <Target Name="Make">
+        <CallTarget Targets="bq_history:Make;bq_ein_bot:Make;bq_ein_bot_v3:Make;bq_bot:Make"/>
+    </Target>
+    <Import Project="$(BDS)\Bin\CodeGear.Group.Targets" Condition="Exists('$(BDS)\Bin\CodeGear.Group.Targets')"/>
+</Project>
