@@ -4,7 +4,8 @@ uses
   Vcl.Forms,
   UnitMainForm in 'UnitMainForm.pas' {Form5},
   Lb.NeuronNet.Neuron in '..\lib\Lb.NeuronNet.Neuron.pas',
-  Lb.NeuronNet.Files in '..\lib\Lb.NeuronNet.Files.pas';
+  Lb.NeuronNet.Files in '..\lib\Lb.NeuronNet.Files.pas',
+  Lb.NeuronNet.Neuron.V2 in '..\lib\Lb.NeuronNet.Neuron.V2.pas';
 
 {$R *.res}
 
