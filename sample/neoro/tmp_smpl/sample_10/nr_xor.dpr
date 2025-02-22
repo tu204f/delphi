@@ -1,4 +1,4 @@
-program nr_10;
+program nr_xor;
 
 uses
   Vcl.Forms,

@@ -1,4 +1,4 @@
-program nr_2;
+program nr_ga;
 
 uses
   Vcl.Forms,

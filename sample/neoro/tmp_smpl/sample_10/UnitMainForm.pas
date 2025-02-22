@@ -31,6 +31,7 @@ type
     procedure Button3Click(Sender: TObject);
     procedure Button4Click(Sender: TObject);
     procedure Button5Click(Sender: TObject);
+    procedure FormShow(Sender: TObject);
   private
     { Private declarations }
   public
@@ -50,19 +51,16 @@ begin
   NeuronNet := TNeuronNet.Create;
 end;
 
-
 procedure TForm5.FormClose(Sender: TObject; var Action: TCloseAction);
 begin
   FreeAndNil(NeuronNet);
 end;
 
-procedure TForm5.Button1Click(Sender: TObject);
+procedure TForm5.FormShow(Sender: TObject);
 begin
-  NeuronNet.Clear;
-  NeuronNet.AddLayer(2);
-  NeuronNet.AddLayer(5);
-  NeuronNet.AddLayer(3);
-  NeuronNet.OutputLayer(1);
+  Memo.Lines.Clear;
+  Self.Caption := 'Тестирование нейроной сети';
+  Button1Click(nil);
 end;
 
 procedure neuroXOR(const A, B: Byte);
@@ -114,9 +112,19 @@ begin
   end;
 end;
 
+procedure TForm5.Button1Click(Sender: TObject);
+begin
+  // Создание нейроной сети
+  Memo.Lines.Add('Создание нейроно сети');
+  NeuronNet.Clear;
+  NeuronNet.AddLayer(2);
+  NeuronNet.AddLayer(2);
+  NeuronNet.OutputLayer(1);
+end;
+
 procedure TForm5.Button2Click(Sender: TObject);
 begin
-  Memo.Lines.Add('***********************************');
+  Memo.Lines.Add('Результат нейроной сети');
   neuroXOR(0,0);
   neuroXOR(0,1);
   neuroXOR(1,0);
@@ -124,9 +132,11 @@ begin
 end;
 
 procedure TForm5.Button3Click(Sender: TObject);
+const
+  COUNT_NEURON = 1000;
 begin
-  Memo.Lines.Add('***********************************');
-  for var i := 0 to 10000 do
+  Memo.Lines.Add('Обучение нейроной сети: количество: ' + COUNT_NEURON.ToString);
+  for var i := 0 to COUNT_NEURON - 1 do
   begin
     neuroLearnXOR(0,0,0);
     neuroLearnXOR(0,1,1);
