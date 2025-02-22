@@ -2,8 +2,8 @@ object MainForm: TMainForm
   Left = 0
   Top = 0
   Caption = 'Form4'
-  ClientHeight = 755
-  ClientWidth = 977
+  ClientHeight = 874
+  ClientWidth = 1029
   FormFactor.Width = 320
   FormFactor.Height = 480
   FormFactor.Devices = [Desktop]
@@ -22,7 +22,7 @@ object MainForm: TMainForm
     Anchors = [akLeft, akTop, akRight]
     Position.X = 120.000000000000000000
     Position.Y = 8.000000000000000000
-    Size.Width = 846.000000000000000000
+    Size.Width = 898.000000000000000000
     Size.Height = 45.000000000000000000
     Size.PlatformDefault = False
     object TextStatus: TText
@@ -30,7 +30,7 @@ object MainForm: TMainForm
       Margins.Left = 5.000000000000000000
       Margins.Top = 5.000000000000000000
       Margins.Bottom = 5.000000000000000000
-      Size.Width = 602.000000000000000000
+      Size.Width = 654.000000000000000000
       Size.Height = 35.000000000000000000
       Size.PlatformDefault = False
       TextSettings.HorzAlign = Leading
@@ -41,7 +41,7 @@ object MainForm: TMainForm
       Margins.Top = 5.000000000000000000
       Margins.Right = 5.000000000000000000
       Margins.Bottom = 5.000000000000000000
-      Position.X = 612.000000000000000000
+      Position.X = 664.000000000000000000
       Position.Y = 5.000000000000000000
       Size.Width = 229.000000000000000000
       Size.Height = 35.000000000000000000
@@ -121,34 +121,46 @@ object MainForm: TMainForm
     Anchors = [akLeft, akTop, akRight, akBottom]
     Position.X = 8.000000000000000000
     Position.Y = 60.000000000000000000
-    Size.Width = 962.000000000000000000
-    Size.Height = 684.000000000000000000
+    Size.Width = 1014.000000000000000000
+    Size.Height = 803.000000000000000000
     Size.PlatformDefault = False
     TabIndex = 0
     TabOrder = 1
     TabPosition = PlatformDefault
     Sizes = (
-      962s
-      658s
-      962s
-      658s
-      962s
-      658s)
+      1014s
+      777s
+      1014s
+      777s
+      1014s
+      777s)
     object TabItemTrade: TTabItem
       CustomIcon = <
         item
         end>
       IsSelected = True
-      Size.Width = 60.000000000000000000
+      Size.Width = 54.000000000000000000
       Size.Height = 26.000000000000000000
       Size.PlatformDefault = False
       StyleLookup = ''
       TabOrder = 0
-      Text = #1040#1085#1072#1083#1080#1079
+      Text = #1057#1074#1077#1095#1080
       ExplicitSize.cx = 54.000000000000000000
       ExplicitSize.cy = 26.000000000000000000
+      object StringGridCandel: TStringGrid
+        Align = Client
+        CanFocus = True
+        ClipChildren = True
+        Size.Width = 693.000000000000000000
+        Size.Height = 479.000000000000000000
+        Size.PlatformDefault = False
+        TabOrder = 1
+        Options = [Editing, ColumnResize, ColumnMove, ColLines, RowLines, RowSelect, Tabs, Header, HeaderClick, AutoDisplacement]
+        Viewport.Width = 689.000000000000000000
+        Viewport.Height = 454.000000000000000000
+      end
       object Chart: TChart
-        Position.Y = 360.000000000000000000
+        Position.Y = 479.000000000000000000
         Foot.Font.StyleExt = {00040000000200000004000000}
         Legend.Title.Font.StyleExt = {00070000000000000004000000}
         Legend.Visible = False
@@ -160,8 +172,8 @@ object MainForm: TMainForm
         Zoom.Brush.Kind = None
         Zoom.Pen.Fill.Color = claSilver
         Align = Bottom
-        TabOrder = 1
-        Size.Width = 962.000000000000000000
+        TabOrder = 2
+        Size.Width = 1014.000000000000000000
         Size.Height = 298.000000000000000000
         Size.PlatformDefault = False
         ColorPaletteIndex = 13
@@ -198,9 +210,9 @@ object MainForm: TMainForm
       object LayoutMarket: TLayout
         Align = Left
         Size.Width = 321.000000000000000000
-        Size.Height = 360.000000000000000000
+        Size.Height = 479.000000000000000000
         Size.PlatformDefault = False
-        TabOrder = 2
+        TabOrder = 3
         object RectangleMarket: TRectangle
           Align = Client
           Padding.Left = 5.000000000000000000
@@ -212,12 +224,12 @@ object MainForm: TMainForm
           Margins.Right = 5.000000000000000000
           Margins.Bottom = 5.000000000000000000
           Size.Width = 313.000000000000000000
-          Size.Height = 352.000000000000000000
+          Size.Height = 471.000000000000000000
           Size.PlatformDefault = False
           object Text1: TText
             Align = Top
             Position.X = 5.000000000000000000
-            Position.Y = 34.000000000000000000
+            Position.Y = 5.000000000000000000
             Size.Width = 303.000000000000000000
             Size.Height = 24.000000000000000000
             Size.PlatformDefault = False
@@ -227,11 +239,11 @@ object MainForm: TMainForm
           object GridPanelPrice: TGridPanelLayout
             Align = Top
             Position.X = 5.000000000000000000
-            Position.Y = 58.000000000000000000
+            Position.Y = 29.000000000000000000
             Size.Width = 303.000000000000000000
             Size.Height = 29.000000000000000000
             Size.PlatformDefault = False
-            TabOrder = 2
+            TabOrder = 1
             ColumnCollection = <
               item
                 Value = 33.333333333333340000
@@ -255,7 +267,7 @@ object MainForm: TMainForm
               end
               item
                 Column = 2
-                Control = EditValueWR
+                Control = EditSlowWR
                 Row = 0
               end>
             RowCollection = <
@@ -286,7 +298,7 @@ object MainForm: TMainForm
               Size.Height = 23.000000000000000000
               Size.PlatformDefault = False
             end
-            object EditValueWR: TEdit
+            object EditSlowWR: TEdit
               Touch.InteractiveGestures = [LongTap, DoubleTap]
               Align = Client
               TabOrder = 1
@@ -302,11 +314,11 @@ object MainForm: TMainForm
           object LayoutTrend: TLayout
             Align = Top
             Position.X = 5.000000000000000000
-            Position.Y = 87.000000000000000000
+            Position.Y = 58.000000000000000000
             Size.Width = 303.000000000000000000
             Size.Height = 29.000000000000000000
             Size.PlatformDefault = False
-            TabOrder = 3
+            TabOrder = 2
             object RectangleTrend: TRectangle
               Align = Right
               Margins.Top = 3.000000000000000000
@@ -333,125 +345,16 @@ object MainForm: TMainForm
           object ListBox: TListBox
             Align = Client
             Size.Width = 303.000000000000000000
-            Size.Height = 231.000000000000000000
+            Size.Height = 379.000000000000000000
             Size.PlatformDefault = False
-            TabOrder = 4
+            TabOrder = 3
             DisableFocusEffect = True
             DefaultItemStyles.ItemStyle = ''
             DefaultItemStyles.GroupHeaderStyle = ''
             DefaultItemStyles.GroupFooterStyle = ''
             Viewport.Width = 299.000000000000000000
-            Viewport.Height = 227.000000000000000000
+            Viewport.Height = 375.000000000000000000
           end
-          object GridPanelLayout1: TGridPanelLayout
-            Align = Top
-            Position.X = 5.000000000000000000
-            Position.Y = 5.000000000000000000
-            Size.Width = 303.000000000000000000
-            Size.Height = 29.000000000000000000
-            Size.PlatformDefault = False
-            TabOrder = 1
-            ColumnCollection = <
-              item
-                Value = 50.000000000000000000
-              end
-              item
-                Value = 50.000000000000000000
-              end>
-            ControlCollection = <
-              item
-                Column = 0
-                Control = Edit1
-                Row = 0
-              end
-              item
-                Column = 1
-                Control = Edit2
-                Row = 0
-              end>
-            RowCollection = <
-              item
-                Value = 100.000000000000000000
-              end>
-            object Edit1: TEdit
-              Touch.InteractiveGestures = [LongTap, DoubleTap]
-              Align = Client
-              TabOrder = 0
-              Margins.Left = 2.000000000000000000
-              Margins.Top = 3.000000000000000000
-              Margins.Right = 2.000000000000000000
-              Margins.Bottom = 3.000000000000000000
-              Size.Width = 147.500000000000000000
-              Size.Height = 23.000000000000000000
-              Size.PlatformDefault = False
-            end
-            object Edit2: TEdit
-              Touch.InteractiveGestures = [LongTap, DoubleTap]
-              Align = Client
-              TabOrder = 1
-              Margins.Left = 2.000000000000000000
-              Margins.Top = 3.000000000000000000
-              Margins.Right = 2.000000000000000000
-              Margins.Bottom = 3.000000000000000000
-              Size.Width = 147.500000000000000000
-              Size.Height = 23.000000000000000000
-              Size.PlatformDefault = False
-            end
-          end
-        end
-      end
-      object Layout1: TLayout
-        Align = Client
-        Size.Width = 641.000000000000000000
-        Size.Height = 360.000000000000000000
-        Size.PlatformDefault = False
-        TabOrder = 3
-        object LayoutDemo: TLayout
-          Align = Top
-          Size.Width = 641.000000000000000000
-          Size.Height = 41.000000000000000000
-          Size.PlatformDefault = False
-          TabOrder = 2
-          object EditDemo1: TEdit
-            Touch.InteractiveGestures = [LongTap, DoubleTap]
-            TabOrder = 6
-            Position.X = 8.000000000000000000
-            Position.Y = 11.000000000000000000
-            Size.Width = 105.000000000000000000
-            Size.Height = 22.000000000000000000
-            Size.PlatformDefault = False
-          end
-          object EditDemo2: TEdit
-            Touch.InteractiveGestures = [LongTap, DoubleTap]
-            TabOrder = 5
-            Position.X = 116.000000000000000000
-            Position.Y = 11.000000000000000000
-            Size.Width = 105.000000000000000000
-            Size.Height = 22.000000000000000000
-            Size.PlatformDefault = False
-          end
-          object EditDemo3: TEdit
-            Touch.InteractiveGestures = [LongTap, DoubleTap]
-            TabOrder = 4
-            Position.X = 224.000000000000000000
-            Position.Y = 11.000000000000000000
-            Size.Width = 105.000000000000000000
-            Size.Height = 22.000000000000000000
-            Size.PlatformDefault = False
-          end
-        end
-        object DemoGrid: TStringGrid
-          Align = Client
-          CanFocus = True
-          ClipChildren = True
-          PopupMenu = PopupMenu
-          Size.Width = 641.000000000000000000
-          Size.Height = 319.000000000000000000
-          Size.PlatformDefault = False
-          TabOrder = 1
-          Options = [Editing, ColumnResize, ColumnMove, ColLines, RowLines, RowSelect, Tabs, Header, HeaderClick, AutoDisplacement]
-          Viewport.Width = 637.000000000000000000
-          Viewport.Height = 294.000000000000000000
         end
       end
     end
@@ -460,48 +363,121 @@ object MainForm: TMainForm
         item
         end>
       IsSelected = False
-      Size.Width = 120.000000000000000000
+      Size.Width = 69.000000000000000000
       Size.Height = 26.000000000000000000
       Size.PlatformDefault = False
       StyleLookup = ''
       TabOrder = 0
-      Text = #1048#1089#1093#1086#1076#1085#1099#1077' '#1076#1072#1085#1085#1099#1077
+      Text = #1055#1086#1079#1080#1094#1080#1103
       ExplicitSize.cx = 69.000000000000000000
       ExplicitSize.cy = 26.000000000000000000
-      object StringGridCandel: TStringGrid
+      object DemoGrid: TStringGrid
         Align = Client
         CanFocus = True
         ClipChildren = True
-        Size.Width = 962.000000000000000000
-        Size.Height = 658.000000000000000000
+        PopupMenu = PopupMenu
+        Size.Width = 1014.000000000000000000
+        Size.Height = 736.000000000000000000
         Size.PlatformDefault = False
         TabOrder = 1
         Options = [Editing, ColumnResize, ColumnMove, ColLines, RowLines, RowSelect, Tabs, Header, HeaderClick, AutoDisplacement]
-        Viewport.Width = 958.000000000000000000
-        Viewport.Height = 633.000000000000000000
+        Viewport.Width = 1010.000000000000000000
+        Viewport.Height = 711.000000000000000000
+      end
+      object LayoutDemo: TLayout
+        Align = Top
+        Size.Width = 1014.000000000000000000
+        Size.Height = 41.000000000000000000
+        Size.PlatformDefault = False
+        TabOrder = 2
+        object EditDemo1: TEdit
+          Touch.InteractiveGestures = [LongTap, DoubleTap]
+          TabOrder = 6
+          Position.X = 8.000000000000000000
+          Position.Y = 11.000000000000000000
+          Size.Width = 105.000000000000000000
+          Size.Height = 22.000000000000000000
+          Size.PlatformDefault = False
+        end
+        object EditDemo2: TEdit
+          Touch.InteractiveGestures = [LongTap, DoubleTap]
+          TabOrder = 5
+          Position.X = 116.000000000000000000
+          Position.Y = 11.000000000000000000
+          Size.Width = 105.000000000000000000
+          Size.Height = 22.000000000000000000
+          Size.PlatformDefault = False
+        end
+        object EditDemo3: TEdit
+          Touch.InteractiveGestures = [LongTap, DoubleTap]
+          TabOrder = 4
+          Position.X = 224.000000000000000000
+          Position.Y = 11.000000000000000000
+          Size.Width = 105.000000000000000000
+          Size.Height = 22.000000000000000000
+          Size.PlatformDefault = False
+        end
       end
     end
-    object TabItemInfoMsg: TTabItem
+    object TabItemReal: TTabItem
       CustomIcon = <
         item
         end>
       IsSelected = False
-      Size.Width = 148.000000000000000000
+      Size.Width = 130.000000000000000000
       Size.Height = 26.000000000000000000
       Size.PlatformDefault = False
       StyleLookup = ''
       TabOrder = 0
-      Text = #1057#1080#1089#1090#1077#1084#1085#1099#1077' '#1089#1086#1086#1073#1097#1077#1085#1080#1103
-      object MemoInfoMsg: TMemo
-        Touch.InteractiveGestures = [Pan, LongTap, DoubleTap]
-        DataDetectorTypes = []
+      Text = #1056#1077#1072#1083#1100#1085#1099#1081' '#1087#1086#1088#1090#1092#1077#1083#1100
+      ExplicitSize.cx = 130.000000000000000000
+      ExplicitSize.cy = 26.000000000000000000
+      object RealGrid: TStringGrid
         Align = Client
-        Size.Width = 962.000000000000000000
-        Size.Height = 658.000000000000000000
+        CanFocus = True
+        ClipChildren = True
+        PopupMenu = PopupMenu
+        Size.Width = 1014.000000000000000000
+        Size.Height = 736.000000000000000000
         Size.PlatformDefault = False
-        TabOrder = 0
-        Viewport.Width = 958.000000000000000000
-        Viewport.Height = 654.000000000000000000
+        TabOrder = 1
+        Options = [Editing, ColumnResize, ColumnMove, ColLines, RowLines, RowSelect, Tabs, Header, HeaderClick, AutoDisplacement]
+        Viewport.Width = 1010.000000000000000000
+        Viewport.Height = 711.000000000000000000
+      end
+      object LayoutReal: TLayout
+        Align = Top
+        Size.Width = 1014.000000000000000000
+        Size.Height = 41.000000000000000000
+        Size.PlatformDefault = False
+        TabOrder = 2
+        object EditReal1: TEdit
+          Touch.InteractiveGestures = [LongTap, DoubleTap]
+          TabOrder = 6
+          Position.X = 8.000000000000000000
+          Position.Y = 11.000000000000000000
+          Size.Width = 105.000000000000000000
+          Size.Height = 22.000000000000000000
+          Size.PlatformDefault = False
+        end
+        object EditReal2: TEdit
+          Touch.InteractiveGestures = [LongTap, DoubleTap]
+          TabOrder = 5
+          Position.X = 116.000000000000000000
+          Position.Y = 11.000000000000000000
+          Size.Width = 105.000000000000000000
+          Size.Height = 22.000000000000000000
+          Size.PlatformDefault = False
+        end
+        object EditReal3: TEdit
+          Touch.InteractiveGestures = [LongTap, DoubleTap]
+          TabOrder = 4
+          Position.X = 224.000000000000000000
+          Position.Y = 11.000000000000000000
+          Size.Width = 105.000000000000000000
+          Size.Height = 22.000000000000000000
+          Size.PlatformDefault = False
+        end
       end
     end
   end

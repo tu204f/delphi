@@ -13,412 +13,232 @@ uses
   System.Generics.Collections,
   Lb.SysUtils,
   Lb.Platform,
-  Lb.TradeBox,
-  Lb.Journal.Trading_OLD;
+  Lb.Journal.Trading.v2;
 
 type
-  ///<summary>
+  /// <summary>
   /// Определяет напровление торговли
-  ///</summary>
-  TTypeBot = (
-    tbLong,   // бот торгует только в лог
-    tbShort   // Торгуеь только в короткую позици
-  );
+  /// </summary>
+  TTypeBot = (tbNull, tbStart, tbOpenTrade, tbClose);
 
-  ///<summary>
+  /// <summary>
   /// Событие
-  ///</summary>
-  TEventOnSendTrade = procedure(
-    ASender: TObject;
-    const ATime: TDateTime;
-    const APrice, AQty: Double;
-    ASide: TTypeBuySell
-  ) of object;
+  /// </summary>
+  TEventOnSendTrade = procedure(ASender: TObject; const ATime: TDateTime;
+    const APrice, AQty: Double; ASide: TTypeBuySell) of object;
 
-
-  ///<summary>
-  /// Механиз фиксации опериции не зависемо отплатформы
-  ///</summary>
-  TCustomTraginBot = class(TObject)
+  TBot = class(TObject)
   private
-    FTradeBox: TTradeBox;
+    FQty: Double;
+    FIsActive: Boolean;
+    FTriling: Double;
     FManager: TJournalManager;
-    procedure TradeBoxOnTradeBox(ASender: TObject; ATypeDirection: TTypeDirection; ATypeTrade: TTypeTrade);
+    FAskPrice, FBidPrice: Double;
   protected
-    procedure DoTradeBox(ATypeDirection: TTypeDirection; ATypeTrade: TTypeTrade); virtual;
+    procedure EventPositionOnClose(ASander: TObject);
+    procedure SetOpenTrade(const ASide: TTypeBuySell; APrice: Double);
+    procedure SetCloseTrade;
   public
     constructor Create; virtual;
     destructor Destroy; override;
-    ///<summary>
-    /// Настройка работы, бокса
-    ///</summary>
-    procedure SetTradeBox(AOpenLong, ACloseLong, AOpenShort, ACloseShort: Double);
-    ///<summary>
-    /// Журнал торговых операций
-    ///</summary>
+    procedure Start;
+    procedure Stop;
+    procedure SetUpData(const AAskPrice, ABidPrice: Double); virtual;
+    property Qty: Double read FQty write FQty;
+    property Triling: Double read FTriling write FTriling;
     property Manager: TJournalManager read FManager;
-    ///<summary>
-    /// Настройка бокса
-    ///</summary>
-    property TradeBox: TTradeBox read FTradeBox;
+    property IsActive: Boolean read FIsActive;
   end;
 
+  TBotList = TObjectList<TBot>;
+
   ///<summary>
-  /// Бот - для торговли
+  /// Для тестирование, с фиксирваным размером депозита
   ///</summary>
-  TBot = class(TCustomTraginBot)
+  TLevelBot  = class(TBot)
   private
-    FTradingPlatform: TTradingPlatform;
-  private
-    FQty: Double;
-    FPeriod: Integer;
-    FValueRSI: Double;
-  protected
-    procedure DoTradeBox(ATypeDirection: TTypeDirection; ATypeTrade: TTypeTrade); override;
-    ///<summary>Совершение торговых операций</summary>
-    procedure DoSendTrade(const ATime: TDateTime; const APrice, AQty: Double; ASide: TTypeBuySell);
+    FProfit: Double;
   public
     constructor Create; override;
     destructor Destroy; override;
-    ///<summary>Запрос на совершение торговых операций </summary>
-    procedure SetSelected;
-    ///<summary>Торговая платформа</summary>
-    property TradingPlatform: TTradingPlatform read FTradingPlatform write FTradingPlatform;
-    ///<summary>Период оценки определение состояние рынка</summary>
-    property Period: Integer read FPeriod write FPeriod;
-    ///<summary>Количество заявок</summary>
-    property Qty: Double read FQty write FQty;
-  end;
-
-  ///<summary>Список ботов</summary>
-  TBotList = TObjectList<TBot>;
-
-  ///<summary>Список которой торгует виртуально</summary>
-  TManagerBot = class(TObject)
-  private
-    FItems: TBotList;
-    FTradingPlatform: TTradingPlatform;
-    ///<summary>Событие нового бара</summary>
-    procedure TradingPlatformOnNewCandel(Sender: TObject);
-    procedure SetTradingPlatform(const Value: TTradingPlatform);
-  public
-    constructor Create; virtual;
-    destructor Destroy; override;
-    procedure Clear;
-    procedure SetSelected;
-    function AddBot: TBot;
-    property Items: TBotList read FItems;
-    property TradingPlatform: TTradingPlatform read FTradingPlatform write SetTradingPlatform;
+    procedure SetUpData(const AAskPrice, ABidPrice: Double); override;
+    property Profit: Double read FProfit write FProfit;
   end;
 
 
-function GetStrToTypeBot(const ATypeBot: TTypeBot): String;
+  TLevelBotList = TObjectList<TLevelBot>;
 
 implementation
-
-uses
-{$IFDEF DEBUG}
-  Lb.Logger,
-{$ENDIF}
-  Lb.Indiсator;
-
-(******************************************************************************)
-(* *)
-
-function GetStrToTypeBot(const ATypeBot: TTypeBot): String;
-begin
-  case ATypeBot of
-    tbLong: Result := 'long';
-    tbShort: Result := 'short';
-  else
-    Result := '';
-  end;
-end;
-
-
-{ TCustomTraginBot }
-
-constructor TCustomTraginBot.Create;
-begin
-  FTradeBox := TTradeBox.Create;
-  FTradeBox.OpenLong := 50;
-  FTradeBox.CloseLong := 80;
-  FTradeBox.OpenShort := 50;
-  FTradeBox.CloseShort := 20;
-  FTradeBox.OnTradeBox := TradeBoxOnTradeBox;
-
-  FManager := TJournalManager.Create;
-end;
-
-destructor TCustomTraginBot.Destroy;
-begin
-  FreeAndNil(FManager);
-  FreeAndNil(FTradeBox);
-  inherited;
-end;
-
-procedure TCustomTraginBot.TradeBoxOnTradeBox(ASender: TObject; ATypeDirection: TTypeDirection; ATypeTrade: TTypeTrade);
-begin
-  DoTradeBox(ATypeDirection, ATypeTrade);
-end;
-
-procedure TCustomTraginBot.SetTradeBox(AOpenLong, ACloseLong, AOpenShort, ACloseShort: Double);
-begin
-  FTradeBox.OpenLong   := AOpenLong;
-  FTradeBox.CloseLong  := ACloseLong;
-  FTradeBox.OpenShort  := AOpenShort;
-  FTradeBox.CloseShort := ACloseShort;
-end;
-
-procedure TCustomTraginBot.DoTradeBox(ATypeDirection: TTypeDirection; ATypeTrade: TTypeTrade);
-begin
-  // Управление данных - значение работы
-end;
 
 { TBot }
 
 constructor TBot.Create;
 begin
-  inherited;
+  FManager := TJournalManager.Create;
+  FTriling := 15;
+  FIsActive := False;
   FQty := 1;
-  FPeriod := 14;
-  FTradingPlatform := nil;
 end;
 
 destructor TBot.Destroy;
 begin
+  FreeAndNil(FManager);
   inherited;
 end;
 
-procedure TBot.DoSendTrade(const ATime: TDateTime; const APrice, AQty: Double; ASide: TTypeBuySell);
+procedure TBot.EventPositionOnClose(ASander: TObject);
+var
+  xPosition: TJournalPosition;
 begin
+  if not FIsActive then
+    Exit;
+
+  if not(ASander is TJournalPosition) then
+    Exit;
+
+  xPosition := TJournalPosition(ASander);
+  case xPosition.Side of
+    tsBuy:
+      SetOpenTrade(TTypeBuySell.tsSell, FAskPrice);
+    tsSell:
+      SetOpenTrade(TTypeBuySell.tsSell, FBidPrice);
+  end;
 end;
 
-procedure TBot.SetSelected;
-begin
-{$IFDEF DEBUG}
-  TLogger.LogTree(0,'TBot.SetSelected: ');
-{$ENDIF}
-  {todo: Все вычисление вынести в отдельный модуль или объект, в целя исключение повторного вычисления}
-  if not Assigned(FTradingPlatform) then
+procedure TBot.SetOpenTrade(const ASide: TTypeBuySell; APrice: Double);
+
+  function _GetQty: Double;
+  var
+    xCount: Integer;
+    xPosition: TJournalPosition;
   begin
-    raise Exception.Create('Error Message: Не определена платформа');
-    Exit;
-  end;
-
-  if FPeriod <= 0 then
-  begin
-    raise Exception.Create('Error Message: Не определен период рынка');
-    Exit;
-  end;
-
-  FValueRSI := FTradingPlatform.ValueRSI.RSI;
-  FTradeBox.SetUpDateValue(FValueRSI);
-end;
-
-procedure TBot.DoTradeBox(ATypeDirection: TTypeDirection; ATypeTrade: TTypeTrade);
-
-  procedure _TypeDirectionLong(ATypeTrade: TTypeTrade; AQty: Double; AAsk, ABid: Double);
-  begin
-  {$IFDEF DEBUG}
-    TLogger.LogTreeText(3,'>> _TypeDirectionLong');
-  {$ENDIF}
-    case ATypeTrade of
-      ttOpen: begin
-        if Manager.IsCurrentPosition then
-        begin
-          if Manager.CurrentPosition.Side = TTypeBuySell.tsSell then
-          begin
-            var xCurrentDateTime := GetNewDateTime;
-            {$IFDEF DEBUG}
-            var xS := '>> revers' +
-                ' time: ' + DateTimeToStr(xCurrentDateTime) + ' ' +
-                ' price: ' + ABid.ToString;
-            TLogger.LogTreeText(3,xS);
-            {$ENDIF}
-            Manager.ReverseTrade(
-              xCurrentDateTime,
-              ABid,
-              FTradingPlatform.StateMarket.Candels
-            );
-          end;
-        end
-        else
-        begin
-          var xCurrentDateTime := GetNewDateTime;
-          {$IFDEF DEBUG}
-          var xS := '>> open' +
-              ' time: ' + DateTimeToStr(xCurrentDateTime) + ' ' +
-              ' price: ' + AAsk.ToString + ' ' +
-              ' qty: ' + AQty.ToString + ' ' +
-              ' side: buy';
-          TLogger.LogTreeText(3,xS);
-          {$ENDIF}
-          Manager.OpenTrade(
-            xCurrentDateTime,
-            AAsk,
-            AQty,
-            TTypeBuySell.tsBuy,
-            FTradingPlatform.StateMarket.Candels
-          );
-        end;
-      end;
-      ttClose: begin
-        if Manager.IsCurrentPosition then
-          if Manager.CurrentPosition.Side = TTypeBuySell.tsBuy then
-          begin
-            var xCurrentDateTime := GetNewDateTime;
-            {$IFDEF DEBUG}
-            var xS := '>> close' +
-                ' time: ' + DateTimeToStr(xCurrentDateTime) + ' ' +
-                ' price: ' + ABid.ToString;
-            TLogger.LogTreeText(3,xS);
-            {$ENDIF}
-            Manager.ReverseTrade(
-              xCurrentDateTime,
-              ABid,
-              FTradingPlatform.StateMarket.Candels
-            );
-            Manager.CloseTrade(
-              xCurrentDateTime,
-              ABid,
-              FTradingPlatform.StateMarket.Candels
-            );
-          end;
-      end;
-    end;
-  end;
-
-  procedure _TypeDirectionShort(ATypeTrade: TTypeTrade; AQty: Double; AAsk, ABid: Double);
-  begin
-  {$IFDEF DEBUG}
-  TLogger.LogTreeText(3,'>> _TypeDirectionShort');
-  {$ENDIF}
-    case ATypeTrade of
-      ttOpen: begin
-        if Manager.IsCurrentPosition then
-        begin
-          var xCurrentDateTime := GetNewDateTime;
-          {$IFDEF DEBUG}
-          var xS := '>> revers' +
-              ' time: ' + DateTimeToStr(xCurrentDateTime) + ' ' +
-              ' price: ' + AAsk.ToString;
-          TLogger.LogTreeText(3,xS);
-          {$ENDIF}
-          if Manager.CurrentPosition.Side = TTypeBuySell.tsBuy then
-          begin
-            Manager.ReverseTrade(
-              xCurrentDateTime,
-              AAsk,
-              FTradingPlatform.StateMarket.Candels
-            );
-          end;
-        end
-        else
-        begin
-          var xCurrentDateTime := GetNewDateTime;
-          {$IFDEF DEBUG}
-          var xS := '>> open' +
-              ' time: ' + DateTimeToStr(xCurrentDateTime) + ' ' +
-              ' price: ' + ABid.ToString + ' ' +
-              ' qty: ' + AQty.ToString + ' ' +
-              ' side: sell';
-          TLogger.LogTreeText(3,xS);
-          {$ENDIF}
-          Manager.OpenTrade(
-            GetNewDateTime,
-            ABid,
-            AQty,
-            TTypeBuySell.tsSell,
-            FTradingPlatform.StateMarket.Candels
-          );
-        end;
-      end;
-      ttClose: begin
-        if Manager.IsCurrentPosition then
-          if Manager.CurrentPosition.Side = TTypeBuySell.tsSell then
-          begin
-            var xCurrentDateTime := GetNewDateTime;
-            {$IFDEF DEBUG}
-            var xS := '>> close' +
-                ' time: ' + DateTimeToStr(xCurrentDateTime) + ' ' +
-                ' price: ' + AAsk.ToString;
-            TLogger.LogTreeText(3,xS);
-            {$ENDIF}
-            Manager.CloseTrade(
-              xCurrentDateTime,
-              AAsk,
-              FTradingPlatform.StateMarket.Candels
-            );
-          end;
-      end;
+    Result := FQty;
+    xCount := FManager.Positions.Count;
+    if xCount > 0 then
+    begin
+      xPosition := FManager.Positions[xCount - 1];
+      if xPosition.Profit < 0 then
+        Result := 2 * xPosition.Qty;
     end;
   end;
 
 var
-  xAsk, xBid: Double;
+  xPosition: TJournalPosition;
 begin
-{$IFDEF DEBUG}
-  TLogger.LogTree(0,'TBot.DoTradeBox: ' + GetStrToTypeDirection(ATypeDirection) + ' :: ' + GetStrToTypeTrade(ATypeTrade) +
-    '(' + FValueRSI.ToString + ')'
-  );
-{$ENDIF}
-  xAsk := FTradingPlatform.StateMarket.Ask;
-  xBid := FTradingPlatform.StateMarket.Bid;
-
-  case ATypeDirection of
-    tdLong: _TypeDirectionLong(ATypeTrade, FQty, xAsk, xBid);
-    tdShort: _TypeDirectionShort(ATypeTrade, FQty, xAsk, xBid);
+  xPosition := FManager.GetCreateJournalPosition;
+  xPosition.OnClose := EventPositionOnClose;
+  with xPosition do
+  begin
+    OpenTime := GetNewDateTime;
+    OpenPrice := APrice;
+    Qty := _GetQty;
+    Side := ASide;
+    IsActive := True;
+    TypeTrade := TTypeTrade.ttOpen;
+    Triling := FTriling;
+    DoOpen;
   end;
 end;
 
-{ TManagerBot }
-
-constructor TManagerBot.Create;
-begin
-  FItems := TBotList.Create;
-end;
-
-destructor TManagerBot.Destroy;
-begin
-  FreeAndNil(FItems);
-  inherited;
-end;
-
-procedure TManagerBot.Clear;
-begin
-  FItems.Clear;
-end;
-
-function TManagerBot.AddBot: TBot;
+procedure TBot.SetCloseTrade;
 var
-  xBot: TBot;
+  xPrice: Double;
+  i, iCount: Integer;
+  xPosition: TJournalPosition;
 begin
-  xBot := TBot.Create;
-  xBot.TradingPlatform := FTradingPlatform;
-  Result := xBot;
-  FItems.Add(xBot);
+  iCount := FManager.Positions.Count;
+  if iCount > 0 then
+    for i := iCount - 1 downto 0 do
+    begin
+      xPosition := FManager.Positions[i];
+      if xPosition.TypeTrade = TTypeTrade.ttOpen then
+      begin
+        with xPosition do
+        begin
+          case Side of
+            TTypeBuySell.tsBuy:
+              xPrice := FBidPrice;
+            TTypeBuySell.tsSell:
+              xPrice := FAskPrice;
+          else
+            xPrice := 0;
+          end;
+
+          if xPrice <= 0 then
+            Exit;
+
+          CloseTime := GetNewDateTime;
+          ClosePrice := xPrice;
+          IsActive := False;
+          TypeTrade := TTypeTrade.ttClose;
+          DoClose;
+        end;
+      end;
+    end;
 end;
 
-procedure TManagerBot.SetSelected;
+procedure TBot.SetUpData(const AAskPrice, ABidPrice: Double);
 var
+  xPosition: TJournalPosition;
   i, iCount: Integer;
 begin
-  iCount := FItems.Count;
+  FAskPrice := AAskPrice;
+  FBidPrice := ABidPrice;
+  iCount := FManager.Positions.Count;
   if iCount > 0 then
     for i := 0 to iCount - 1 do
-      FItems[i].SetSelected;
+    begin
+      xPosition := FManager.Positions[i];
+      if xPosition.TypeTrade = TTypeTrade.ttOpen then
+      begin
+        case xPosition.Side of
+          tsBuy:
+            xPosition.SetUpData(ABidPrice);
+          tsSell:
+            xPosition.SetUpData(AAskPrice);
+        end;
+      end;
+    end;
 end;
 
-procedure TManagerBot.SetTradingPlatform(const Value: TTradingPlatform);
+procedure TBot.Start;
 begin
-  FTradingPlatform := Value;
-  FTradingPlatform.OnNewCandel := TradingPlatformOnNewCandel;
+  if not FIsActive then
+  begin
+    FIsActive := True;
+    { todo: Случайно выбираем открывать позицию }
+    SetOpenTrade(TTypeBuySell.tsBuy, FAskPrice);
+  end;
 end;
 
-procedure TManagerBot.TradingPlatformOnNewCandel(Sender: TObject);
+procedure TBot.Stop;
 begin
-  Self.SetSelected;
+  if FIsActive then
+  begin
+    FIsActive := False;
+    SetCloseTrade;
+  end;
+end;
+
+{ TLevelBot }
+
+constructor TLevelBot.Create;
+begin
+  inherited;
+  FProfit := 100;
+end;
+
+destructor TLevelBot.Destroy;
+begin
+
+  inherited;
+end;
+
+procedure TLevelBot.SetUpData(const AAskPrice, ABidPrice: Double);
+begin
+  inherited SetUpData(AAskPrice, ABidPrice);
+  if (FProfit - FManager.Profit) < 0 then
+    Stop;
 end;
 
 end.

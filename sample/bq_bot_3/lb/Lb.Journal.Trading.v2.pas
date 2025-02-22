@@ -71,6 +71,8 @@ type
     FSide: TTypeBuySell;
     FQty: Double;
     FProfit: Double;
+    FMinProfit: Double;
+    FMaxProfit: Double;
     FTypeTrade: TTypeTrade;
   private
     FTriling: Double;
@@ -96,6 +98,8 @@ type
     property Side: TTypeBuySell read FSide write FSide;
     property Qty: Double read FQty write FQty;
     property Profit: Double read FProfit write FProfit;
+    property MaxProfit: Double read FMaxProfit write FMaxProfit;
+    property MinProfit: Double read FMinProfit write FMinProfit;
     property Triling: Double read FTriling write FTriling;
     property StopLoss: Double read FStopLoss write FStopLoss;
     property TakeProfit: Double read FTakeProfit write FTakeProfit;
@@ -248,6 +252,9 @@ begin
   xS := xS + _Add(FloatToStr(Self.Triling));
   xS := xS + _Add(FloatToStr(Self.TakeProfit));
   xS := xS + _Add(FloatToStr(Self.Profit));
+  xS := xS + _Add(FloatToStr(Self.MaxProfit));
+  xS := xS + _Add(FloatToStr(Self.MinProfit));
+
   xS := xS + _Add(GetStrToTypeTrade(Self.TypeTrade));
   xS := xS + _Add(FloatToStr(Self.ProfitFeeRatesTaker));
   xS := xS + _Add(FloatToStr(Self.ProfitFeeRatesMaker));
@@ -279,12 +286,20 @@ procedure TJournalPosition.SetUpData(const APrice: Double);
       end;
     end;
     FProfit := GetRound(FProfit);
+
+    if FMaxProfit < FProfit then
+      FMaxProfit := FProfit;
+    if FMinProfit > FProfit then
+      FMinProfit := FProfit;
   end;
 
   procedure _CalcTrelingStopLoss(const APrice: Double);
   var
     xStopLoss: Double;
   begin
+    if FTriling <= 0 then
+      Exit;
+
     if FTypeTrade = TTypeTrade.ttOpen then
     begin
       case FSide of

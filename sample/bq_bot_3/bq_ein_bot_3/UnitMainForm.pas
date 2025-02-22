@@ -14,14 +14,13 @@ uses
   Lb.Bybit.SysUtils,
   Lb.Platform.Bybit,
   Lb.Journal.Trading.v2,
-  Lb.Bot.V2,
 
   FMX.Objects,
   FMX.Layouts,
   FMX.TabControl,
   FMX.Menus,
   FMX.Edit, FMXTee.Engine, FMXTee.Series, FMXTee.Procs, FMXTee.Chart,
-  FMX.ListBox, FMX.Memo.Types, FMX.Memo;
+  FMX.ListBox;
 
 type
   TMainForm = class(TForm)
@@ -36,8 +35,20 @@ type
     TabControl1: TTabControl;
     TabItemTrade: TTabItem;
     TabItemPosition: TTabItem;
+    DemoGrid: TStringGrid;
+    StringGridCandel: TStringGrid;
     PopupMenu: TPopupMenu;
     MenuItemSaveFile: TMenuItem;
+    TabItemReal: TTabItem;
+    RealGrid: TStringGrid;
+    LayoutDemo: TLayout;
+    EditDemo1: TEdit;
+    EditDemo2: TEdit;
+    EditDemo3: TEdit;
+    LayoutReal: TLayout;
+    EditReal1: TEdit;
+    EditReal2: TEdit;
+    EditReal3: TEdit;
     Chart: TChart;
     SeriesValueWR: TLineSeries;
     SeriesValueMa2: TLineSeries;
@@ -48,43 +59,28 @@ type
     Text1: TText;
     EditWR: TEdit;
     EditFastWR: TEdit;
-    EditValueWR: TEdit;
+    EditSlowWR: TEdit;
     LayoutTrend: TLayout;
     RectangleTrend: TRectangle;
     Text2: TText;
     ListBox: TListBox;
-    Layout1: TLayout;
-    LayoutDemo: TLayout;
-    EditDemo1: TEdit;
-    EditDemo2: TEdit;
-    EditDemo3: TEdit;
-    DemoGrid: TStringGrid;
-    StringGridCandel: TStringGrid;
-    GridPanelLayout1: TGridPanelLayout;
-    Edit1: TEdit;
-    Edit2: TEdit;
-    TabItemInfoMsg: TTabItem;
-    MemoInfoMsg: TMemo;
     procedure ButtonStartOrStopClick(Sender: TObject);
     procedure ButtonBuyClick(Sender: TObject);
     procedure ButtonSellClick(Sender: TObject);
     procedure ButtonCloseClick(Sender: TObject);
   private
     procedure TradingPlatformOnStateMarket(ASender: TObject; AStateMarket: TStateMarket);
+    procedure SetRealPosition(const ADemoPosition: TJournalPosition);
     procedure TradingPlatformOnNewCandel(Sender: TObject);
-    procedure TradingPlatformOnMsgInfo(ASender: TObject; AMsg: String);
   protected
     procedure DoStart;
     procedure DoStop;
     procedure Strategy;
     procedure PositionClose(ASander: TObject);
-  protected
-    procedure WorkBotOnLongOpen(Sender: TObject);
-    procedure WorkBotOnShortOpen(Sender: TObject);
   public
-    WorkBot: TWorkBotV2;
     TypeDirection: TTypeDirection;
     DemoJournalManager: TJournalManager;
+    RealJournalManager: TJournalManager;
     TradingPlatform: TTradingPlatform;
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
@@ -98,9 +94,6 @@ implementation
 {$R *.fmx}
 
 uses
-{$IFDEF DEBUG}
-  Lb.Logger,
-{$ENDIF}
   System.DateUtils;
 
 constructor TMainForm.Create(AOwner: TComponent);
@@ -143,29 +136,36 @@ begin
   SetAddColumn(DemoGrid,'FeeRatesTaker');
   SetAddColumn(DemoGrid,'FeeRatesMaker');
 
+  SetAddColumn(RealGrid,'id',50);
+  SetAddColumn(RealGrid,'OpenTime',120);
+  SetAddColumn(RealGrid,'OpenPrice');
+  SetAddColumn(RealGrid,'CloseTime',120);
+  SetAddColumn(RealGrid,'ClosePrice');
+  SetAddColumn(RealGrid,'Qty');
+  SetAddColumn(RealGrid,'Side');
+  SetAddColumn(RealGrid,'SL');
+  SetAddColumn(RealGrid,'TK');
+  SetAddColumn(RealGrid,'Profit');
+  SetAddColumn(RealGrid,'TypeTrade');
+  SetAddColumn(RealGrid,'FeeRatesTaker');
+  SetAddColumn(RealGrid,'FeeRatesMaker');
+
   TradingPlatform := TPlatfomBybit.Create;
   TradingPlatform.OnStateMarket := TradingPlatformOnStateMarket;
   TradingPlatform.OnNewCandel := TradingPlatformOnNewCandel;
-  TradingPlatform.OnMsgInfo := TradingPlatformOnMsgInfo;
 
-
-  // 'DdncwwQY6AVdShL008';
-  // 'ldfYDnYhlVU5SU7w89mOnaHi0icy8XctNXtT';
-
-  TPlatfomBybit(TradingPlatform).ApiKey := 't0YI4Ou0TKOTd7WrkE';
-  TPlatfomBybit(TradingPlatform).ApiSecret := 'dWcdTGIulDoKOiK4mggPQIkYwmMFGxvFVusp';
+  TPlatfomBybit(TradingPlatform).ApiKey := '3bvDxJnKzjkIg8y0RV';
+  TPlatfomBybit(TradingPlatform).ApiSecret := 'YtpORO6EYWTESXWwCyLiOBm75c1Tv6GSOzqJ';
   TPlatfomBybit(TradingPlatform).Interval  := TTypeInterval.ti_60;
 
-  WorkBot := TWorkBotV2.Create;
-  WorkBot.OnLongOpen := WorkBotOnLongOpen;
-  WorkBot.OnShortOpen := WorkBotOnShortOpen;
-
   DemoJournalManager := TJournalManager.Create;
+  RealJournalManager := TJournalManager.Create;
+
 end;
 
 destructor TMainForm.Destroy;
 begin
-  FreeAndNil(WorkBot);
+  FreeAndNil(RealJournalManager);
   FreeAndNil(DemoJournalManager);
   FreeAndNil(TradingPlatform);
   inherited;
@@ -364,17 +364,16 @@ begin
 
   EditWR.Text := TradingPlatform.ValuesW.ValueWR.ToString;
   EditFastWR.Text := TradingPlatform.ValuesW.FastValueMa.ToString;
-  EditValueWR.Text := TradingPlatform.ValuesW.SlowValueMa.ToString;
-
-  Edit1.Text := TradingPlatform.ValueVolatility.DeviationValue.ToString;
-  Edit2.Text := TradingPlatform.ValueVolatility.DeviationValueQuard.ToString;
+  EditSlowWR.Text := TradingPlatform.ValuesW.SlowValueMa.ToString;
 
   _ShowCandel;
 
   Strategy;
 
   _SetUpDataPosition(DemoJournalManager);
+  _SetUpDataPosition(RealJournalManager);
   _ShowPosition(DemoGrid, DemoJournalManager);
+  _ShowPosition(RealGrid, RealJournalManager);
 
 
   xSumValue1 := 0.0;
@@ -387,115 +386,56 @@ begin
   EditDemo3.Text := xSumValue3.ToString;
 
 
+  _ShowProfit(RealJournalManager, xSumValue1,xSumValue2,xSumValue3);
+  EditReal1.Text := xSumValue1.ToString;
+  EditReal2.Text := xSumValue2.ToString;
+  EditReal3.Text := xSumValue3.ToString;
+
   _ShowChart;
   _InfoPanel;
 end;
 
-procedure TMainForm.WorkBotOnLongOpen(Sender: TObject);
 
-  procedure _CloseShort;
-  var
-    xPrice: Double;
-    xPosition: TJournalPosition;
-    i, iCount: Integer;
-  begin
-    iCount := DemoJournalManager.Positions.Count;
-    if iCount > 0 then
-      for i := 0 to iCount - 1 do
-      begin
-        xPosition := DemoJournalManager.Positions[i];
-        if (xPosition.TypeTrade = TTypeTrade.ttOpen) and (xPosition.Side = TTypeBuySell.tsSell) then
-        begin
-          with xPosition do
-          begin
-            xPrice := TradingPlatform.StateMarket.Ask;
-            CloseTime := GetNewDateTime;
-            ClosePrice := xPrice;
-            IsActive := False;
-            TypeTrade := TTypeTrade.ttClose;
-            DoClose;
-          end;
-        end;
-      end;
-  end;
-
-begin
-  _CloseShort;
-  ButtonBuyClick(nil);
-  ListBox.Items.Add('Покупка:');
-end;
-
-procedure TMainForm.WorkBotOnShortOpen(Sender: TObject);
-
-  procedure _CloseLong;
-  var
-    xPrice: Double;
-    xPosition: TJournalPosition;
-    i, iCount: Integer;
-  begin
-    iCount := DemoJournalManager.Positions.Count;
-    if iCount > 0 then
-      for i := 0 to iCount - 1 do
-      begin
-        xPosition := DemoJournalManager.Positions[i];
-        if (xPosition.TypeTrade = TTypeTrade.ttOpen) and (xPosition.Side = TTypeBuySell.tsBuy) then
-        begin
-          with xPosition do
-          begin
-            xPrice := TradingPlatform.StateMarket.Bid;
-            CloseTime := GetNewDateTime;
-            ClosePrice := xPrice;
-            IsActive := False;
-            TypeTrade := TTypeTrade.ttClose;
-            DoClose;
-          end;
-        end;
-      end;
-  end;
-
-begin
-  _CloseLong;
-  ButtonSellClick(nil);
-  ListBox.Items.Add('Продажа:');
-end;
-
-procedure TMainForm.TradingPlatformOnMsgInfo(ASender: TObject; AMsg: String);
+procedure TMainForm.SetRealPosition(const ADemoPosition: TJournalPosition);
 var
-  xS: String;
+  xPosition: TJournalPosition;
 begin
-  xS := FormatDateTime('hh:nn:ss.zzz',Time) + ': ' + AMsg;
-  MemoInfoMsg.Lines.Add(xS);
+  xPosition := RealJournalManager.GetCreateJournalPosition;
+  xPosition.OpenTime := ADemoPosition.OpenTime;
+  xPosition.OpenPrice := ADemoPosition.OpenPrice;
+  xPosition.Qty := ADemoPosition.Qty;
+  xPosition.Side := ADemoPosition.Side;
+  xPosition.IsActive := ADemoPosition.IsActive;
+  xPosition.TypeTrade := ADemoPosition.TypeTrade;
+  xPosition.Triling := ADemoPosition.Triling;
+  case xPosition.Side of
+    TTypeBuySell.tsBuy: xPosition.TakeProfit := xPosition.OpenPrice + 10;
+    TTypeBuySell.tsSell: xPosition.TakeProfit := xPosition.OpenPrice - 10;
+  end;
+  xPosition.DoOpen;
 end;
 
 procedure TMainForm.TradingPlatformOnNewCandel(Sender: TObject);
 var
-  xCandel: TCandel;
-  xValueWR, xFastValueMa, xSlowValueMa: Double;
+  xValueWR: Double;
+  xFastValueMa: Double;
+  xSlowValueMa: Double;
 begin
   // Реализуем тактику работу системы
-  xValueWR  := TradingPlatform.ValuesW.ValueWR;
+  // xValueWR  := TradingPlatform.ValuesW.ValueWR;
   xFastValueMa := TradingPlatform.ValuesW.FastValueMa;
-  xSlowValueMa := TradingPlatform.ValuesW.SlowValueMa;
+  // xSlowValueMa := TradingPlatform.ValuesW.SlowValueMa;
 
-  {$IFDEF DEBUG}
-  TLogger.Log('NewCandel: ' + xValueWR.ToString + '; ' + xFastValueMa.ToString + '; ' + xSlowValueMa.ToString);
-  {$ENDIF}
 
-  if TradingPlatform.StateMarket.Candels.Count > 0 then
-  begin
-    xCandel := TradingPlatform.StateMarket.Candels[1];
-    WorkBot.SetUpDataParam(xCandel,TradingPlatform.ValueVolatility.DeviationValue);
-  end;
+
+
+  if xFastValueMa > 50 then
+    ButtonBuyClick(nil)
+  else if xFastValueMa < 50 then
+    ButtonSellClick(nil);
 end;
 
 procedure TMainForm.ButtonBuyClick(Sender: TObject);
-
-  function _GetQty: Double;
-  begin
-    DemoJournalManager.Positions
-  end;
-
-
 var
   xPrice: Double;
   xPosition: TJournalPosition;
@@ -513,19 +453,10 @@ begin
       Side := TTypeBuySell.tsBuy;
       IsActive := True;
       TypeTrade := TTypeTrade.ttOpen;
-      Triling := TradingPlatform.ValueVolatility.DeviationValueQuard;
+      Triling := 30;
       DoOpen;
     end;
-
-
-    TradingPlatform.SendTrade(
-      xPosition.OpenTime,
-      xPosition.OpenPrice,
-      xPosition.Qty,
-      xPosition.Side
-    );
-
-
+    SetRealPosition(xPosition);
   end;
 end;
 
@@ -547,17 +478,10 @@ begin
       Side := TTypeBuySell.tsSell;
       IsActive := True;
       TypeTrade := TTypeTrade.ttOpen;
-      Triling := TradingPlatform.ValueVolatility.DeviationValueQuard;
+      Triling := 30;
       DoOpen;
     end;
-
-    TradingPlatform.SendTrade(
-      xPosition.OpenTime,
-      xPosition.OpenPrice,
-      xPosition.Qty,
-      xPosition.Side
-    );
-
+    SetRealPosition(xPosition);
   end;
 end;
 
@@ -575,7 +499,6 @@ begin
       xPosition := DemoJournalManager.Positions[i];
       if xPosition.TypeTrade = TTypeTrade.ttOpen then
       begin
-
         with xPosition do
         begin
           case Side of
@@ -594,20 +517,7 @@ begin
           TypeTrade := TTypeTrade.ttClose;
           DoClose;
         end;
-
-
-        TradingPlatform.SendTrade(
-          xPosition.CloseTime,
-          xPosition.ClosePrice,
-          xPosition.Qty,
-          GetCrossSide(xPosition.Side)
-        );
-
       end;
-
-
-
-
     end;
 end;
 

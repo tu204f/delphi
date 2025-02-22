@@ -11,15 +11,18 @@ uses
   Lb.Bybit.OrderBook in '..\..\..\library\trade\bybit\market\Lb.Bybit.OrderBook.pas',
   Lb.Bybit.ServerTime in '..\..\..\library\trade\bybit\market\Lb.Bybit.ServerTime.pas',
   Lb.Logger in '..\..\..\library\Lb.Logger.pas',
-  Lb.Indiñator in '..\lb\Lb.Indiñator.pas',
+  Lb.Indicator in '..\lb\Lb.Indicator.pas',
   Lb.Journal.Trading.v2 in '..\lb\Lb.Journal.Trading.v2.pas',
   Lb.Platform.Bybit in '..\lb\Lb.Platform.Bybit.pas',
   Lb.Platform in '..\lb\Lb.Platform.pas',
-  Lb.SysUtils in '..\lb\Lb.SysUtils.pas';
+  Lb.SysUtils in '..\lb\Lb.SysUtils.pas',
+  Lb.Bot.V2 in '..\lb\Lb.Bot.V2.pas';
 
 {$R *.res}
 
 begin
+  BybitHostTest := True;
+
   TLogger.ClearLog;
 
   Application.Initialize;

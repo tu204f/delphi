@@ -357,7 +357,7 @@ uses
 function LinkBybitHost: String;
 begin
   case BybitHostTest of
-    True: Result := 'https://api-testnet.bybit.com';
+    True: Result := 'https://api-demo.bybit.com';
     False: Result := 'https://api.bybit.com';
   end;
 end;

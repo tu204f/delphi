@@ -22,6 +22,7 @@ type
     procedure SetCandels(ACandels: TCandelList); virtual; abstract;
   end;
 
+  {todo: Не правильно точнее, не коректно расчивается}
   ///<summary>Объект для расчета значение RSI</summary>
   TValueRSI = class(TCustomIndicator)
   private
@@ -31,28 +32,67 @@ type
     FValueMaD: TDoubleList;
     FValueRSI: TDoubleList;
     FValueMaRSI: TDoubleList;
-    FValueTR: TDoubleList;
-    FValueATR: TDoubleList;
-    FPeriod: Integer;
-    FPeriodMovingAverag: Integer;
-    FPeriodATR: Integer;
+    FValueMa2RSI: TDoubleList;
+  public
+    FPeriodRSI: Integer;
+    FPeriodSmoothingRSI: Integer;
+    FPeriodTrendRSI: Integer;
     function GetRSI: Double;
-    function GetMovingAveragRSI: Double;
-    function GetATR: Double;
+    function GetSmoothingRSI: Double;
+    function GetTrendRSI: Double;
   public
     constructor Create; virtual;
     destructor Destroy; override;
     procedure SetCandels(ACandels: TCandelList); override;
     property ValueRSI: TDoubleList read FValueRSI;
     property ValueMaRSI: TDoubleList read FValueMaRSI;
-    property ValueATR: TDoubleList read FValueATR;
-    property Period: Integer read FPeriod write FPeriod;
-    property PeriodMovingAverag: Integer read FPeriodMovingAverag write FPeriodMovingAverag;
-    property PeriodATR: Integer read FPeriodATR write FPeriodATR;
+    property ValueMa2RSI: TDoubleList read FValueMa2RSI;
+    ///<summary>
+    /// Период для расчета RSI
+    ///</summary>
+    property PeriodRSI: Integer read FPeriodRSI write FPeriodRSI;
+    ///<summary>
+    /// Период сглаживания
+    ///</summary>
+    property PeriodSmoothingRSI: Integer read FPeriodSmoothingRSI write FPeriodSmoothingRSI;
+    ///<summary>
+    /// Период сглаживания
+    ///</summary>
+    property PeriodTrendRSI: Integer read FPeriodTrendRSI write FPeriodTrendRSI;
   public
     property RSI: Double read GetRSI;
-    property MovingAveragRSI: Double read GetMovingAveragRSI;
-    property ATR: Double read GetATR;
+    property SmoothingRSI: Double read GetSmoothingRSI;
+    property TrendRSI: Double read GetTrendRSI;
+  end;
+
+  ///<summary>Процентный коридор Вильемса<summary>
+  TValuesW = class(TCustomIndicator)
+  private
+    FValuesWR: TDoubleList;
+    FValuesMA1: TDoubleList;
+    FValuesMA2: TDoubleList;
+    FPeriodWR: Integer;
+    FPeriodMA1: Integer;
+    FPeriodMA2: Integer;
+    function GetValueWR: Double;
+    function GetValueMA1: Double;
+    function GetValueMA2: Double;
+  public
+    constructor Create; virtual;
+    destructor Destroy; override;
+    procedure SetCandels(ACandels: TCandelList); override;
+
+    property ValuesWR: TDoubleList read FValuesWR;
+    property ValuesMA1: TDoubleList read FValuesMA1;
+    property ValuesMA2: TDoubleList read FValuesMA2;
+
+    property PeriodWR: Integer read FPeriodWR write FPeriodWR;
+    property PeriodMA1: Integer read FPeriodMA1 write FPeriodMA1;
+    property PeriodMA2: Integer read FPeriodMA2 write FPeriodMA2;
+  public
+    property ValueWR: Double read GetValueWR;
+    property FastValueMa: Double read GetValueMA1;
+    property SlowValueMa: Double read GetValueMA2;
   end;
 
   TValueATR = class(TCustomIndicator)
@@ -92,6 +132,20 @@ type
     property MomentumMA: Double read GetMomentumMA;
   end;
 
+  ///<summary>
+  /// Вычисляем валатильность инструмента
+  ///</summary>
+  TValueVolatility = class(TCustomIndicator)
+  private
+    FDeviationValue: Double;
+    FDeviationValueQuard: Double;
+  public
+    constructor Create; virtual;
+    destructor Destroy; override;
+    procedure SetCandels(ACandels: TCandelList); override;
+    property DeviationValue: Double read FDeviationValue;
+    property DeviationValueQuard: Double read FDeviationValueQuard;
+  end;
 
 
 function GetSMA(const AValue: TDoubleList): Double;
@@ -101,10 +155,11 @@ procedure SetAveragRSI(const APeriodRSI, APeriodSMA: Integer; const ACandels: TC
 
 implementation
 
-{$IFDEF DEBUG}
 uses
-  Lb.Logger;
+{$IFDEF DEBUG}
+  Lb.Logger,
 {$ENDIF}
+  System.Math;
 
 function GetMovingAverag(const AValue: TDoubleList): Double;
 var
@@ -313,9 +368,9 @@ constructor TValueRSI.Create;
 begin
   FCandels := nil;
 
-  FPeriod := 14;
-  FPeriodMovingAverag := 9;
-  FPeriodATR := 9;
+  FPeriodRSI := 14;
+  FPeriodSmoothingRSI := 3;
+  FPeriodTrendRSI := 14;
 
   FValuesU := TDoubleList.Create;
   FValuesD := TDoubleList.Create;
@@ -323,14 +378,12 @@ begin
   FValueMaD := TDoubleList.Create;
   FValueRSI := TDoubleList.Create;
   FValueMaRSI := TDoubleList.Create;
-  FValueTR := TDoubleList.Create;
-  FValueATR := TDoubleList.Create;
+  FValueMa2RSI := TDoubleList.Create;
 end;
 
 destructor TValueRSI.Destroy;
 begin
-  FreeAndNil(FValueATR);
-  FreeAndNil(FValueTR);
+  FreeAndNil(FValueMa2RSI);
   FreeAndNil(FValueMaRSI);
   FreeAndNil(FValueRSI);
   FreeAndNil(FValueMaD);
@@ -346,16 +399,15 @@ procedure TValueRSI.SetCandels(ACandels: TCandelList);
   var
     xDelta: Double;
     i, Count: Integer;
-    xCandel1, xCandel2: TCandel;
+    xCandel: TCandel;
   begin
     FValuesU.Clear;
     FValuesD.Clear;
     Count := FCandels.Count;
-    for i := 0 to Count - 2 do
+    for i := 0 to Count - 1 do
     begin
-      xCandel1 := FCandels[i];
-      xCandel2 := FCandels[i + 1];
-      xDelta := xCandel1.Close - xCandel2.Close;
+      xCandel := FCandels[i];
+      xDelta := xCandel.Open - xCandel.Close;
       if xDelta > 0 then
       begin
         FValuesU.Add(xDelta);
@@ -367,8 +419,6 @@ procedure TValueRSI.SetCandels(ACandels: TCandelList);
         FValuesD.Add(-1 * xDelta);
       end;
     end;
-    FValuesU.Add(0);
-    FValuesD.Add(0);
   end;
 
   procedure _ValueMovingAverag;
@@ -382,8 +432,8 @@ procedure TValueRSI.SetCandels(ACandels: TCandelList);
     begin
       for i := 0 to Count - 1 do
       begin
-        FValueMaU.Add(GetValueSMA(FPeriod,i,FValuesU));
-        FValueMaD.Add(GetValueSMA(FPeriod,i,FValuesD));
+        FValueMaU.Add(GetValueSMA(FPeriodSmoothingRSI,i,FValuesU));
+        FValueMaD.Add(GetValueSMA(FPeriodSmoothingRSI,i,FValuesD));
       end;
     end;
   end;
@@ -412,7 +462,7 @@ procedure TValueRSI.SetCandels(ACandels: TCandelList);
     end;
   end;
 
-  procedure _ValueMovingAveragRSI;
+  procedure _ValueSmoothingRSI;
   var
     i, Count: Integer;
   begin
@@ -420,36 +470,18 @@ procedure TValueRSI.SetCandels(ACandels: TCandelList);
     Count := FCandels.Count;
     if Count > 0 then
       for i := 0 to Count - 1 do
-        FValueMaRSI.Add(GetValueSMA(FPeriodMovingAverag,i,FValueRSI));
+        FValueMaRSI.Add(GetValueSMA(FPeriodSmoothingRSI,i,FValueRSI));
   end;
 
-  procedure _ValueTR;
-  var
-    xTR: Double;
-    i, Count: Integer;
-  begin
-    FValueTR.Clear;
-    Count := FCandels.Count;
-    if Count > 0 then
-    begin
-      for i := 1 to Count - 1 do
-      begin
-        xTR := FValueRSI[i - 1] - FValueRSI[i];
-        FValueTR.Add(xTR);
-      end;
-      FValueTR.Add(0);
-    end;
-  end;
-
-  procedure _ValueMovingAveragRSI_ART;
+  procedure _ValueTrandRSI;
   var
     i, Count: Integer;
   begin
-    FValueATR.Clear;
+    FValueMa2RSI.Clear;
     Count := FCandels.Count;
     if Count > 0 then
       for i := 0 to Count - 1 do
-        FValueATR.Add(GetValueSMA(FPeriodATR,i,FValueTR));
+        FValueMa2RSI.Add(GetValueSMA(FPeriodTrendRSI,i,FValueMaRSI));
   end;
 
 begin
@@ -459,9 +491,8 @@ begin
     _ValueUD;
     _ValueMovingAverag;
     _ValueRSI;
-    _ValueMovingAveragRSI;
-    _ValueTR;
-    _ValueMovingAveragRSI_ART;
+    _ValueSmoothingRSI;
+    _ValueTrandRSI;
   end;
 end;
 
@@ -472,18 +503,127 @@ begin
     Result := GetRound(FValueRSI[0]);
 end;
 
-function TValueRSI.GetMovingAveragRSI: Double;
+function TValueRSI.GetSmoothingRSI: Double;
 begin
   Result := 0;
   if FValueMaRSI.Count > 0 then
     Result := GetRound(FValueMaRSI[0]);
 end;
 
-function TValueRSI.GetATR: Double;
+function TValueRSI.GetTrendRSI: Double;
 begin
   Result := 0;
-  if FValueMaRSI.Count > 0 then
-    Result := GetRound(FValueATR[0]);
+  if FValueMa2RSI.Count > 0 then
+    Result := GetRound(FValueMa2RSI[0]);
+end;
+
+{ TValuesW }
+
+constructor TValuesW.Create;
+begin
+  FValuesWR := TDoubleList.Create;
+  FPeriodWR := 14;
+
+  FValuesMA1 := TDoubleList.Create;
+  FPeriodMA1 := 9;
+
+  FValuesMA2 := TDoubleList.Create;
+  FPeriodMA2 := 26;
+end;
+
+destructor TValuesW.Destroy;
+begin
+  FreeAndNil(FValuesMA2);
+  FreeAndNil(FValuesMA1);
+  FreeAndNil(FValuesWR);
+  inherited;
+end;
+
+
+procedure TValuesW.SetCandels(ACandels: TCandelList);
+
+  procedure _SetValueMaxAndMinPrice(const AIndex: Integer; var AValueMax, AValueMin: Double);
+  var
+    xCandel: TCandel;
+    i, xIndex: Integer;
+  begin
+    xCandel := FCandels[AIndex];
+    AValueMax := xCandel.High;
+    AValueMin := xCandel.Low;
+    for i := 0 to FPeriodWR - 1 do
+    begin
+      xIndex := AIndex + i;
+      if (xIndex >= 0) and (xIndex < FCandels.Count) then
+      begin
+        xCandel := FCandels[xIndex];
+        if AValueMax < xCandel.High then
+          AValueMax := xCandel.High;
+        if AValueMin > xCandel.Low then
+          AValueMin := xCandel.Low;
+      end;
+    end;
+  end;
+
+  procedure _SetValuesWR;
+  var
+    xValue: Double;
+    xCandel: TCandel;
+    i, iCount: Integer;
+    xValueMax, xValueMin: Double;
+  begin
+    iCount := FCandels.Count;
+    if iCount > 0 then
+      for i := 0 to iCount - 1 do
+      begin
+        xCandel := FCandels[i];
+        _SetValueMaxAndMinPrice(i,xValueMax,xValueMin);
+        if (xValueMax > xValueMin) and (xValueMax > 0) and (xValueMin > 0) then
+          xValue := (xCandel.Close - xValueMin)/(xValueMax - xValueMin)
+        else
+          xValue := 0;
+        xValue := 100 * GetRound(xValue);
+        FValuesWR.Add(xValue);
+      end;
+  end;
+
+  procedure _ValuesMA(ASource: TDoubleList; ADest: TDoubleList; APeriod: Integer);
+  var
+    i, Count: Integer;
+  begin
+    ADest.Clear;
+    Count := FCandels.Count;
+    if Count > 0 then
+      for i := 0 to Count - 1 do
+        ADest.Add(GetValueSMA(APeriod,i,ASource));
+  end;
+
+begin
+  FCandels := ACandels;
+  FValuesWR.Clear;
+  _SetValuesWR;
+  _ValuesMA(FValuesWR,FValuesMA1,FPeriodMA1);
+  _ValuesMA(FValuesMA1,FValuesMA2,FPeriodMA2);
+end;
+
+function TValuesW.GetValueWR: Double;
+begin
+  Result := 0;
+  if FValuesWR.Count > 0 then
+    Result := FValuesWR[0];
+end;
+
+function TValuesW.GetValueMA1: Double;
+begin
+  Result := 0;
+  if FValuesMA1.Count > 0 then
+    Result := FValuesMA1[0];
+end;
+
+function TValuesW.GetValueMA2: Double;
+begin
+  Result := 0;
+  if FValuesMA2.Count > 0 then
+    Result := FValuesMA2[0];
 end;
 
 { TValueATR }
@@ -647,6 +787,52 @@ begin
   Result := 0;
   if FCandels.Count > 0 then
     Result := FValuesMA[0];
+end;
+
+
+{ TValueVolatility }
+
+constructor TValueVolatility.Create;
+begin
+  FDeviationValue := 0;
+  FDeviationValueQuard := 0;
+end;
+
+destructor TValueVolatility.Destroy;
+begin
+
+  inherited;
+end;
+
+procedure TValueVolatility.SetCandels(ACandels: TCandelList);
+
+  procedure _Deviation;
+  var
+    xDelta: Double;
+    xSum, xSumQuard: Double;
+    xCandel: TCandel;
+    i, iCount: Integer;
+  begin
+    xSum := 0;
+    xSumQuard := 0;
+    iCount := FCandels.Count;
+    if iCount > 0 then
+    begin
+      for i := 0 to iCount - 1 do
+      begin
+        xCandel := FCandels[i];
+        xDelta := xCandel.High - xCandel.Low;
+        xSum := xSum + xDelta;
+        xSumQuard := xSumQuard + Power(xDelta,2);
+      end;
+      FDeviationValue := GetRound(xSum/iCount);
+      FDeviationValueQuard := GetRound(xSumQuard/(iCount * (iCount - 1)));
+    end;
+  end;
+
+begin
+  FCandels := ACandels;
+  _Deviation;
 end;
 
 end.

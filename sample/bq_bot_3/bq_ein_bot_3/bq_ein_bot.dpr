@@ -1,4 +1,4 @@
-program bq_history;
+program bq_ein_bot;
 
 uses
   System.StartUpCopy,
@@ -11,10 +11,11 @@ uses
   Lb.Bybit.OrderBook in '..\..\..\library\trade\bybit\market\Lb.Bybit.OrderBook.pas',
   Lb.Bybit.ServerTime in '..\..\..\library\trade\bybit\market\Lb.Bybit.ServerTime.pas',
   Lb.Logger in '..\..\..\library\Lb.Logger.pas',
+  Lb.Indicator in '..\lb\Lb.Indicator.pas',
+  Lb.Journal.Trading.v2 in '..\lb\Lb.Journal.Trading.v2.pas',
   Lb.Platform.Bybit in '..\lb\Lb.Platform.Bybit.pas',
   Lb.Platform in '..\lb\Lb.Platform.pas',
-  Lb.SysUtils in '..\lb\Lb.SysUtils.pas',
-  Lb.Indicator in '..\lb\Lb.Indicator.pas';
+  Lb.SysUtils in '..\lb\Lb.SysUtils.pas';
 
 {$R *.res}
 
