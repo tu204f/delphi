@@ -478,8 +478,8 @@ object MainForm: TMainForm
         Size.PlatformDefault = False
         TabOrder = 1
         Options = [Editing, ColumnResize, ColumnMove, ColLines, RowLines, RowSelect, Tabs, Header, HeaderClick, AutoDisplacement]
-        Viewport.Width = 958.000000000000000000
-        Viewport.Height = 633.000000000000000000
+        Viewport.Width = 962.000000000000000000
+        Viewport.Height = 658.000000000000000000
       end
     end
     object TabItemInfoMsg: TTabItem
@@ -503,8 +503,8 @@ object MainForm: TMainForm
         Size.Height = 658.000000000000000000
         Size.PlatformDefault = False
         TabOrder = 0
-        Viewport.Width = 958.000000000000000000
-        Viewport.Height = 654.000000000000000000
+        Viewport.Width = 962.000000000000000000
+        Viewport.Height = 658.000000000000000000
       end
     end
   end

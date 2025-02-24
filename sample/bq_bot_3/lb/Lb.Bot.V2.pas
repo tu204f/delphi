@@ -48,12 +48,10 @@ type
   public
     constructor Create; virtual;
     destructor Destroy; override;
-    procedure SetUpDataParam(ACandel: TCandel; ADeviation: Double);
+    procedure SetUpDataParam(ACandel: TCandel; ARatio, ADeviation: Double);
     property OnLongOpen: TNotifyEvent write FOnLongOpen;
     property OnShortOpen: TNotifyEvent write FOnShortOpen;
   end;
-
-
 
 implementation
 
@@ -167,18 +165,17 @@ begin
     FOnShortOpen(Self);
 end;
 
-procedure TWorkBotDeviation.SetUpDataParam(ACandel: TCandel; ADeviation: Double);
+procedure TWorkBotDeviation.SetUpDataParam(ACandel: TCandel; ARatio, ADeviation: Double);
 var
-  xDeltaBody: Double;
+  xPriceBuy, xPriceSell: Double;
 begin
-  xDeltaBody := Abs(ACandel.Close - ACandel.Open);
-  if xDeltaBody > ADeviation then
-  begin
-    if ACandel.Open < ACandel.Close then
-      DoLongOpen
-    else if ACandel.Open > ACandel.Close then
-      DoShortOpen;
-  end;
+  xPriceBuy  := ACandel.Open + ARatio * ADeviation;
+  xPriceSell := ACandel.Open - ARatio * ADeviation;
+
+  if ACandel.Close > xPriceBuy then
+    DoLongOpen
+  else if ACandel.Close < xPriceSell then
+    DoShortOpen
 end;
 
 end.

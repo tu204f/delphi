@@ -2,7 +2,7 @@ unit UnitMainForm;
 
 interface
 
-{$DEFINE REAL_TRADE}
+//{$DEFINE REAL_TRADE}
 
 uses
   System.SysUtils, System.Types, System.UITypes, System.Classes, System.Variants,
@@ -79,6 +79,7 @@ type
     procedure WorkBotOnLongOpen(Sender: TObject);
     procedure WorkBotOnShortOpen(Sender: TObject);
   public
+    localUserKey: String;
     WorkBotDeviation: TWorkBotDeviation;
     TypeDirection: TTypeDirection;
     DemoJournalManager: TJournalManager;
@@ -151,7 +152,7 @@ begin
 
   TPlatfomBybit(TradingPlatform).ApiKey := 't0YI4Ou0TKOTd7WrkE';
   TPlatfomBybit(TradingPlatform).ApiSecret := 'dWcdTGIulDoKOiK4mggPQIkYwmMFGxvFVusp';
-  TPlatfomBybit(TradingPlatform).Interval  := TTypeInterval.ti_60;
+  TPlatfomBybit(TradingPlatform).Interval  := TTypeInterval.ti_1;
 
   WorkBotDeviation := TWorkBotDeviation.Create;
   WorkBotDeviation.OnLongOpen  := WorkBotOnLongOpen;
@@ -383,68 +384,68 @@ end;
 
 procedure TMainForm.WorkBotOnLongOpen(Sender: TObject);
 
-  procedure _CloseShort;
-  var
-    xPrice: Double;
-    xPosition: TJournalPosition;
-    i, iCount: Integer;
-  begin
-    iCount := DemoJournalManager.Positions.Count;
-    if iCount > 0 then
-      for i := 0 to iCount - 1 do
-      begin
-        xPosition := DemoJournalManager.Positions[i];
-        if (xPosition.TypeTrade = TTypeTrade.ttOpen) and (xPosition.Side = TTypeBuySell.tsSell) then
-        begin
-          with xPosition do
-          begin
-            xPrice := TradingPlatform.StateMarket.Ask;
-            CloseTime := GetNewDateTime;
-            ClosePrice := xPrice;
-            IsActive := False;
-            TypeTrade := TTypeTrade.ttClose;
-            DoClose;
-          end;
-        end;
-      end;
-  end;
+//  procedure _CloseShort;
+//  var
+//    xPrice: Double;
+//    xPosition: TJournalPosition;
+//    i, iCount: Integer;
+//  begin
+//    iCount := DemoJournalManager.Positions.Count;
+//    if iCount > 0 then
+//      for i := 0 to iCount - 1 do
+//      begin
+//        xPosition := DemoJournalManager.Positions[i];
+//        if (xPosition.TypeTrade = TTypeTrade.ttOpen) and (xPosition.Side = TTypeBuySell.tsSell) then
+//        begin
+//          with xPosition do
+//          begin
+//            xPrice := TradingPlatform.StateMarket.Ask;
+//            CloseTime := GetNewDateTime;
+//            ClosePrice := xPrice;
+//            IsActive := False;
+//            TypeTrade := TTypeTrade.ttClose;
+//            DoClose;
+//          end;
+//        end;
+//      end;
+//  end;
 
 begin
-  _CloseShort;
+//  _CloseShort;
   ButtonBuyClick(nil);
   ListBox.Items.Add('Покупка: DeviationValue = ' + TradingPlatform.ValueVolatility.DeviationValue.ToString);
 end;
 
 procedure TMainForm.WorkBotOnShortOpen(Sender: TObject);
 
-  procedure _CloseLong;
-  var
-    xPrice: Double;
-    xPosition: TJournalPosition;
-    i, iCount: Integer;
-  begin
-    iCount := DemoJournalManager.Positions.Count;
-    if iCount > 0 then
-      for i := 0 to iCount - 1 do
-      begin
-        xPosition := DemoJournalManager.Positions[i];
-        if (xPosition.TypeTrade = TTypeTrade.ttOpen) and (xPosition.Side = TTypeBuySell.tsBuy) then
-        begin
-          with xPosition do
-          begin
-            xPrice := TradingPlatform.StateMarket.Bid;
-            CloseTime := GetNewDateTime;
-            ClosePrice := xPrice;
-            IsActive := False;
-            TypeTrade := TTypeTrade.ttClose;
-            DoClose;
-          end;
-        end;
-      end;
-  end;
+//  procedure _CloseLong;
+//  var
+//    xPrice: Double;
+//    xPosition: TJournalPosition;
+//    i, iCount: Integer;
+//  begin
+//    iCount := DemoJournalManager.Positions.Count;
+//    if iCount > 0 then
+//      for i := 0 to iCount - 1 do
+//      begin
+//        xPosition := DemoJournalManager.Positions[i];
+//        if (xPosition.TypeTrade = TTypeTrade.ttOpen) and (xPosition.Side = TTypeBuySell.tsBuy) then
+//        begin
+//          with xPosition do
+//          begin
+//            xPrice := TradingPlatform.StateMarket.Bid;
+//            CloseTime := GetNewDateTime;
+//            ClosePrice := xPrice;
+//            IsActive := False;
+//            TypeTrade := TTypeTrade.ttClose;
+//            DoClose;
+//          end;
+//        end;
+//      end;
+//  end;
 
 begin
-  _CloseLong;
+//  _CloseLong;
   ButtonSellClick(nil);
   ListBox.Items.Add('Продажа: DeviationValue = ' + TradingPlatform.ValueVolatility.DeviationValue.ToString);
 end;
@@ -458,20 +459,45 @@ begin
 end;
 
 procedure TMainForm.TradingPlatformOnNewCandel(Sender: TObject);
-var
-  xCandel: TCandel;
-begin
-  // Реализация торгового операции
 
-  if TradingPlatform.StateMarket.Candels.Count > 0 then
+  function _GetIsOpenPosition: Boolean;
+  var
+    i, Count: Integer;
+    xPosition: TJournalPosition;
   begin
-    xCandel := TradingPlatform.StateMarket.Candels[0];
-    WorkBotDeviation.SetUpDataParam(
-      xCandel,
-      TradingPlatform.ValueVolatility.DeviationValue
-    );
+    Result := False;
+    Count := DemoJournalManager.Positions.Count;
+    if Count > 0 then
+      for i := 0 to Count - 1 do
+      begin
+        xPosition := DemoJournalManager.Positions[i];
+        if xPosition.TypeTrade = TTypeTrade.ttOpen then
+        begin
+          Result := True;
+          Break;
+        end;
+      end;
   end;
 
+var
+  Count: Integer;
+  xCandels: TCandelList;
+  xCandel: TCandel;
+begin
+//  if _GetIsOpenPosition then
+//  begin
+    xCandels := TradingPlatform.StateMarket.Candels;
+    Count := xCandels.Count;
+    if Count > 0 then
+    begin
+      xCandel := xCandels[0];
+      WorkBotDeviation.SetUpDataParam(
+        xCandel,
+        0.75,
+        TradingPlatform.ValueVolatility.DeviationValue
+      );
+    end;
+//  end;
 end;
 
 procedure TMainForm.ButtonBuyClick(Sender: TObject);
@@ -494,12 +520,20 @@ procedure TMainForm.ButtonBuyClick(Sender: TObject);
 var
   xPrice, xQty: Double;
   xPosition: TJournalPosition;
+  xDeviationValue: Double;
 begin
+  xDeviationValue := TradingPlatform.ValueVolatility.DeviationValueQuard;
+  if xDeviationValue <= 0 then
+    Exit;
+
   xPrice := TradingPlatform.StateMarket.Ask;
   if xPrice > 0 then
   begin
     xQty := _GetQty;
     xPosition := DemoJournalManager.GetCreateJournalPosition;
+
+    localUserKey := 'ID_' + xPosition.ID.ToString;
+
     xPosition.OnClose := PositionClose;
     with xPosition do
     begin
@@ -509,8 +543,9 @@ begin
       Side := TTypeBuySell.tsBuy;
       IsActive := True;
       TypeTrade := TTypeTrade.ttOpen;
-      Triling := TradingPlatform.ValueVolatility.DeviationValue;
-      TakeProfit := OpenPrice + 2 * TradingPlatform.ValueVolatility.DeviationValue;
+//      Triling := 20;
+//      TakeProfit := OpenPrice + 20;
+      UserKey := localUserKey;
       DoOpen;
     end;
 
@@ -547,7 +582,12 @@ procedure TMainForm.ButtonSellClick(Sender: TObject);
 var
   xPrice, xQty: Double;
   xPosition: TJournalPosition;
+  xDeviationValue: Double;
 begin
+  xDeviationValue := TradingPlatform.ValueVolatility.DeviationValueQuard;
+  if xDeviationValue <= 0 then
+    Exit;
+
   xPrice := TradingPlatform.StateMarket.Bid;
   if xPrice > 0 then
   begin
@@ -562,8 +602,9 @@ begin
       Side := TTypeBuySell.tsSell;
       IsActive := True;
       TypeTrade := TTypeTrade.ttOpen;
-      Triling := TradingPlatform.ValueVolatility.DeviationValue;
-      TakeProfit := OpenPrice - 2 * TradingPlatform.ValueVolatility.DeviationValue;
+//      Triling := 20;
+//      TakeProfit := OpenPrice - 20;
+      UserKey := localUserKey;
       DoOpen;
     end;
 
