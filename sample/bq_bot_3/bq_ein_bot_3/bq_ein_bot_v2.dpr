@@ -1,4 +1,4 @@
-program bq_ein_bot;
+program bq_ein_bot_v2;
 
 uses
   System.StartUpCopy,

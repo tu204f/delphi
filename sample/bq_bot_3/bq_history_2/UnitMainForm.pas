@@ -64,10 +64,6 @@ begin
   SetAddColumn(StrGrid,'Close');
   SetAddColumn(StrGrid,'Vol');
 
-  SetAddColumn(StrGrid,'RSI');
-  SetAddColumn(StrGrid,'MaRSI');
-  SetAddColumn(StrGrid,'ATR');
-
   TradingPlatform := TPlatfomBybit.Create;
   TradingPlatform.OnStateMarket := TradingPlatformOnStateMarket;
 
@@ -130,15 +126,7 @@ begin
       StrGrid.Cells[3,i] := xCandel.Low.ToString;
       StrGrid.Cells[4,i] := xCandel.Close.ToString;
       StrGrid.Cells[5,i] := xCandel.Vol.ToString;
-      StrGrid.Cells[6,i] := TradingPlatform.ValueRSI.ValueRSI[i].ToString;
-      StrGrid.Cells[7,i] := TradingPlatform.ValueRSI.ValueMaRSI[i].ToString;
-      StrGrid.Cells[8,i] := TradingPlatform.ValueATR.Values[i].ToString;
     end;
-
-  TextStatus.Text :=
-    'ValueRSI: ' + TradingPlatform.ValueRSI.RSI.ToString + '; ' +
-    'ValueAveragRSI: ' + TradingPlatform.ValueRSI.MovingAveragRSI.ToString + '; ' +
-    'ValueATR: ' + TradingPlatform.ValueATR.ATR.ToString  + ';';
 end;
 
 end.

@@ -417,9 +417,9 @@ end;
 
 procedure TMainForm.TradingPlatformOnNewCandel(Sender: TObject);
 var
-  xValueWR: Double;
+  //xValueWR: Double;
   xFastValueMa: Double;
-  xSlowValueMa: Double;
+  //xSlowValueMa: Double;
 begin
   // Реализуем тактику работу системы
   // xValueWR  := TradingPlatform.ValuesW.ValueWR;
