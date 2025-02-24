@@ -154,11 +154,11 @@ begin
 
   TPlatfomBybit(TradingPlatform).ApiKey := 't0YI4Ou0TKOTd7WrkE';
   TPlatfomBybit(TradingPlatform).ApiSecret := 'dWcdTGIulDoKOiK4mggPQIkYwmMFGxvFVusp';
-  TPlatfomBybit(TradingPlatform).Interval  := TTypeInterval.ti_60;
+  TPlatfomBybit(TradingPlatform).Interval  := TTypeInterval.ti_5;
 
   WorkBot := TWorkBotV2.Create;
-  WorkBot.OnLongOpen := WorkBotOnLongOpen;
-  WorkBot.OnShortOpen := WorkBotOnShortOpen;
+  WorkBot.OnLongOpen :=  WorkBotOnShortOpen;
+  WorkBot.OnShortOpen := WorkBotOnLongOpen;
 
   DemoJournalManager := TJournalManager.Create;
 end;
@@ -210,6 +210,7 @@ end;
 procedure TMainForm.PositionClose(ASander: TObject);
 begin
   {todo: Сообщение о закрытие}
+  ButtonCloseClick(nil);
 end;
 
 procedure TMainForm.TradingPlatformOnStateMarket(ASender: TObject; AStateMarket: TStateMarket);
@@ -422,7 +423,7 @@ procedure TMainForm.WorkBotOnLongOpen(Sender: TObject);
 begin
   _CloseShort;
   ButtonBuyClick(nil);
-  ListBox.Items.Add('Покупка:');
+  ListBox.Items.Add('Покупка: DeviationValue = ' + TradingPlatform.ValueVolatility.DeviationValue.ToString);
 end;
 
 procedure TMainForm.WorkBotOnShortOpen(Sender: TObject);
@@ -456,7 +457,7 @@ procedure TMainForm.WorkBotOnShortOpen(Sender: TObject);
 begin
   _CloseLong;
   ButtonSellClick(nil);
-  ListBox.Items.Add('Продажа:');
+  ListBox.Items.Add('Продажа: DeviationValue = ' + TradingPlatform.ValueVolatility.DeviationValue.ToString);
 end;
 
 procedure TMainForm.TradingPlatformOnMsgInfo(ASender: TObject; AMsg: String);
@@ -491,29 +492,40 @@ end;
 procedure TMainForm.ButtonBuyClick(Sender: TObject);
 
   function _GetQty: Double;
+//  var
+//    iCount: Integer;
+//    xPosition: TJournalPosition;
   begin
-    DemoJournalManager.Positions
+    Result := 1;
+//    iCount := DemoJournalManager.Positions.Count;
+//    if iCount > 0 then
+//    begin
+//      xPosition := DemoJournalManager.Positions[iCount - 1];
+//      if (xPosition.TypeTrade = TTypeTrade.ttOpen) and (xPosition.Side = TTypeBuySell.tsSell) then
+//        Result := 2;
+//    end;
   end;
 
-
 var
-  xPrice: Double;
+  xPrice, xQty: Double;
   xPosition: TJournalPosition;
 begin
   xPrice := TradingPlatform.StateMarket.Ask;
   if xPrice > 0 then
   begin
+    xQty := _GetQty;
     xPosition := DemoJournalManager.GetCreateJournalPosition;
     xPosition.OnClose := PositionClose;
     with xPosition do
     begin
       OpenTime := GetNewDateTime;
       OpenPrice := xPrice;
-      Qty := 1;
+      Qty := xQty;
       Side := TTypeBuySell.tsBuy;
       IsActive := True;
       TypeTrade := TTypeTrade.ttOpen;
-      Triling := TradingPlatform.ValueVolatility.DeviationValueQuard;
+      Triling := 2 * TradingPlatform.ValueVolatility.DeviationValue;
+      Profit  := 2 * TradingPlatform.ValueVolatility.DeviationValue;
       DoOpen;
     end;
 
@@ -530,24 +542,42 @@ begin
 end;
 
 procedure TMainForm.ButtonSellClick(Sender: TObject);
+
+  function _GetQty: Double;
+//  var
+//    iCount: Integer;
+//    xPosition: TJournalPosition;
+  begin
+    Result := 1;
+//    iCount := DemoJournalManager.Positions.Count;
+//    if iCount > 0 then
+//    begin
+//      xPosition := DemoJournalManager.Positions[iCount - 1];
+//      if (xPosition.TypeTrade = TTypeTrade.ttOpen) and (xPosition.Side = TTypeBuySell.tsBuy) then
+//        Result := 2;
+//    end;
+  end;
+
 var
-  xPrice: Double;
+  xPrice, xQty: Double;
   xPosition: TJournalPosition;
 begin
   xPrice := TradingPlatform.StateMarket.Bid;
   if xPrice > 0 then
   begin
+    xQty := _GetQty;
     xPosition := DemoJournalManager.GetCreateJournalPosition;
     xPosition.OnClose := PositionClose;
     with xPosition do
     begin
       OpenTime := GetNewDateTime;
       OpenPrice := xPrice;
-      Qty := 1;
+      Qty := xQty;
       Side := TTypeBuySell.tsSell;
       IsActive := True;
       TypeTrade := TTypeTrade.ttOpen;
-      Triling := TradingPlatform.ValueVolatility.DeviationValueQuard;
+      Triling := 2 * TradingPlatform.ValueVolatility.DeviationValue;
+      Profit  := 2 * TradingPlatform.ValueVolatility.DeviationValue;
       DoOpen;
     end;
 

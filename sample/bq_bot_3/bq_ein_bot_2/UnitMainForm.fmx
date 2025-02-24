@@ -492,6 +492,8 @@ object MainForm: TMainForm
       StyleLookup = ''
       TabOrder = 0
       Text = #1057#1080#1089#1090#1077#1084#1085#1099#1077' '#1089#1086#1086#1073#1097#1077#1085#1080#1103
+      ExplicitSize.cx = 148.000000000000000000
+      ExplicitSize.cy = 26.000000000000000000
       object MemoInfoMsg: TMemo
         Touch.InteractiveGestures = [Pan, LongTap, DoubleTap]
         DataDetectorTypes = []
