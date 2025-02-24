@@ -74,6 +74,7 @@ type
     FMinProfit: Double;
     FMaxProfit: Double;
     FTypeTrade: TTypeTrade;
+    FUserKey: String;
   private
     FTriling: Double;
     FStopLoss: Double;
@@ -103,6 +104,7 @@ type
     property Triling: Double read FTriling write FTriling;
     property StopLoss: Double read FStopLoss write FStopLoss;
     property TakeProfit: Double read FTakeProfit write FTakeProfit;
+    property UserKey: String read FUserKey write FUserKey;
   public
     property FeeRatesTaker: Double read GetFeeRatesTaker;
     property FeeRatesMaker: Double read GetFeeRatesMaker;
@@ -204,6 +206,7 @@ begin
   FTypeTrade := TTypeTrade.ttNull;
   FStopLoss := 0;
   FTakeProfit := 0;
+  FUserKey := '';
 end;
 
 destructor TJournalPosition.Destroy;

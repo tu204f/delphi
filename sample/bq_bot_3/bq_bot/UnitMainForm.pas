@@ -214,11 +214,6 @@ procedure TMainForm.TradingPlatformOnStateMarket(ASender: TObject; AStateMarket:
         StringGridCandel.Cells[3,i] := xCandel.Low.ToString;
         StringGridCandel.Cells[4,i] := xCandel.Close.ToString;
         StringGridCandel.Cells[5,i] := xCandel.Vol.ToString;
-        StringGridCandel.Cells[6,i] := TradingPlatform.ValueRSI.ValueRSI[i].ToString;
-        StringGridCandel.Cells[7,i] := TradingPlatform.ValueRSI.ValueMaRSI[i].ToString;
-        StringGridCandel.Cells[8,i] := TradingPlatform.ValueATR.Values[i].ToString;
-        StringGridCandel.Cells[9,i]  := TradingPlatform.ValueMomentum.Values[i].ToString;
-        StringGridCandel.Cells[10,i] := TradingPlatform.ValueMomentum.ValuesMA[i].ToString;
       end;
   end;
 
@@ -316,11 +311,7 @@ procedure TMainForm.TradingPlatformOnStateMarket(ASender: TObject; AStateMarket:
 begin
   // ***********************************************
   // Оценка состояния рынка
-  TextStatus.Text :=
-    'Price: ' + TradingPlatform.StateMarket.Ask.ToString + '/' + TradingPlatform.StateMarket.Bid.ToString + '; ' +
-    'ValueRSI: ' + TradingPlatform.ValueRSI.RSI.ToString + '; ' +
-    'ValueAveragRSI: ' + TradingPlatform.ValueRSI.MovingAveragRSI.ToString + '; ' +
-    'ValueATR: ' + TradingPlatform.ValueATR.ATR.ToString  + ';';
+  TextStatus.Text := '{todo: Выводить информацию}';
   _ShowCandel;
 
   // **********************************************

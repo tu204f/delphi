@@ -1,4 +1,4 @@
-program bq_ein_bot;
+program bq_volt;
 
 uses
   System.StartUpCopy,
@@ -15,11 +15,14 @@ uses
   Lb.Journal.Trading.v2 in '..\lb\Lb.Journal.Trading.v2.pas',
   Lb.Platform.Bybit in '..\lb\Lb.Platform.Bybit.pas',
   Lb.Platform in '..\lb\Lb.Platform.pas',
-  Lb.SysUtils in '..\lb\Lb.SysUtils.pas';
+  Lb.SysUtils in '..\lb\Lb.SysUtils.pas',
+  Lb.Bot.V2 in '..\lb\Lb.Bot.V2.pas';
 
 {$R *.res}
 
 begin
+  BybitHostTest := True;
+
   TLogger.ClearLog;
 
   Application.Initialize;
