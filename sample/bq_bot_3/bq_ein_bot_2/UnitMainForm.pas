@@ -69,6 +69,7 @@ type
     procedure ButtonBuyClick(Sender: TObject);
     procedure ButtonSellClick(Sender: TObject);
     procedure ButtonCloseClick(Sender: TObject);
+    procedure FormShow(Sender: TObject);
   private
     procedure TradingPlatformOnStateMarket(ASender: TObject; AStateMarket: TStateMarket);
     procedure TradingPlatformOnNewCandel(Sender: TObject);
@@ -82,7 +83,7 @@ type
     procedure WorkBotOnLongOpen(Sender: TObject);
     procedure WorkBotOnShortOpen(Sender: TObject);
   public
-    WorkBot: TWorkBotV2;
+    WorkBotDeviation: TWorkBotDeviation;
     TypeDirection: TTypeDirection;
     DemoJournalManager: TJournalManager;
     TradingPlatform: TTradingPlatform;
@@ -154,18 +155,18 @@ begin
 
   TPlatfomBybit(TradingPlatform).ApiKey := 't0YI4Ou0TKOTd7WrkE';
   TPlatfomBybit(TradingPlatform).ApiSecret := 'dWcdTGIulDoKOiK4mggPQIkYwmMFGxvFVusp';
-  TPlatfomBybit(TradingPlatform).Interval  := TTypeInterval.ti_5;
+  TPlatfomBybit(TradingPlatform).Interval  := TTypeInterval.ti_60;
 
-  WorkBot := TWorkBotV2.Create;
-  WorkBot.OnLongOpen :=  WorkBotOnShortOpen;
-  WorkBot.OnShortOpen := WorkBotOnLongOpen;
+  WorkBotDeviation := TWorkBotDeviation.Create;
+  WorkBotDeviation.OnLongOpen  := WorkBotOnLongOpen;
+  WorkBotDeviation.OnShortOpen := WorkBotOnShortOpen;
 
   DemoJournalManager := TJournalManager.Create;
 end;
 
 destructor TMainForm.Destroy;
 begin
-  FreeAndNil(WorkBot);
+  FreeAndNil(WorkBotDeviation);
   FreeAndNil(DemoJournalManager);
   FreeAndNil(TradingPlatform);
   inherited;
@@ -193,6 +194,11 @@ begin
   end;
 end;
 
+
+procedure TMainForm.FormShow(Sender: TObject);
+begin
+  Self.Caption := 'Пробитие волатильности';
+end;
 
 procedure TMainForm.ButtonStartOrStopClick(Sender: TObject);
 begin
@@ -473,6 +479,8 @@ var
   xCandel: TCandel;
   xValueWR, xFastValueMa, xSlowValueMa: Double;
 begin
+
+
   // Реализуем тактику работу системы
   xValueWR  := TradingPlatform.ValuesW.ValueWR;
   xFastValueMa := TradingPlatform.ValuesW.FastValueMa;
@@ -484,8 +492,11 @@ begin
 
   if TradingPlatform.StateMarket.Candels.Count > 0 then
   begin
-    xCandel := TradingPlatform.StateMarket.Candels[1];
-    WorkBot.SetUpDataParam(xCandel,TradingPlatform.ValueVolatility.DeviationValue);
+    xCandel := TradingPlatform.StateMarket.Candels[0];
+    WorkBotDeviation.SetUpDataParam(
+      xCandel,
+      TradingPlatform.ValueVolatility.DeviationValue
+    );
   end;
 end;
 
@@ -524,7 +535,7 @@ begin
       Side := TTypeBuySell.tsBuy;
       IsActive := True;
       TypeTrade := TTypeTrade.ttOpen;
-      Triling := 2 * TradingPlatform.ValueVolatility.DeviationValue;
+      Triling := TradingPlatform.ValueVolatility.DeviationValue;
       Profit  := 2 * TradingPlatform.ValueVolatility.DeviationValue;
       DoOpen;
     end;
@@ -576,7 +587,7 @@ begin
       Side := TTypeBuySell.tsSell;
       IsActive := True;
       TypeTrade := TTypeTrade.ttOpen;
-      Triling := 2 * TradingPlatform.ValueVolatility.DeviationValue;
+      Triling := TradingPlatform.ValueVolatility.DeviationValue;
       Profit  := 2 * TradingPlatform.ValueVolatility.DeviationValue;
       DoOpen;
     end;
@@ -634,8 +645,6 @@ begin
         );
 
       end;
-
-
 
 
     end;

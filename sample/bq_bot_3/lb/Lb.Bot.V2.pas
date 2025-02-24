@@ -34,7 +34,11 @@ type
     property OnShortOpen: TNotifyEvent write FOnShortOpen;
   end;
 
-  TWorkBotV2 = class(TObject)
+
+  ///<summary>
+  /// Производим оценку волотильности по рынку
+  ///</summary>
+  TWorkBotDeviation = class(TObject)
   private
     FOnLongOpen: TNotifyEvent;
     FOnShortOpen: TNotifyEvent;
@@ -138,32 +142,32 @@ begin
     SetShortTrade(AFastValueMa, ASlowValueMa);
 end;
 
-{ TWorkBotV2 }
+{ TWorkBotDeviation }
 
-constructor TWorkBotV2.Create;
+constructor TWorkBotDeviation.Create;
 begin
 
 end;
 
-destructor TWorkBotV2.Destroy;
+destructor TWorkBotDeviation.Destroy;
 begin
 
   inherited;
 end;
 
-procedure TWorkBotV2.DoLongOpen;
+procedure TWorkBotDeviation.DoLongOpen;
 begin
   if Assigned(FOnLongOpen) then
     FOnLongOpen(Self);
 end;
 
-procedure TWorkBotV2.DoShortOpen;
+procedure TWorkBotDeviation.DoShortOpen;
 begin
   if Assigned(FOnShortOpen) then
     FOnShortOpen(Self);
 end;
 
-procedure TWorkBotV2.SetUpDataParam(ACandel: TCandel; ADeviation: Double);
+procedure TWorkBotDeviation.SetUpDataParam(ACandel: TCandel; ADeviation: Double);
 var
   xDeltaBody: Double;
 begin
