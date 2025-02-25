@@ -180,11 +180,13 @@ begin
       Break;
     end;
   end;
-  FStateMarket.SetPrice(xAsk,xBid);
 
   Dec(FCountSelected);
   if FCountSelected = 0 then
+  begin
+    FStateMarket.SetPrice(xAsk,xBid);
     DoStateMarke;
+  end;
 end;
 
 

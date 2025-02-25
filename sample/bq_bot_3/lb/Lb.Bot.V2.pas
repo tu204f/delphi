@@ -169,6 +169,9 @@ procedure TWorkBotDeviation.SetUpDataParam(ACandel: TCandel; ARatio, ADeviation:
 var
   xPriceBuy, xPriceSell: Double;
 begin
+  if ARatio <= 0 then
+    raise Exception.Create('Error Message: Коффицента валатильности нулевой');
+
   xPriceBuy  := ACandel.Open + ARatio * ADeviation;
   xPriceSell := ACandel.Open - ARatio * ADeviation;
 

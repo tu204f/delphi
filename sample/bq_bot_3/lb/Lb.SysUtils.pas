@@ -325,6 +325,13 @@ end;
 
 procedure TStateMarket.SetPrice(const AAsk, ABid: Double);
 begin
+  {todo: тех случает, такое возможно когда нет ликвидности на рынке}
+  if AAsk <= 0 then
+    raise Exception.Create('Error Message: Цена продавца не может быть нулевой');
+
+  if ABid <= 0 then
+    raise Exception.Create('Error Message: Цена покупателя не может быть нулевой');
+
   FAsk := AAsk;
   FBid := ABid;
 end;

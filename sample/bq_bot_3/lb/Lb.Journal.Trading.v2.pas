@@ -76,6 +76,9 @@ type
     FTypeTrade: TTypeTrade;
     FUserKey: String;
   private
+    FFeeRatesTakerSL: Double;
+    FFeeRatesTakerTK: Double;
+  private
     FTriling: Double;
     FStopLoss: Double;
     FTakeProfit: Double;
@@ -106,6 +109,8 @@ type
     property TakeProfit: Double read FTakeProfit write FTakeProfit;
     property UserKey: String read FUserKey write FUserKey;
   public
+    property FeeRatesTakerSL: Double read FFeeRatesTakerSL write FFeeRatesTakerSL;
+    property FeeRatesTakerTK: Double read FFeeRatesTakerTK write FFeeRatesTakerTK;
     property FeeRatesTaker: Double read GetFeeRatesTaker;
     property FeeRatesMaker: Double read GetFeeRatesMaker;
     property ProfitFeeRatesTaker: Double read GetProfitFeeRatesTaker;
@@ -135,12 +140,10 @@ type
     function GetSumCountIsActive: Integer;
     ///<summary>Список позиций</summary>
     property Positions: TJournalPositionList read FPositions;
-
     ///<summary>Сумарный профит повсем позициям</summary>
     property Profit: Double read GetProfit;
     property ProfitFeeRatesTaker: Double read GetProfitFeeRatesTaker;
     property ProfitFeeRatesMaker: Double read GetProfitFeeRatesMaker;
-
   end;
 
 implementation
@@ -207,6 +210,8 @@ begin
   FStopLoss := 0;
   FTakeProfit := 0;
   FUserKey := '';
+  FFeeRatesTakerSL := 0;
+  FFeeRatesTakerTK := 0;
 end;
 
 destructor TJournalPosition.Destroy;
@@ -261,6 +266,7 @@ begin
   xS := xS + _Add(GetStrToTypeTrade(Self.TypeTrade));
   xS := xS + _Add(FloatToStr(Self.ProfitFeeRatesTaker));
   xS := xS + _Add(FloatToStr(Self.ProfitFeeRatesMaker));
+  xS := xS + _Add(UserKey);
 
   PositionText(xS);
 
@@ -356,33 +362,53 @@ procedure TJournalPosition.SetUpData(const APrice: Double);
     end;
   end;
 
+  procedure _CloseOrder(APrice: Double);
+  begin
+    if APrice <= 0 then
+      raise Exception.Create('Error Message: Закрываем позицию, а цена нулевая ');
+
+    CloseTime := GetNewDateTime;
+    ClosePrice := APrice;
+    IsActive := False;
+    TypeTrade := TTypeTrade.ttClose;
+    DoClose;
+  end;
+
   procedure _ActiveStopLoss(APrice: Double);
   begin
+    if FStopLoss <= 0 then
+      Exit;
+
     if FTypeTrade = TTypeTrade.ttOpen then
     begin
       case FSide of
         tsBuy: begin
           if APrice < FStopLoss then
-          begin
-            CloseTime := GetNewDateTime;
-            ClosePrice := APrice;
-            IsActive := False;
-            TypeTrade := TTypeTrade.ttClose;
-            DoClose;
-          end;
+            _CloseOrder(APrice);
         end;
         tsSell: begin
           if APrice > FStopLoss then
-          begin
-            CloseTime := GetNewDateTime;
-            ClosePrice := APrice;
-            IsActive := False;
-            TypeTrade := TTypeTrade.ttClose;
-            DoClose;
-          end;
+            _CloseOrder(APrice);
         end;
       end;
     end;
+  end;
+
+
+  procedure _SetFeeRatesTakerSL(APrice: Double);
+  begin
+    if FFeeRatesTakerSL = 0 then
+      Exit;
+    if Self.ProfitFeeRatesTaker < FFeeRatesTakerSL then
+      _CloseOrder(APrice);
+  end;
+
+  procedure _SetFeeRatesMakerTK(APrice: Double);
+  begin
+    if FFeeRatesTakerTK = 0 then
+      Exit;
+    if Self.ProfitFeeRatesTaker > FFeeRatesTakerTK then
+      _CloseOrder(APrice);
   end;
 
 begin
@@ -390,9 +416,14 @@ begin
     raise Exception.Create('Error Message: Нет цены открытие');
 
   _CalcProfit(APrice);
-  _CalcTrelingStopLoss(APrice);
-  _ActiveTakeProfit(APrice);
-  _ActiveStopLoss(APrice);
+  if FTypeTrade = TTypeTrade.ttOpen then
+  begin
+    _CalcTrelingStopLoss(APrice);
+    _ActiveTakeProfit(APrice);
+    _ActiveStopLoss(APrice);
+    _SetFeeRatesTakerSL(APrice);
+    _SetFeeRatesMakerTK(APrice);
+  end;
 end;
 
 

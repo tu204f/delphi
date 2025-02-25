@@ -495,6 +495,7 @@ begin
     xCandel := TradingPlatform.StateMarket.Candels[0];
     WorkBotDeviation.SetUpDataParam(
       xCandel,
+      0,
       TradingPlatform.ValueVolatility.DeviationValue
     );
   end;
