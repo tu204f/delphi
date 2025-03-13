@@ -62,7 +62,6 @@ type
     FSymbol: String;
     FOnStateMarket: TEventOnStateMarket;
   private
-    FValuesW: TValuesW;
     FValueVolatility: TValueVolatility;
   protected
     FStateMarket: TStateMarket;
@@ -83,7 +82,6 @@ type
     ///</summary>
     procedure SendTrade(const ATime: TDateTime; const APrice, AQty: Double; ASide: TTypeBuySell); virtual;
   public {торговые правильа }
-    property ValuesW: TValuesW read FValuesW;
     property ValueVolatility: TValueVolatility read FValueVolatility;
   end;
 
@@ -176,7 +174,6 @@ end;
 constructor TTradingPlatform.Create;
 begin
   inherited Create;
-  FValuesW := TValuesW.Create;
   FStateMarket := TStateMarket.Create;
   FValueVolatility := TValueVolatility.Create;
 end;
@@ -184,7 +181,6 @@ end;
 destructor TTradingPlatform.Destroy;
 begin
   FreeAndNil(FValueVolatility);
-  FreeAndNil(FValuesW);
   FreeAndNil(FStateMarket);
   inherited Destroy;
 end;
@@ -197,7 +193,6 @@ end;
 
 procedure TTradingPlatform.DoStateMarke;
 begin
-  FValuesW.SetCandels(FStateMarket.Candels);
   FValueVolatility.SetCandels(FStateMarket.Candels);
   if Assigned(FOnStateMarket) then
     FOnStateMarket(Self,FStateMarket);

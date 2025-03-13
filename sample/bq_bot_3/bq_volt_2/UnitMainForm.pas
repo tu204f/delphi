@@ -2,7 +2,7 @@ unit UnitMainForm;
 
 interface
 
-//{$DEFINE REAL_TRADE}
+
 
 uses
   System.SysUtils, System.Types, System.UITypes, System.Classes, System.Variants,
@@ -22,8 +22,16 @@ uses
   FMX.Layouts,
   FMX.TabControl,
   FMX.Menus,
-  FMX.Edit, FMXTee.Engine, FMXTee.Series, FMXTee.Procs, FMXTee.Chart,
-  FMX.ListBox, FMX.Memo.Types, FMX.Memo;
+  FMX.Edit,
+  FMXTee.Engine,
+  FMXTee.Series,
+  FMXTee.Procs,
+  FMXTee.Chart,
+  FMX.ListBox,
+  FMX.Memo.Types,
+  FMX.Memo,
+
+  UnitWorkBotFrame;
 
 type
   TMainForm = class(TForm)
@@ -35,8 +43,6 @@ type
     TabItemPosition: TTabItem;
     PopupMenu: TPopupMenu;
     MenuItemSaveFile: TMenuItem;
-    LayoutMarket: TLayout;
-    RectangleMarket: TRectangle;
     Layout1: TLayout;
     LayoutDemo: TLayout;
     EditDemo1: TEdit;
@@ -46,17 +52,18 @@ type
     StringGridCandel: TStringGrid;
     TabItemInfoMsg: TTabItem;
     MemoInfoMsg: TMemo;
-    GridPanelLayout: TGridPanelLayout;
-    Text1: TText;
     EditVolatility: TEdit;
-    Text2: TText;
     EditVolatilityHigh: TEdit;
-    Text3: TText;
     EditVolatilityLow: TEdit;
-    StringGridRation: TStringGrid;
+    LayoutWork: TLayout;
+    LayoutGridPositon: TLayout;
+    RectangleWork: TRectangle;
+    EditRate: TEdit;
+    LayoutChartCandel: TLayout;
     procedure ButtonStartOrStopClick(Sender: TObject);
     procedure FormShow(Sender: TObject);
   private
+    ValueEvent1, ValueEvent2, ValueEvent3: Integer;
     procedure TradingPlatformOnStateMarket(ASender: TObject; AStateMarket: TStateMarket);
     procedure TradingPlatformOnNewCandel(Sender: TObject);
     procedure TradingPlatformOnMsgInfo(ASender: TObject; AMsg: String);
@@ -64,7 +71,11 @@ type
     procedure DoStart;
     procedure DoStop;
   public
-    WorkBots: TWorkBotDeviationList;
+    ///<summary>
+    /// Форма бота
+    ///</summary>
+    WorkBotFrame: TWorkBotFrame;
+    ///<summary>Торговая платформа</summary>
     TradingPlatform: TTradingPlatform;
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
@@ -95,76 +106,71 @@ constructor TMainForm.Create(AOwner: TComponent);
     xCol.Width  := AWidth;
   end;
 
-  procedure SetCreateWorkBot(const ARatio: Double);
-  var
-    xWorkBot: TWorkBotDeviation;
+  procedure SetShowStringGridCandel;
   begin
-    xWorkBot := TWorkBotDeviation.Create;
-    xWorkBot.TradingPlatform := TradingPlatform;
-    xWorkBot.Ratio := ARatio;
-    WorkBots.Add(xWorkBot);
+    SetAddColumn(StringGridCandel,'Time',150);
+    SetAddColumn(StringGridCandel,'Open');
+    SetAddColumn(StringGridCandel,'High');
+    SetAddColumn(StringGridCandel,'Low');
+    SetAddColumn(StringGridCandel,'Close');
+    SetAddColumn(StringGridCandel,'Vol');
   end;
+
+  procedure SetShowDemoGrid;
+  begin
+    SetAddColumn(DemoGrid,'id',50);
+    SetAddColumn(DemoGrid,'OpenTime',120);
+    SetAddColumn(DemoGrid,'OpenPrice');
+    SetAddColumn(DemoGrid,'CloseTime',120);
+    SetAddColumn(DemoGrid,'ClosePrice');
+    SetAddColumn(DemoGrid,'Qty');
+    SetAddColumn(DemoGrid,'Side');
+    SetAddColumn(DemoGrid,'SL');
+    SetAddColumn(DemoGrid,'TK');
+    SetAddColumn(DemoGrid,'Profit');
+    SetAddColumn(DemoGrid,'TypeTrade');
+    SetAddColumn(DemoGrid,'FeeRatesTaker');
+    SetAddColumn(DemoGrid,'FeeRatesMaker');
+  end;
+
 
 begin
   inherited;
+  SetShowStringGridCandel;
+  SetShowDemoGrid;
 
-  SetAddColumn(StringGridCandel,'Time',150);
-  SetAddColumn(StringGridCandel,'Open');
-  SetAddColumn(StringGridCandel,'High');
-  SetAddColumn(StringGridCandel,'Low');
-  SetAddColumn(StringGridCandel,'Close');
-  SetAddColumn(StringGridCandel,'Vol');
-
-
-  SetAddColumn(DemoGrid,'id',50);
-  SetAddColumn(DemoGrid,'OpenTime',120);
-  SetAddColumn(DemoGrid,'OpenPrice');
-  SetAddColumn(DemoGrid,'CloseTime',120);
-  SetAddColumn(DemoGrid,'ClosePrice');
-  SetAddColumn(DemoGrid,'Qty');
-  SetAddColumn(DemoGrid,'Side');
-  SetAddColumn(DemoGrid,'SL');
-  SetAddColumn(DemoGrid,'TK');
-  SetAddColumn(DemoGrid,'Profit');
-  SetAddColumn(DemoGrid,'TypeTrade');
-  SetAddColumn(DemoGrid,'FeeRatesTaker');
-  SetAddColumn(DemoGrid,'FeeRatesMaker');
-
-
-  SetAddColumn(StringGridRation,'ID');
-  SetAddColumn(StringGridRation,'Ratio');
-  SetAddColumn(StringGridRation,'Deviation');
-
+  // *************************************************************************
+  // Реализация торговой платформы
   TradingPlatform := TPlatfomBybit.Create;
   TradingPlatform.OnStateMarket := TradingPlatformOnStateMarket;
-  TradingPlatform.OnNewCandel := TradingPlatformOnNewCandel;
-  TradingPlatform.OnMsgInfo := TradingPlatformOnMsgInfo;
-
-
+  TradingPlatform.OnNewCandel   := TradingPlatformOnNewCandel;
+  TradingPlatform.OnMsgInfo     := TradingPlatformOnMsgInfo;
   // 'DdncwwQY6AVdShL008';
   // 'ldfYDnYhlVU5SU7w89mOnaHi0icy8XctNXtT';
   TPlatfomBybit(TradingPlatform).ApiKey := 't0YI4Ou0TKOTd7WrkE';
   TPlatfomBybit(TradingPlatform).ApiSecret := 'dWcdTGIulDoKOiK4mggPQIkYwmMFGxvFVusp';
-  TPlatfomBybit(TradingPlatform).Interval  := TTypeInterval.ti_5;
+  TPlatfomBybit(TradingPlatform).Interval  := TTypeInterval.ti_1;
 
-  WorkBots := TWorkBotDeviationList.Create;
-  SetCreateWorkBot(0.2);
-  SetCreateWorkBot(0.5);
-  SetCreateWorkBot(0.75);
-  SetCreateWorkBot(1.0);
-  SetCreateWorkBot(1.5);
-  SetCreateWorkBot(2.0);
+  // *************************************************************************
+  // Выводит последнию свечу
+  WorkBotFrame := TWorkBotFrame.Create(nil);
+  WorkBotFrame.Parent := LayoutChartCandel;
+  WorkBotFrame.Align := TAlignLayout.Client;
 end;
 
 destructor TMainForm.Destroy;
 begin
-  FreeAndNil(WorkBots);
+  FreeAndNil(WorkBotFrame);
   FreeAndNil(TradingPlatform);
   inherited;
 end;
 
 procedure TMainForm.DoStart;
 begin
+  ValueEvent1 := 0;
+  ValueEvent2 := 0;
+  ValueEvent3 := 0;
+
   if not TradingPlatform.IsActive then
   begin
     ButtonStartOrStop.Text := 'Стоп';
@@ -207,6 +213,7 @@ end;
 
 procedure TMainForm.TradingPlatformOnStateMarket(ASender: TObject; AStateMarket: TStateMarket);
 
+  {$REGION 'Обновить показатели'}
   procedure _SetUpDataPosition(AJournalManager: TJournalManager);
   var
     i, iCount: Integer;
@@ -234,7 +241,9 @@ procedure TMainForm.TradingPlatformOnStateMarket(ASender: TObject; AStateMarket:
         end;
       end;
   end;
+  {$ENDREGION}
 
+  {$REGION 'Показывать исторические данные'}
   procedure _ShowCandel;
   var
     xCandel: TCandel;
@@ -254,7 +263,9 @@ procedure TMainForm.TradingPlatformOnStateMarket(ASender: TObject; AStateMarket:
         StringGridCandel.Cells[5,i] := xCandel.Vol.ToString;
       end;
   end;
+  {$ENDREGION}
 
+  {$REGION 'Показывает состояние портфеля'}
   procedure _ShowProfit(const AJournalManager: TJournalManager; var ASumValue1, ASumValue2, ASumValue3: Double);
   var
     i, Count: Integer;
@@ -273,7 +284,9 @@ procedure TMainForm.TradingPlatformOnStateMarket(ASender: TObject; AStateMarket:
         ASumValue3 := ASumValue3 + xPosition.ProfitFeeRatesMaker;
       end;
   end;
+  {$ENDREGION}
 
+  {$REGION 'Показывать позиции по инструменту'}
   procedure _ShowPosition(const AGrid: TStringGrid; const AJournalManager: TJournalManager);
   var
     i, Count: Integer;
@@ -320,57 +333,30 @@ procedure TMainForm.TradingPlatformOnStateMarket(ASender: TObject; AStateMarket:
     EditDemo2.text := xSumValue2.ToString;
     EditDemo3.text := xSumValue3.ToString;
   end;
+  {$ENDREGION}
 
-
-
-  procedure _DeviationRationStringGrid(const AIndex: Integer; const ARatio: Double);
-  begin
-    StringGridRation.Cells[0,AIndex] := (AIndex + 1).ToString;
-    StringGridRation.Cells[1,AIndex] := 'Ratio: ' + ARatio.ToString;
-    StringGridRation.Cells[2,AIndex] := TradingPlatform.ValueVolatility.GetProbability(ARatio).ToString;
-  end;
-
-  procedure _DeviationRation;
+  procedure _ShowCandelParam;
   var
-    xWorkBotDeviation: TWorkBotDeviation;
-    i, iCount: Integer;
+    iCount: Integer;
+    xCandel: TCandel;
+    xCandels: TCandelList;
   begin
-    StringGridRation.RowCount := WorkBots.Count;
-    iCount := WorkBots.Count;
+    xCandels := TradingPlatform.StateMarket.Candels;
+    iCount := xCandels.Count;
     if iCount > 0 then
-      for i := 0 to iCount - 1 do
-      begin
-        xWorkBotDeviation := WorkBots[i];
-        _DeviationRationStringGrid(i,xWorkBotDeviation.Ratio);
-        _SetUpDataPosition(xWorkBotDeviation.JournalManager);
-      end;
+    begin
+      xCandel := xCandels[0];
+      WorkBotFrame.SetParamValue(
+        xCandel,
+        TradingPlatform.ValueVolatility.DeviationValue,
+        TradingPlatform.ValueVolatility.RsecommendRate,
+        3
+      );
+    end;
   end;
 
-  procedure _DeviationShowPosition(const AIndex: Integer);
-  var
-    xWorkBotDeviation: TWorkBotDeviation;
-  begin
-    xWorkBotDeviation := WorkBots[AIndex];
-    _ShowPosition(DemoGrid,xWorkBotDeviation.JournalManager);
-  end;
-
-  procedure _SetUpDataParam;
-  var
-    xWorkBotDeviation: TWorkBotDeviation;
-    i, iCount: Integer;
-  begin
-    iCount := WorkBots.Count;
-    if iCount > 0 then
-      for i := 0 to iCount - 1 do
-      begin
-        xWorkBotDeviation := WorkBots[i];
-        xWorkBotDeviation.SetUpDataParam;
-      end;
-  end;
-
-var
-  xRow: Integer;
 begin
+
   // ***********************************************
   // Оценка состояния рынка
   TextStatus.Text :=
@@ -380,37 +366,21 @@ begin
   EditVolatilityLow.Text  := TradingPlatform.ValueVolatility.DeviationLow.ToString;
 
   // Обнлвдение параметров свяи
-  _SetUpDataParam;
-
-  // Насчет откланение
-  _DeviationRation;
-
-  xRow := StringGridRation.Selected;
-  if xRow >= 0 then
-    _DeviationShowPosition(xRow);
+  EditRate.Text    := 'р. Rate: ' + TradingPlatform.ValueVolatility.RsecommendRate.Tostring;
+  //_SetUpDataPosition(WorkBotFrame.WorkBot.JournalManager);
+  //_ShowPosition(DemoGrid,WorkBotFrame.WorkBot.JournalManager);
 
   // Вывод свячи
   _ShowCandel;
+
+  // **************************************************************************
+  // Последний свеча работы
+  _ShowCandelParam;
 end;
 
 procedure TMainForm.TradingPlatformOnNewCandel(Sender: TObject);
-
-  procedure _SetNewCandel;
-  var
-    xWorkBotDeviation: TWorkBotDeviation;
-    i, iCount: Integer;
-  begin
-    iCount := WorkBots.Count;
-    if iCount > 0 then
-      for i := 0 to iCount - 1 do
-      begin
-        xWorkBotDeviation := WorkBots[i];
-        xWorkBotDeviation.SetNewCandel;
-      end;
-  end;
-
 begin
-  _SetNewCandel;
+  WorkBotFrame.SetNewCandel;
 end;
 
 end.

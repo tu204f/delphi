@@ -1,0 +1,104 @@
+object WorkBotPanelFrame: TWorkBotPanelFrame
+  Size.Width = 859.000000000000000000
+  Size.Height = 478.000000000000000000
+  Size.PlatformDefault = False
+  object LayoutWork: TLayout
+    Align = Left
+    Size.Width = 137.000000000000000000
+    Size.Height = 478.000000000000000000
+    Size.PlatformDefault = False
+    TabOrder = 1
+    object RectangleWork: TRectangle
+      Align = Client
+      Margins.Left = 2.000000000000000000
+      Margins.Top = 2.000000000000000000
+      Margins.Right = 2.000000000000000000
+      Margins.Bottom = 2.000000000000000000
+      Size.Width = 133.000000000000000000
+      Size.Height = 474.000000000000000000
+      Size.PlatformDefault = False
+      object LayoutWorkBot: TLayout
+        Align = Client
+        Margins.Left = 5.000000000000000000
+        Margins.Top = 2.500000000000000000
+        Margins.Right = 5.000000000000000000
+        Margins.Bottom = 2.500000000000000000
+        Size.Width = 123.000000000000000000
+        Size.Height = 356.000000000000000000
+        Size.PlatformDefault = False
+        TabOrder = 5
+      end
+      object EditRate: TEdit
+        Touch.InteractiveGestures = [LongTap, DoubleTap]
+        Align = Top
+        TabOrder = 4
+        ReadOnly = True
+        Position.X = 5.000000000000000000
+        Position.Y = 5.000000000000000000
+        Margins.Left = 5.000000000000000000
+        Margins.Top = 5.000000000000000000
+        Margins.Right = 5.000000000000000000
+        Margins.Bottom = 2.500000000000000000
+        Size.Width = 123.000000000000000000
+        Size.Height = 22.000000000000000000
+        Size.PlatformDefault = False
+      end
+      object EditProfitFeeRatesMaker: TEdit
+        Touch.InteractiveGestures = [LongTap, DoubleTap]
+        Align = Bottom
+        TabOrder = 3
+        ReadOnly = True
+        Position.X = 5.000000000000000000
+        Position.Y = 447.000000000000000000
+        Margins.Left = 5.000000000000000000
+        Margins.Top = 2.500000000000000000
+        Margins.Right = 5.000000000000000000
+        Margins.Bottom = 5.000000000000000000
+        Size.Width = 123.000000000000000000
+        Size.Height = 22.000000000000000000
+        Size.PlatformDefault = False
+      end
+      object EditProfitFeeRatesTaker: TEdit
+        Touch.InteractiveGestures = [LongTap, DoubleTap]
+        Align = Bottom
+        TabOrder = 2
+        ReadOnly = True
+        Position.X = 5.000000000000000000
+        Position.Y = 420.000000000000000000
+        Margins.Left = 5.000000000000000000
+        Margins.Top = 2.500000000000000000
+        Margins.Right = 5.000000000000000000
+        Margins.Bottom = 2.500000000000000000
+        Size.Width = 123.000000000000000000
+        Size.Height = 22.000000000000000000
+        Size.PlatformDefault = False
+      end
+      object EditProfit: TEdit
+        Touch.InteractiveGestures = [LongTap, DoubleTap]
+        Align = Bottom
+        TabOrder = 1
+        ReadOnly = True
+        Position.X = 5.000000000000000000
+        Position.Y = 393.000000000000000000
+        Margins.Left = 5.000000000000000000
+        Margins.Top = 2.500000000000000000
+        Margins.Right = 5.000000000000000000
+        Margins.Bottom = 2.500000000000000000
+        Size.Width = 123.000000000000000000
+        Size.Height = 22.000000000000000000
+        Size.PlatformDefault = False
+      end
+    end
+  end
+  object PositionGrid: TStringGrid
+    Align = Client
+    CanFocus = True
+    ClipChildren = True
+    Size.Width = 722.000000000000000000
+    Size.Height = 478.000000000000000000
+    Size.PlatformDefault = False
+    TabOrder = 2
+    Viewport.Width = 722.000000000000000000
+    Viewport.Height = 478.000000000000000000
+  end
+end

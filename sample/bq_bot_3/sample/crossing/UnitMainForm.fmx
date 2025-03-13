@@ -1,0 +1,63 @@
+object Form4: TForm4
+  Left = 0
+  Top = 0
+  Caption = 'Form4'
+  ClientHeight = 480
+  ClientWidth = 640
+  FormFactor.Width = 320
+  FormFactor.Height = 480
+  FormFactor.Devices = [Desktop]
+  OnCreate = FormCreate
+  OnClose = FormClose
+  DesignerMasterStyle = 0
+  object Button1: TButton
+    Position.X = 8.000000000000000000
+    Position.Y = 12.000000000000000000
+    TabOrder = 0
+    Text = 'Button1'
+    OnClick = Button1Click
+  end
+  object ListBox1: TListBox
+    Anchors = [akLeft, akTop, akRight, akBottom]
+    Position.X = 8.000000000000000000
+    Position.Y = 48.000000000000000000
+    Size.Width = 625.000000000000000000
+    Size.Height = 421.000000000000000000
+    Size.PlatformDefault = False
+    TabOrder = 1
+    DisableFocusEffect = True
+    DefaultItemStyles.ItemStyle = ''
+    DefaultItemStyles.GroupHeaderStyle = ''
+    DefaultItemStyles.GroupFooterStyle = ''
+    Viewport.Width = 621.000000000000000000
+    Viewport.Height = 417.000000000000000000
+  end
+  object Timer1: TTimer
+    Enabled = False
+    Interval = 100
+    OnTimer = Timer1Timer
+    Left = 312
+    Top = 80
+  end
+  object Edit1: TEdit
+    Touch.InteractiveGestures = [LongTap, DoubleTap]
+    TabOrder = 3
+    Position.X = 100.000000000000000000
+    Position.Y = 12.000000000000000000
+    Size.Width = 189.000000000000000000
+    Size.Height = 22.000000000000000000
+    Size.PlatformDefault = False
+  end
+  object Edit2: TEdit
+    Touch.InteractiveGestures = [LongTap, DoubleTap]
+    TabOrder = 6
+    Position.X = 300.000000000000000000
+    Position.Y = 12.000000000000000000
+  end
+  object Edit3: TEdit
+    Touch.InteractiveGestures = [LongTap, DoubleTap]
+    TabOrder = 5
+    Position.X = 408.000000000000000000
+    Position.Y = 12.000000000000000000
+  end
+end

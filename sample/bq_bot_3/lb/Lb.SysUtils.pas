@@ -12,6 +12,11 @@ uses
   System.Generics.Collections;
 
 type
+  IMainFormLog = interface
+    procedure LogMsg(const S: WideString);
+  end;
+
+type
   ///<summary>Состояние сделки</summary>
   TTypeTrade = (
     ttNull,
@@ -36,6 +41,11 @@ type
 
 type
   ///<summary>
+  /// Тип свячи
+  ///</summary>
+  TTypeCandel = (tcNull, tcGreen, tcRed);
+
+  ///<summary>
   /// Свеча
   ///</summary>
   TCandel = record
@@ -44,9 +54,12 @@ type
     High: Double;   // Максимальная цена
     Low: Double;    // Минимальная цена
     Close: Double;  // Закрытие цены
-    Vol: Double;    // Объем который прошол
+    Vol: Double;
+  private
+    function GetTypeCandel: TTypeCandel;    // Объем который прошол
   public
     function GetToStr: String;
+    property TypeCandel: TTypeCandel read GetTypeCandel;
   end;
 
   ///<summary>
@@ -280,6 +293,18 @@ begin
     Low.ToString + ';' +
     Close.ToString + ';' +
     Vol.ToString;
+end;
+
+function TCandel.GetTypeCandel: TTypeCandel;
+var
+  xTypeCandel: TTypeCandel;
+begin
+  xTypeCandel := TTypeCandel.tcNull;
+  if Self.Open < Self.Close then
+    xTypeCandel := TTypeCandel.tcGreen
+  else if Self.Open > Self.Close then
+    xTypeCandel := TTypeCandel.tcRed;
+  Result := xTypeCandel;
 end;
 
 { TCandelList }

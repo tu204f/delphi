@@ -133,18 +133,29 @@ type
   end;
 
   ///<summary>
-  /// Вычисляем валатильность инструмента
+  /// Вычисляем валатильность инструмента, На весь объем свечей
   ///</summary>
   TValueVolatility = class(TCustomIndicator)
   private
     FDeviationValue: Double;
-    FDeviationValueQuard: Double;
+    FDeviationHigh: Double;
+    FDeviationLow: Double;
+    FPeriodFirst: Integer;
+    FPeriodSlow: Integer;
+    FRsecommendRate: Double;
   public
     constructor Create; virtual;
     destructor Destroy; override;
+    property PeriodFirst: Integer read FPeriodFirst write FPeriodFirst;
+    property PeriodSlow: Integer read FPeriodSlow write FPeriodSlow;
+    function GetProbability(const ARatio: Double = 2): Double;
     procedure SetCandels(ACandels: TCandelList); override;
     property DeviationValue: Double read FDeviationValue;
-    property DeviationValueQuard: Double read FDeviationValueQuard;
+    property DeviationHigh: Double read FDeviationHigh;
+    property DeviationLow: Double read FDeviationLow;
+  public
+    function GetRate(const AFromRate, AToRate, AStep: Double; const ATouchCount: Integer): Double;
+    property RsecommendRate: Double read FRsecommendRate;
   end;
 
 
@@ -795,7 +806,11 @@ end;
 constructor TValueVolatility.Create;
 begin
   FDeviationValue := 0;
-  FDeviationValueQuard := 0;
+  FDeviationHigh := 0;
+  FDeviationLow := 0;
+
+  FPeriodFirst := 6;
+  FPeriodSlow := 13;
 end;
 
 destructor TValueVolatility.Destroy;
@@ -808,31 +823,175 @@ procedure TValueVolatility.SetCandels(ACandels: TCandelList);
 
   procedure _Deviation;
   var
-    xDelta: Double;
-    xSum, xSumQuard: Double;
+    xSum, xSumHigh, xSumLow: Double;
     xCandel: TCandel;
     i, iCount: Integer;
   begin
     xSum := 0;
-    xSumQuard := 0;
+    xSumHigh := 0;
+    xSumLow := 0;
+
     iCount := FCandels.Count;
     if iCount > 0 then
     begin
       for i := 0 to iCount - 1 do
       begin
         xCandel := FCandels[i];
-        xDelta := xCandel.High - xCandel.Low;
-        xSum := xSum + xDelta;
-        xSumQuard := xSumQuard + Power(xDelta,2);
+        xSum     := xSum     + (xCandel.High - xCandel.Low);
+        xSumHigh := xSumHigh + (xCandel.High - xCandel.Open);
+        xSumLow  := xSumLow  + (xCandel.Open - xCandel.Low);
       end;
       FDeviationValue := GetRound(xSum/iCount);
-      FDeviationValueQuard := GetRound(xSumQuard/(iCount * (iCount - 1)));
+      FDeviationHigh  := GetRound(xSumHigh/iCount);
+      FDeviationLow   := GetRound(xSumLow/iCount);
     end;
   end;
+
+//  procedure _DeviationValue;
+//  var
+//    xCandel: TCandel;
+//    i, iCount: Integer;
+//    xValueHigh, xValueLow: Double;
+//  begin
+//    iCount := FCandels.Count;
+//    if iCount > 0 then
+//    begin
+//      for i := 0 to iCount - 1 do
+//      begin
+//        xCandel := FCandels[i];
+//        xValueHigh := xCandel.Open + FDeviationHigh;
+//        xValueLow  := xCandel.Open - FDeviationLow;
+//      end;
+//    end;
+//  end;
+
+{
+  FPeriodFirst := 6;
+  FPeriodSlow := 13;
+}
 
 begin
   FCandels := ACandels;
   _Deviation;
+  FRsecommendRate := GetRate(0,3,0.01,1);
+end;
+
+function TValueVolatility.GetProbability(const ARatio: Double): Double;
+var
+  xCandel: TCandel;
+  i, iCount, xDeviationCount: Integer;
+  xDeviation, xDelta: Double;
+begin
+  xDeviationCount := 0;
+  xDeviation := FDeviationValue * ARatio;
+  iCount := FCandels.Count;
+  if iCount > 0 then
+  begin
+    for i := 0 to iCount - 1 do
+    begin
+      xCandel := FCandels[i];
+      xDelta := xCandel.High - xCandel.Low;
+      if xDelta >= (xDeviation) then
+        xDeviationCount := xDeviationCount + 1;
+    end;
+    Result := xDeviationCount/iCount;
+  end
+  else
+    Result := 0;
+end;
+
+function TValueVolatility.GetRate(const AFromRate, AToRate, AStep: Double; const ATouchCount: Integer): Double;
+
+  function _IsTouchCount(AValueRate: Double; ATouchCount: Integer):  Boolean;
+  var
+    xCandel: TCandel;
+    xTouchCount: Integer;
+    xDeltaHigh, xDeltaLow: Double;
+    xDeviationValue: Double;
+  begin
+    Result := False;
+    xDeviationValue := AValueRate * Self.DeviationValue;
+    xTouchCount := 0;
+    for xCandel in FCandels do
+    begin
+      xDeltaHigh := xCandel.High - xCandel.Open;
+      xDeltaLow  := xCandel.Open - xCandel.Low;
+      if (xDeltaHigh > xDeviationValue) and (xDeltaLow > xDeviationValue) then
+        xTouchCount := xTouchCount + 1;
+      if xTouchCount >= ATouchCount then
+      begin
+        Result := True;
+        Break;
+      end;
+    end;
+  end;
+
+  function _IsTouchHighCount(AValueRate: Double; ATouchCount: Integer):  Boolean;
+  var
+    xCandel: TCandel;
+    xTouchCount: Integer;
+    xDeltaHigh, xDeltaLow: Double;
+    xDeviationValue: Double;
+  begin
+    Result := False;
+    xDeviationValue := AValueRate * Self.DeviationValue;
+    xTouchCount := 0;
+    for xCandel in FCandels do
+    begin
+      xDeltaHigh := xCandel.High - xCandel.Open;
+      if (xDeltaHigh > xDeviationValue) then
+        xTouchCount := xTouchCount + 1;
+      if xTouchCount >= ATouchCount then
+      begin
+        Result := True;
+        Break;
+      end;
+    end;
+  end;
+
+  function _IsTouchLowCount(AValueRate: Double; ATouchCount: Integer):  Boolean;
+  var
+    xCandel: TCandel;
+    xTouchCount: Integer;
+    xDeltaHigh, xDeltaLow: Double;
+    xDeviationValue: Double;
+  begin
+    Result := False;
+    xDeviationValue := AValueRate * Self.DeviationValue;
+    xTouchCount := 0;
+    for xCandel in FCandels do
+    begin
+      xDeltaLow  := xCandel.Open - xCandel.Low;
+      if (xDeltaLow > xDeviationValue) then
+        xTouchCount := xTouchCount + 1;
+      if xTouchCount >= ATouchCount then
+      begin
+        Result := True;
+        Break;
+      end;
+    end;
+  end;
+
+var
+  xValueRate: Double;
+begin
+  Result := 0;
+  if AStep <= 0 then
+    raise Exception.Create('Шаг изменение долже быть больше нуля');
+
+  if Self.DeviationValue > 0 then
+  begin
+    xValueRate := AFromRate;
+    while xValueRate <= AToRate do
+    begin
+//      if not _IsTouchCount(xValueRate,ATouchCount) then
+//        Break;
+      if _IsTouchHighCount(xValueRate,ATouchCount) xor _IsTouchLowCount(xValueRate,ATouchCount) then
+        Break;
+      xValueRate := xValueRate + AStep;
+    end;
+    Result := xValueRate;
+  end;
 end;
 
 end.

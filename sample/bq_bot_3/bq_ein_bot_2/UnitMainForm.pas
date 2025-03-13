@@ -480,7 +480,6 @@ var
   xValueWR, xFastValueMa, xSlowValueMa: Double;
 begin
 
-
   // Реализуем тактику работу системы
   xValueWR  := TradingPlatform.ValuesW.ValueWR;
   xFastValueMa := TradingPlatform.ValuesW.FastValueMa;

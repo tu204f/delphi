@@ -52,6 +52,7 @@ type
   ///<summary>Список сделок</summary>
   TJournalTradeList = TObjectList<TJournalTrade>;
 
+
   ///<summary>Позиция которую открыли</summary>
   ///<remarks>
   /// Позиция считается открытой пока есть хоть одна не нулевая позиция
@@ -75,6 +76,7 @@ type
     FMaxProfit: Double;
     FTypeTrade: TTypeTrade;
     FUserKey: String;
+    FInfoValue: String;
   private
     FFeeRatesTakerSL: Double;
     FFeeRatesTakerTK: Double;
@@ -108,6 +110,7 @@ type
     property StopLoss: Double read FStopLoss write FStopLoss;
     property TakeProfit: Double read FTakeProfit write FTakeProfit;
     property UserKey: String read FUserKey write FUserKey;
+    property InfoValue: String read FInfoValue write FInfoValue;
   public
     property FeeRatesTakerSL: Double read FFeeRatesTakerSL write FFeeRatesTakerSL;
     property FeeRatesTakerTK: Double read FFeeRatesTakerTK write FFeeRatesTakerTK;
@@ -151,9 +154,13 @@ implementation
 uses
   System.Math;
 
+const
+  FILE_NAME_POSITION = 'position.csv';
+
 var
   localID: Integer = 0;
   LogCS: TCriticalSection;
+
 
 
 procedure PositionText(S: String);
@@ -163,7 +170,7 @@ var
 begin
   LogCS.Enter;
   try
-    xPath := ExtractFilePath(ParamStr(0)) + 'position.csv';
+    xPath := ExtractFilePath(ParamStr(0)) + FILE_NAME_POSITION;
     AssignFile(f,xPath);
     if FileExists(xPath) then
       Append(F)
@@ -174,6 +181,46 @@ begin
   finally
     LogCS.Leave;
   end;
+end;
+
+procedure InitializationFileLog;
+
+  function _Add(S: String): String;
+  begin
+    Result := S + ';';
+  end;
+
+  procedure _SetFieldName;
+  var
+    xS: String;
+  begin
+    xS := 'localID;';
+    xS := xS + _Add('OpenTime');
+    xS := xS + _Add('OpenPrice');
+    xS := xS + _Add('CloseTime');
+    xS := xS + _Add('ClosePrice');
+    xS := xS + _Add('Qty');
+    xS := xS + _Add('Side');
+    xS := xS + _Add('StopLoss');
+    xS := xS + _Add('Triling');
+    xS := xS + _Add('TakeProfit');
+    xS := xS + _Add('Profit');
+    xS := xS + _Add('MaxProfit');
+    xS := xS + _Add('MinProfit');
+    xS := xS + _Add('TypeTrade');
+    xS := xS + _Add('ProfitFeeRatesTaker');
+    xS := xS + _Add('ProfitFeeRatesMaker');
+    xS := xS + _Add('UserKey');
+    xS := xS + _Add('InfoValue');
+    PositionText(xS);
+  end;
+
+var
+  xPath: String;
+begin
+  xPath := ExtractFilePath(ParamStr(0)) + FILE_NAME_POSITION;
+  DeleteFile(xPath);
+  _SetFieldName;
 end;
 
 { TJournalTrade }
@@ -212,6 +259,7 @@ begin
   FUserKey := '';
   FFeeRatesTakerSL := 0;
   FFeeRatesTakerTK := 0;
+  FInfoValue := '';
 end;
 
 destructor TJournalPosition.Destroy;
@@ -259,6 +307,7 @@ begin
   xS := xS + _Add(FloatToStr(Self.StopLoss));
   xS := xS + _Add(FloatToStr(Self.Triling));
   xS := xS + _Add(FloatToStr(Self.TakeProfit));
+
   xS := xS + _Add(FloatToStr(Self.Profit));
   xS := xS + _Add(FloatToStr(Self.MaxProfit));
   xS := xS + _Add(FloatToStr(Self.MinProfit));
@@ -266,7 +315,8 @@ begin
   xS := xS + _Add(GetStrToTypeTrade(Self.TypeTrade));
   xS := xS + _Add(FloatToStr(Self.ProfitFeeRatesTaker));
   xS := xS + _Add(FloatToStr(Self.ProfitFeeRatesMaker));
-  xS := xS + _Add(UserKey);
+  xS := xS + _Add(FUserKey);
+  xS := xS + _Add(FInfoValue);
 
   PositionText(xS);
 
@@ -415,6 +465,7 @@ begin
   if FOpenPrice <= 0 then
     raise Exception.Create('Error Message: Нет цены открытие');
 
+
   _CalcProfit(APrice);
   if FTypeTrade = TTypeTrade.ttOpen then
   begin
@@ -528,11 +579,10 @@ begin
   Result := xCnt;
 end;
 
-
-
 initialization
   localID := 0;
   LogCS := TCriticalSection.Create;
+  InitializationFileLog;
 
 finalization
   FreeAndNil(LogCS);

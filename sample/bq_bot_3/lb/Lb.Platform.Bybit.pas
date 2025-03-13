@@ -160,8 +160,8 @@ procedure TPlatfomBybit.BybitOrderBookOnEventEndLoading(ASender: TObject);
 var
   xBid, xAsk: Double;
 begin
-  xBid := 0;
-  xAsk := 0;
+  xBid := FBybitOrderBook.OrderBook.Bid;
+  xAsk := FBybitOrderBook.OrderBook.Ask;
 
   for var xOrderMarket in FBybitOrderBook.OrderBook.Bids do
   begin
@@ -182,7 +182,7 @@ begin
   end;
 
   Dec(FCountSelected);
-  if FCountSelected = 0 then
+  if (FCountSelected = 0) and (xBid > 0) and (xAsk > 0) then
   begin
     FStateMarket.SetPrice(xAsk,xBid);
     DoStateMarke;
@@ -233,10 +233,13 @@ begin
       xPlaceOrder.Side        := _ToTypeSide(ASide);
 
       xPlaceOrder.PositionIdx := 0;
-      xPlaceOrder.OrderType   := TTypeOrder.Limit;
+      xPlaceOrder.OrderType   := TTypeOrder.Market;
       xPlaceOrder.Qty         := AQty;
       xPlaceOrder.Price       := APrice;
       xPlaceOrder.timeInForce := TTypeTimeInForce.GTC;
+
+
+
       xPlaceOrder.OrderLinkId := _CreateOrderLinkId;
 
       xResponse := TOrderResponse.Create;
@@ -248,7 +251,7 @@ begin
            xPlaceOrder,
            xResponse // Возрат сообщение ос делке
         );
-        DoMsgInfo(xResponse.RetMsg);
+        DoMsgInfo(xResponse.Value + ' ' + xResponse.RetMsg);
       finally
         FreeAndNil(xResponse);
       end;

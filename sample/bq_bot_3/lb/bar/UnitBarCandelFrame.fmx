@@ -1,0 +1,70 @@
+object BarFrame: TBarFrame
+  Size.Width = 114.000000000000000000
+  Size.Height = 465.000000000000000000
+  Size.PlatformDefault = False
+  object RectangleBar: TRectangle
+    Align = Client
+    Size.Width = 114.000000000000000000
+    Size.Height = 465.000000000000000000
+    Size.PlatformDefault = False
+    object GridLayout: TGridPanelLayout
+      Align = Client
+      Size.Width = 114.000000000000000000
+      Size.Height = 465.000000000000000000
+      Size.PlatformDefault = False
+      TabOrder = 0
+      ColumnCollection = <
+        item
+          Value = 50.000000000000000000
+        end
+        item
+          Value = 50.000000000000000000
+        end>
+      ControlCollection = <
+        item
+          Column = 0
+          Control = LayoutInfo
+          Row = 0
+        end
+        item
+          Column = 1
+          Control = LayoutBar
+          Row = 0
+        end>
+      RowCollection = <
+        item
+          Value = 100.000000000000000000
+        end>
+      object LayoutInfo: TLayout
+        Align = Client
+        Size.Width = 57.000000000000000000
+        Size.Height = 465.000000000000000000
+        Size.PlatformDefault = False
+        TabOrder = 1
+        object LinePriceHigh: TLine
+          LineType = Bottom
+          Position.X = 4.000000000000000000
+          Position.Y = 176.000000000000000000
+          Size.Width = 50.000000000000000000
+          Size.Height = 25.000000000000000000
+          Size.PlatformDefault = False
+        end
+        object LinePriceLow: TLine
+          LineType = Top
+          Position.X = 3.000000000000000000
+          Position.Y = 256.000000000000000000
+          Size.Width = 50.000000000000000000
+          Size.Height = 25.000000000000000000
+          Size.PlatformDefault = False
+        end
+      end
+      object LayoutBar: TLayout
+        Align = Client
+        Size.Width = 57.000000000000000000
+        Size.Height = 465.000000000000000000
+        Size.PlatformDefault = False
+        TabOrder = 0
+      end
+    end
+  end
+end
