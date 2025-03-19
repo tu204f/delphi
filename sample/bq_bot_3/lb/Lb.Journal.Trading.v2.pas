@@ -78,8 +78,8 @@ type
     FUserKey: String;
     FInfoValue: String;
   private
-    FFeeRatesTakerSL: Double;
-    FFeeRatesTakerTK: Double;
+    FRatesSL: Double;
+    FRatesTK: Double;
   private
     FTriling: Double;
     FStopLoss: Double;
@@ -88,13 +88,21 @@ type
     function GetFeeRatesTaker: Double;
     function GetProfitFeeRatesMaker: Double;
     function GetProfitFeeRatesTaker: Double;
+  private
+    procedure CloseOrder(APrice: Double);
+    procedure CalcProfit(const APrice: Double);
+    procedure CalcTrilingStopLoss(const APrice: Double);
+    procedure ActiveStopLoss(APrice: Double);
+    procedure ActiveTakeProfit(APrice: Double);
+    procedure SetRatesSL(APrice: Double);
+    procedure SetRatesTK(APrice: Double);
   public
     constructor Create; virtual;
     destructor Destroy; override;
     procedure SetUpData(const APrice: Double = 0);
     procedure DoOpen;
     procedure DoClose;
-  public
+  public {Параметры открытой позиции}
     property TypeTrade: TTypeTrade read FTypeTrade write FTypeTrade;
     property IsActive: Boolean read FIsActive write FIsActive;
     property OpenTime: TDateTime read FOpenTime write FOpenTime;
@@ -103,19 +111,32 @@ type
     property ClosePrice: Double read FClosePrice write FClosePrice;
     property Side: TTypeBuySell read FSide write FSide;
     property Qty: Double read FQty write FQty;
-    property Profit: Double read FProfit write FProfit;
-    property MaxProfit: Double read FMaxProfit write FMaxProfit;
-    property MinProfit: Double read FMinProfit write FMinProfit;
-    property Triling: Double read FTriling write FTriling;
-    property StopLoss: Double read FStopLoss write FStopLoss;
-    property TakeProfit: Double read FTakeProfit write FTakeProfit;
     property UserKey: String read FUserKey write FUserKey;
     property InfoValue: String read FInfoValue write FInfoValue;
-  public
-    property FeeRatesTakerSL: Double read FFeeRatesTakerSL write FFeeRatesTakerSL;
-    property FeeRatesTakerTK: Double read FFeeRatesTakerTK write FFeeRatesTakerTK;
+  public {Предельные значение позиции}
+    property Profit: Double read FProfit;
+    property MaxProfit: Double read FMaxProfit;
+    property MinProfit: Double read FMinProfit;
+  public {Условия позиции}
+    ///<summary>
+    /// Значение скользящий стоп лосс
+    ///</summary>
+    property Triling: Double read FTriling write FTriling;
+    ///<summary>
+    /// Ценна фиксации убытка
+    ///</summary>
+    property StopLoss: Double read FStopLoss write FStopLoss;
+    ///<summary>
+    /// Ценна фиксации прибыли
+    ///</summary>
+    property TakeProfit: Double read FTakeProfit write FTakeProfit;
+  public {С учетом комиссии биржи}
+    property RatesSL: Double read FRatesSL write FRatesSL;
+    property RatesTK: Double read FRatesTK write FRatesTK;
+
     property FeeRatesTaker: Double read GetFeeRatesTaker;
     property FeeRatesMaker: Double read GetFeeRatesMaker;
+
     property ProfitFeeRatesTaker: Double read GetProfitFeeRatesTaker;
     property ProfitFeeRatesMaker: Double read GetProfitFeeRatesMaker;
   public
@@ -257,8 +278,8 @@ begin
   FStopLoss := 0;
   FTakeProfit := 0;
   FUserKey := '';
-  FFeeRatesTakerSL := 0;
-  FFeeRatesTakerTK := 0;
+  FRatesSL := 0;
+  FRatesTK := 0;
   FInfoValue := '';
 end;
 
@@ -324,156 +345,158 @@ begin
     FOnClose(Self);
 end;
 
+procedure TJournalPosition.CalcProfit(const APrice: Double);
+begin
+  case FTypeTrade of
+    ttOpen: begin
+      case FSide of
+        tsBuy: FProfit := (APrice - FOpenPrice) * FQty;
+        tsSell: FProfit := (FOpenPrice - APrice) * FQty;
+      end;
+    end;
+    ttClose: begin
+      if FClosePrice <= 0 then
+        raise Exception.Create('Error Message: Цена закрытие не может быть нулейо ');
+      case FSide of
+        tsBuy: FProfit := (FClosePrice - FOpenPrice) * FQty;
+        tsSell: FProfit := (FOpenPrice - FClosePrice) * FQty;
+      end;
+    end;
+  end;
+  FProfit := GetRound(FProfit);
+
+  if FMaxProfit < FProfit then
+    FMaxProfit := FProfit;
+  if FMinProfit > FProfit then
+    FMinProfit := FProfit;
+end;
+
+
+procedure TJournalPosition.CalcTrilingStopLoss(const APrice: Double);
+var
+  xStopLoss: Double;
+begin
+  if FTriling <= 0 then
+    Exit;
+
+  if FTypeTrade = TTypeTrade.ttOpen then
+  begin
+    case FSide of
+      tsBuy: begin
+        xStopLoss := APrice - FTriling;
+        if xStopLoss > FStopLoss then
+          FStopLoss := xStopLoss;
+      end;
+      tsSell: begin
+        xStopLoss := APrice + FTriling;
+        if FStopLoss = 0  then
+          FStopLoss := xStopLoss;
+        if xStopLoss < FStopLoss then
+          FStopLoss := xStopLoss;
+        if FStopLoss <= 0 then
+          raise Exception.Create('Error Message: Стоп лосс не может быть нулевым');
+      end;
+    end;
+  end;
+end;
+
+procedure TJournalPosition.CloseOrder(APrice: Double);
+begin
+
+  if APrice <= 0 then
+    raise Exception.Create('Error Message: Закрываем позицию, а цена нулевая ');
+
+  CloseTime := GetNewDateTime;
+  ClosePrice := APrice;
+  IsActive := False;
+  TypeTrade := TTypeTrade.ttClose;
+  DoClose;
+end;
+
+procedure TJournalPosition.ActiveTakeProfit(APrice: Double);
+begin
+  if FTakeProfit <= 0 then
+    Exit;
+
+  if FTypeTrade = TTypeTrade.ttOpen then
+  begin
+    case FSide of
+      tsBuy: begin
+        if APrice > FTakeProfit then
+        begin
+          CloseTime := GetNewDateTime;
+          ClosePrice := APrice;
+          IsActive := False;
+          TypeTrade := TTypeTrade.ttClose;
+          DoClose;
+        end;
+      end;
+      tsSell: begin
+        if APrice < FTakeProfit then
+        begin
+          CloseTime := GetNewDateTime;
+          ClosePrice := APrice;
+          IsActive := False;
+          TypeTrade := TTypeTrade.ttClose;
+          DoClose;
+        end;
+      end;
+    end;
+  end;
+end;
+
+
+procedure TJournalPosition.ActiveStopLoss(APrice: Double);
+begin
+  if FStopLoss <= 0 then
+    Exit;
+
+  if FTypeTrade = TTypeTrade.ttOpen then
+  begin
+    case FSide of
+      tsBuy: begin
+        if APrice < FStopLoss then
+          CloseOrder(APrice);
+      end;
+      tsSell: begin
+        if APrice > FStopLoss then
+          CloseOrder(APrice);
+      end;
+    end;
+  end;
+end;
+
+procedure TJournalPosition.SetRatesSL(APrice: Double);
+begin
+  if FRatesSL = 0 then
+    Exit;
+  if Self.Profit < (-1 * FRatesSL) then
+    CloseOrder(APrice);
+end;
+
+procedure TJournalPosition.SetRatesTK(APrice: Double);
+begin
+  if FRatesTK = 0 then
+    Exit;
+  if Self.Profit > FRatesTK then
+    CloseOrder(APrice);
+end;
+
 procedure TJournalPosition.SetUpData(const APrice: Double);
-
-  procedure _CalcProfit(const APrice: Double);
-  begin
-    case FTypeTrade of
-      ttOpen: begin
-        case FSide of
-          tsBuy: FProfit := (APrice - FOpenPrice) * FQty;
-          tsSell: FProfit := (FOpenPrice - APrice) * FQty;
-        end;
-      end;
-      ttClose: begin
-        if FClosePrice <= 0 then
-          raise Exception.Create('Error Message: Цена закрытие не может быть нулейо ');
-        case FSide of
-          tsBuy: FProfit := (FClosePrice - FOpenPrice) * FQty;
-          tsSell: FProfit := (FOpenPrice - FClosePrice) * FQty;
-        end;
-      end;
-    end;
-    FProfit := GetRound(FProfit);
-
-    if FMaxProfit < FProfit then
-      FMaxProfit := FProfit;
-    if FMinProfit > FProfit then
-      FMinProfit := FProfit;
-  end;
-
-  procedure _CalcTrelingStopLoss(const APrice: Double);
-  var
-    xStopLoss: Double;
-  begin
-    if FTriling <= 0 then
-      Exit;
-
-    if FTypeTrade = TTypeTrade.ttOpen then
-    begin
-      case FSide of
-        tsBuy: begin
-          xStopLoss := APrice - FTriling;
-          if xStopLoss > FStopLoss then
-            FStopLoss := xStopLoss;
-        end;
-        tsSell: begin
-          xStopLoss := APrice + FTriling;
-          if FStopLoss = 0  then
-            FStopLoss := xStopLoss;
-          if xStopLoss < FStopLoss then
-            FStopLoss := xStopLoss;
-          if FStopLoss <= 0 then
-            raise Exception.Create('Error Message: Стоп лосс не может быть нулевым');
-        end;
-      end;
-    end;
-  end;
-
-  procedure _ActiveTakeProfit(APrice: Double);
-  begin
-    if FTakeProfit <= 0 then
-      Exit;
-
-    if FTypeTrade = TTypeTrade.ttOpen then
-    begin
-      case FSide of
-        tsBuy: begin
-          if APrice > FTakeProfit then
-          begin
-            CloseTime := GetNewDateTime;
-            ClosePrice := APrice;
-            IsActive := False;
-            TypeTrade := TTypeTrade.ttClose;
-            DoClose;
-          end;
-        end;
-        tsSell: begin
-          if APrice < FTakeProfit then
-          begin
-            CloseTime := GetNewDateTime;
-            ClosePrice := APrice;
-            IsActive := False;
-            TypeTrade := TTypeTrade.ttClose;
-            DoClose;
-          end;
-        end;
-      end;
-    end;
-  end;
-
-  procedure _CloseOrder(APrice: Double);
-  begin
-    if APrice <= 0 then
-      raise Exception.Create('Error Message: Закрываем позицию, а цена нулевая ');
-
-    CloseTime := GetNewDateTime;
-    ClosePrice := APrice;
-    IsActive := False;
-    TypeTrade := TTypeTrade.ttClose;
-    DoClose;
-  end;
-
-  procedure _ActiveStopLoss(APrice: Double);
-  begin
-    if FStopLoss <= 0 then
-      Exit;
-
-    if FTypeTrade = TTypeTrade.ttOpen then
-    begin
-      case FSide of
-        tsBuy: begin
-          if APrice < FStopLoss then
-            _CloseOrder(APrice);
-        end;
-        tsSell: begin
-          if APrice > FStopLoss then
-            _CloseOrder(APrice);
-        end;
-      end;
-    end;
-  end;
-
-
-  procedure _SetFeeRatesTakerSL(APrice: Double);
-  begin
-    if FFeeRatesTakerSL = 0 then
-      Exit;
-    if Self.ProfitFeeRatesTaker < FFeeRatesTakerSL then
-      _CloseOrder(APrice);
-  end;
-
-  procedure _SetFeeRatesMakerTK(APrice: Double);
-  begin
-    if FFeeRatesTakerTK = 0 then
-      Exit;
-    if Self.ProfitFeeRatesTaker > FFeeRatesTakerTK then
-      _CloseOrder(APrice);
-  end;
 
 begin
   if FOpenPrice <= 0 then
     raise Exception.Create('Error Message: Нет цены открытие');
 
-
-  _CalcProfit(APrice);
+  // Вычисляем профит
+  CalcProfit(APrice);
   if FTypeTrade = TTypeTrade.ttOpen then
   begin
-    _CalcTrelingStopLoss(APrice);
-    _ActiveTakeProfit(APrice);
-    _ActiveStopLoss(APrice);
-    _SetFeeRatesTakerSL(APrice);
-    _SetFeeRatesMakerTK(APrice);
+    CalcTrilingStopLoss(APrice); // Смещаем цену сто лосса
+    ActiveTakeProfit(APrice);    // Активация таке профита
+    ActiveStopLoss(APrice);      // Активация стоп лосса
+    SetRatesSL(APrice);          // Закрытие по профита значение Стоп Лосса
+    SetRatesTK(APrice);          // Закрытие по профита значение Таке Профит
   end;
 end;
 

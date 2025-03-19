@@ -930,12 +930,13 @@ function TValueVolatility.GetRate(const AFromRate, AToRate, AStep: Double; const
   var
     xCandel: TCandel;
     xTouchCount: Integer;
-    xDeltaHigh, xDeltaLow: Double;
+    xDeltaHigh: Double;
     xDeviationValue: Double;
   begin
     Result := False;
     xDeviationValue := AValueRate * Self.DeviationValue;
     xTouchCount := 0;
+
     for xCandel in FCandels do
     begin
       xDeltaHigh := xCandel.High - xCandel.Open;
@@ -953,7 +954,7 @@ function TValueVolatility.GetRate(const AFromRate, AToRate, AStep: Double; const
   var
     xCandel: TCandel;
     xTouchCount: Integer;
-    xDeltaHigh, xDeltaLow: Double;
+    xDeltaLow: Double;
     xDeviationValue: Double;
   begin
     Result := False;

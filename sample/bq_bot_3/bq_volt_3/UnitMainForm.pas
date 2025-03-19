@@ -2,7 +2,7 @@ unit UnitMainForm;
 
 interface
 
-
+{$I debug_volt.inc}
 
 uses
   System.SysUtils, System.Types, System.UITypes, System.Classes, System.Variants,
@@ -46,11 +46,10 @@ type
     MenuItemSaveFile: TMenuItem;
     StringGridCandel: TStringGrid;
     MemoLog: TMemo;
+    TabItemTrade2: TTabItem;
     procedure ButtonStartOrStopClick(Sender: TObject);
     procedure FormShow(Sender: TObject);
   private
-//    procedure WorkBotOnСrossingHigh(Sender: TObject);
-//    procedure WorkBotOnСrossingLow(Sender: TObject);
     procedure TradingPlatformOnStateMarket(ASender: TObject; AStateMarket: TStateMarket);
     procedure TradingPlatformOnNewCandel(Sender: TObject);
     procedure TradingPlatformOnMsgInfo(ASender: TObject; AMsg: String);
@@ -60,6 +59,7 @@ type
     procedure LogMsg(const S: WideString);
   public
     WorkBotPanelFrame: TWorkBotPanelFrame;
+    WorkBotPanelReversFrame: TWorkBotPanelFrame;
     TradingPlatform: TTradingPlatform;
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
@@ -77,6 +77,7 @@ uses
   Lb.Logger,
 {$ENDIF}
   System.DateUtils;
+
 
 constructor TMainForm.Create(AOwner: TComponent);
 
@@ -114,7 +115,7 @@ begin
   // 'ldfYDnYhlVU5SU7w89mOnaHi0icy8XctNXtT';
   TPlatfomBybit(TradingPlatform).ApiKey := 't0YI4Ou0TKOTd7WrkE';
   TPlatfomBybit(TradingPlatform).ApiSecret := 'dWcdTGIulDoKOiK4mggPQIkYwmMFGxvFVusp';
-  TPlatfomBybit(TradingPlatform).Interval  := TTypeInterval.ti_1;
+  TPlatfomBybit(TradingPlatform).Interval  := TTypeInterval.ti_5;
 
 
   // *************************************************************************
@@ -124,6 +125,18 @@ begin
   WorkBotPanelFrame.Parent := TabItemTrade1;
   WorkBotPanelFrame.Align := TAlignLayout.Client;
   WorkBotPanelFrame.MainFormLog := Self;
+  WorkBotPanelFrame.WorkBot.Rate := 1;
+  WorkBotPanelFrame.WorkBot.IsRevers := False;
+
+  // ************************************************************************
+  // Обратная торговая стратегия
+  WorkBotPanelReversFrame := TWorkBotPanelFrame.Create(nil);
+  WorkBotPanelReversFrame.TradingPlatform := TradingPlatform;
+  WorkBotPanelReversFrame.Parent := TabItemTrade2;
+  WorkBotPanelReversFrame.Align := TAlignLayout.Client;
+  WorkBotPanelReversFrame.MainFormLog := Self;
+  WorkBotPanelReversFrame.WorkBot.Rate := 1;
+  WorkBotPanelReversFrame.WorkBot.IsRevers := True;
 end;
 
 destructor TMainForm.Destroy;
@@ -176,43 +189,18 @@ end;
 
 procedure TMainForm.TradingPlatformOnMsgInfo(ASender: TObject; AMsg: String);
 begin
+  {todo: сообщение работы}
   LogMsg('MsgInfo: ' + AMsg);
 end;
 
 procedure TMainForm.TradingPlatformOnNewCandel(Sender: TObject);
 begin
+  {todo: новая свеча}
   WorkBotPanelFrame.TradingPlatformNewCandel;
+  WorkBotPanelReversFrame.TradingPlatformNewCandel;
 end;
 
 procedure TMainForm.TradingPlatformOnStateMarket(ASender: TObject; AStateMarket: TStateMarket);
-
-  procedure _SetUpDataPosition(AJournalManager: TJournalManager);
-  var
-    i, iCount: Integer;
-    xPosition: TJournalPosition;
-  begin
-    iCount := AJournalManager.Positions.Count;
-    if iCount > 0 then
-      for i := iCount - 1 downto 0 do
-      begin
-        xPosition := AJournalManager.Positions[i];
-        if xPosition.TypeTrade = TTypeTrade.ttOpen then
-        begin
-          case xPosition.Side of
-            TTypeBuySell.tsBuy: begin
-              var xPrice := TradingPlatform.StateMarket.Bid;
-              if xPrice > 0 then
-                xPosition.SetUpData(xPrice);
-            end;
-            TTypeBuySell.tsSell: begin
-              var xPrice := TradingPlatform.StateMarket.Ask;
-              if xPrice > 0 then
-                xPosition.SetUpData(xPrice);
-            end;
-          end;
-        end;
-      end;
-  end;
 
   procedure _ShowCandel;
   var
@@ -234,38 +222,65 @@ procedure TMainForm.TradingPlatformOnStateMarket(ASender: TObject; AStateMarket:
       end;
   end;
 
-  procedure _ShowProfit(const AJournalManager: TJournalManager; var ASumValue1, ASumValue2, ASumValue3: Double);
+  procedure _SaveTakt(const AAsk, ABid, ADeviationValue: Double; ACandel: TCandel);
   var
-    i, Count: Integer;
-    xPosition: TJournalPosition;
+    xS: String;
+    xPath: String;
+    F: TextFile;
   begin
-    ASumValue1 := 0;
-    ASumValue2 := 0;
-    ASumValue3 := 0;
-    Count := AJournalManager.Positions.Count;
-    if Count > 0 then
-      for i := 0 to Count - 1 do
-      begin
-        xPosition := AJournalManager.Positions[i];
-        ASumValue1 := ASumValue1 + xPosition.Profit;
-        ASumValue2 := ASumValue2 + xPosition.ProfitFeeRatesTaker;
-        ASumValue3 := ASumValue3 + xPosition.ProfitFeeRatesMaker;
-      end;
+    xS := AAsk.ToString + ';' + ABid.ToString + ';' + ADeviationValue.ToString + ';';
+    xS := xS + ACandel.Time.ToString + ';';
+    xS := xS + DateTimeToStr(UnixToDateTime(ACandel.Time)) + ';';
+    xS := xS + ACandel.Open.ToString + ';';
+    xS := xS + ACandel.High.ToString + ';';
+    xS := xS + ACandel.Low.ToString + ';';
+    xS := xS + ACandel.Close.ToString + ';';
+    xS := xS + ACandel.Vol.ToString + ';';
+    xS := xS + 'endl';
+
+    xPath := ExtractFilePath(ParamStr(0)) + 'history.txt';
+    AssignFile(f,xPath);
+    if FileExists(xPath) then
+      Append(F)
+    else
+      Rewrite(F);
+    WriteLn(F, xS);
+    CloseFile(F);
   end;
 
 begin
   // **************************************************************************
   // Оценка состояния рынка
-  TextStatus.Text := 'Price: ' + TradingPlatform.StateMarket.Ask.ToString + '/' + TradingPlatform.StateMarket.Bid.ToString + ';';
+  TextStatus.Text :=
+    'Price: ' +
+    TradingPlatform.StateMarket.Ask.ToString + '/' +
+    TradingPlatform.StateMarket.Bid.ToString + ';';
+
+  if AStateMarket.Candels.Count > 0 then
+  begin
+    _SaveTakt(
+      AStateMarket.Ask,
+      AStateMarket.Bid,
+      TradingPlatform.ValueVolatility.DeviationValue,
+      AStateMarket.Candels.FirstCandel
+    );
+  end;
+
 
   // *************************************************************************
   // Исторические данные
   _ShowCandel;
 
+{$IFDEF DBG_TRADING}
+  TLogger.LogText('*',80);
+  TLogger.LogTree(0,'BEGIN.TradingPlatform');
+{$ENDIF}
   WorkBotPanelFrame.TradingPlatformStateMarket(AStateMarket);
+  WorkBotPanelReversFrame.TradingPlatformStateMarket(AStateMarket);
+{$IFDEF DBG_TRADING}
+  TLogger.LogTree(0,'END.TradingPlatform');
+{$ENDIF}
 end;
-
-
 
 
 end.

@@ -218,9 +218,10 @@
             <FormType>fmx</FormType>
             <DesignClass>TFrame</DesignClass>
         </DCCReference>
-        <DCCReference Include="..\lb\Lb.Crossing.pas"/>
+        <DCCReference Include="..\lb\Lb.Breakdown.pas"/>
         <DCCReference Include="..\lb\Lb.Bot.V4.pas"/>
         <None Include="..\lb\debug.inc"/>
+        <None Include="debug_volt.inc"/>
         <BuildConfiguration Include="Release">
             <Key>Cfg_2</Key>
             <CfgParent>Base</CfgParent>
@@ -268,6 +269,12 @@
                 </DeployFile>
                 <DeployFile LocalName="..\lb\debug.inc" Configuration="Debug" Class="ProjectFile">
                     <Platform Name="Win64">
+                        <RemoteDir>.\</RemoteDir>
+                        <Overwrite>true</Overwrite>
+                    </Platform>
+                </DeployFile>
+                <DeployFile LocalName="debug_volt.inc" Configuration="Debug" Class="ProjectFile">
+                    <Platform Name="Win32">
                         <RemoteDir>.\</RemoteDir>
                         <Overwrite>true</Overwrite>
                     </Platform>

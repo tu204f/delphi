@@ -20,7 +20,7 @@ uses
   Lb.Platform,
   Lb.SysUtils,
   Lb.Bot.V4,
-  Lb.Crossing;
+  Lb.Breakdown;
 
 type
   TWorkBotFrame =  class(TFrame)
@@ -35,10 +35,10 @@ type
     LinePriceLow: TLine;
     TextPriceLow: TText;
     TextPriceHigh: TText;
-    TextInfo: TText;
     LayoutPrice: TLayout;
-    TextValueHL: TText;
     LineOpen: TLine;
+    Timer1: TTimer;
+    procedure Timer1Timer(Sender: TObject);
   public const
     LEFT_CONTROL = 10;
     LINE_PRICE = 23;
@@ -47,23 +47,23 @@ type
     FOpenBuySell: Char;
   private
     FRateMax: Double;
-    FWorkBot: TWorkBotDeviation;
+    FBreakdown: TBreakdown;
     FTradingPlatform: TTradingPlatform;
-    procedure SetWorkBot(const Value: TWorkBotDeviation);
+    procedure SetBreakdown(const ABreakdown: TBreakdown);
     procedure SetParamPriceLimit;
   protected
     FPriceHighMax: Double;
     FPriceLowMin: Double;
     function GetPriceToY(const APrice: Double): Single;
   protected
-    procedure EventParamValue(const AWorkBot: TWorkBotDeviation);
-    procedure EventCrossingValue(ASender: TObject; APrice: Double; ATypeCrossing: TTypeCrossing);
+    procedure EventParamValue;
   public
     MainFormLog: IMainFormLog;
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
+    procedure SetUpDataWorkBot;
     property TradingPlatform: TTradingPlatform read FTradingPlatform write FTradingPlatform;
-    property WorkBot: TWorkBotDeviation read FWorkBot write SetWorkBot;
+    property Breakdown: TBreakdown read FBreakdown write SetBreakdown;
   end;
 
 implementation
@@ -75,7 +75,7 @@ implementation
 constructor TWorkBotFrame.Create(AOwner: TComponent);
 begin
   inherited;
-  FWorkBot := nil;
+  FBreakdown := nil;
   FTradingPlatform := nil;
   MainFormLog := nil;
 
@@ -90,10 +90,10 @@ begin
   inherited;
 end;
 
-procedure TWorkBotFrame.SetWorkBot(const Value: TWorkBotDeviation);
+procedure TWorkBotFrame.SetBreakdown(const ABreakdown: TBreakdown);
 begin
-  FWorkBot := Value;
-  FWorkBot.OnCrossingValue := EventCrossingValue;
+  FBreakdown := ABreakdown;
+  //FWorkBot.OnCrossingValue := EventCrossingValue;
 end;
 
 procedure TWorkBotFrame.SetParamPriceLimit;
@@ -101,15 +101,15 @@ var
   xCandel: TCandel;
 begin
   // Максимальный значение работы
-  FPriceHighMax := FWorkBot.PriceHigh + FWorkBot.Deviation;
-  FPriceLowMin  := FWorkBot.PriceLow  - FWorkBot.Deviation;
+  FPriceHighMax := FBreakdown.PriceHigh + FBreakdown.Deviation;
+  FPriceLowMin  := FBreakdown.PriceLow  - FBreakdown.Deviation;
 
-  xCandel := FWorkBot.Candel;
+  xCandel := FBreakdown.Candel;
   if FPriceHighMax < xCandel.High then
-    FPriceHighMax := xCandel.High + FWorkBot.Deviation;
+    FPriceHighMax := xCandel.High + FBreakdown.Deviation;
   
   if FPriceLowMin > xCandel.Low then
-    FPriceLowMin := xCandel.Low - FWorkBot.Deviation;
+    FPriceLowMin := xCandel.Low - FBreakdown.Deviation;
 end;
 
 function TWorkBotFrame.GetPriceToY(const APrice: Double): Single;
@@ -126,7 +126,7 @@ begin
     Result := 0;
 end;
 
-procedure TWorkBotFrame.EventParamValue(const AWorkBot: TWorkBotDeviation);
+procedure TWorkBotFrame.EventParamValue;
 
   function _MaxValue(const APrice1, APrice2: Double): Double;
   begin
@@ -149,11 +149,11 @@ procedure TWorkBotFrame.EventParamValue(const AWorkBot: TWorkBotDeviation);
     xCandel: TCandel;
     xPriceHighY, xPriceLowY, xPriceOpenY, xPriceCloseY: Single;
   begin
-    if not Assigned(FWorkBot) then
+    if not Assigned(FBreakdown) then
       Exit;
 
     {todo: Если вдруг приодовается предель. Сейчас это не так важно}
-    xCandel      := FWorkBot.Candel;
+    xCandel      := FBreakdown.Candel;
     xPriceHighY  := GetPriceToY(xCandel.High);
     xPriceLowY   := GetPriceToY(xCandel.Low);
     xPriceOpenY  := GetPriceToY(_MinValue(xCandel.Open, xCandel.Close));
@@ -202,11 +202,11 @@ procedure TWorkBotFrame.EventParamValue(const AWorkBot: TWorkBotDeviation);
   var
     xPriceHighY, xPriceLowY: Single;
   begin
-    TextPriceHigh.Text := FWorkBot.PriceHigh.ToString;
-    TextPriceLow.Text  := FWorkBot.PriceLow.ToString;
+    TextPriceHigh.Text := FBreakdown.PriceHigh.ToString;
+    TextPriceLow.Text  := FBreakdown.PriceLow.ToString;
 
-    xPriceHighY := GetPriceToY(FWorkBot.PriceHigh) - LINE_PRICE;
-    xPriceLowY  := GetPriceToY(FWorkBot.PriceLow);
+    xPriceHighY := GetPriceToY(FBreakdown.PriceHigh) - LINE_PRICE;
+    xPriceLowY  := GetPriceToY(FBreakdown.PriceLow);
 
     LinePriceHigh.SetBounds(
       LEFT_CONTROL,
@@ -223,56 +223,22 @@ procedure TWorkBotFrame.EventParamValue(const AWorkBot: TWorkBotDeviation);
     );
   end;
 
-var
-  xProfit, xClosePrice: Double;
 begin
   SetParamPriceLimit;
 
   _LayoutHighLowPriceMax;
   _LayoutHighLowPrice;
-
-  case FOpenBuySell of
-    'B': begin
-      xClosePrice := FTradingPlatform.StateMarket.Bid;
-      xProfit := xClosePrice - FOpenPrice;
-    end;
-    'S': begin
-      FOpenBuySell := 'S';
-      xClosePrice := FTradingPlatform.StateMarket.Ask;
-      xProfit := FOpenPrice - xClosePrice;
-    end;
-  end;
-
-  xProfit := GetRound(xProfit);
-  TextInfo.Text := 'P[' + FOpenBuySell + ']: ' + xProfit.ToString;
-  if xProfit > 0 then
-  begin
-    TextInfo.TextSettings.FontColor := TAlphaColorRec.Green;
-  end
-  else if xProfit < 0 then
-  begin
-    TextInfo.TextSettings.FontColor := TAlphaColorRec.Red;
-  end
-  else
-  begin
-    TextInfo.TextSettings.FontColor := TAlphaColorRec.Black;
-  end;
-
-  TextValueHL.Text := 'new_candel: ' + FWorkBot.CountValue.ToString;
 end;
 
-procedure TWorkBotFrame.EventCrossingValue(ASender: TObject; APrice: Double; ATypeCrossing: TTypeCrossing);
+procedure TWorkBotFrame.SetUpDataWorkBot;
 begin
-  case ATypeCrossing of
-    tcHigh: begin
-      FOpenBuySell := 'B';
-      FOpenPrice := FTradingPlatform.StateMarket.Ask;
-    end;
-    tcLow: begin
-      FOpenBuySell := 'S';
-      FOpenPrice := FTradingPlatform.StateMarket.Bid;
-    end;
-  end;
+  EventParamValue;
+end;
+
+
+procedure TWorkBotFrame.Timer1Timer(Sender: TObject);
+begin
+  SetUpDataWorkBot;
 end;
 
 end.

@@ -19,7 +19,7 @@ uses
   UnitWorkBotFrame in 'frame\UnitWorkBotFrame.pas' {WorkBotFrame: TFrame},
   Lb.Bot.V3 in '..\lb\Lb.Bot.V3.pas',
   UnitWorkBotPanelFrame in 'frame\UnitWorkBotPanelFrame.pas' {WorkBotPanelFrame: TFrame},
-  Lb.Crossing in '..\lb\Lb.Crossing.pas',
+  Lb.Breakdown in '..\lb\Lb.Breakdown.pas',
   Lb.Bot.V4 in '..\lb\Lb.Bot.V4.pas';
 
 {$R *.res}

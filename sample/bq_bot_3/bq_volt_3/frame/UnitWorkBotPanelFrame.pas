@@ -2,6 +2,8 @@ unit UnitWorkBotPanelFrame;
 
 interface
 
+{$I debug_volt.inc}
+
 uses
   System.SysUtils,
   System.Types,
@@ -27,6 +29,8 @@ uses
   UnitWorkBotFrame,
 
   Lb.Bot.V4,
+  Lb.Breakdown,
+
   Lb.SysUtils,
   Lb.Bybit.SysUtils,
   Lb.Platform,
@@ -37,36 +41,36 @@ type
   TWorkBotPanelFrame = class(TFrame)
     LayoutWork: TLayout;
     RectangleWork: TRectangle;
-    EditRate: TEdit;
+    EditDeviationValue: TEdit;
     LayoutWorkBot: TLayout;
     PositionGrid: TStringGrid;
     EditProfitFeeRatesMaker: TEdit;
     EditProfitFeeRatesTaker: TEdit;
     EditProfit: TEdit;
+    LayoutStatusMarket: TLayout;
+    RectangleStatusMarket: TRectangle;
+    EditNewCandel: TEdit;
+    EditUpDataCandel: TEdit;
   private
     FMainFormLog: IMainFormLog;
     procedure SetLog(S: String);
   private
-    FWorkBot: TWorkBotDeviation;
-    FTradingPlatform: TTradingPlatform;
-    FJournalManager: TJournalManager;
+    FWorkBot: TWorkBot;
     FWorkBotFrame: TWorkBotFrame;
+    FTradingPlatform: TTradingPlatform;
     procedure SetTradingPlatform(const Value: TTradingPlatform);
-    function GetQty: Double;
   protected
-    procedure PositionClose(ASander: TObject);
-  protected
-    procedure OpenPositionBuy;
-    procedure OpenPositionSell;
-    procedure ClosePosition;
+    FCountNewCandel: Integer;
+    FCountUpDataCandel: Integer;
   public
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
+
     procedure TradingPlatformNewCandel;
     procedure TradingPlatformStateMarket(AStateMarket: TStateMarket);
+
     property MainFormLog: IMainFormLog write FMainFormLog;
-    property JournalManager: TJournalManager read FJournalManager;
-    property WorkBot: TWorkBotDeviation write FWorkBot;
+    property WorkBot: TWorkBot read FWorkBot write FWorkBot;
     property TradingPlatform: TTradingPlatform read FTradingPlatform write SetTradingPlatform;
   end;
 
@@ -102,42 +106,50 @@ constructor TWorkBotPanelFrame.Create(AOwner: TComponent);
     SetAddColumn(PositionGrid,'Side');
     SetAddColumn(PositionGrid,'SL');
     SetAddColumn(PositionGrid,'TK');
-    SetAddColumn(PositionGrid,'Profit');
     SetAddColumn(PositionGrid,'TypeTrade');
+    SetAddColumn(PositionGrid,'Profit');
+    SetAddColumn(PositionGrid,'MaxProfit');
+    SetAddColumn(PositionGrid,'MinProfit');
     SetAddColumn(PositionGrid,'FeeRatesTaker');
     SetAddColumn(PositionGrid,'FeeRatesMaker');
   end;
 
 begin
   inherited;
+
+  FCountNewCandel := 0;
+  FCountUpDataCandel := 0;
+
   SetShowPositionGrid;
 
   FMainFormLog := nil;
-  FWorkBot := TWorkBotDeviation.Create;
-  FWorkBot.OnCrossingValue := WorkBotOn—rossingLevel;
-
-
-  FJournalManager := TJournalManager.Create;
+  FWorkBot := TWorkBot.Create;
+  FWorkBot.Rate := 1;
 
   FWorkBotFrame := TWorkBotFrame.Create(nil);
   FWorkBotFrame.Parent := LayoutWorkBot;
   FWorkBotFrame.Align := TAlignLayout.Client;
-  FWorkBotFrame.WorkBot := FWorkBot;
+  FWorkBotFrame.Breakdown := FWorkBot.Breakdown;
 
   LayoutWorkBot.Visible := False;
 end;
 
 destructor TWorkBotPanelFrame.Destroy;
 begin
-  FreeAndNil(FJournalManager);
   FreeAndNil(FWorkBot);
   inherited;
 end;
 
 procedure TWorkBotPanelFrame.TradingPlatformNewCandel;
 begin
-  LayoutWorkBot.Visible := True;
-  FWorkBot.SetNewCandel;
+  Inc(FCountNewCandel);
+  FCountUpDataCandel := 0;
+
+  EditNewCandel.Text := FCountNewCandel.ToString;
+  EditUpDataCandel.Text := FCountUpDataCandel.ToString;
+
+  if Assigned(FTradingPlatform) then
+    FWorkBot.SetTradingNewCandel;
 end;
 
 procedure TWorkBotPanelFrame.TradingPlatformStateMarket(AStateMarket: TStateMarket);
@@ -179,8 +191,10 @@ procedure TWorkBotPanelFrame.TradingPlatformStateMarket(AStateMarket: TStateMark
 
         // œË·˚Î¸ Ò ‚ÓÁÏÓÊÌÓÈ ÍÓÏËÒÒËÂ
         AGrid.Cells[10,i] := FloatToStr(xPosition.Profit);
-        AGrid.Cells[11,i] := FloatToStr(xPosition.ProfitFeeRatesTaker);
-        AGrid.Cells[12,i] := FloatToStr(xPosition.ProfitFeeRatesMaker);
+        AGrid.Cells[11,i] := FloatToStr(xPosition.MaxProfit);
+        AGrid.Cells[12,i] := FloatToStr(xPosition.MinProfit);
+        AGrid.Cells[13,i] := FloatToStr(xPosition.ProfitFeeRatesTaker);
+        AGrid.Cells[14,i] := FloatToStr(xPosition.ProfitFeeRatesMaker);
       end;
   end;
 
@@ -222,8 +236,8 @@ procedure TWorkBotPanelFrame.TradingPlatformStateMarket(AStateMarket: TStateMark
         if xPosition.TypeTrade = TTypeTrade.ttOpen then
         begin
           case xPosition.Side of
-            TTypeBuySell.tsBuy: xPosition.SetUpData(TradingPlatform.StateMarket.Bid);
-            TTypeBuySell.tsSell: xPosition.SetUpData(TradingPlatform.StateMarket.Ask);
+            TTypeBuySell.tsBuy: xPosition.SetUpData(FTradingPlatform.StateMarket.Bid);
+            TTypeBuySell.tsSell: xPosition.SetUpData(FTradingPlatform.StateMarket.Ask);
           end;
         end;
       end;
@@ -231,24 +245,26 @@ procedure TWorkBotPanelFrame.TradingPlatformStateMarket(AStateMarket: TStateMark
 
 var
   xRate: Double;
-  xParam: TWorkBotDeviation.TParam;
+  xCandel: TCandel;
 begin
-  _ShowJournalManager(PositionGrid,FJournalManager);
+{$IFDEF DBG_STATE_MARKET}
+  TLogger.LogTree(0,'TWorkBotPanelFrame.TradingPlatformStateMarket: —ÓÒÚÓˇÌËÂ ˚ÌÍ‡');
+{$ENDIF}
+  LayoutWorkBot.Visible := True;
 
-  EditRate.Text := '';
-  if AStateMarket.Candels.Count > 0 then
+  Inc(FCountUpDataCandel);
+  EditNewCandel.Text := FCountNewCandel.ToString;
+  EditUpDataCandel.Text := FCountUpDataCandel.ToString;
+
+  if Assigned(FTradingPlatform) then
   begin
-    xRate := TradingPlatform.ValueVolatility.RsecommendRate;
-    EditRate.Text := GetRound(xRate).ToString;
-
-    xParam.Candel := AStateMarket.Candels[0];
-    xParam.Deviation := TradingPlatform.ValueVolatility.DeviationValue;
-    xParam.Rate := xRate * 0.2;
-    FWorkBot.SetParamValue(xParam);
+    EditDeviationValue.Text := FTradingPlatform.ValueVolatility.DeviationValue.ToString;
+    FWorkBot.SetTradingPlatform(FTradingPlatform);
   end;
 
-  _ShowJournalManagerProfit(FJournalManager);
-  _SetUpDataPosition(FJournalManager);
+  _ShowJournalManager(PositionGrid,FWorkBot.JournalManager);
+  _ShowJournalManagerProfit(FWorkBot.JournalManager);
+  _SetUpDataPosition(FWorkBot.JournalManager);
 end;
 
 procedure TWorkBotPanelFrame.SetLog(S: String);
@@ -257,184 +273,11 @@ begin
     FMainFormLog.LogMsg(S);
 end;
 
-procedure TWorkBotPanelFrame.WorkBotOn—rossingLevel(Sender: TObject; const AWorkBotStatus: TWorkBotStatus);
-begin
-  {$IFDEF DEBUG}
-  TLogger.LogTree(0,'TWorkBotPanelFrame.WorkBotOn—rossingLevel:');
-  {$ENDIF}
-  case AWorkBotStatus of
-    TWorkBotStatus.wbsHigh: begin
-      ClosePosition;
-      OpenPositionBuy;
-    end;
-    TWorkBotStatus.wbsLow : begin
-      ClosePosition;
-      OpenPositionSell;
-    end;
-  end;
-end;
-
-
 procedure TWorkBotPanelFrame.SetTradingPlatform(const Value: TTradingPlatform);
 begin
   FTradingPlatform := Value;
   FWorkBotFrame.TradingPlatform := FTradingPlatform;
-end;
-
-procedure TWorkBotPanelFrame.PositionClose(ASander: TObject);
-var
-  xPrice: Double;
-  xPosition: TJournalPosition;
-begin
-  case xPosition.Side of
-    TTypeBuySell.tsBuy : xPrice := xPosition.ClosePrice - 2;
-    TTypeBuySell.tsSell: xPrice := xPosition.ClosePrice + 2;
-  else
-    xPrice := 0;
-  end;
-  if xPrice <= 0 then
-    Exit;
-
-  xPosition := TJournalPosition(ASander);
-  TradingPlatform.SendTrade(
-    xPosition.CloseTime,
-    xPrice,
-    1,
-    xPosition.Side
-  );
-end;
-
-
-function TWorkBotPanelFrame.GetQty: Double;
-var
-  xCount: INteger;
-  xPosition: TJournalPosition;
-begin
-  Result := 1;
-  xCount := JournalManager.Positions.Count;
-  if xCount > 0 then
-  begin
-    xPosition := JournalManager.Positions[xCount - 1];
-    if xPosition.TypeTrade = TTypeTrade.ttOpen then
-      Result := 2;
-  end;
-end;
-
-procedure TWorkBotPanelFrame.OpenPositionBuy;
-var
-  xQty  : Double;
-  xPrice: Double;
-  xPosition: TJournalPosition;
-begin
-  {$IFDEF DEBUG}
-  TLogger.LogTree(0,'TWorkBotPanelFrame.OpenPositionBuy:');
-  {$ENDIF}
-  xPrice := TradingPlatform.StateMarket.Ask;
-  if xPrice > 0 then
-  begin
-    xQty := GetQty;
-    xPosition := JournalManager.GetCreateJournalPosition;
-    xPosition.OnClose := PositionClose;
-    with xPosition do
-    begin
-      OpenTime := GetNewDateTime;
-      OpenPrice := xPrice;
-      Qty := 1;
-      Side := TTypeBuySell.tsBuy;
-      IsActive := True;
-      TypeTrade := TTypeTrade.ttOpen;
-      Triling := 20;
-      Profit  := 50;
-      DoOpen;
-    end;
-
-    TradingPlatform.SendTrade(
-      xPosition.OpenTime,
-      xPosition.OpenPrice + 2,
-      xQty,
-      xPosition.Side
-    );
-
-  end;
-end;
-
-procedure TWorkBotPanelFrame.OpenPositionSell;
-var
-  xQty  : Double;
-  xPrice: Double;
-  xPosition: TJournalPosition;
-begin
-  {$IFDEF DEBUG}
-  TLogger.LogTree(0,'TWorkBotPanelFrame.OpenPositionSell:');
-  {$ENDIF}
-  xPrice := TradingPlatform.StateMarket.Bid;
-  if xPrice > 0 then
-  begin
-    xQty := GetQty;
-    xPosition := JournalManager.GetCreateJournalPosition;
-    xPosition.OnClose := PositionClose;
-    with xPosition do
-    begin
-      OpenTime := GetNewDateTime;
-      OpenPrice := xPrice;
-      Qty := 1;
-      Side := TTypeBuySell.tsSell;
-      IsActive := True;
-      TypeTrade := TTypeTrade.ttOpen;
-      Triling := 20;
-      Profit  := 50;
-      DoOpen;
-    end;
-
-
-    TradingPlatform.SendTrade(
-      xPosition.OpenTime,
-      xPosition.OpenPrice - 2,
-      xQty,
-      xPosition.Side
-    );
-
-
-  end;
-end;
-
-procedure TWorkBotPanelFrame.ClosePosition;
-var
-  xPrice: Double;
-  xPosition: TJournalPosition;
-  i, iCount: Integer;
-begin
-  {$IFDEF DEBUG}
-  TLogger.LogTree(0,'TWorkBotPanelFrame.ClosePosition:');
-  {$ENDIF}
-  iCount := JournalManager.Positions.Count;
-  if iCount > 0 then
-    for i := 0 to iCount - 1 do
-    begin
-      xPosition := JournalManager.Positions[i];
-      if xPosition.TypeTrade = TTypeTrade.ttOpen then
-      begin
-
-        with xPosition do
-        begin
-          case Side of
-            TTypeBuySell.tsBuy : xPrice := TradingPlatform.StateMarket.Bid;
-            TTypeBuySell.tsSell: xPrice := TradingPlatform.StateMarket.Ask;
-          else
-            xPrice := 0;
-          end;
-
-          if xPrice <= 0 then
-            Exit;
-
-          CloseTime := GetNewDateTime;
-          ClosePrice := xPrice;
-          IsActive := False;
-          TypeTrade := TTypeTrade.ttClose;
-          DoClose;
-        end;
-      end;
-    end;
+  FWorkBot.SetTradingPlatform(FTradingPlatform);
 end;
 
 end.

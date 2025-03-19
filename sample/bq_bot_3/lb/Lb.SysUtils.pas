@@ -68,6 +68,7 @@ type
   TCandelList = class(TList<TCandel>)
   public
     procedure CopyCandels(const ACandels: TCandelList);
+    function FirstCandel: TCandel;
   end;
 
   ///<summary>
@@ -317,6 +318,19 @@ begin
     for var xC in ACandels do
       Self.Add(xC);
   end;
+end;
+
+function TCandelList.FirstCandel: TCandel;
+var
+  xCandel: TCandel;
+begin
+  if Self.Count > 0 then
+  begin
+    xCandel := Self.Items[0];
+    Result := xCandel;
+  end
+  else
+    raise Exception.Create('Error Message: Ошибка запроса');
 end;
 
 { TStateMarket }
