@@ -47,7 +47,7 @@ type
     Edit3: TEdit;
   private
     FMainFormLog: IMainFormLog;
-    procedure SetLog(S: String);
+
   private
     FWorkBot: TWorkBot;
     FTradingPlatform: TTradingPlatform;
@@ -65,6 +65,8 @@ type
     property MainFormLog: IMainFormLog write FMainFormLog;
     property WorkBot: TWorkBot read FWorkBot write FWorkBot;
     property TradingPlatform: TTradingPlatform read FTradingPlatform write SetTradingPlatform;
+  public
+    procedure SetLog(S: String);
   end;
 
 implementation

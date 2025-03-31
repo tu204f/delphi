@@ -11,8 +11,8 @@ object WorkBotPanelFrame: TWorkBotPanelFrame
     Size.PlatformDefault = False
     TabOrder = 1
     Options = [ColumnResize, ColumnMove, ColLines, RowLines, RowSelect, Tabs, Header, HeaderClick, AutoDisplacement]
-    Viewport.Width = 712.000000000000000000
-    Viewport.Height = 437.000000000000000000
+    Viewport.Width = 716.000000000000000000
+    Viewport.Height = 462.000000000000000000
   end
   object LayoutStatusMarket: TLayout
     Align = Right

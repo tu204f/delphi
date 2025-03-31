@@ -135,6 +135,7 @@ function GetCrossSide(ASide: TTypeBuySell): TTypeBuySell;
 function GetStrToSide(ASide: TTypeBuySell): String;
 function GetSiseToStr(AValue: String): TTypeBuySell;
 function GetStrToTypeTrade(const ATypeTrade: TTypeTrade): String;
+function GetStrToTypeCandel(const ATypeCandel: TTypeCandel): String;
 function GetTypeTradeToStr(const AValue: String): TTypeTrade;
 
 ///<summary>
@@ -169,6 +170,15 @@ begin
     ttNull: Result := 'null';
     ttOpen: Result := 'open';
     ttClose: Result := 'close';
+  end;
+end;
+
+function GetStrToTypeCandel(const ATypeCandel: TTypeCandel): String;
+begin
+  case ATypeCandel of
+    TTypeCandel.tcNull: Result := 'null';
+    TTypeCandel.tcGreen: Result := 'green';
+    TTypeCandel.tcRed: Result := 'red';
   end;
 end;
 

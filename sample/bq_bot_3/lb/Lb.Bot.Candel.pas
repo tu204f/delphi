@@ -24,10 +24,11 @@ type
   ///</remarks>
   TWorkBot = class(TObject)
   private
-    FIsRevers: Boolean;
     FStateMarket: TStateMarket;
     FTradingPlatform: TTradingPlatform;
     FJournalManager: TJournalManager;
+  protected
+    function GetCurrentJournalPosition: TJournalPosition;
   private
     procedure OpenPosition(const APrice: Double; const ASide: TTypeBuySell);
     procedure OpenPositionBuy;
@@ -49,11 +50,6 @@ type
     /// Событие обновления данных, платформы
     ///</summary>
     procedure SetTradingPlatform(const ATradingPlatform: TTradingPlatform);
-
-    ///<summary>
-    /// Включить реверс операции
-    ///</summary>
-    property IsRevers: Boolean read FIsRevers write FIsRevers;
   public
     ///<summary>
     /// Журнал торговых операций
@@ -74,7 +70,6 @@ uses
 
 constructor TWorkBot.Create;
 begin
-  FIsRevers := False;
   FTradingPlatform := nil;
   FJournalManager  := TJournalManager.Create;
 end;
@@ -92,6 +87,7 @@ begin
   {$IFDEF DBG_OPEN_POSITION}
   TLogger.LogTree(0,'TWorkBot.OpenPosition');
   {$ENDIF}
+  ClosePosition;
   if APrice > 0 then
   begin
     xPosition := JournalManager.GetCreateJournalPosition;
@@ -112,28 +108,39 @@ begin
   end;
 end;
 
+function TWorkBot.GetCurrentJournalPosition: TJournalPosition;
+var
+  Count: Integer;
+  xJournalPosition: TJournalPosition;
+begin
+  Result := nil;
+  Count := FJournalManager.Positions.Count;
+  if Count > 0 then
+  begin
+    xJournalPosition := FJournalManager.Positions[Count - 1];
+    Result := xJournalPosition;
+  end;
+end;
+
 procedure TWorkBot.OpenPositionBuy;
 var
   xPrice: Double;
   xSide: TTypeBuySell;
+  xJournalPosition: TJournalPosition;
 begin
+  xJournalPosition := GetCurrentJournalPosition;
+  if Assigned(xJournalPosition) then
+  begin
+    if (xJournalPosition.TypeTrade = TTypeTrade.ttOpen) and (xJournalPosition.Side = TTypeBuySell.tsBuy) then
+      Exit;
+  end;
   if not Assigned(FTradingPlatform) then
     raise Exception.Create('Торговая платформа не определена');
   {$IFDEF DBG_OPEN_POSITION}
   TLogger.LogTree(0,'TWorkBot.OpenPositionBuy');
   {$ENDIF}
-  ClosePosition;
-
-  if FIsRevers then
-  begin
-    xSide := TTypeBuySell.tsBuy;
-    xPrice := FTradingPlatform.StateMarket.Ask;
-  end
-  else
-  begin
-    xSide := TTypeBuySell.tsSell;
-    xPrice := FTradingPlatform.StateMarket.Bid;
-  end;
+  xSide := TTypeBuySell.tsBuy;
+  xPrice := FTradingPlatform.StateMarket.Ask;
   OpenPosition(xPrice, xSide);
 end;
 
@@ -141,24 +148,21 @@ procedure TWorkBot.OpenPositionSell;
 var
   xPrice: Double;
   xSide: TTypeBuySell;
+  xJournalPosition: TJournalPosition;
 begin
+  xJournalPosition := GetCurrentJournalPosition;
+  if Assigned(xJournalPosition) then
+  begin
+    if (xJournalPosition.TypeTrade = TTypeTrade.ttOpen) and (xJournalPosition.Side = TTypeBuySell.tsSell) then
+      Exit;
+  end;
   if not Assigned(FTradingPlatform) then
     raise Exception.Create('Торговая платформа не определена');
   {$IFDEF DBG_OPEN_POSITION}
   TLogger.LogTree(0,'TWorkBot.OpenPositionSell');
   {$ENDIF}
-  ClosePosition;
-
-  if FIsRevers then
-  begin
-    xSide := TTypeBuySell.tsSell;
-    xPrice := FTradingPlatform.StateMarket.Bid;
-  end
-  else
-  begin
-    xSide := TTypeBuySell.tsBuy;
-    xPrice := FTradingPlatform.StateMarket.Ask;
-  end;
+  xSide := TTypeBuySell.tsSell;
+  xPrice := FTradingPlatform.StateMarket.Bid;
   OpenPosition(xPrice, xSide);
 end;
 
@@ -234,10 +238,12 @@ begin
 end;
 
 
+
+
 procedure TWorkBot.EventPositionClose(const AJournalPosition: TJournalPosition);
 {$IFDEF DBG_SEND_TRADE}
 var
-  xOpenPrice: Double;
+  xClosePrice: Double;
   xSide: TTypeBuySell;
 {$ENDIF}
 begin
@@ -245,45 +251,59 @@ begin
   TLogger.LogTree(0,'TWorkBot.PositionClose');
   {$ENDIF}
   {$IFDEF DBG_SEND_TRADE}
-    xOpenPrice := 0;
-    xSide := GetCrossSide(AJournalPosition.Side);
-    case xSide of
-      TTypeBuySell.tsBuy : xOpenPrice := AJournalPosition.OpenPrice + 2;
-      TTypeBuySell.tsSell: xOpenPrice := AJournalPosition.OpenPrice - 2;
-    end;
-    if xOpenPrice > 0 then
-      AJournalPosition.CloseLinkId := FTradingPlatform.SendTrade(
-        AJournalPosition.OpenTime,
-        xOpenPrice,
-        AJournalPosition.Qty,
-        xSide
-      );
+  xClosePrice := 0;
+  xSide := GetCrossSide(AJournalPosition.Side);
+  case xSide of
+    TTypeBuySell.tsBuy : xClosePrice := AJournalPosition.ClosePrice + 2;
+    TTypeBuySell.tsSell: xClosePrice := AJournalPosition.ClosePrice - 2;
+  end;
+  if xClosePrice > 0 then
+    AJournalPosition.CloseLinkId := FTradingPlatform.SendTrade(
+      AJournalPosition.CloseTime,
+      xClosePrice,
+      AJournalPosition.Qty,
+      xSide
+    );
   {$ENDIF}
 end;
 
 
 procedure TWorkBot.SetTradingNewCandel;
 
-  function _GetIsTrandBuy: Boolean;
-  var
-    xC1, xC2: TCandel;
+{$IFDEF DBG_TRADING_NEW_CANDEL}
+  procedure _LogCandel(const ACandel: TCandel);
   begin
-    xC1 := FStateMarket.Candels[0];
-    xC2 := FStateMarket.Candels[1];
-    Result :=
-      (xC1.TypeCandel = TTypeCandel.tcGreen) and
-      (xC2.TypeCandel = TTypeCandel.tcGreen);
+    TLogger.LogTree(3,'Candel:>>' + ACandel.GetToStr);
+  end;
+{$ENDIF}
+
+  function _GetIsTranding: Integer;
+  var
+    xCandel: TCandel;
+    i, Count, xCountTranding: Integer;
+  begin
+    xCountTranding := 0;
+    Count := FStateMarket.Candels.Count;
+    if Count > 0 then
+      for i := 1 to 2 do
+      begin
+        xCandel := FStateMarket.Candels[i];
+        case xCandel.TypeCandel of
+          tcGreen: xCountTranding := xCountTranding + 1;
+          tcRed: xCountTranding := xCountTranding - 1;
+        end;
+      end;
+    Result := xCountTranding;
+  end;
+
+  function _GetIsTrandBuy: Boolean;
+  begin
+    Result := (_GetIsTranding = 2);
   end;
 
   function _GetIsTrandSell: Boolean;
-  var
-    xC1, xC2: TCandel;
   begin
-    xC1 := FStateMarket.Candels[0];
-    xC2 := FStateMarket.Candels[1];
-    Result :=
-      (xC1.TypeCandel = TTypeCandel.tcRed) and
-      (xC2.TypeCandel = TTypeCandel.tcRed);
+    Result := (_GetIsTranding = -2);
   end;
 
 begin

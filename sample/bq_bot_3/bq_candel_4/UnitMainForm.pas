@@ -97,6 +97,7 @@ constructor TMainForm.Create(AOwner: TComponent);
     SetAddColumn(StringGridCandel,'Low');
     SetAddColumn(StringGridCandel,'Close');
     SetAddColumn(StringGridCandel,'Vol');
+    SetAddColumn(StringGridCandel,'color');
   end;
 
 begin
@@ -122,7 +123,6 @@ begin
   WorkBotPanelFrame.Parent := TabItemTrade;
   WorkBotPanelFrame.Align := TAlignLayout.Client;
   WorkBotPanelFrame.MainFormLog := Self;
-  WorkBotPanelFrame.WorkBot.IsRevers := False;
 end;
 
 destructor TMainForm.Destroy;
@@ -159,7 +159,6 @@ begin
   end;
 end;
 
-
 procedure TMainForm.FormShow(Sender: TObject);
 begin
   Self.Caption := 'Пробитие волатильности';
@@ -180,13 +179,39 @@ begin
 end;
 
 procedure TMainForm.TradingPlatformOnNewCandel(Sender: TObject);
+
+  function _GetIsTranding: Integer;
+  var
+    xCandel: TCandel;
+    xCandels: TCandelList;
+    i, Count, xCountTranding: Integer;
+  begin
+    xCountTranding := 0;
+    xCandels := TradingPlatform.StateMarket.Candels;
+    Count := xCandels.Count;
+    if Count > 0 then
+      for i := 1 to 2 do
+      begin
+        xCandel := xCandels[i];
+        case xCandel.TypeCandel of
+          tcGreen: xCountTranding := xCountTranding + 1;
+          tcRed: xCountTranding := xCountTranding - 1;
+        end;
+      end;
+    Result := xCountTranding;
+  end;
+
 begin
+  {$IFDEF DEBUG}
+  LogMsg('TMainForm.TradingPlatformOnNewCandel: ' + _GetIsTranding.ToString);
+  {$ENDIF}
   {todo: новая свеча}
   WorkBotPanelFrame.TradingPlatformNewCandel;
 end;
 
 procedure TMainForm.TradingPlatformOnStateMarket(ASender: TObject; AStateMarket: TStateMarket);
 
+  {$IFDEF DBG_HISTORY_CANDEL}
   procedure _ShowCandel;
   var
     xCandel: TCandel;
@@ -206,6 +231,7 @@ procedure TMainForm.TradingPlatformOnStateMarket(ASender: TObject; AStateMarket:
         StringGridCandel.Cells[4,i] := xCandel.Low.ToString;
         StringGridCandel.Cells[5,i] := xCandel.Close.ToString;
         StringGridCandel.Cells[6,i] := xCandel.Vol.ToString;
+        StringGridCandel.Cells[7,i] := GetStrToTypeCandel(xCandel.TypeCandel);
       end;
   end;
 
@@ -258,6 +284,7 @@ procedure TMainForm.TradingPlatformOnStateMarket(ASender: TObject; AStateMarket:
       FreeAndNil(xFS);
     end;
   end;
+  {$ENDIF}
 
 begin
   // **************************************************************************
