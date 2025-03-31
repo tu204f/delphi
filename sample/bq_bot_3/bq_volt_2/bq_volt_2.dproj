@@ -203,7 +203,7 @@
         <DCCReference Include="..\..\..\library\trade\bybit\market\Lb.Bybit.ServerTime.pas"/>
         <DCCReference Include="..\..\..\library\Lb.Logger.pas"/>
         <DCCReference Include="..\lb\Lb.Indicator.pas"/>
-        <DCCReference Include="..\lb\Lb.Journal.Trading.v2.pas"/>
+        <DCCReference Include="..\lb\Lb.Journal.Trading.pas"/>
         <DCCReference Include="..\lb\Lb.Platform.Bybit.pas"/>
         <DCCReference Include="..\lb\Lb.Platform.pas"/>
         <DCCReference Include="..\lb\Lb.SysUtils.pas"/>

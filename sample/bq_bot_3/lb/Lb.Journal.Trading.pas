@@ -1,7 +1,7 @@
 (******************************************************************************)
 (* Журнал сделок торговых операций                                            *)
 (******************************************************************************)
-unit Lb.Journal.Trading.v2;
+unit Lb.Journal.Trading;
 
 interface
 
@@ -27,8 +27,8 @@ type
 
   ///<summary>Когда позиция открывает новую сделку</summary>
   TEventOnNewTrade = procedure(ASander: TObject; ATrade: TJournalTrade) of object;
-  TEventOnOpen = procedure(ASander: TObject) of object;
-  TEventOnClose = procedure(ASander: TObject) of object;
+  TEventOnOpen = procedure(const AJournalPosition: TJournalPosition) of object;
+  TEventOnClose = procedure(const AJournalPosition: TJournalPosition) of object;
 
   ///<summary>Сделка</summary>
   TJournalTrade = class(TObject)
@@ -77,6 +77,8 @@ type
     FTypeTrade: TTypeTrade;
     FUserKey: String;
     FInfoValue: String;
+    FOpenLinkID: String;
+    FCloseLinkID: String;
   private
     FRatesSL: Double;
     FRatesTK: Double;
@@ -113,6 +115,8 @@ type
     property Qty: Double read FQty write FQty;
     property UserKey: String read FUserKey write FUserKey;
     property InfoValue: String read FInfoValue write FInfoValue;
+    property OpenLinkID: String read FOpenLinkID write FOpenLinkID;
+    property CloseLinkID: String read FCloseLinkID write FCloseLinkID;
   public {Предельные значение позиции}
     property Profit: Double read FProfit;
     property MaxProfit: Double read FMaxProfit;

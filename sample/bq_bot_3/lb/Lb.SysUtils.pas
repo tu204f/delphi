@@ -41,7 +41,7 @@ type
 
 type
   ///<summary>
-  /// “ип св€чи
+  /// “ип тело св€чи
   ///</summary>
   TTypeCandel = (tcNull, tcGreen, tcRed);
 
@@ -270,8 +270,10 @@ begin
   {todo: ≈сть уже заложденый баг}
   xHour  := _Hour(AValue);
   xValue := AValue - xHour * HOUR_COUNT_MSEC;
+
   xMin   := _Min(xValue);
   xValue := xValue - xMin * MIN_COUNT_MSEC;
+
   xSec   := _Sec(xValue);
   xMSec  := xValue - xSec * SEC_COUNT_MSEC;
 
@@ -286,14 +288,18 @@ end;
 { TCandel }
 
 function TCandel.GetToStr: String;
+var
+  xValueDateTime: TDateTime;
 begin
+  xValueDateTime := UnixToDateTime(Time);
   Result :=
+    DateTimeToStr(xValueDateTime) + ';' +
     Time.ToString + ';' +
     Open.ToString + ';' +
     High.ToString + ';' +
     Low.ToString + ';' +
     Close.ToString + ';' +
-    Vol.ToString;
+    Vol.ToString + ';';
 end;
 
 function TCandel.GetTypeCandel: TTypeCandel;

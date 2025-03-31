@@ -15,8 +15,8 @@ uses
   Lb.Platform,
   Lb.Bybit.SysUtils,
   Lb.Platform.Bybit,
-  Lb.Journal.Trading.v2,
-  Lb.Bot.V4,
+  Lb.Journal.Trading,
+  Lb.Bot.Candel,
 
   FMX.Objects,
   FMX.Layouts,
@@ -31,8 +31,7 @@ uses
   FMX.Memo.Types,
   FMX.Memo,
 
-  UnitWorkBotPanelFrame,
-  UnitWorkBotFrame;
+  UnitWorkBotPanelFrame;
 
 type
   TMainForm = class(TForm, IMainFormLog)
@@ -40,13 +39,12 @@ type
     Rectangle: TRectangle;
     TextStatus: TText;
     TabControl1: TTabControl;
-    TabItemTrade1: TTabItem;
+    TabItemTrade: TTabItem;
     TabItemPosition: TTabItem;
     PopupMenu: TPopupMenu;
     MenuItemSaveFile: TMenuItem;
     StringGridCandel: TStringGrid;
     MemoLog: TMemo;
-    TabItemTrade2: TTabItem;
     procedure ButtonStartOrStopClick(Sender: TObject);
     procedure FormShow(Sender: TObject);
   private
@@ -59,7 +57,6 @@ type
     procedure LogMsg(const S: WideString);
   public
     WorkBotPanelFrame: TWorkBotPanelFrame;
-    WorkBotPanelReversFrame: TWorkBotPanelFrame;
     TradingPlatform: TTradingPlatform;
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
@@ -94,6 +91,7 @@ constructor TMainForm.Create(AOwner: TComponent);
   procedure SetShowStringGridCandel;
   begin
     SetAddColumn(StringGridCandel,'Time',150);
+    SetAddColumn(StringGridCandel,'TimeInt',150);
     SetAddColumn(StringGridCandel,'Open');
     SetAddColumn(StringGridCandel,'High');
     SetAddColumn(StringGridCandel,'Low');
@@ -115,28 +113,16 @@ begin
   // 'ldfYDnYhlVU5SU7w89mOnaHi0icy8XctNXtT';
   TPlatfomBybit(TradingPlatform).ApiKey := 't0YI4Ou0TKOTd7WrkE';
   TPlatfomBybit(TradingPlatform).ApiSecret := 'dWcdTGIulDoKOiK4mggPQIkYwmMFGxvFVusp';
-  TPlatfomBybit(TradingPlatform).Interval  := TTypeInterval.ti_60;
-
+  TPlatfomBybit(TradingPlatform).Interval  := TTypeInterval.ti_1;
 
   // *************************************************************************
   // Торговая панель
   WorkBotPanelFrame := TWorkBotPanelFrame.Create(nil);
   WorkBotPanelFrame.TradingPlatform := TradingPlatform;
-  WorkBotPanelFrame.Parent := TabItemTrade1;
+  WorkBotPanelFrame.Parent := TabItemTrade;
   WorkBotPanelFrame.Align := TAlignLayout.Client;
   WorkBotPanelFrame.MainFormLog := Self;
-  WorkBotPanelFrame.WorkBot.Rate := 0.2;
   WorkBotPanelFrame.WorkBot.IsRevers := False;
-
-  // ************************************************************************
-  // Обратная торговая стратегия
-  WorkBotPanelReversFrame := TWorkBotPanelFrame.Create(nil);
-  WorkBotPanelReversFrame.TradingPlatform := TradingPlatform;
-  WorkBotPanelReversFrame.Parent := TabItemTrade2;
-  WorkBotPanelReversFrame.Align := TAlignLayout.Client;
-  WorkBotPanelReversFrame.MainFormLog := Self;
-  WorkBotPanelReversFrame.WorkBot.Rate := 0.2;
-  WorkBotPanelReversFrame.WorkBot.IsRevers := True;
 end;
 
 destructor TMainForm.Destroy;
@@ -158,7 +144,7 @@ begin
   if not TradingPlatform.IsActive then
   begin
     ButtonStartOrStop.Text := 'Стоп';
-    TradingPlatform.Symbol := 'BTCUSDT';
+    TradingPlatform.Symbol := 'ETHUSDT';
     TradingPlatform.StateMarket.Qty := 10;
     TradingPlatform.Start;
   end;
@@ -197,7 +183,6 @@ procedure TMainForm.TradingPlatformOnNewCandel(Sender: TObject);
 begin
   {todo: новая свеча}
   WorkBotPanelFrame.TradingPlatformNewCandel;
-  WorkBotPanelReversFrame.TradingPlatformNewCandel;
 end;
 
 procedure TMainForm.TradingPlatformOnStateMarket(ASender: TObject; AStateMarket: TStateMarket);
@@ -207,6 +192,7 @@ procedure TMainForm.TradingPlatformOnStateMarket(ASender: TObject; AStateMarket:
     xCandel: TCandel;
     i, iCount: Integer;
   begin
+    // Исторические данные
     iCount := AStateMarket.Candels.Count;
     StringGridCandel.RowCount := iCount;
     if iCount > 0 then
@@ -214,11 +200,12 @@ procedure TMainForm.TradingPlatformOnStateMarket(ASender: TObject; AStateMarket:
       begin
         xCandel := AStateMarket.Candels[i];
         StringGridCandel.Cells[0,i] := DateTimeToStr(UnixToDateTime(xCandel.Time));
-        StringGridCandel.Cells[1,i] := xCandel.Open.ToString;
-        StringGridCandel.Cells[2,i] := xCandel.High.ToString;
-        StringGridCandel.Cells[3,i] := xCandel.Low.ToString;
-        StringGridCandel.Cells[4,i] := xCandel.Close.ToString;
-        StringGridCandel.Cells[5,i] := xCandel.Vol.ToString;
+        StringGridCandel.Cells[1,i] := xCandel.Time.ToString;
+        StringGridCandel.Cells[2,i] := xCandel.Open.ToString;
+        StringGridCandel.Cells[3,i] := xCandel.High.ToString;
+        StringGridCandel.Cells[4,i] := xCandel.Low.ToString;
+        StringGridCandel.Cells[5,i] := xCandel.Close.ToString;
+        StringGridCandel.Cells[6,i] := xCandel.Vol.ToString;
       end;
   end;
 
@@ -230,7 +217,6 @@ procedure TMainForm.TradingPlatformOnStateMarket(ASender: TObject; AStateMarket:
   begin
     xLength := S.Length;
     SetLength(xB,xLength);
-
     i := 0;
     while i < xLength do
     begin
@@ -291,7 +277,6 @@ begin
     );
   end;
 
-
   // *************************************************************************
   // Исторические данные
   _ShowCandel;
@@ -301,7 +286,6 @@ begin
   TLogger.LogTree(0,'BEGIN.TradingPlatform');
 {$ENDIF}
   WorkBotPanelFrame.TradingPlatformStateMarket(AStateMarket);
-  WorkBotPanelReversFrame.TradingPlatformStateMarket(AStateMarket);
 {$IFDEF DBG_TRADING}
   TLogger.LogTree(0,'END.TradingPlatform');
 {$ENDIF}

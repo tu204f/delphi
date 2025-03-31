@@ -164,11 +164,33 @@ procedure TMainForm.TradingPlatformOnStateMarket(ASender: TObject; AStateMarket:
     TextEventStatus.Text := FormatDateTime('hh.nn.ss.zzz',Time) + ' ' + IndexEvent.ToString;
   end;
 
+  procedure _SetSaveCandel;
+  var
+    xCandel: TCandel;
+    i, iCount: Integer;
+    xStr: TStrings;
+  begin
+    xStr := TStringList.Create;
+    try
+      iCount := AStateMarket.Candels.Count;
+      if iCount > 0 then
+        for i := iCount - 1 downto 0 do
+        begin
+          xCandel := AStateMarket.Candels[i];
+          xStr.Add(xCandel.GetToStr);
+        end;
+      xStr.SaveToFile('history.csv');
+    finally
+      FreeAndNil(xStr);
+    end;
+  end;
+
 var
   xCandel: TCandel;
   i, iCount: Integer;
 begin
   _StatusEvent;
+  _SetSaveCandel;
 
   iCount := AStateMarket.Candels.Count;
   StrGrid.RowCount := iCount;
@@ -227,20 +249,20 @@ begin
   iCount := xStateMarket.Candels.Count;
   if iCount > 0 then
   begin
-    if IsNewCandel then
-    begin
-      xCandel := xStateMarket.Candels[0];
-      _LineCande(xCandel);
-    end
-    else
-    begin
+//    if IsNewCandel then
+//    begin
+//      xCandel := xStateMarket.Candels[0];
+//      _LineCande(xCandel);
+//    end
+//    else
+//    begin
       IsNewCandel := True;
       for i := iCount - 1 downto 0 do
       begin
         xCandel := xStateMarket.Candels[i];
         _LineCande(xCandel);
       end;
-    end;
+//    end;
   end;
 end;
 

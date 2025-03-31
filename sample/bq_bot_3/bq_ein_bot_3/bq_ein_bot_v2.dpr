@@ -12,7 +12,7 @@ uses
   Lb.Bybit.ServerTime in '..\..\..\library\trade\bybit\market\Lb.Bybit.ServerTime.pas',
   Lb.Logger in '..\..\..\library\Lb.Logger.pas',
   Lb.Indicator in '..\lb\Lb.Indicator.pas',
-  Lb.Journal.Trading.v2 in '..\lb\Lb.Journal.Trading.v2.pas',
+  Lb.Journal.Trading in '..\lb\Lb.Journal.Trading.pas',
   Lb.Platform.Bybit in '..\lb\Lb.Platform.Bybit.pas',
   Lb.Platform in '..\lb\Lb.Platform.pas',
   Lb.SysUtils in '..\lb\Lb.SysUtils.pas';

@@ -1,4 +1,4 @@
-program bq_bot;
+program bq_candel_4;
 
 uses
   System.StartUpCopy,
@@ -16,11 +16,16 @@ uses
   Lb.Platform.Bybit in '..\lb\Lb.Platform.Bybit.pas',
   Lb.Platform in '..\lb\Lb.Platform.pas',
   Lb.SysUtils in '..\lb\Lb.SysUtils.pas',
-  Lb.Bot in '..\lb\Lb.Bot.pas';
+  UnitWorkBotPanelFrame in 'frame\UnitWorkBotPanelFrame.pas' {WorkBotPanelFrame: TFrame},
+  Lb.Breakdown in '..\lb\Lb.Breakdown.pas',
+  Lb.Bot.Candel in '..\lb\Lb.Bot.Candel.pas',
+  Lb.Bybit.OrderHistory in '..\..\..\library\trade\bybit\trade\Lb.Bybit.OrderHistory.pas';
 
 {$R *.res}
 
 begin
+  BybitHostDemo := True;
+
   TLogger.ClearLog;
 
   Application.Initialize;

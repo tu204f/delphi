@@ -43,7 +43,7 @@ type
     ///<summary>
     /// Есть потенциальная ошибка зависание заявки
     ///</summary>
-    procedure SendTrade(const ATime: TDateTime; const APrice, AQty: Double; ASide: TTypeBuySell); override;
+    function SendTrade(const ATime: TDateTime; const APrice, AQty: Double; ASide: TTypeBuySell): String; override;
 
     property Interval: TTypeInterval write SetInterval;
   public
@@ -104,8 +104,8 @@ begin
 
   {todo: Перевести эти параметры в найстроки}
   FBybitKline.Category := TTypeCategory.tcLinear;
-  //FBybitKline.Interval := TTypeInterval.ti_1;
-  FBybitKline.Limit    := 100;
+  //FBybitKline.Interval := TTypeInterval.ti_60;
+  FBybitKline.Limit    := 5000;
   FBybitKline.Selected;
 
   FBybitOrderBook.Category := TTypeCategory.tcLinear;
@@ -195,7 +195,7 @@ begin
   raise Exception.Create(TBybitHttpClient(ASender).ValueMessage);
 end;
 
-procedure TPlatfomBybit.SendTrade(const ATime: TDateTime; const APrice, AQty: Double; ASide: TTypeBuySell);
+function TPlatfomBybit.SendTrade(const ATime: TDateTime; const APrice, AQty: Double; ASide: TTypeBuySell): String;
 
   function _CreateOrderLinkId: String;
   var
@@ -218,7 +218,10 @@ procedure TPlatfomBybit.SendTrade(const ATime: TDateTime; const APrice, AQty: Do
 var
   xPlaceOrder: TParamOrder;
   xResponse: TOrderResponse;
+  xLinkId: String;
 begin
+  xLinkId := _CreateOrderLinkId;
+  Result := xLinkId;
   try
     // Инструмент отслеживания
     // Передача ключей программе
@@ -238,9 +241,7 @@ begin
       xPlaceOrder.Price       := APrice;
       xPlaceOrder.timeInForce := TTypeTimeInForce.GTC;
 
-
-
-      xPlaceOrder.OrderLinkId := _CreateOrderLinkId;
+      xPlaceOrder.OrderLinkId := xLinkId;
 
       xResponse := TOrderResponse.Create;
       try
@@ -255,13 +256,12 @@ begin
       finally
         FreeAndNil(xResponse);
       end;
-
     finally
       FreeAndNil(xPlaceOrder);
     end;
   except
     on E: Exception do
-      raise Exception.Create('Error Message:' + E.Message);
+      raise Exception.Create('Error Message: LinkID: [' + xLinkId + '].' + E.Message);
   end;
 end;
 

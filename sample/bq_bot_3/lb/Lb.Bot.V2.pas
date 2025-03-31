@@ -226,8 +226,8 @@ begin
       Side := ASide;
       IsActive := True;
       TypeTrade := TTypeTrade.ttOpen;
-      FeeRatesTakerSL := -10;
-      FeeRatesTakerTK := 30;
+      RatesSL := 10;
+      RatesTK := 30;
       InfoValue := GetInfoValue;
       DoOpen;
     end;

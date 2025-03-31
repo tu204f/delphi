@@ -80,7 +80,7 @@ type
     ///<summary>
     /// Есть потенциальная ошибка зависание заявки
     ///</summary>
-    procedure SendTrade(const ATime: TDateTime; const APrice, AQty: Double; ASide: TTypeBuySell); virtual;
+    function SendTrade(const ATime: TDateTime; const APrice, AQty: Double; ASide: TTypeBuySell): String; virtual;
   public {торговые правильа }
     property ValueVolatility: TValueVolatility read FValueVolatility;
   end;
@@ -198,7 +198,7 @@ begin
     FOnStateMarket(Self,FStateMarket);
 end;
 
-procedure TTradingPlatform.SendTrade(const ATime: TDateTime; const APrice, AQty: Double; ASide: TTypeBuySell);
+function TTradingPlatform.SendTrade(const ATime: TDateTime; const APrice, AQty: Double; ASide: TTypeBuySell): String;
 begin
   //
 end;

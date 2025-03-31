@@ -1,0 +1,71 @@
+object WorkBotPanelFrame: TWorkBotPanelFrame
+  Size.Width = 875.000000000000000000
+  Size.Height = 462.000000000000000000
+  Size.PlatformDefault = False
+  object PositionGrid: TStringGrid
+    Align = Client
+    CanFocus = True
+    ClipChildren = True
+    Size.Width = 716.000000000000000000
+    Size.Height = 462.000000000000000000
+    Size.PlatformDefault = False
+    TabOrder = 1
+    Options = [ColumnResize, ColumnMove, ColLines, RowLines, RowSelect, Tabs, Header, HeaderClick, AutoDisplacement]
+    Viewport.Width = 712.000000000000000000
+    Viewport.Height = 437.000000000000000000
+  end
+  object LayoutStatusMarket: TLayout
+    Align = Right
+    Position.X = 716.000000000000000000
+    Size.Width = 159.000000000000000000
+    Size.Height = 462.000000000000000000
+    Size.PlatformDefault = False
+    TabOrder = 2
+    object RectangleStatusMarket: TRectangle
+      Align = Client
+      Margins.Left = 2.000000000000000000
+      Margins.Top = 2.000000000000000000
+      Margins.Right = 2.000000000000000000
+      Margins.Bottom = 2.000000000000000000
+      Size.Width = 155.000000000000000000
+      Size.Height = 458.000000000000000000
+      Size.PlatformDefault = False
+    end
+    object EditNewCandel: TEdit
+      Touch.InteractiveGestures = [LongTap, DoubleTap]
+      TabOrder = 2
+      Position.X = 8.000000000000000000
+      Position.Y = 12.000000000000000000
+      Size.Width = 141.000000000000000000
+      Size.Height = 22.000000000000000000
+      Size.PlatformDefault = False
+    end
+    object EditUpDataCandel: TEdit
+      Touch.InteractiveGestures = [LongTap, DoubleTap]
+      TabOrder = 1
+      Position.X = 8.000000000000000000
+      Position.Y = 40.000000000000000000
+      Size.Width = 141.000000000000000000
+      Size.Height = 22.000000000000000000
+      Size.PlatformDefault = False
+    end
+    object Edit1: TEdit
+      Touch.InteractiveGestures = [LongTap, DoubleTap]
+      TabOrder = 5
+      Position.X = 20.000000000000000000
+      Position.Y = 332.000000000000000000
+    end
+    object Edit2: TEdit
+      Touch.InteractiveGestures = [LongTap, DoubleTap]
+      TabOrder = 4
+      Position.X = 20.000000000000000000
+      Position.Y = 360.000000000000000000
+    end
+    object Edit3: TEdit
+      Touch.InteractiveGestures = [LongTap, DoubleTap]
+      TabOrder = 3
+      Position.X = 20.000000000000000000
+      Position.Y = 388.000000000000000000
+    end
+  end
+end
