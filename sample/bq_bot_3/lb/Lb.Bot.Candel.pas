@@ -126,14 +126,15 @@ procedure TWorkBot.OpenPositionBuy;
 var
   xPrice: Double;
   xSide: TTypeBuySell;
-  xJournalPosition: TJournalPosition;
+//  xJournalPosition: TJournalPosition;
 begin
-  xJournalPosition := GetCurrentJournalPosition;
-  if Assigned(xJournalPosition) then
-  begin
-    if (xJournalPosition.TypeTrade = TTypeTrade.ttOpen) and (xJournalPosition.Side = TTypeBuySell.tsBuy) then
-      Exit;
-  end;
+//  xJournalPosition := GetCurrentJournalPosition;
+//  if Assigned(xJournalPosition) then
+//  begin
+//    if (xJournalPosition.TypeTrade = TTypeTrade.ttOpen) and (xJournalPosition.Side = TTypeBuySell.tsBuy) then
+//      Exit;
+//  end;
+
   if not Assigned(FTradingPlatform) then
     raise Exception.Create('Торговая платформа не определена');
   {$IFDEF DBG_OPEN_POSITION}
@@ -148,14 +149,15 @@ procedure TWorkBot.OpenPositionSell;
 var
   xPrice: Double;
   xSide: TTypeBuySell;
-  xJournalPosition: TJournalPosition;
+//  xJournalPosition: TJournalPosition;
 begin
-  xJournalPosition := GetCurrentJournalPosition;
-  if Assigned(xJournalPosition) then
-  begin
-    if (xJournalPosition.TypeTrade = TTypeTrade.ttOpen) and (xJournalPosition.Side = TTypeBuySell.tsSell) then
-      Exit;
-  end;
+//  xJournalPosition := GetCurrentJournalPosition;
+//  if Assigned(xJournalPosition) then
+//  begin
+//    if (xJournalPosition.TypeTrade = TTypeTrade.ttOpen) and (xJournalPosition.Side = TTypeBuySell.tsSell) then
+//      Exit;
+//  end;
+
   if not Assigned(FTradingPlatform) then
     raise Exception.Create('Торговая платформа не определена');
   {$IFDEF DBG_OPEN_POSITION}
@@ -178,7 +180,6 @@ begin
   {$IFDEF DBG_OPEN_POSITION}
   TLogger.LogTree(0,'TWorkBot.ClosePosition');
   {$ENDIF}
-
   iCount := JournalManager.Positions.Count;
   if iCount > 0 then
     for i := 0 to iCount - 1 do
@@ -237,9 +238,6 @@ begin
   {$ENDIF}
 end;
 
-
-
-
 procedure TWorkBot.EventPositionClose(const AJournalPosition: TJournalPosition);
 {$IFDEF DBG_SEND_TRADE}
 var
@@ -292,32 +290,33 @@ procedure TWorkBot.SetTradingNewCandel;
           tcGreen: xCountTranding := xCountTranding + 1;
           tcRed: xCountTranding := xCountTranding - 1;
         end;
+        {$IFDEF DBG_TRADING_NEW_CANDEL}
+        _LogCandel(xCandel);
+        {$ENDIF}
       end;
     Result := xCountTranding;
   end;
 
-  function _GetIsTrandBuy: Boolean;
-  begin
-    Result := (_GetIsTranding = 2);
-  end;
-
-  function _GetIsTrandSell: Boolean;
-  begin
-    Result := (_GetIsTranding = -2);
-  end;
-
+var
+  xInd_IsTrand: Integer;
 begin
   {$IFDEF DBG_TRADING_NEW_CANDEL}
   TLogger.LogTree(0,'TWorkBot.SetTradingNewCandel');
   {$ENDIF}
   if Assigned(FStateMarket) then
+  begin
     if (FStateMarket.Candels.Count > 0) and (FStateMarket.Ask > 0) and (FStateMarket.Bid > 0) then
     begin
-      if _GetIsTrandBuy then
-        OpenPositionBuy
-      else if _GetIsTrandSell then
-        OpenPositionSell;
+      xInd_IsTrand := _GetIsTranding;
+      {$IFDEF DBG_TRADING_NEW_CANDEL}
+      TLogger.LogTree(3,'Tranding: >> ' + xInd_IsTrand.ToString);
+      {$ENDIF}
+      case xInd_IsTrand of
+        2 : OpenPositionBuy;
+        -2: OpenPositionSell;
+      end;
     end;
+  end;
 end;
 
 procedure TWorkBot.SetTradingPlatform(const ATradingPlatform: TTradingPlatform);

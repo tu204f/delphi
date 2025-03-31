@@ -309,7 +309,8 @@ begin
     High.ToString + ';' +
     Low.ToString + ';' +
     Close.ToString + ';' +
-    Vol.ToString + ';';
+    Vol.ToString + ';' +
+    GetStrToTypeCandel(Self.TypeCandel) + ';';
 end;
 
 function TCandel.GetTypeCandel: TTypeCandel;

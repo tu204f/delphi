@@ -179,31 +179,9 @@ begin
 end;
 
 procedure TMainForm.TradingPlatformOnNewCandel(Sender: TObject);
-
-  function _GetIsTranding: Integer;
-  var
-    xCandel: TCandel;
-    xCandels: TCandelList;
-    i, Count, xCountTranding: Integer;
-  begin
-    xCountTranding := 0;
-    xCandels := TradingPlatform.StateMarket.Candels;
-    Count := xCandels.Count;
-    if Count > 0 then
-      for i := 1 to 2 do
-      begin
-        xCandel := xCandels[i];
-        case xCandel.TypeCandel of
-          tcGreen: xCountTranding := xCountTranding + 1;
-          tcRed: xCountTranding := xCountTranding - 1;
-        end;
-      end;
-    Result := xCountTranding;
-  end;
-
 begin
   {$IFDEF DEBUG}
-  LogMsg('TMainForm.TradingPlatformOnNewCandel: ' + _GetIsTranding.ToString);
+  LogMsg('TMainForm.TradingPlatformOnNewCandel:');
   {$ENDIF}
   {todo: новая свеча}
   WorkBotPanelFrame.TradingPlatformNewCandel;
@@ -211,7 +189,7 @@ end;
 
 procedure TMainForm.TradingPlatformOnStateMarket(ASender: TObject; AStateMarket: TStateMarket);
 
-  {$IFDEF DBG_HISTORY_CANDEL}
+
   procedure _ShowCandel;
   var
     xCandel: TCandel;
@@ -235,6 +213,7 @@ procedure TMainForm.TradingPlatformOnStateMarket(ASender: TObject; AStateMarket:
       end;
   end;
 
+  {$IFDEF DBG_HISTORY_CANDEL}
   function _ToBytes(S: String): TBytes;
   var
     xC: Char;
@@ -293,7 +272,7 @@ begin
     'Price: ' +
     TradingPlatform.StateMarket.Ask.ToString + '/' +
     TradingPlatform.StateMarket.Bid.ToString + ';';
-
+  {$IFDEF DBG_HISTORY_CANDEL}
   if AStateMarket.Candels.Count > 0 then
   begin
     _SaveTakt(
@@ -303,6 +282,7 @@ begin
       AStateMarket.Candels.FirstCandel
     );
   end;
+  {$ENDIF}
 
   // *************************************************************************
   // Исторические данные
