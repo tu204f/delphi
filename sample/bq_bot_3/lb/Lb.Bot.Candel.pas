@@ -24,6 +24,7 @@ type
   ///</remarks>
   TWorkBot = class(TObject)
   private
+    FCloseTriling: Double;
     FStateMarket: TStateMarket;
     FTradingPlatform: TTradingPlatform;
     FJournalManager: TJournalManager;
@@ -34,7 +35,7 @@ type
     procedure OpenPositionBuy;
     procedure OpenPositionSell;
     procedure ClosePosition;
-
+  private
     procedure EventPositionOpen(const AJournalPosition: TJournalPosition);
     procedure EventPositionClose(const AJournalPosition: TJournalPosition);
   public
@@ -55,7 +56,17 @@ type
     /// Журнал торговых операций
     ///</summary>
     property JournalManager: TJournalManager read FJournalManager;
+
+    ///<summary>
+    /// Дельта закрытие позиции, после открытие
+    ///</summary>
+    property CloseTriling: Double read FCloseTriling write FCloseTriling;
   end;
+
+  ///<summary>
+  /// Список работов
+  ///</summary>
+  TWorkBotList = TObjectList<TWorkBot>;
 
 implementation
 
@@ -72,6 +83,7 @@ constructor TWorkBot.Create;
 begin
   FTradingPlatform := nil;
   FJournalManager  := TJournalManager.Create;
+  FCloseTriling := 10;
 end;
 
 destructor TWorkBot.Destroy;
@@ -101,8 +113,10 @@ begin
       Side := ASide;
       IsActive := True;
       TypeTrade := TTypeTrade.ttOpen;
-      RatesSL := 10;
-      RatesTK := 30;
+//      RatesSL := 0.5;
+//      RatesTK := 3;
+      Triling := Self.CloseTriling;
+      InfoValue := 'treling_' + CloseTriling.ToString;
       DoOpen;
     end;
   end;
@@ -126,14 +140,14 @@ procedure TWorkBot.OpenPositionBuy;
 var
   xPrice: Double;
   xSide: TTypeBuySell;
-//  xJournalPosition: TJournalPosition;
+  xJournalPosition: TJournalPosition;
 begin
-//  xJournalPosition := GetCurrentJournalPosition;
-//  if Assigned(xJournalPosition) then
-//  begin
-//    if (xJournalPosition.TypeTrade = TTypeTrade.ttOpen) and (xJournalPosition.Side = TTypeBuySell.tsBuy) then
-//      Exit;
-//  end;
+  xJournalPosition := GetCurrentJournalPosition;
+  if Assigned(xJournalPosition) then
+  begin
+    if (xJournalPosition.TypeTrade = TTypeTrade.ttOpen) and (xJournalPosition.Side = TTypeBuySell.tsBuy) then
+      Exit;
+  end;
 
   if not Assigned(FTradingPlatform) then
     raise Exception.Create('Торговая платформа не определена');
@@ -149,14 +163,14 @@ procedure TWorkBot.OpenPositionSell;
 var
   xPrice: Double;
   xSide: TTypeBuySell;
-//  xJournalPosition: TJournalPosition;
+  xJournalPosition: TJournalPosition;
 begin
-//  xJournalPosition := GetCurrentJournalPosition;
-//  if Assigned(xJournalPosition) then
-//  begin
-//    if (xJournalPosition.TypeTrade = TTypeTrade.ttOpen) and (xJournalPosition.Side = TTypeBuySell.tsSell) then
-//      Exit;
-//  end;
+  xJournalPosition := GetCurrentJournalPosition;
+  if Assigned(xJournalPosition) then
+  begin
+    if (xJournalPosition.TypeTrade = TTypeTrade.ttOpen) and (xJournalPosition.Side = TTypeBuySell.tsSell) then
+      Exit;
+  end;
 
   if not Assigned(FTradingPlatform) then
     raise Exception.Create('Торговая платформа не определена');
@@ -269,9 +283,9 @@ end;
 procedure TWorkBot.SetTradingNewCandel;
 
 {$IFDEF DBG_TRADING_NEW_CANDEL}
-  procedure _LogCandel(const ACandel: TCandel);
+  procedure _LogCandel(const AIndex: Integer; const ACandel: TCandel);
   begin
-    TLogger.LogTree(3,'Candel:>>' + ACandel.GetToStr);
+    TLogger.LogTree(3,'Candel:>> [' + AIndex.ToString + ']' + ACandel.GetToStr);
   end;
 {$ENDIF}
 
@@ -283,7 +297,7 @@ procedure TWorkBot.SetTradingNewCandel;
     xCountTranding := 0;
     Count := FStateMarket.Candels.Count;
     if Count > 0 then
-      for i := 1 to 2 do
+      for i := 0 to 1 do
       begin
         xCandel := FStateMarket.Candels[i];
         case xCandel.TypeCandel of
@@ -291,7 +305,7 @@ procedure TWorkBot.SetTradingNewCandel;
           tcRed: xCountTranding := xCountTranding - 1;
         end;
         {$IFDEF DBG_TRADING_NEW_CANDEL}
-        _LogCandel(xCandel);
+        _LogCandel(i,xCandel);
         {$ENDIF}
       end;
     Result := xCountTranding;

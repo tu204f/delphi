@@ -215,6 +215,17 @@
         <DCCReference Include="..\lb\Lb.Breakdown.pas"/>
         <DCCReference Include="..\lb\Lb.Bot.Candel.pas"/>
         <DCCReference Include="..\..\..\library\trade\bybit\trade\Lb.Bybit.OrderHistory.pas"/>
+        <DCCReference Include="frame\UnitPositionGridFrame.pas">
+            <Form>PositionGridFrame</Form>
+            <FormType>fmx</FormType>
+            <DesignClass>TFrame</DesignClass>
+        </DCCReference>
+        <DCCReference Include="frame\UnitWorkBotGrid.pas">
+            <Form>WorkBotGridFrame</Form>
+            <FormType>fmx</FormType>
+            <DesignClass>TFrame</DesignClass>
+        </DCCReference>
+        <DCCReference Include="frame\Lb.WorkBot.Grid.pas"/>
         <None Include="..\lb\debug.inc"/>
         <None Include="debug_volt.inc"/>
         <BuildConfiguration Include="Release">

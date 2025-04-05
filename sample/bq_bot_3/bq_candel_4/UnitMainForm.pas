@@ -70,6 +70,7 @@ implementation
 {$R *.fmx}
 
 uses
+  Lb.WorkBot.Grid,
 {$IFDEF DEBUG}
   Lb.Logger,
 {$ENDIF}
@@ -77,16 +78,6 @@ uses
 
 
 constructor TMainForm.Create(AOwner: TComponent);
-
-  procedure SetAddColumn(const AStrGrid: TStringGrid; const AHeader: String; const AWidth: Single = 80);
-  var
-    xCol: TStringColumn;
-  begin
-    xCol := TStringColumn.Create(nil);
-    xCol.Parent := AStrGrid;
-    xCol.Header := AHeader;
-    xCol.Width  := AWidth;
-  end;
 
   procedure SetShowStringGridCandel;
   begin
@@ -114,7 +105,7 @@ begin
   // 'ldfYDnYhlVU5SU7w89mOnaHi0icy8XctNXtT';
   TPlatfomBybit(TradingPlatform).ApiKey := 't0YI4Ou0TKOTd7WrkE';
   TPlatfomBybit(TradingPlatform).ApiSecret := 'dWcdTGIulDoKOiK4mggPQIkYwmMFGxvFVusp';
-  TPlatfomBybit(TradingPlatform).Interval  := TTypeInterval.ti_1;
+  TPlatfomBybit(TradingPlatform).Interval  := TTypeInterval.ti_15;
 
   // *************************************************************************
   // Торговая панель
@@ -188,7 +179,6 @@ begin
 end;
 
 procedure TMainForm.TradingPlatformOnStateMarket(ASender: TObject; AStateMarket: TStateMarket);
-
 
   procedure _ShowCandel;
   var

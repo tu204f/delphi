@@ -26,6 +26,8 @@ uses
   FMX.ScrollBox,
   FMX.Grid,
 
+  UnitPositionGridFrame,
+
   Lb.Bot.Candel,
   Lb.Breakdown,
 
@@ -33,29 +35,37 @@ uses
   Lb.Bybit.SysUtils,
   Lb.Platform,
   Lb.Platform.Bybit,
-  Lb.Journal.Trading;
+  Lb.Journal.Trading, FMX.ListBox;
 
 type
+  ///<summary>
+  /// Фрейм работы робота - объекта
+  ///</summary>
   TWorkBotPanelFrame = class(TFrame)
-    PositionGrid: TStringGrid;
     LayoutStatusMarket: TLayout;
     RectangleStatusMarket: TRectangle;
     EditNewCandel: TEdit;
     EditUpDataCandel: TEdit;
-    Edit1: TEdit;
-    Edit2: TEdit;
-    Edit3: TEdit;
+    EditProfit: TEdit;
+    EditProfitFeeRatesTaker: TEdit;
+    EditProfitFeeRatesMaker: TEdit;
+    LayoutPositionGrid: TLayout;
+    ListBoxWorkBot: TListBox;
+    procedure ListBoxWorkBotClick(Sender: TObject);
   private
     FMainFormLog: IMainFormLog;
-
   private
-    FWorkBot: TWorkBot;
+    FSelectedWorkBot: TWorkBot;
     FTradingPlatform: TTradingPlatform;
     procedure SetTradingPlatform(const Value: TTradingPlatform);
   protected
     FCountNewCandel: Integer;
     FCountUpDataCandel: Integer;
   public
+
+    WorkBots: TWorkBotList;
+    PositionGridFrame: TPositionGridFrame;
+
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
 
@@ -63,7 +73,7 @@ type
     procedure TradingPlatformStateMarket(AStateMarket: TStateMarket);
 
     property MainFormLog: IMainFormLog write FMainFormLog;
-    property WorkBot: TWorkBot read FWorkBot write FWorkBot;
+    property SelectedWorkBot: TWorkBot read FSelectedWorkBot write FSelectedWorkBot;
     property TradingPlatform: TTradingPlatform read FTradingPlatform write SetTradingPlatform;
   public
     procedure SetLog(S: String);
@@ -80,35 +90,25 @@ uses
 
 constructor TWorkBotPanelFrame.Create(AOwner: TComponent);
 
-  procedure SetAddColumn(const AStrGrid: TStringGrid; const AHeader: String; const AWidth: Single = 80);
+  procedure _SetInitilizationWorkBots;
   var
-    xCol: TStringColumn;
+    i: Integer;
+    xWorkBot: TWorkBot;
   begin
-    xCol := TStringColumn.Create(nil);
-    xCol.Parent := AStrGrid;
-    xCol.Header := AHeader;
-    xCol.Width  := AWidth;
-  end;
+    WorkBots.Clear;
+    ListBoxWorkBot.Items.Clear;
 
-  procedure SetShowPositionGrid;
-  begin
-    SetAddColumn(PositionGrid,'id',50);
-    SetAddColumn(PositionGrid,'OpenTime',120);
-    SetAddColumn(PositionGrid,'OpenPrice');
-    SetAddColumn(PositionGrid,'CloseTime',120);
-    SetAddColumn(PositionGrid,'ClosePrice');
-    SetAddColumn(PositionGrid,'Qty');
-    SetAddColumn(PositionGrid,'Side');
-    SetAddColumn(PositionGrid,'SL');
-    SetAddColumn(PositionGrid,'TK');
-    SetAddColumn(PositionGrid,'TypeTrade');
-    SetAddColumn(PositionGrid,'Profit');
-    SetAddColumn(PositionGrid,'MaxProfit');
-    SetAddColumn(PositionGrid,'MinProfit');
-    SetAddColumn(PositionGrid,'FeeRatesTaker');
-    SetAddColumn(PositionGrid,'FeeRatesMaker');
-    SetAddColumn(PositionGrid,'OpenLinkID');
-    SetAddColumn(PositionGrid,'CloseLinkID');
+    for i := 1 to 20 do
+    begin
+      xWorkBot := TWorkBot.Create;
+      xWorkBot.CloseTriling := 0.5 * i;
+      WorkBots.Add(xWorkBot);
+
+      ListBoxWorkBot.Items.Add('triling_' + xWorkBot.CloseTriling.ToString);
+
+      FSelectedWorkBot := xWorkBot;
+    end;
+
   end;
 
 begin
@@ -117,19 +117,55 @@ begin
   FCountNewCandel := 0;
   FCountUpDataCandel := 0;
 
-  SetShowPositionGrid;
+  PositionGridFrame := TPositionGridFrame.Create(nil);
+  PositionGridFrame.Parent := LayoutPositionGrid;
+  PositionGridFrame.Align := TAlignLayout.Client;
 
   FMainFormLog := nil;
-  FWorkBot := TWorkBot.Create;
+
+  FSelectedWorkBot := nil;
+  WorkBots := TWorkBotList.Create;
+  _SetInitilizationWorkBots;
+
 end;
 
 destructor TWorkBotPanelFrame.Destroy;
 begin
-  FreeAndNil(FWorkBot);
+  FreeAndNil(WorkBots);
+  FreeAndNil(PositionGridFrame);
   inherited;
 end;
 
+procedure TWorkBotPanelFrame.ListBoxWorkBotClick(Sender: TObject);
+var
+  xIndex: Integer;
+begin
+  FSelectedWorkBot := nil;
+  xIndex := ListBoxWorkBot.ItemIndex;
+  if xIndex >= 0 then
+  begin
+    FSelectedWorkBot := WorkBots[xIndex];
+  end;
+
+  if Assigned(FSelectedWorkBot) then
+  begin
+    PositionGridFrame.UpDataJournalManager(FSelectedWorkBot.JournalManager);
+    EditProfit.Text := FSelectedWorkBot.JournalManager.Profit.ToString;
+    EditProfitFeeRatesTaker.Text := FSelectedWorkBot.JournalManager.ProfitFeeRatesTaker.ToString;
+    EditProfitFeeRatesMaker.Text := FSelectedWorkBot.JournalManager.ProfitFeeRatesMaker.ToString;
+  end;
+
+end;
+
 procedure TWorkBotPanelFrame.TradingPlatformNewCandel;
+
+  procedure _SetTradingNewCandel;
+  begin
+    if WorkBots.Count > 0 then
+      for var xWorkBot in WorkBots do
+        xWorkBot.SetTradingNewCandel;
+  end;
+
 begin
   Inc(FCountNewCandel);
   FCountUpDataCandel := 0;
@@ -138,79 +174,11 @@ begin
   EditUpDataCandel.Text := FCountUpDataCandel.ToString;
 
   if Assigned(FTradingPlatform) then
-    FWorkBot.SetTradingNewCandel;
+    _SetTradingNewCandel;
+
 end;
 
 procedure TWorkBotPanelFrame.TradingPlatformStateMarket(AStateMarket: TStateMarket);
-
-  procedure _ShowJournalManager(const AGrid: TStringGrid; const AJournalManager: TJournalManager);
-  var
-    i, Count: Integer;
-    xPosition: TJournalPosition;
-  begin
-    Count := AJournalManager.Positions.Count;
-    AGrid.RowCount := Count;
-
-    if Count > 0 then
-      for i := 0 to Count - 1 do
-      begin
-        xPosition := AJournalManager.Positions[i];
-        if xPosition.TypeTrade = TTypeTrade.ttClose then
-          xPosition.SetUpdata;
-
-        AGrid.Cells[0,i] := (i + 1).ToString;
-        AGrid.Cells[1,i] := DateTimeToStr(xPosition.OpenTime);
-        AGrid.Cells[2,i] := FloatToStr(xPosition.OpenPrice);
-
-        if xPosition.ClosePrice = 0 then
-        begin
-          AGrid.Cells[3,i] := '';
-          AGrid.Cells[4,i] := '';
-        end else
-        begin
-          AGrid.Cells[3,i] := DateTimeToStr(xPosition.CloseTime);
-          AGrid.Cells[4,i] := FloatToStr(xPosition.ClosePrice);
-        end;
-
-        AGrid.Cells[5,i] := FloatToStr(xPosition.Qty);
-        AGrid.Cells[6,i] := GetStrToSide(xPosition.Side);
-        AGrid.Cells[7,i] := FloatToStr(xPosition.StopLoss);
-        AGrid.Cells[8,i] := FloatToStr(xPosition.TakeProfit);
-        AGrid.Cells[9,i] := GetStrToTypeTrade(xPosition.TypeTrade);
-
-        // Прибыль с возможной комиссие
-        AGrid.Cells[10,i] := FloatToStr(xPosition.Profit);
-        AGrid.Cells[11,i] := FloatToStr(xPosition.MaxProfit);
-        AGrid.Cells[12,i] := FloatToStr(xPosition.MinProfit);
-        AGrid.Cells[13,i] := FloatToStr(xPosition.ProfitFeeRatesTaker);
-        AGrid.Cells[14,i] := FloatToStr(xPosition.ProfitFeeRatesMaker);
-
-        AGrid.Cells[15,i] := xPosition.OpenLinkID;
-        AGrid.Cells[16,i] := xPosition.CloseLinkID;
-
-      end;
-  end;
-
-  procedure _ShowJournalManagerProfit(const AJournalManager: TJournalManager);
-  var
-    i, Count: Integer;
-    xPosition: TJournalPosition;
-    xSummProfit, xSummProfitFeeRatesTaker, xSummProfitFeeRatesMaker: Double;
-  begin
-    xSummProfit := 0;
-    xSummProfitFeeRatesTaker := 0;
-    xSummProfitFeeRatesMaker := 0;
-
-    Count := AJournalManager.Positions.Count;
-    if Count > 0 then
-      for i := 0 to Count - 1 do
-      begin
-        xPosition := AJournalManager.Positions[i];
-        xSummProfit := xSummProfit + xPosition.Profit;
-        xSummProfitFeeRatesTaker := xSummProfitFeeRatesTaker + xPosition.ProfitFeeRatesTaker;
-        xSummProfitFeeRatesMaker := xSummProfitFeeRatesMaker + xPosition.ProfitFeeRatesMaker;
-      end;
-  end;
 
   procedure _SetUpDataPosition(AJournalManager: TJournalManager);
   var
@@ -232,29 +200,15 @@ procedure TWorkBotPanelFrame.TradingPlatformStateMarket(AStateMarket: TStateMark
       end;
   end;
 
-  procedure _SetUpProfit(AJournalManager: TJournalManager);
-  var
-    i, iCount: Integer;
-    xPosition: TJournalPosition;
-    xSumProfit, xSumProfitTaker, xSumProfitMaker: Double;
+  procedure _TradingPlatformStateMarket;
   begin
-    xSumProfit := 0;
-    xSumProfitTaker := 0;
-    xSumProfitMaker := 0;
-
-    iCount := AJournalManager.Positions.Count;
-    if iCount > 0 then
-      for i := iCount - 1 downto 0 do
+    // Обновление текущий позиции по инструменту
+    if WorkBots.Count > 0 then
+      for var xWorkBot in WorkBots do
       begin
-        xPosition := AJournalManager.Positions[i];
-        xSumProfit := xSumProfit + xPosition.Profit;
-        xSumProfitTaker := xSumProfitTaker + xPosition.ProfitFeeRatesTaker;
-        xSumProfitMaker := xSumProfitMaker + xPosition.ProfitFeeRatesMaker;
+        xWorkBot.SetTradingPlatform(FTradingPlatform);
+        _SetUpDataPosition(xWorkBot.JournalManager);
       end;
-
-    Edit1.Text := xSumProfit.ToString;
-    Edit2.Text := xSumProfitTaker.ToString;
-    Edit3.Text := xSumProfitMaker.ToString;
   end;
 
 begin
@@ -267,12 +221,15 @@ begin
   EditUpDataCandel.Text := FCountUpDataCandel.ToString;
 
   if Assigned(FTradingPlatform) then
-    FWorkBot.SetTradingPlatform(FTradingPlatform);
+    _TradingPlatformStateMarket;
 
-  _ShowJournalManager(PositionGrid,FWorkBot.JournalManager);
-  _ShowJournalManagerProfit(FWorkBot.JournalManager);
-  _SetUpDataPosition(FWorkBot.JournalManager);
-  _SetUpProfit(FWorkBot.JournalManager);
+  if Assigned(FSelectedWorkBot) then
+  begin
+    PositionGridFrame.UpDataJournalManager(FSelectedWorkBot.JournalManager);
+    EditProfit.Text := FSelectedWorkBot.JournalManager.Profit.ToString;
+    EditProfitFeeRatesTaker.Text := FSelectedWorkBot.JournalManager.ProfitFeeRatesTaker.ToString;
+    EditProfitFeeRatesMaker.Text := FSelectedWorkBot.JournalManager.ProfitFeeRatesMaker.ToString;
+  end;
 end;
 
 procedure TWorkBotPanelFrame.SetLog(S: String);
@@ -282,9 +239,21 @@ begin
 end;
 
 procedure TWorkBotPanelFrame.SetTradingPlatform(const Value: TTradingPlatform);
+
+  procedure _SetTradingPlatform;
+  var
+    i: Integer;
+    xWorkBot: TWorkBot;
+  begin
+    if WorkBots.Count > 0 then
+      for xWorkBot in WorkBots do
+        xWorkBot.SetTradingPlatform(FTradingPlatform);
+  end;
+
+
 begin
   FTradingPlatform := Value;
-  FWorkBot.SetTradingPlatform(FTradingPlatform);
+  _SetTradingPlatform;
 end;
 
 end.

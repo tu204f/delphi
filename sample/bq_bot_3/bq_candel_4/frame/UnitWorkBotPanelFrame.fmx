@@ -2,25 +2,13 @@ object WorkBotPanelFrame: TWorkBotPanelFrame
   Size.Width = 875.000000000000000000
   Size.Height = 462.000000000000000000
   Size.PlatformDefault = False
-  object PositionGrid: TStringGrid
-    Align = Client
-    CanFocus = True
-    ClipChildren = True
-    Size.Width = 716.000000000000000000
-    Size.Height = 462.000000000000000000
-    Size.PlatformDefault = False
-    TabOrder = 1
-    Options = [ColumnResize, ColumnMove, ColLines, RowLines, RowSelect, Tabs, Header, HeaderClick, AutoDisplacement]
-    Viewport.Width = 716.000000000000000000
-    Viewport.Height = 462.000000000000000000
-  end
   object LayoutStatusMarket: TLayout
     Align = Right
     Position.X = 716.000000000000000000
     Size.Width = 159.000000000000000000
     Size.Height = 462.000000000000000000
     Size.PlatformDefault = False
-    TabOrder = 2
+    TabOrder = 1
     object RectangleStatusMarket: TRectangle
       Align = Client
       Margins.Left = 2.000000000000000000
@@ -49,23 +37,46 @@ object WorkBotPanelFrame: TWorkBotPanelFrame
       Size.Height = 22.000000000000000000
       Size.PlatformDefault = False
     end
-    object Edit1: TEdit
+    object EditProfit: TEdit
       Touch.InteractiveGestures = [LongTap, DoubleTap]
       TabOrder = 5
       Position.X = 20.000000000000000000
       Position.Y = 332.000000000000000000
     end
-    object Edit2: TEdit
+    object EditProfitFeeRatesTaker: TEdit
       Touch.InteractiveGestures = [LongTap, DoubleTap]
       TabOrder = 4
       Position.X = 20.000000000000000000
       Position.Y = 360.000000000000000000
     end
-    object Edit3: TEdit
+    object EditProfitFeeRatesMaker: TEdit
       Touch.InteractiveGestures = [LongTap, DoubleTap]
       TabOrder = 3
       Position.X = 20.000000000000000000
       Position.Y = 388.000000000000000000
     end
+  end
+  object LayoutPositionGrid: TLayout
+    Align = Client
+    Margins.Left = 5.000000000000000000
+    Margins.Right = 5.000000000000000000
+    Size.Width = 506.000000000000000000
+    Size.Height = 462.000000000000000000
+    Size.PlatformDefault = False
+    TabOrder = 2
+  end
+  object ListBoxWorkBot: TListBox
+    Align = Left
+    Size.Width = 200.000000000000000000
+    Size.Height = 462.000000000000000000
+    Size.PlatformDefault = False
+    TabOrder = 3
+    OnClick = ListBoxWorkBotClick
+    DisableFocusEffect = True
+    DefaultItemStyles.ItemStyle = ''
+    DefaultItemStyles.GroupHeaderStyle = ''
+    DefaultItemStyles.GroupFooterStyle = ''
+    Viewport.Width = 196.000000000000000000
+    Viewport.Height = 458.000000000000000000
   end
 end

@@ -19,7 +19,10 @@ uses
   UnitWorkBotPanelFrame in 'frame\UnitWorkBotPanelFrame.pas' {WorkBotPanelFrame: TFrame},
   Lb.Breakdown in '..\lb\Lb.Breakdown.pas',
   Lb.Bot.Candel in '..\lb\Lb.Bot.Candel.pas',
-  Lb.Bybit.OrderHistory in '..\..\..\library\trade\bybit\trade\Lb.Bybit.OrderHistory.pas';
+  Lb.Bybit.OrderHistory in '..\..\..\library\trade\bybit\trade\Lb.Bybit.OrderHistory.pas',
+  UnitPositionGridFrame in 'frame\UnitPositionGridFrame.pas' {PositionGridFrame: TFrame},
+  UnitWorkBotGrid in 'frame\UnitWorkBotGrid.pas' {WorkBotGridFrame: TFrame},
+  Lb.WorkBot.Grid in 'frame\Lb.WorkBot.Grid.pas';
 
 {$R *.res}
 
