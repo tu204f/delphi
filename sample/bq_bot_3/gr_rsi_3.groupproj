@@ -9,13 +9,7 @@
         <Projects Include="bq_history_parser\bq_parser.dproj">
             <Dependencies/>
         </Projects>
-        <Projects Include="bq_volt_2\bq_volt_2.dproj">
-            <Dependencies/>
-        </Projects>
         <Projects Include="bq_volt_3\bq_volt_3.dproj">
-            <Dependencies/>
-        </Projects>
-        <Projects Include="bq_h\bq_h.dproj">
             <Dependencies/>
         </Projects>
         <Projects Include="bq_candel_4\bq_candel_4.dproj">
@@ -47,15 +41,6 @@
     <Target Name="bq_parser:Make">
         <MSBuild Projects="bq_history_parser\bq_parser.dproj" Targets="Make"/>
     </Target>
-    <Target Name="bq_volt_2">
-        <MSBuild Projects="bq_volt_2\bq_volt_2.dproj"/>
-    </Target>
-    <Target Name="bq_volt_2:Clean">
-        <MSBuild Projects="bq_volt_2\bq_volt_2.dproj" Targets="Clean"/>
-    </Target>
-    <Target Name="bq_volt_2:Make">
-        <MSBuild Projects="bq_volt_2\bq_volt_2.dproj" Targets="Make"/>
-    </Target>
     <Target Name="bq_volt_3">
         <MSBuild Projects="bq_volt_3\bq_volt_3.dproj"/>
     </Target>
@@ -64,15 +49,6 @@
     </Target>
     <Target Name="bq_volt_3:Make">
         <MSBuild Projects="bq_volt_3\bq_volt_3.dproj" Targets="Make"/>
-    </Target>
-    <Target Name="bq_h">
-        <MSBuild Projects="bq_h\bq_h.dproj"/>
-    </Target>
-    <Target Name="bq_h:Clean">
-        <MSBuild Projects="bq_h\bq_h.dproj" Targets="Clean"/>
-    </Target>
-    <Target Name="bq_h:Make">
-        <MSBuild Projects="bq_h\bq_h.dproj" Targets="Make"/>
     </Target>
     <Target Name="bq_candel_4">
         <MSBuild Projects="bq_candel_4\bq_candel_4.dproj"/>
@@ -84,13 +60,13 @@
         <MSBuild Projects="bq_candel_4\bq_candel_4.dproj" Targets="Make"/>
     </Target>
     <Target Name="Build">
-        <CallTarget Targets="bq_history;bq_parser;bq_volt_2;bq_volt_3;bq_h;bq_candel_4"/>
+        <CallTarget Targets="bq_history;bq_parser;bq_volt_3;bq_candel_4"/>
     </Target>
     <Target Name="Clean">
-        <CallTarget Targets="bq_history:Clean;bq_parser:Clean;bq_volt_2:Clean;bq_volt_3:Clean;bq_h:Clean;bq_candel_4:Clean"/>
+        <CallTarget Targets="bq_history:Clean;bq_parser:Clean;bq_volt_3:Clean;bq_candel_4:Clean"/>
     </Target>
     <Target Name="Make">
-        <CallTarget Targets="bq_history:Make;bq_parser:Make;bq_volt_2:Make;bq_volt_3:Make;bq_h:Make;bq_candel_4:Make"/>
+        <CallTarget Targets="bq_history:Make;bq_parser:Make;bq_volt_3:Make;bq_candel_4:Make"/>
     </Target>
     <Import Project="$(BDS)\Bin\CodeGear.Group.Targets" Condition="Exists('$(BDS)\Bin\CodeGear.Group.Targets')"/>
 </Project>
