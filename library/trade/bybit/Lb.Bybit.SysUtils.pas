@@ -344,7 +344,7 @@ var
   ///<summary>
   /// Ключаем режем тестрование
   ///</summary>
-  BybitHostTest: Boolean = False;
+  BybitHostDemo: Boolean = False;
 
 function LinkBybitHost: String;
 
@@ -356,7 +356,7 @@ uses
 
 function LinkBybitHost: String;
 begin
-  case BybitHostTest of
+  case BybitHostDemo of
     True: Result := 'https://api-demo.bybit.com';
     False: Result := 'https://api.bybit.com';
   end;
@@ -1066,9 +1066,9 @@ begin
   FClient.AcceptEncoding := 'gzip, deflate';
   FClient.Accept := '*/*';
   xHeaders  := _Headers;
+
   xURL := FBybitModule.GetURL;
   try
-
     case FBybitModule.TypeHttp of
       thGet: xResponse := FClient.Get(
         xURL,
@@ -1100,6 +1100,7 @@ begin
     FStatusCode := ERROR_CODE_HTTP;
     FResponseValue := 'Error Connection. Ошибка соединение';
   end;
+
 end;
 
 { TCustonObjectJson }

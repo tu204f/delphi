@@ -1,0 +1,120 @@
+object WorkBotFrame: TWorkBotFrame
+  Size.Width = 154.000000000000000000
+  Size.Height = 449.000000000000000000
+  Size.PlatformDefault = False
+  object Rectangle: TRectangle
+    Align = Client
+    Size.Width = 154.000000000000000000
+    Size.Height = 449.000000000000000000
+    Size.PlatformDefault = False
+    object LayoutPrice: TLayout
+      Align = Client
+      Size.Width = 154.000000000000000000
+      Size.Height = 449.000000000000000000
+      Size.PlatformDefault = False
+      TabOrder = 0
+      object Layout: TLayout
+        Position.X = 17.500000000000000000
+        Position.Y = 96.000000000000000000
+        Size.Width = 61.000000000000000000
+        Size.Height = 229.000000000000000000
+        Size.PlatformDefault = False
+        TabOrder = 0
+        object RectangleBody: TRectangle
+          Align = Client
+          Size.Width = 61.000000000000000000
+          Size.Height = 122.000000000000000000
+          Size.PlatformDefault = False
+          Stroke.Thickness = 2.000000000000000000
+        end
+        object LayoutHigh: TLayout
+          Align = Top
+          Size.Width = 61.000000000000000000
+          Size.Height = 50.000000000000000000
+          Size.PlatformDefault = False
+          TabOrder = 2
+          object LineHigh: TLine
+            Align = Right
+            LineType = Left
+            Position.X = 36.000000000000000000
+            Size.Width = 25.000000000000000000
+            Size.Height = 50.000000000000000000
+            Size.PlatformDefault = False
+            Stroke.Thickness = 2.000000000000000000
+          end
+        end
+        object LayoutLow: TLayout
+          Align = Bottom
+          Position.Y = 172.000000000000000000
+          Size.Width = 61.000000000000000000
+          Size.Height = 57.000000000000000000
+          Size.PlatformDefault = False
+          TabOrder = 1
+          object LineLow: TLine
+            Align = Right
+            LineType = Left
+            Position.X = 32.000000000000000000
+            Size.Width = 29.000000000000000000
+            Size.Height = 57.000000000000000000
+            Size.PlatformDefault = False
+            Stroke.Thickness = 2.000000000000000000
+          end
+        end
+      end
+      object LinePriceHigh: TLine
+        LineType = Bottom
+        Position.X = 10.000000000000000000
+        Size.Width = 103.000000000000000000
+        Size.Height = 25.000000000000000000
+        Size.PlatformDefault = False
+        Stroke.Thickness = 2.000000000000000000
+        Stroke.Dash = Dash
+        object TextPriceHigh: TText
+          Align = Client
+          Margins.Right = 3.000000000000000000
+          Size.Width = 100.000000000000000000
+          Size.Height = 25.000000000000000000
+          Size.PlatformDefault = False
+          Text = #1042#1077#1088#1093#1085#1103#1103' '#1075#1088#1072#1085#1080#1094#1072
+          TextSettings.Font.StyleExt = {00070000000000000004000000}
+          TextSettings.HorzAlign = Trailing
+        end
+      end
+      object LinePriceLow: TLine
+        LineType = Top
+        Position.X = 10.000000000000000000
+        Position.Y = 200.000000000000000000
+        Size.Width = 107.000000000000000000
+        Size.Height = 29.000000000000000000
+        Size.PlatformDefault = False
+        Stroke.Thickness = 2.000000000000000000
+        Stroke.Dash = Dash
+        object TextPriceLow: TText
+          Align = Client
+          Margins.Right = 3.000000000000000000
+          Size.Width = 104.000000000000000000
+          Size.Height = 29.000000000000000000
+          Size.PlatformDefault = False
+          Text = #1053#1080#1078#1085#1103#1103' '#1075#1088#1072#1085#1080#1094#1072
+          TextSettings.Font.StyleExt = {00070000000000000004000000}
+          TextSettings.HorzAlign = Trailing
+        end
+      end
+      object LineOpen: TLine
+        LineType = Top
+        Position.X = 84.000000000000000000
+        Position.Y = 144.000000000000000000
+        Size.Width = 50.000000000000000000
+        Size.Height = 33.000000000000000000
+        Size.PlatformDefault = False
+        Stroke.Thickness = 2.000000000000000000
+      end
+    end
+  end
+  object Timer1: TTimer
+    Interval = 100
+    OnTimer = Timer1Timer
+    Left = 72
+    Top = 360
+  end
+end

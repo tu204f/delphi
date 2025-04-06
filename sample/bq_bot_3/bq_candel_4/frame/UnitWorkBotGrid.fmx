@@ -1,0 +1,16 @@
+object WorkBotGridFrame: TWorkBotGridFrame
+  Size.Width = 455.000000000000000000
+  Size.Height = 388.000000000000000000
+  Size.PlatformDefault = False
+  object WorkBotGrid: TStringGrid
+    Align = Client
+    CanFocus = True
+    ClipChildren = True
+    Size.Width = 455.000000000000000000
+    Size.Height = 388.000000000000000000
+    Size.PlatformDefault = False
+    TabOrder = 0
+    Viewport.Width = 451.000000000000000000
+    Viewport.Height = 363.000000000000000000
+  end
+end

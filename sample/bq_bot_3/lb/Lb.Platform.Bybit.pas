@@ -43,7 +43,7 @@ type
     ///<summary>
     /// Есть потенциальная ошибка зависание заявки
     ///</summary>
-    procedure SendTrade(const ATime: TDateTime; const APrice, AQty: Double; ASide: TTypeBuySell); override;
+    function SendTrade(const ATime: TDateTime; const APrice, AQty: Double; ASide: TTypeBuySell): String; override;
 
     property Interval: TTypeInterval write SetInterval;
   public
@@ -104,8 +104,8 @@ begin
 
   {todo: Перевести эти параметры в найстроки}
   FBybitKline.Category := TTypeCategory.tcLinear;
-  //FBybitKline.Interval := TTypeInterval.ti_1;
-  FBybitKline.Limit    := 100;
+  //FBybitKline.Interval := TTypeInterval.ti_60;
+  FBybitKline.Limit    := 5000;
   FBybitKline.Selected;
 
   FBybitOrderBook.Category := TTypeCategory.tcLinear;
@@ -160,8 +160,8 @@ procedure TPlatfomBybit.BybitOrderBookOnEventEndLoading(ASender: TObject);
 var
   xBid, xAsk: Double;
 begin
-  xBid := 0;
-  xAsk := 0;
+  xBid := FBybitOrderBook.OrderBook.Bid;
+  xAsk := FBybitOrderBook.OrderBook.Ask;
 
   for var xOrderMarket in FBybitOrderBook.OrderBook.Bids do
   begin
@@ -180,11 +180,13 @@ begin
       Break;
     end;
   end;
-  FStateMarket.SetPrice(xAsk,xBid);
 
   Dec(FCountSelected);
-  if FCountSelected = 0 then
+  if (FCountSelected = 0) and (xBid > 0) and (xAsk > 0) then
+  begin
+    FStateMarket.SetPrice(xAsk,xBid);
     DoStateMarke;
+  end;
 end;
 
 
@@ -193,7 +195,7 @@ begin
   raise Exception.Create(TBybitHttpClient(ASender).ValueMessage);
 end;
 
-procedure TPlatfomBybit.SendTrade(const ATime: TDateTime; const APrice, AQty: Double; ASide: TTypeBuySell);
+function TPlatfomBybit.SendTrade(const ATime: TDateTime; const APrice, AQty: Double; ASide: TTypeBuySell): String;
 
   function _CreateOrderLinkId: String;
   var
@@ -216,7 +218,10 @@ procedure TPlatfomBybit.SendTrade(const ATime: TDateTime; const APrice, AQty: Do
 var
   xPlaceOrder: TParamOrder;
   xResponse: TOrderResponse;
+  xLinkId: String;
 begin
+  xLinkId := _CreateOrderLinkId;
+  Result := xLinkId;
   try
     // Инструмент отслеживания
     // Передача ключей программе
@@ -231,11 +236,12 @@ begin
       xPlaceOrder.Side        := _ToTypeSide(ASide);
 
       xPlaceOrder.PositionIdx := 0;
-      xPlaceOrder.OrderType   := TTypeOrder.Limit;
+      xPlaceOrder.OrderType   := TTypeOrder.Market;
       xPlaceOrder.Qty         := AQty;
       xPlaceOrder.Price       := APrice;
       xPlaceOrder.timeInForce := TTypeTimeInForce.GTC;
-      xPlaceOrder.OrderLinkId := _CreateOrderLinkId;
+
+      xPlaceOrder.OrderLinkId := xLinkId;
 
       xResponse := TOrderResponse.Create;
       try
@@ -246,17 +252,16 @@ begin
            xPlaceOrder,
            xResponse // Возрат сообщение ос делке
         );
-        DoMsgInfo(xResponse.RetMsg);
+        DoMsgInfo(xResponse.Value + ' ' + xResponse.RetMsg);
       finally
         FreeAndNil(xResponse);
       end;
-
     finally
       FreeAndNil(xPlaceOrder);
     end;
   except
     on E: Exception do
-      raise Exception.Create('Error Message:' + E.Message);
+      raise Exception.Create('Error Message: LinkID: [' + xLinkId + '].' + E.Message);
   end;
 end;
 

@@ -12,6 +12,11 @@ uses
   System.Generics.Collections;
 
 type
+  IMainFormLog = interface
+    procedure LogMsg(const S: WideString);
+  end;
+
+type
   ///<summary>Состояние сделки</summary>
   TTypeTrade = (
     ttNull,
@@ -36,6 +41,11 @@ type
 
 type
   ///<summary>
+  /// Тип тело свячи
+  ///</summary>
+  TTypeCandel = (tcNull, tcGreen, tcRed);
+
+  ///<summary>
   /// Свеча
   ///</summary>
   TCandel = record
@@ -44,9 +54,12 @@ type
     High: Double;   // Максимальная цена
     Low: Double;    // Минимальная цена
     Close: Double;  // Закрытие цены
-    Vol: Double;    // Объем который прошол
+    Vol: Double;
+  private
+    function GetTypeCandel: TTypeCandel;    // Объем который прошол
   public
     function GetToStr: String;
+    property TypeCandel: TTypeCandel read GetTypeCandel;
   end;
 
   ///<summary>
@@ -55,6 +68,7 @@ type
   TCandelList = class(TList<TCandel>)
   public
     procedure CopyCandels(const ACandels: TCandelList);
+    function FirstCandel: TCandel;
   end;
 
   ///<summary>
@@ -121,6 +135,7 @@ function GetCrossSide(ASide: TTypeBuySell): TTypeBuySell;
 function GetStrToSide(ASide: TTypeBuySell): String;
 function GetSiseToStr(AValue: String): TTypeBuySell;
 function GetStrToTypeTrade(const ATypeTrade: TTypeTrade): String;
+function GetStrToTypeCandel(const ATypeCandel: TTypeCandel): String;
 function GetTypeTradeToStr(const AValue: String): TTypeTrade;
 
 ///<summary>
@@ -155,6 +170,15 @@ begin
     ttNull: Result := 'null';
     ttOpen: Result := 'open';
     ttClose: Result := 'close';
+  end;
+end;
+
+function GetStrToTypeCandel(const ATypeCandel: TTypeCandel): String;
+begin
+  case ATypeCandel of
+    TTypeCandel.tcNull: Result := 'null';
+    TTypeCandel.tcGreen: Result := 'green';
+    TTypeCandel.tcRed: Result := 'red';
   end;
 end;
 
@@ -256,8 +280,10 @@ begin
   {todo: Есть уже заложденый баг}
   xHour  := _Hour(AValue);
   xValue := AValue - xHour * HOUR_COUNT_MSEC;
+
   xMin   := _Min(xValue);
   xValue := xValue - xMin * MIN_COUNT_MSEC;
+
   xSec   := _Sec(xValue);
   xMSec  := xValue - xSec * SEC_COUNT_MSEC;
 
@@ -272,14 +298,31 @@ end;
 { TCandel }
 
 function TCandel.GetToStr: String;
+var
+  xValueDateTime: TDateTime;
 begin
+  xValueDateTime := UnixToDateTime(Time);
   Result :=
+    DateTimeToStr(xValueDateTime) + ';' +
     Time.ToString + ';' +
     Open.ToString + ';' +
     High.ToString + ';' +
     Low.ToString + ';' +
     Close.ToString + ';' +
-    Vol.ToString;
+    Vol.ToString + ';' +
+    GetStrToTypeCandel(Self.TypeCandel) + ';';
+end;
+
+function TCandel.GetTypeCandel: TTypeCandel;
+var
+  xTypeCandel: TTypeCandel;
+begin
+  xTypeCandel := TTypeCandel.tcNull;
+  if Self.Open < Self.Close then
+    xTypeCandel := TTypeCandel.tcGreen
+  else if Self.Open > Self.Close then
+    xTypeCandel := TTypeCandel.tcRed;
+  Result := xTypeCandel;
 end;
 
 { TCandelList }
@@ -292,6 +335,19 @@ begin
     for var xC in ACandels do
       Self.Add(xC);
   end;
+end;
+
+function TCandelList.FirstCandel: TCandel;
+var
+  xCandel: TCandel;
+begin
+  if Self.Count > 0 then
+  begin
+    xCandel := Self.Items[0];
+    Result := xCandel;
+  end
+  else
+    raise Exception.Create('Error Message: Ошибка запроса');
 end;
 
 { TStateMarket }
@@ -325,6 +381,13 @@ end;
 
 procedure TStateMarket.SetPrice(const AAsk, ABid: Double);
 begin
+  {todo: тех случает, такое возможно когда нет ликвидности на рынке}
+  if AAsk <= 0 then
+    raise Exception.Create('Error Message: Цена продавца не может быть нулевой');
+
+  if ABid <= 0 then
+    raise Exception.Create('Error Message: Цена покупателя не может быть нулевой');
+
   FAsk := AAsk;
   FBid := ABid;
 end;

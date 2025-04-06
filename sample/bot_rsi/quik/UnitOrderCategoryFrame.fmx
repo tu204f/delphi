@@ -1,5 +1,0 @@
-object OrderCategoryFrame: TOrderCategoryFrame
-  Size.Width = 231.000000000000000000
-  Size.Height = 381.000000000000000000
-  Size.PlatformDefault = False
-end

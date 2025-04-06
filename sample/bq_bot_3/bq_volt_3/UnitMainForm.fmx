@@ -1,0 +1,132 @@
+object MainForm: TMainForm
+  Left = 0
+  Top = 0
+  Caption = 'Form4'
+  ClientHeight = 818
+  ClientWidth = 1073
+  FormFactor.Width = 320
+  FormFactor.Height = 480
+  FormFactor.Devices = [Desktop]
+  OnShow = FormShow
+  DesignerMasterStyle = 0
+  object ButtonStartOrStop: TButton
+    Position.X = 8.000000000000000000
+    Position.Y = 8.000000000000000000
+    Size.Width = 109.000000000000000000
+    Size.Height = 45.000000000000000000
+    Size.PlatformDefault = False
+    TabOrder = 0
+    Text = #1057#1090#1072#1088#1090
+    OnClick = ButtonStartOrStopClick
+  end
+  object Rectangle: TRectangle
+    Anchors = [akLeft, akTop, akRight]
+    Position.X = 120.000000000000000000
+    Position.Y = 8.000000000000000000
+    Size.Width = 942.000000000000000000
+    Size.Height = 45.000000000000000000
+    Size.PlatformDefault = False
+    object TextStatus: TText
+      Align = Client
+      Margins.Left = 5.000000000000000000
+      Margins.Top = 5.000000000000000000
+      Margins.Bottom = 5.000000000000000000
+      Size.Width = 937.000000000000000000
+      Size.Height = 35.000000000000000000
+      Size.PlatformDefault = False
+      TextSettings.HorzAlign = Leading
+    end
+  end
+  object TabControl1: TTabControl
+    Anchors = [akLeft, akTop, akRight, akBottom]
+    Position.X = 8.000000000000000000
+    Position.Y = 60.000000000000000000
+    Size.Width = 1058.000000000000000000
+    Size.Height = 495.000000000000000000
+    Size.PlatformDefault = False
+    TabIndex = 0
+    TabOrder = 1
+    TabPosition = PlatformDefault
+    Sizes = (
+      1058s
+      469s
+      1058s
+      469s
+      1058s
+      469s)
+    object TabItemTrade1: TTabItem
+      CustomIcon = <
+        item
+        end>
+      IsSelected = True
+      Size.Width = 123.000000000000000000
+      Size.Height = 26.000000000000000000
+      Size.PlatformDefault = False
+      StyleLookup = ''
+      TabOrder = 0
+      Text = #1058#1086#1088#1075#1086#1074#1072#1103' '#1087#1072#1085#1077#1083#1100' 1'
+      ExplicitSize.cx = 54.000000000000000000
+      ExplicitSize.cy = 26.000000000000000000
+    end
+    object TabItemTrade2: TTabItem
+      CustomIcon = <
+        item
+        end>
+      IsSelected = False
+      Size.Width = 123.000000000000000000
+      Size.Height = 26.000000000000000000
+      Size.PlatformDefault = False
+      StyleLookup = ''
+      TabOrder = 0
+      Text = #1058#1086#1088#1075#1086#1074#1072#1103' '#1087#1072#1085#1077#1083#1100' 2'
+      ExplicitSize.cx = 123.000000000000000000
+      ExplicitSize.cy = 26.000000000000000000
+    end
+    object TabItemPosition: TTabItem
+      CustomIcon = <
+        item
+        end>
+      IsSelected = False
+      Size.Width = 120.000000000000000000
+      Size.Height = 26.000000000000000000
+      Size.PlatformDefault = False
+      StyleLookup = ''
+      TabOrder = 0
+      Text = #1048#1089#1093#1086#1076#1085#1099#1077' '#1076#1072#1085#1085#1099#1077
+      ExplicitSize.cx = 69.000000000000000000
+      ExplicitSize.cy = 26.000000000000000000
+      object StringGridCandel: TStringGrid
+        Align = Client
+        CanFocus = True
+        ClipChildren = True
+        Size.Width = 1058.000000000000000000
+        Size.Height = 469.000000000000000000
+        Size.PlatformDefault = False
+        TabOrder = 0
+        Options = [Editing, ColumnResize, ColumnMove, ColLines, RowLines, RowSelect, Tabs, Header, HeaderClick, AutoDisplacement]
+        Viewport.Width = 1054.000000000000000000
+        Viewport.Height = 444.000000000000000000
+      end
+    end
+  end
+  object PopupMenu: TPopupMenu
+    Left = 219
+    Top = 228
+    object MenuItemSaveFile: TMenuItem
+      Text = 'MenuItemSaveFile'
+    end
+  end
+  object MemoLog: TMemo
+    Touch.InteractiveGestures = [Pan, LongTap, DoubleTap]
+    DataDetectorTypes = []
+    Anchors = [akLeft, akRight, akBottom]
+    Position.X = 8.000000000000000000
+    Position.Y = 559.000000000000000000
+    Size.Width = 1057.000000000000000000
+    Size.Height = 253.000000000000000000
+    Size.PlatformDefault = False
+    TabOrder = 3
+    Viewport.Width = 1053.000000000000000000
+    Viewport.Height = 249.000000000000000000
+  end
+end
