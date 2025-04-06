@@ -22,7 +22,7 @@ uses
 {$R *.res}
 
 begin
-  BybitHostTest := True;
+  BybitHostDemo := True;
 
   TLogger.ClearLog;
 

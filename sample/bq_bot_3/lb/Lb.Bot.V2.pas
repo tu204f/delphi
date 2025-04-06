@@ -15,7 +15,7 @@ uses
   System.Generics.Collections,
   Lb.SysUtils,
   Lb.Platform,
-  Lb.Journal.Trading.v2;
+  Lb.Journal.Trading;
 
 type
   ///<summary>
@@ -41,7 +41,7 @@ type
   protected
     procedure DoLongOpen;
     procedure DoShortOpen;
-    procedure PositionClose(ASander: TObject);
+    procedure PositionClose(const AJournalPosition: TJournalPosition);
     procedure OpenPosition(const ASide: TTypeBuySell);
     procedure ClosePosition;
   public
@@ -285,7 +285,7 @@ begin
 end;
 
 
-procedure TWorkBotDeviation.PositionClose(ASander: TObject);
+procedure TWorkBotDeviation.PositionClose(const AJournalPosition: TJournalPosition);
 begin
   FPosition := nil;
 end;

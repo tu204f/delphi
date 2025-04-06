@@ -13,7 +13,7 @@ uses
   System.Generics.Collections,
   Lb.SysUtils,
   Lb.Platform,
-  Lb.Journal.Trading.v2,
+  Lb.Journal.Trading,
   Lb.Breakdown;
 
 type
@@ -38,7 +38,7 @@ type
     procedure OpenPositionBuy;
     procedure OpenPositionSell;
     procedure ClosePosition;
-    procedure EventPositionClose(ASender: TObject);
+    procedure EventPositionClose(const AJournalPosition: TJournalPosition);
   public
     constructor Create; virtual;
     destructor Destroy; override;
@@ -270,7 +270,7 @@ begin
 
 end;
 
-procedure TWorkBot.EventPositionClose(ASender: TObject);
+procedure TWorkBot.EventPositionClose(const AJournalPosition: TJournalPosition);
 begin
   {$IFDEF DBG_WORK_BOT}
   TLogger.LogTree(0,'TWorkBot.PositionClose');

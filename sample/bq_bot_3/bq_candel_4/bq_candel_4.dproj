@@ -226,6 +226,7 @@
             <DesignClass>TFrame</DesignClass>
         </DCCReference>
         <DCCReference Include="frame\Lb.WorkBot.Grid.pas"/>
+        <DCCReference Include="..\lb\Lb.CustomWorkBot.pas"/>
         <None Include="..\lb\debug.inc"/>
         <None Include="debug_volt.inc"/>
         <BuildConfiguration Include="Release">

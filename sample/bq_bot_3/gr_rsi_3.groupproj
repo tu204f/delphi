@@ -9,18 +9,6 @@
         <Projects Include="bq_history_parser\bq_parser.dproj">
             <Dependencies/>
         </Projects>
-        <Projects Include="bq_ein_bot_2\bq_ein_bot.dproj">
-            <Dependencies/>
-        </Projects>
-        <Projects Include="bq_bot\bq_bot.dproj">
-            <Dependencies/>
-        </Projects>
-        <Projects Include="bq_ein_bot_3\bq_ein_bot_v2.dproj">
-            <Dependencies/>
-        </Projects>
-        <Projects Include="bq_volt\bq_volt.dproj">
-            <Dependencies/>
-        </Projects>
         <Projects Include="bq_volt_2\bq_volt_2.dproj">
             <Dependencies/>
         </Projects>
@@ -59,42 +47,6 @@
     <Target Name="bq_parser:Make">
         <MSBuild Projects="bq_history_parser\bq_parser.dproj" Targets="Make"/>
     </Target>
-    <Target Name="bq_ein_bot">
-        <MSBuild Projects="bq_ein_bot_2\bq_ein_bot.dproj"/>
-    </Target>
-    <Target Name="bq_ein_bot:Clean">
-        <MSBuild Projects="bq_ein_bot_2\bq_ein_bot.dproj" Targets="Clean"/>
-    </Target>
-    <Target Name="bq_ein_bot:Make">
-        <MSBuild Projects="bq_ein_bot_2\bq_ein_bot.dproj" Targets="Make"/>
-    </Target>
-    <Target Name="bq_bot">
-        <MSBuild Projects="bq_bot\bq_bot.dproj"/>
-    </Target>
-    <Target Name="bq_bot:Clean">
-        <MSBuild Projects="bq_bot\bq_bot.dproj" Targets="Clean"/>
-    </Target>
-    <Target Name="bq_bot:Make">
-        <MSBuild Projects="bq_bot\bq_bot.dproj" Targets="Make"/>
-    </Target>
-    <Target Name="bq_ein_bot_v2">
-        <MSBuild Projects="bq_ein_bot_3\bq_ein_bot_v2.dproj"/>
-    </Target>
-    <Target Name="bq_ein_bot_v2:Clean">
-        <MSBuild Projects="bq_ein_bot_3\bq_ein_bot_v2.dproj" Targets="Clean"/>
-    </Target>
-    <Target Name="bq_ein_bot_v2:Make">
-        <MSBuild Projects="bq_ein_bot_3\bq_ein_bot_v2.dproj" Targets="Make"/>
-    </Target>
-    <Target Name="bq_volt">
-        <MSBuild Projects="bq_volt\bq_volt.dproj"/>
-    </Target>
-    <Target Name="bq_volt:Clean">
-        <MSBuild Projects="bq_volt\bq_volt.dproj" Targets="Clean"/>
-    </Target>
-    <Target Name="bq_volt:Make">
-        <MSBuild Projects="bq_volt\bq_volt.dproj" Targets="Make"/>
-    </Target>
     <Target Name="bq_volt_2">
         <MSBuild Projects="bq_volt_2\bq_volt_2.dproj"/>
     </Target>
@@ -132,13 +84,13 @@
         <MSBuild Projects="bq_candel_4\bq_candel_4.dproj" Targets="Make"/>
     </Target>
     <Target Name="Build">
-        <CallTarget Targets="bq_history;bq_parser;bq_ein_bot;bq_bot;bq_ein_bot_v2;bq_volt;bq_volt_2;bq_volt_3;bq_h;bq_candel_4"/>
+        <CallTarget Targets="bq_history;bq_parser;bq_volt_2;bq_volt_3;bq_h;bq_candel_4"/>
     </Target>
     <Target Name="Clean">
-        <CallTarget Targets="bq_history:Clean;bq_parser:Clean;bq_ein_bot:Clean;bq_bot:Clean;bq_ein_bot_v2:Clean;bq_volt:Clean;bq_volt_2:Clean;bq_volt_3:Clean;bq_h:Clean;bq_candel_4:Clean"/>
+        <CallTarget Targets="bq_history:Clean;bq_parser:Clean;bq_volt_2:Clean;bq_volt_3:Clean;bq_h:Clean;bq_candel_4:Clean"/>
     </Target>
     <Target Name="Make">
-        <CallTarget Targets="bq_history:Make;bq_parser:Make;bq_ein_bot:Make;bq_bot:Make;bq_ein_bot_v2:Make;bq_volt:Make;bq_volt_2:Make;bq_volt_3:Make;bq_h:Make;bq_candel_4:Make"/>
+        <CallTarget Targets="bq_history:Make;bq_parser:Make;bq_volt_2:Make;bq_volt_3:Make;bq_h:Make;bq_candel_4:Make"/>
     </Target>
     <Import Project="$(BDS)\Bin\CodeGear.Group.Targets" Condition="Exists('$(BDS)\Bin\CodeGear.Group.Targets')"/>
 </Project>

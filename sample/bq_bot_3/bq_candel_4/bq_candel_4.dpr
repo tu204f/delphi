@@ -22,7 +22,8 @@ uses
   Lb.Bybit.OrderHistory in '..\..\..\library\trade\bybit\trade\Lb.Bybit.OrderHistory.pas',
   UnitPositionGridFrame in 'frame\UnitPositionGridFrame.pas' {PositionGridFrame: TFrame},
   UnitWorkBotGrid in 'frame\UnitWorkBotGrid.pas' {WorkBotGridFrame: TFrame},
-  Lb.WorkBot.Grid in 'frame\Lb.WorkBot.Grid.pas';
+  Lb.WorkBot.Grid in 'frame\Lb.WorkBot.Grid.pas',
+  Lb.CustomWorkBot in '..\lb\Lb.CustomWorkBot.pas';
 
 {$R *.res}
 

@@ -76,7 +76,7 @@ object WorkBotPanelFrame: TWorkBotPanelFrame
     DefaultItemStyles.ItemStyle = ''
     DefaultItemStyles.GroupHeaderStyle = ''
     DefaultItemStyles.GroupFooterStyle = ''
-    Viewport.Width = 196.000000000000000000
-    Viewport.Height = 458.000000000000000000
+    Viewport.Width = 200.000000000000000000
+    Viewport.Height = 462.000000000000000000
   end
 end

@@ -35,7 +35,7 @@ uses
   Lb.Bybit.SysUtils,
   Lb.Platform,
   Lb.Platform.Bybit,
-  Lb.Journal.Trading.v2;
+  Lb.Journal.Trading;
 
 type
   TWorkBotPanelFrame = class(TFrame)

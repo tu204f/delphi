@@ -134,13 +134,13 @@ object MainForm: TMainForm
               end>
             RowCollection = <
               item
-                Value = 33.333333333333330000
+                Value = 33.333333333333340000
               end
               item
-                Value = 33.333333333333330000
+                Value = 33.333333333333340000
               end
               item
-                Value = 33.333333333333330000
+                Value = 33.333333333333340000
               end
               item
                 SizeStyle = Auto

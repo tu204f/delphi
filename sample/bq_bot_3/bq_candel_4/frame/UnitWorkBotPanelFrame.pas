@@ -35,7 +35,8 @@ uses
   Lb.Bybit.SysUtils,
   Lb.Platform,
   Lb.Platform.Bybit,
-  Lb.Journal.Trading, FMX.ListBox;
+  Lb.Journal.Trading,
+  FMX.ListBox;
 
 type
   ///<summary>
@@ -163,7 +164,7 @@ procedure TWorkBotPanelFrame.TradingPlatformNewCandel;
   begin
     if WorkBots.Count > 0 then
       for var xWorkBot in WorkBots do
-        xWorkBot.SetTradingNewCandel;
+        xWorkBot.TradingNewCandel;
   end;
 
 begin
@@ -206,7 +207,7 @@ procedure TWorkBotPanelFrame.TradingPlatformStateMarket(AStateMarket: TStateMark
     if WorkBots.Count > 0 then
       for var xWorkBot in WorkBots do
       begin
-        xWorkBot.SetTradingPlatform(FTradingPlatform);
+        xWorkBot.TradingUpDataCandel(FTradingPlatform);
         _SetUpDataPosition(xWorkBot.JournalManager);
       end;
   end;
@@ -247,7 +248,7 @@ procedure TWorkBotPanelFrame.SetTradingPlatform(const Value: TTradingPlatform);
   begin
     if WorkBots.Count > 0 then
       for xWorkBot in WorkBots do
-        xWorkBot.SetTradingPlatform(FTradingPlatform);
+        xWorkBot.TradingUpDataCandel(FTradingPlatform);
   end;
 
 

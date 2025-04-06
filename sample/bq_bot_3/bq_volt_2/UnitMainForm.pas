@@ -15,7 +15,7 @@ uses
   Lb.Platform,
   Lb.Bybit.SysUtils,
   Lb.Platform.Bybit,
-  Lb.Journal.Trading.v2,
+  Lb.Journal.Trading,
   Lb.Bot.V2,
 
   FMX.Objects,
