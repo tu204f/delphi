@@ -51,7 +51,6 @@ type
     EditProfitFeeRatesTaker: TEdit;
     EditProfitFeeRatesMaker: TEdit;
     LayoutPositionGrid: TLayout;
-    ListBoxWorkBot: TListBox;
     procedure ListBoxWorkBotClick(Sender: TObject);
   private
     FMainFormLog: IMainFormLog;
@@ -64,7 +63,7 @@ type
     FCountUpDataCandel: Integer;
   public
 
-    WorkBots: TWorkBotList;
+    WorkBot: TWorkBot;
     PositionGridFrame: TPositionGridFrame;
 
     constructor Create(AOwner: TComponent); override;
@@ -93,23 +92,11 @@ constructor TWorkBotPanelFrame.Create(AOwner: TComponent);
 
   procedure _SetInitilizationWorkBots;
   var
-    i: Integer;
     xWorkBot: TWorkBot;
   begin
-    WorkBots.Clear;
-    ListBoxWorkBot.Items.Clear;
-
-    for i := 1 to 20 do
-    begin
-      xWorkBot := TWorkBot.Create;
-      xWorkBot.CloseTriling := 0.5 * i;
-      WorkBots.Add(xWorkBot);
-
-      ListBoxWorkBot.Items.Add('triling_' + xWorkBot.CloseTriling.ToString);
-
-      FSelectedWorkBot := xWorkBot;
-    end;
-
+    xWorkBot := TWorkBot.Create;
+    xWorkBot.CloseTriling := 5;
+    FSelectedWorkBot := xWorkBot;
   end;
 
 begin
@@ -125,29 +112,19 @@ begin
   FMainFormLog := nil;
 
   FSelectedWorkBot := nil;
-  WorkBots := TWorkBotList.Create;
   _SetInitilizationWorkBots;
 
 end;
 
 destructor TWorkBotPanelFrame.Destroy;
 begin
-  FreeAndNil(WorkBots);
+  FreeAndNil(FSelectedWorkBot);
   FreeAndNil(PositionGridFrame);
   inherited;
 end;
 
 procedure TWorkBotPanelFrame.ListBoxWorkBotClick(Sender: TObject);
-var
-  xIndex: Integer;
 begin
-  FSelectedWorkBot := nil;
-  xIndex := ListBoxWorkBot.ItemIndex;
-  if xIndex >= 0 then
-  begin
-    FSelectedWorkBot := WorkBots[xIndex];
-  end;
-
   if Assigned(FSelectedWorkBot) then
   begin
     PositionGridFrame.UpDataJournalManager(FSelectedWorkBot.JournalManager);
@@ -155,16 +132,13 @@ begin
     EditProfitFeeRatesTaker.Text := FSelectedWorkBot.JournalManager.ProfitFeeRatesTaker.ToString;
     EditProfitFeeRatesMaker.Text := FSelectedWorkBot.JournalManager.ProfitFeeRatesMaker.ToString;
   end;
-
 end;
 
 procedure TWorkBotPanelFrame.TradingPlatformNewCandel;
 
   procedure _SetTradingNewCandel;
   begin
-    if WorkBots.Count > 0 then
-      for var xWorkBot in WorkBots do
-        xWorkBot.TradingNewCandel;
+    FSelectedWorkBot.TradingNewCandel;
   end;
 
 begin
@@ -203,13 +177,7 @@ procedure TWorkBotPanelFrame.TradingPlatformStateMarket(AStateMarket: TStateMark
 
   procedure _TradingPlatformStateMarket;
   begin
-    // Обновление текущий позиции по инструменту
-    if WorkBots.Count > 0 then
-      for var xWorkBot in WorkBots do
-      begin
-        xWorkBot.TradingUpDataCandel(FTradingPlatform);
-        _SetUpDataPosition(xWorkBot.JournalManager);
-      end;
+    FSelectedWorkBot.TradingUpDataCandel(FTradingPlatform);
   end;
 
 begin
@@ -242,13 +210,8 @@ end;
 procedure TWorkBotPanelFrame.SetTradingPlatform(const Value: TTradingPlatform);
 
   procedure _SetTradingPlatform;
-  var
-    i: Integer;
-    xWorkBot: TWorkBot;
   begin
-    if WorkBots.Count > 0 then
-      for xWorkBot in WorkBots do
-        xWorkBot.TradingUpDataCandel(FTradingPlatform);
+    FSelectedWorkBot.TradingUpDataCandel(FTradingPlatform);
   end;
 
 

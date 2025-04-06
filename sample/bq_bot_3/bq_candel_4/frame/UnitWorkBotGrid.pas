@@ -30,11 +30,9 @@ type
   TWorkBotGridFrame = class(TFrame)
     WorkBotGrid: TStringGrid;
   private
-    FWorkBots: TWorkBotList;
   public
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
-    property WorkBots: TWorkBotList read FWorkBots;
   end;
 
 implementation
@@ -59,12 +57,11 @@ constructor TWorkBotGridFrame.Create(AOwner: TComponent);
 
 begin
   inherited Create(AOwner);
-  FWorkBots := TWorkBotList.Create;
 end;
 
 destructor TWorkBotGridFrame.Destroy;
 begin
-  FreeAndNil(FWorkBots);
+
   inherited;
 end;
 

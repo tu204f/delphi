@@ -105,7 +105,7 @@ begin
   // 'ldfYDnYhlVU5SU7w89mOnaHi0icy8XctNXtT';
   TPlatfomBybit(TradingPlatform).ApiKey := 't0YI4Ou0TKOTd7WrkE';
   TPlatfomBybit(TradingPlatform).ApiSecret := 'dWcdTGIulDoKOiK4mggPQIkYwmMFGxvFVusp';
-  TPlatfomBybit(TradingPlatform).Interval  := TTypeInterval.ti_15;
+  TPlatfomBybit(TradingPlatform).Interval  := TTypeInterval.ti_1;
 
   // *************************************************************************
   // Торговая панель

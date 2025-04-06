@@ -60,23 +60,9 @@ object WorkBotPanelFrame: TWorkBotPanelFrame
     Align = Client
     Margins.Left = 5.000000000000000000
     Margins.Right = 5.000000000000000000
-    Size.Width = 506.000000000000000000
+    Size.Width = 706.000000000000000000
     Size.Height = 462.000000000000000000
     Size.PlatformDefault = False
     TabOrder = 2
-  end
-  object ListBoxWorkBot: TListBox
-    Align = Left
-    Size.Width = 200.000000000000000000
-    Size.Height = 462.000000000000000000
-    Size.PlatformDefault = False
-    TabOrder = 3
-    OnClick = ListBoxWorkBotClick
-    DisableFocusEffect = True
-    DefaultItemStyles.ItemStyle = ''
-    DefaultItemStyles.GroupHeaderStyle = ''
-    DefaultItemStyles.GroupFooterStyle = ''
-    Viewport.Width = 200.000000000000000000
-    Viewport.Height = 462.000000000000000000
   end
 end

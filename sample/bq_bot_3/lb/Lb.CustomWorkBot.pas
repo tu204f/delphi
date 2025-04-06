@@ -26,7 +26,7 @@ type
     FJournalManager: TJournalManager;
   private
     FCurrentPosition: TJournalPosition;
-  private
+  protected
     procedure OpenPosition(const APrice: Double; const ASide: TTypeBuySell);
     procedure OpenPositionBuy;
     procedure OpenPositionSell;
@@ -43,6 +43,7 @@ type
     procedure TradingNewCandel; virtual;
     procedure TradingUpDataCandel(const ATradingPlatform: TTradingPlatform); virtual;
     property JournalManager: TJournalManager read FJournalManager;
+    property StateMarket: TStateMarket read FStateMarket;
   end;
 
 implementation
@@ -209,8 +210,10 @@ begin
 end;
 
 procedure TCustomWorkBot.EventPositionOpen(const AJournalPosition: TJournalPosition);
+{$IFDEF DBG_SEND_TRADE}
 var
   xOpenPrice: Double;
+{$ENDIF}
 begin
   {$IFDEF DBG_WORK_BOT}
   TLogger.LogTree(0,'TWorkBot.EventPositionOpen');
@@ -235,8 +238,10 @@ end;
 
 
 procedure TCustomWorkBot.EventPositionClose(const AJournalPosition: TJournalPosition);
+{$IFDEF DBG_SEND_TRADE}
 var
   xOpenPrice: Double;
+{$ENDIF}
 begin
   {$IFDEF DBG_WORK_BOT}
   TLogger.LogTree(0,'TWorkBot.PositionClose');

@@ -47,11 +47,6 @@ type
     property CloseTriling: Double read FCloseTriling write FCloseTriling;
   end;
 
-  ///<summary>
-  /// Список работов
-  ///</summary>
-  TWorkBotList = TObjectList<TWorkBot>;
-
 implementation
 
 uses
@@ -64,6 +59,7 @@ uses
 
 constructor TWorkBot.Create;
 begin
+  inherited;
   FCloseTriling := 10;
 end;
 
@@ -83,15 +79,64 @@ begin
   if Assigned(APosition) then
     with APosition do
     begin
-      //RatesSL := 0.5;
-      //RatesTK := 3;
-      Triling := Self.CloseTriling;
+      RatesSL := 0.5;
+      RatesTK := 3;
+      //Triling := Self.CloseTriling;
     end;
 end;
 
 procedure TWorkBot.TradingNewCandel;
+
+{$IFDEF DBG_TRADING_NEW_CANDEL}
+  procedure _LogCandel(const AIndex: Integer; const ACandel: TCandel);
+  begin
+    TLogger.LogTree(3,'Candel:>> [' + AIndex.ToString + ']' + ACandel.GetToStr);
+  end;
+{$ENDIF}
+
+  function _GetIsTranding: Integer;
+  var
+    xCandel: TCandel;
+    i, Count, xCountTranding: Integer;
+  begin
+    xCountTranding := 0;
+    Count := StateMarket.Candels.Count;
+    if Count > 0 then
+      for i := 0 to 1 do
+      begin
+        xCandel := StateMarket.Candels[i];
+        case xCandel.TypeCandel of
+          tcGreen: xCountTranding := xCountTranding + 1;
+          tcRed: xCountTranding := xCountTranding - 1;
+        end;
+        {$IFDEF DBG_TRADING_NEW_CANDEL}
+        _LogCandel(i,xCandel);
+        {$ENDIF}
+      end;
+    Result := xCountTranding;
+  end;
+
+var
+  xInd_IsTrand: Integer;
 begin
   inherited TradingNewCandel;
+  {$IFDEF DBG_TRADING_NEW_CANDEL}
+  TLogger.LogTree(0,'TWorkBot.SetTradingNewCandel');
+  {$ENDIF}
+  if Assigned(StateMarket) then
+  begin
+    if (StateMarket.Candels.Count > 0) and (StateMarket.Ask > 0) and (StateMarket.Bid > 0) then
+    begin
+      xInd_IsTrand := _GetIsTranding;
+      {$IFDEF DBG_TRADING_NEW_CANDEL}
+      TLogger.LogTree(3,'Tranding: >> ' + xInd_IsTrand.ToString);
+      {$ENDIF}
+      case xInd_IsTrand of
+        2 : OpenPositionBuy;
+        -2: OpenPositionSell;
+      end;
+    end;
+  end;
 end;
 
 procedure TWorkBot.TradingUpDataCandel(const ATradingPlatform: TTradingPlatform);
