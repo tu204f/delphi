@@ -30,6 +30,9 @@
         <Projects Include="sample\order_history\get_oh.dproj">
             <Dependencies/>
         </Projects>
+        <Projects Include="sample\tickers\tickers.dproj">
+            <Dependencies/>
+        </Projects>
     </ItemGroup>
     <ProjectExtensions>
         <Borland.Personality>Default.Personality.12</Borland.Personality>
@@ -119,14 +122,23 @@
     <Target Name="get_oh:Make">
         <MSBuild Projects="sample\order_history\get_oh.dproj" Targets="Make"/>
     </Target>
+    <Target Name="tickers">
+        <MSBuild Projects="sample\tickers\tickers.dproj"/>
+    </Target>
+    <Target Name="tickers:Clean">
+        <MSBuild Projects="sample\tickers\tickers.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="tickers:Make">
+        <MSBuild Projects="sample\tickers\tickers.dproj" Targets="Make"/>
+    </Target>
     <Target Name="Build">
-        <CallTarget Targets="bybit;instrument;recent_trade;candels;history;place;orderbook;indicator;get_oh"/>
+        <CallTarget Targets="bybit;instrument;recent_trade;candels;history;place;orderbook;indicator;get_oh;tickers"/>
     </Target>
     <Target Name="Clean">
-        <CallTarget Targets="bybit:Clean;instrument:Clean;recent_trade:Clean;candels:Clean;history:Clean;place:Clean;orderbook:Clean;indicator:Clean;get_oh:Clean"/>
+        <CallTarget Targets="bybit:Clean;instrument:Clean;recent_trade:Clean;candels:Clean;history:Clean;place:Clean;orderbook:Clean;indicator:Clean;get_oh:Clean;tickers:Clean"/>
     </Target>
     <Target Name="Make">
-        <CallTarget Targets="bybit:Make;instrument:Make;recent_trade:Make;candels:Make;history:Make;place:Make;orderbook:Make;indicator:Make;get_oh:Make"/>
+        <CallTarget Targets="bybit:Make;instrument:Make;recent_trade:Make;candels:Make;history:Make;place:Make;orderbook:Make;indicator:Make;get_oh:Make;tickers:Make"/>
     </Target>
     <Import Project="$(BDS)\Bin\CodeGear.Group.Targets" Condition="Exists('$(BDS)\Bin\CodeGear.Group.Targets')"/>
 </Project>
