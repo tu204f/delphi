@@ -31,10 +31,7 @@ type
     ButtonStart: TButton;
     ButtonStop: TButton;
     procedure ButtonStartClick(Sender: TObject);
-  protected
-    function GetRSI(const AIndex, ACount: Integer): Double;
   private
-    ValueRSI: TDoubleList;
     BybitKline: TBybitKline;
     procedure BybitKlineOnEventEndLoading(Sender: TObject);
   public
@@ -77,13 +74,10 @@ begin
   AddCol('closePrice');
   AddCol('volume:');
   AddCol('turnover');
-
-  ValueRSI := TDoubleList.Create;
 end;
 
 destructor TMainForm.Destroy;
 begin
-  FreeAndNil(ValueRSI);
   FreeAndNil(BybitKline);
   inherited;
 end;
@@ -92,67 +86,13 @@ end;
 procedure TMainForm.ButtonStartClick(Sender: TObject);
 begin
   BybitKline.Category := TTypeCategory.tcLinear;
-  BybitKline.Symbol := 'BTCUSDT';
-  BybitKline.Interval := TTypeInterval.ti_5;
+  BybitKline.Symbol := 'ETHUSDT';
+  //BybitKline.Symbol := 'BTCUSDT';
+  BybitKline.Interval := TTypeInterval.ti_D;
   //BybitKline.StartTime := 1718402400000;
   //BybitKline.EndTime   := 1718402400000 - 5000;
   BybitKline.Limit := 3000;
   BybitKline.Selected;
-end;
-
-function TMainForm.GetRSI(const AIndex, ACount: Integer): Double;
-
-  function GetMA(const AValues: TDoubleList): Double;
-  var
-    xSum: Double;
-    i, iCount: Integer;
-  begin
-    Result := 0;
-    xSum := 0;
-    iCount := AValues.Count;
-    if iCount > 0 then
-    begin
-      for i := 0 to iCount - 1 do
-        xSum := xSum + AValues[i];
-      Result := xSum/iCount;
-    end;
-  end;
-
-var
-  xInd: Integer;
-  xDelta: Double;
-  xG, xL: TDoubleList;
-  i, iCount: Integer;
-  xCandel: TCandelObject;
-begin
-  Result := 0;
-  xG := TDoubleList.Create;
-  xL := TDoubleList.Create;
-  try
-    iCount := BybitKline.CandelObjects.Count;
-    if iCount > 0 then
-    begin
-      xInd := iCount - 1;
-      for i := AIndex to iCount - 1 do
-      begin
-        xCandel := BybitKline.CandelObjects[xInd - i];
-        xDelta := xCandel.Close - xCandel.Open;
-        if xDelta > 0 then
-        begin
-          xG.Add(xDelta);
-          xL.Add(0);
-        end
-        else
-        begin
-          xG.Add(0);
-          xL.Add(xDelta);
-        end;
-      end;
-    end;
-  finally
-    FreeAndNil(xL);
-    FreeAndNil(xG);
-  end;
 end;
 
 procedure TMainForm.BybitKlineOnEventEndLoading(Sender: TObject);
@@ -162,8 +102,6 @@ var
   xS: String;
   xStr: TStrings;
 begin
-  ValueRSI.Clear;
-
   xStr := TStringList.Create;
   try
     StrGrid.RowCount := 0;
@@ -199,7 +137,7 @@ begin
 
     end;
   finally
-    xStr.SaveToFile('data.csv');
+    xStr.SaveToFile('data_' + BybitKline.Symbol + '.csv');
   end;
 end;
 
