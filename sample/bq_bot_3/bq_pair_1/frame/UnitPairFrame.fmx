@@ -1,0 +1,5 @@
+object PairFrame: TPairFrame
+  Size.Width = 842.000000000000000000
+  Size.Height = 387.000000000000000000
+  Size.PlatformDefault = False
+end
