@@ -249,7 +249,7 @@ begin
       ATickerValues.Add(xTickerValue);
     end;
 
-  ATickerValues.Sort(TComparer<TTickerValue>.Construct(Comparison));
+  //ATickerValues.Sort(TComparer<TTickerValue>.Construct(Comparison));
 end;
 
 { TBybitTickers }

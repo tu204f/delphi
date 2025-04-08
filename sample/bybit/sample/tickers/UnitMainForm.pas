@@ -57,6 +57,7 @@ constructor TMainForm.Create(AOwner: TComponent);
 begin
   inherited;
 
+  _AddColumn('id');
   _AddColumn('symbol');
   _AddColumn('lastPrice');
   _AddColumn('indexPrice');
@@ -89,6 +90,7 @@ begin
   BybitTickers := TBybitTickers.Create;
   BybitTickers.OnEventEndLoading := BybitTickersOnEventEndLoading;
   BybitTickers.Category := TTypeCategory.tcLinear;
+  BybitTickers.BaseCoin := 'BTCUSDT';
 end;
 
 destructor TMainForm.Destroy;
@@ -113,35 +115,37 @@ begin
     for var i := 0 to iCount - 1 do
     begin
       xTickerValue := BybitTickers.TickerValues[i];
-      StrGrid.Cells[0,i] := xTickerValue.symbol;
-      StrGrid.Cells[1,i] := xTickerValue.lastPrice.ToString;
-      StrGrid.Cells[2,i] := xTickerValue.indexPrice.ToString;
-      StrGrid.Cells[3,i] := xTickerValue.markPrice.ToString;
-      StrGrid.Cells[4,i] := xTickerValue.prevPrice24h.ToString;
-      StrGrid.Cells[5,i] := xTickerValue.price24hPcnt.ToString;
-      StrGrid.Cells[6,i] := xTickerValue.highPrice24h.ToString;
-      StrGrid.Cells[7,i] := xTickerValue.lowPrice24h.ToString;
-      StrGrid.Cells[8,i] := xTickerValue.prevPrice1h.ToString;
-      StrGrid.Cells[9,i] := xTickerValue.openInterest.ToString;
-      StrGrid.Cells[10,i] := xTickerValue.openInterestValue.ToString;
-      StrGrid.Cells[11,i] := xTickerValue.turnover24h.ToString;
-      StrGrid.Cells[12,i] := xTickerValue.volume24h.ToString;
 
-      StrGrid.Cells[13,i] := FloatToStr(xTickerValue.fundingRate);
+      StrGrid.Cells[0,i] := (i + 1).ToString;
+      StrGrid.Cells[1,i] := xTickerValue.symbol;
+      StrGrid.Cells[2,i] := xTickerValue.lastPrice.ToString;
+      StrGrid.Cells[3,i] := xTickerValue.indexPrice.ToString;
+      StrGrid.Cells[4,i] := xTickerValue.markPrice.ToString;
+      StrGrid.Cells[5,i] := xTickerValue.prevPrice24h.ToString;
+      StrGrid.Cells[6,i] := xTickerValue.price24hPcnt.ToString;
+      StrGrid.Cells[7,i] := xTickerValue.highPrice24h.ToString;
+      StrGrid.Cells[8,i] := xTickerValue.lowPrice24h.ToString;
+      StrGrid.Cells[9,i] := xTickerValue.prevPrice1h.ToString;
+      StrGrid.Cells[10,i] := xTickerValue.openInterest.ToString;
+      StrGrid.Cells[11,i] := xTickerValue.openInterestValue.ToString;
+      StrGrid.Cells[12,i] := xTickerValue.turnover24h.ToString;
+      StrGrid.Cells[13,i] := xTickerValue.volume24h.ToString;
 
-      StrGrid.Cells[14,i] := xTickerValue.nextFundingTime.ToString;
-      StrGrid.Cells[15,i] := xTickerValue.predictedDeliveryPrice.ToString;
-      StrGrid.Cells[16,i] := xTickerValue.basisRate.ToString;
-      StrGrid.Cells[17,i] := xTickerValue.deliveryFeeRate.ToString;
-      StrGrid.Cells[18,i] := xTickerValue.deliveryTime.ToString;
-      StrGrid.Cells[19,i] := xTickerValue.ask1Size.ToString;
-      StrGrid.Cells[20,i] := xTickerValue.bid1Price.ToString;
-      StrGrid.Cells[21,i] := xTickerValue.ask1Price.ToString;
-      StrGrid.Cells[22,i] := xTickerValue.bid1Size.ToString;
-      StrGrid.Cells[23,i] := xTickerValue.basis.ToString;
-      StrGrid.Cells[24,i] := xTickerValue.preOpenPrice.ToString;
-      StrGrid.Cells[25,i] := xTickerValue.preQty.ToString;
-      StrGrid.Cells[26,i] := xTickerValue.curPreListingPhase;
+      StrGrid.Cells[14,i] := FloatToStr(xTickerValue.fundingRate);
+
+      StrGrid.Cells[15,i] := xTickerValue.nextFundingTime.ToString;
+      StrGrid.Cells[16,i] := xTickerValue.predictedDeliveryPrice.ToString;
+      StrGrid.Cells[17,i] := xTickerValue.basisRate.ToString;
+      StrGrid.Cells[18,i] := xTickerValue.deliveryFeeRate.ToString;
+      StrGrid.Cells[19,i] := xTickerValue.deliveryTime.ToString;
+      StrGrid.Cells[20,i] := xTickerValue.ask1Size.ToString;
+      StrGrid.Cells[21,i] := xTickerValue.bid1Price.ToString;
+      StrGrid.Cells[22,i] := xTickerValue.ask1Price.ToString;
+      StrGrid.Cells[23,i] := xTickerValue.bid1Size.ToString;
+      StrGrid.Cells[24,i] := xTickerValue.basis.ToString;
+      StrGrid.Cells[25,i] := xTickerValue.preOpenPrice.ToString;
+      StrGrid.Cells[26,i] := xTickerValue.preQty.ToString;
+      StrGrid.Cells[27,i] := xTickerValue.curPreListingPhase;
     end;
 end;
 
