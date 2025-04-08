@@ -15,6 +15,12 @@
         <Projects Include="bq_candel_4\bq_candel_4.dproj">
             <Dependencies/>
         </Projects>
+        <Projects Include="bq_pair_1\bq_pair_1.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="bq_pair_2\bq_pair_2.dproj">
+            <Dependencies/>
+        </Projects>
     </ItemGroup>
     <ProjectExtensions>
         <Borland.Personality>Default.Personality.12</Borland.Personality>
@@ -59,14 +65,32 @@
     <Target Name="bq_candel_4:Make">
         <MSBuild Projects="bq_candel_4\bq_candel_4.dproj" Targets="Make"/>
     </Target>
+    <Target Name="bq_pair_1">
+        <MSBuild Projects="bq_pair_1\bq_pair_1.dproj"/>
+    </Target>
+    <Target Name="bq_pair_1:Clean">
+        <MSBuild Projects="bq_pair_1\bq_pair_1.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="bq_pair_1:Make">
+        <MSBuild Projects="bq_pair_1\bq_pair_1.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="bq_pair_2">
+        <MSBuild Projects="bq_pair_2\bq_pair_2.dproj"/>
+    </Target>
+    <Target Name="bq_pair_2:Clean">
+        <MSBuild Projects="bq_pair_2\bq_pair_2.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="bq_pair_2:Make">
+        <MSBuild Projects="bq_pair_2\bq_pair_2.dproj" Targets="Make"/>
+    </Target>
     <Target Name="Build">
-        <CallTarget Targets="bq_history;bq_parser;bq_volt_3;bq_candel_4"/>
+        <CallTarget Targets="bq_history;bq_parser;bq_volt_3;bq_candel_4;bq_pair_1;bq_pair_2"/>
     </Target>
     <Target Name="Clean">
-        <CallTarget Targets="bq_history:Clean;bq_parser:Clean;bq_volt_3:Clean;bq_candel_4:Clean"/>
+        <CallTarget Targets="bq_history:Clean;bq_parser:Clean;bq_volt_3:Clean;bq_candel_4:Clean;bq_pair_1:Clean;bq_pair_2:Clean"/>
     </Target>
     <Target Name="Make">
-        <CallTarget Targets="bq_history:Make;bq_parser:Make;bq_volt_3:Make;bq_candel_4:Make"/>
+        <CallTarget Targets="bq_history:Make;bq_parser:Make;bq_volt_3:Make;bq_candel_4:Make;bq_pair_1:Make;bq_pair_2:Make"/>
     </Target>
     <Import Project="$(BDS)\Bin\CodeGear.Group.Targets" Condition="Exists('$(BDS)\Bin\CodeGear.Group.Targets')"/>
 </Project>
