@@ -2,7 +2,7 @@ unit Lb.Bot.Candel;
 
 interface
 
-{$I debug_volt.inc}
+{$I debug_app.inc}
 
 uses
   System.SysUtils,
@@ -79,9 +79,11 @@ begin
   if Assigned(APosition) then
     with APosition do
     begin
-      RatesSL := 0.5;
-      RatesTK := 3;
-      //Triling := Self.CloseTriling;
+     {Наспрйкм услвия получение прибыли или убытка}
+      RatesSL := 10;
+      RatesTK := 30;
+      if (Triling = 0) and (Profit > RatesSL) then
+        Triling := Self.CloseTriling;
     end;
 end;
 
@@ -90,7 +92,7 @@ procedure TWorkBot.TradingNewCandel;
 {$IFDEF DBG_TRADING_NEW_CANDEL}
   procedure _LogCandel(const AIndex: Integer; const ACandel: TCandel);
   begin
-    TLogger.LogTree(3,'Candel:>> [' + AIndex.ToString + ']' + ACandel.GetToStr);
+    DoLog('   Candel:>> [' + AIndex.ToString + ']' + ACandel.GetToStr);
   end;
 {$ENDIF}
 
@@ -121,7 +123,7 @@ var
 begin
   inherited TradingNewCandel;
   {$IFDEF DBG_TRADING_NEW_CANDEL}
-  TLogger.LogTree(0,'TWorkBot.SetTradingNewCandel');
+  DoLog('TWorkBot.SetTradingNewCandel');
   {$ENDIF}
   if Assigned(StateMarket) then
   begin
@@ -129,7 +131,7 @@ begin
     begin
       xInd_IsTrand := _GetIsTranding;
       {$IFDEF DBG_TRADING_NEW_CANDEL}
-      TLogger.LogTree(3,'Tranding: >> ' + xInd_IsTrand.ToString);
+      DoLog('   Tranding: >> ' + xInd_IsTrand.ToString);
       {$ENDIF}
       case xInd_IsTrand of
         2 : OpenPositionBuy;

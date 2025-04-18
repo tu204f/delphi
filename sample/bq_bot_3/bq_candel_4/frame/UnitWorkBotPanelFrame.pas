@@ -2,7 +2,7 @@ unit UnitWorkBotPanelFrame;
 
 interface
 
-{$I debug_volt.inc}
+{$I debug_app.inc}
 
 uses
   System.SysUtils,
@@ -58,6 +58,7 @@ type
     FSelectedWorkBot: TWorkBot;
     FTradingPlatform: TTradingPlatform;
     procedure SetTradingPlatform(const Value: TTradingPlatform);
+    procedure EventOnLogBot(ASender: TObject; AMsg: String);
   protected
     FCountNewCandel: Integer;
     FCountUpDataCandel: Integer;
@@ -96,6 +97,7 @@ constructor TWorkBotPanelFrame.Create(AOwner: TComponent);
   begin
     xWorkBot := TWorkBot.Create;
     xWorkBot.CloseTriling := 5;
+    xWorkBot.OnLogBot := EventOnLogBot;
     FSelectedWorkBot := xWorkBot;
   end;
 
@@ -123,6 +125,8 @@ begin
   inherited;
 end;
 
+
+
 procedure TWorkBotPanelFrame.ListBoxWorkBotClick(Sender: TObject);
 begin
   if Assigned(FSelectedWorkBot) then
@@ -138,6 +142,9 @@ procedure TWorkBotPanelFrame.TradingPlatformNewCandel;
 
   procedure _SetTradingNewCandel;
   begin
+    {$IFDEF DBG_TRADING_NEW_CANDEL}
+    SetLog('TWorkBotPanelFrame.TradingPlatformNewCandel._SetTradingNewCandel');
+    {$ENDIF}
     FSelectedWorkBot.TradingNewCandel;
   end;
 
@@ -178,6 +185,7 @@ procedure TWorkBotPanelFrame.TradingPlatformStateMarket(AStateMarket: TStateMark
   procedure _TradingPlatformStateMarket;
   begin
     FSelectedWorkBot.TradingUpDataCandel(FTradingPlatform);
+    _SetUpDataPosition(FSelectedWorkBot.JournalManager);
   end;
 
 begin
@@ -194,6 +202,9 @@ begin
 
   if Assigned(FSelectedWorkBot) then
   begin
+    {$IFDEF DBG_STATE_MARKET}
+    TLogger.LogTreeText(3,'>> Таблица заявок');
+    {$ENDIF}
     PositionGridFrame.UpDataJournalManager(FSelectedWorkBot.JournalManager);
     EditProfit.Text := FSelectedWorkBot.JournalManager.Profit.ToString;
     EditProfitFeeRatesTaker.Text := FSelectedWorkBot.JournalManager.ProfitFeeRatesTaker.ToString;
@@ -205,6 +216,11 @@ procedure TWorkBotPanelFrame.SetLog(S: String);
 begin
   if Assigned(FMainFormLog) then
     FMainFormLog.LogMsg(S);
+end;
+
+procedure TWorkBotPanelFrame.EventOnLogBot(ASender: TObject; AMsg: String);
+begin
+  SetLog('WorkBot: ' + AMsg);
 end;
 
 procedure TWorkBotPanelFrame.SetTradingPlatform(const Value: TTradingPlatform);

@@ -91,7 +91,7 @@ type
     function GetProfitFeeRatesMaker: Double;
     function GetProfitFeeRatesTaker: Double;
   private
-    procedure CloseOrder(APrice: Double);
+
     procedure CalcProfit(const APrice: Double);
     procedure CalcTrilingStopLoss(const APrice: Double);
     procedure ActiveStopLoss(APrice: Double);
@@ -102,6 +102,7 @@ type
     constructor Create; virtual;
     destructor Destroy; override;
     procedure SetUpData(const APrice: Double = 0);
+    procedure CloseOrder(APrice: Double; ATypeTrade: TTypeTrade = TTypeTrade.ttClose);
     procedure DoOpen;
     procedure DoClose;
   public {Параметры открытой позиции}
@@ -185,7 +186,6 @@ const
 var
   localID: Integer = 0;
   LogCS: TCriticalSection;
-
 
 
 procedure PositionText(S: String);
@@ -367,8 +367,8 @@ begin
       end;
     end;
   end;
-  FProfit := GetRound(FProfit);
 
+  FProfit := GetRound(FProfit);
   if FMaxProfit < FProfit then
     FMaxProfit := FProfit;
   if FMinProfit > FProfit then
@@ -404,7 +404,7 @@ begin
   end;
 end;
 
-procedure TJournalPosition.CloseOrder(APrice: Double);
+procedure TJournalPosition.CloseOrder(APrice: Double; ATypeTrade: TTypeTrade);
 begin
 
   if APrice <= 0 then
@@ -413,7 +413,7 @@ begin
   CloseTime := GetNewDateTime;
   ClosePrice := APrice;
   IsActive := False;
-  TypeTrade := TTypeTrade.ttClose;
+  TypeTrade := ATypeTrade;
   DoClose;
 end;
 
@@ -427,23 +427,11 @@ begin
     case FSide of
       tsBuy: begin
         if APrice > FTakeProfit then
-        begin
-          CloseTime := GetNewDateTime;
-          ClosePrice := APrice;
-          IsActive := False;
-          TypeTrade := TTypeTrade.ttClose;
-          DoClose;
-        end;
+          CloseOrder(APrice,TTypeTrade.ttCloseTakeProfit);
       end;
       tsSell: begin
         if APrice < FTakeProfit then
-        begin
-          CloseTime := GetNewDateTime;
-          ClosePrice := APrice;
-          IsActive := False;
-          TypeTrade := TTypeTrade.ttClose;
-          DoClose;
-        end;
+          CloseOrder(APrice,TTypeTrade.ttCloseTakeProfit);
       end;
     end;
   end;
@@ -460,11 +448,11 @@ begin
     case FSide of
       tsBuy: begin
         if APrice < FStopLoss then
-          CloseOrder(APrice);
+          CloseOrder(APrice, TTypeTrade.ttCloseStopLoss);
       end;
       tsSell: begin
         if APrice > FStopLoss then
-          CloseOrder(APrice);
+          CloseOrder(APrice, TTypeTrade.ttCloseStopLoss);
       end;
     end;
   end;
@@ -475,7 +463,7 @@ begin
   if FRatesSL = 0 then
     Exit;
   if Self.Profit < (-1 * FRatesSL) then
-    CloseOrder(APrice);
+    CloseOrder(APrice, TTypeTrade.ttCloseRatesSL);
 end;
 
 procedure TJournalPosition.SetRatesTK(APrice: Double);
@@ -483,7 +471,7 @@ begin
   if FRatesTK = 0 then
     Exit;
   if Self.Profit > FRatesTK then
-    CloseOrder(APrice);
+    CloseOrder(APrice, TTypeTrade.ttCloseRatesTK);
 end;
 
 procedure TJournalPosition.SetUpData(const APrice: Double);

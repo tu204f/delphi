@@ -1,6 +1,6 @@
 ﻿<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
     <PropertyGroup>
-        <ProjectGuid>{E9C0F2AF-4403-4864-83A4-727F80A11B7A}</ProjectGuid>
+        <ProjectGuid>{4356C865-2DA1-436B-BB96-52EFCACBC581}</ProjectGuid>
         <ProjectVersion>19.1</ProjectVersion>
         <FrameworkType>FMX</FrameworkType>
         <Base>True</Base>
@@ -8,7 +8,7 @@
         <Platform Condition="'$(Platform)'==''">Win32</Platform>
         <TargetedPlatforms>32787</TargetedPlatforms>
         <AppType>Application</AppType>
-        <MainSource>bq_candel_4.dpr</MainSource>
+        <MainSource>bq_his_candel.dpr</MainSource>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Config)'=='Base' or '$(Base)'!=''">
         <Base>true</Base>
@@ -86,7 +86,7 @@
         <AUP_READ_PHONE_STATE>true</AUP_READ_PHONE_STATE>
         <Icon_MainIcon>$(BDS)\bin\delphi_PROJECTICON.ico</Icon_MainIcon>
         <Icns_MainIcns>$(BDS)\bin\delphi_PROJECTICNS.icns</Icns_MainIcns>
-        <SanitizedProjectName>bq_candel_4</SanitizedProjectName>
+        <SanitizedProjectName>bq_his_candel</SanitizedProjectName>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Base_Android)'!=''">
         <DCC_UsePackage>DBXSqliteDriver;RESTComponents;DBXInterBaseDriver;emsclientfiredac;tethering;DataSnapFireDAC;bindcompfmx;FmxTeeUI;fmx;FireDACIBDriver;FireDACDBXDriver;dbexpress;IndyCore;dsnap;emsclient;DataSnapCommon;FireDACCommon;RESTBackendComponents;soapserver;bindengine;CloudService;FireDACCommonDriver;DataSnapClient;inet;IndyIPCommon;bindcompdbx;IndyIPServer;sgcWebSocketsD10_4;IndySystem;fmxFireDAC;FireDAC;FireDACSqliteDriver;ibmonitor;FMXTee;soaprtl;DbxCommonDriver;ibxpress;xmlrtl;soapmidas;DataSnapNativeClient;FireDACDSDriver;rtl;DbxClientDriver;ibxbindings;CustomIPTransport;bindcomp;IndyIPClient;dbxcds;dsnapxml;DataSnapProviderClient;dbrtl;IndyProtocols;$(DCC_UsePackage)</DCC_UsePackage>
@@ -202,33 +202,11 @@
         <DCCReference Include="..\..\..\library\trade\bybit\market\Lb.Bybit.OrderBook.pas"/>
         <DCCReference Include="..\..\..\library\trade\bybit\market\Lb.Bybit.ServerTime.pas"/>
         <DCCReference Include="..\..\..\library\Lb.Logger.pas"/>
-        <DCCReference Include="..\lb\Lb.Indicator.pas"/>
-        <DCCReference Include="..\lb\Lb.Journal.Trading.pas"/>
         <DCCReference Include="..\lb\Lb.Platform.Bybit.pas"/>
         <DCCReference Include="..\lb\Lb.Platform.pas"/>
         <DCCReference Include="..\lb\Lb.SysUtils.pas"/>
-        <DCCReference Include="frame\UnitWorkBotPanelFrame.pas">
-            <Form>WorkBotPanelFrame</Form>
-            <FormType>fmx</FormType>
-            <DesignClass>TFrame</DesignClass>
-        </DCCReference>
-        <DCCReference Include="..\lb\Lb.Breakdown.pas"/>
-        <DCCReference Include="..\lb\Lb.Bot.Candel.pas"/>
-        <DCCReference Include="..\..\..\library\trade\bybit\trade\Lb.Bybit.OrderHistory.pas"/>
-        <DCCReference Include="frame\UnitPositionGridFrame.pas">
-            <Form>PositionGridFrame</Form>
-            <FormType>fmx</FormType>
-            <DesignClass>TFrame</DesignClass>
-        </DCCReference>
-        <DCCReference Include="frame\UnitWorkBotGrid.pas">
-            <Form>WorkBotGridFrame</Form>
-            <FormType>fmx</FormType>
-            <DesignClass>TFrame</DesignClass>
-        </DCCReference>
-        <DCCReference Include="frame\Lb.WorkBot.Grid.pas"/>
-        <DCCReference Include="..\lb\Lb.CustomWorkBot.pas"/>
-        <None Include="..\lb\debug.inc"/>
-        <None Include="debug_app.inc"/>
+        <DCCReference Include="..\lb\Lb.Indicator.pas"/>
+        <DCCReference Include="Lb.History.Candel.pas"/>
         <BuildConfiguration Include="Release">
             <Key>Cfg_2</Key>
             <CfgParent>Base</CfgParent>
@@ -247,7 +225,7 @@
         <BorlandProject>
             <Delphi.Personality>
                 <Source>
-                    <Source Name="MainSource">bq_candel_4.dpr</Source>
+                    <Source Name="MainSource">bq_his_candel.dpr</Source>
                 </Source>
                 <Excluded_Packages>
                     <Excluded_Packages Name="C:\Users\Public\Documents\Embarcadero\Studio\21.0\Bpl\IcsVclD104Design.bpl">Overbyte ICS VCL Design-Time Package for Delphi 10.4</Excluded_Packages>
@@ -262,30 +240,6 @@
                         <Overwrite>true</Overwrite>
                     </Platform>
                 </DeployFile>
-                <DeployFile LocalName="..\lb\debug.inc" Configuration="Debug" Class="ProjectFile">
-                    <Platform Name="Win32">
-                        <RemoteDir>.\</RemoteDir>
-                        <Overwrite>true</Overwrite>
-                    </Platform>
-                </DeployFile>
-                <DeployFile LocalName="app\bin\bq_candel_4.exe" Configuration="Debug" Class="ProjectOutput">
-                    <Platform Name="Win32">
-                        <RemoteName>bq_candel_4.exe</RemoteName>
-                        <Overwrite>true</Overwrite>
-                    </Platform>
-                </DeployFile>
-                <DeployFile LocalName="..\lb\debug.inc" Configuration="Debug" Class="ProjectFile">
-                    <Platform Name="Win64">
-                        <RemoteDir>.\</RemoteDir>
-                        <Overwrite>true</Overwrite>
-                    </Platform>
-                </DeployFile>
-                <DeployFile LocalName="debug_volt.inc" Configuration="Debug" Class="ProjectFile">
-                    <Platform Name="Win32">
-                        <RemoteDir>.\</RemoteDir>
-                        <Overwrite>true</Overwrite>
-                    </Platform>
-                </DeployFile>
                 <DeployFile LocalName="$(BDS)\Redist\iossimulator\libcgunwind.1.0.dylib" Class="DependencyModule">
                     <Platform Name="iOSSimulator">
                         <Overwrite>true</Overwrite>
@@ -296,9 +250,9 @@
                         <Overwrite>true</Overwrite>
                     </Platform>
                 </DeployFile>
-                <DeployFile LocalName="Win64\Debug\bq_candel_4.exe" Configuration="Debug" Class="ProjectOutput">
-                    <Platform Name="Win64">
-                        <RemoteName>bq_candel_4.exe</RemoteName>
+                <DeployFile LocalName="app\bin\bq_his_candel.exe" Configuration="Debug" Class="ProjectOutput">
+                    <Platform Name="Win32">
+                        <RemoteName>bq_his_candel.exe</RemoteName>
                         <Overwrite>true</Overwrite>
                     </Platform>
                 </DeployFile>

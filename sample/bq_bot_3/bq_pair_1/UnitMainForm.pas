@@ -87,13 +87,13 @@ procedure TMainForm.Button1Click(Sender: TObject);
 begin
   Memo1.Lines.Add('Старт');
 
-  FSecFutures.Symbol := 'ETHUSDT-18APR25';
+  FSecFutures.Symbol := 'BTCUSDT-30MAY25';
   FSecFutures.Interval := TTypeInterval.ti_15;
   FSecFutures.Limit := 1000;
   FSecFutures.Selected;
   FSecFutures.OnEventEndLoading := SecFuturesOnEventEndLoading;
 
-  FSecSpot.Symbol := 'ETHUSDT';
+  FSecSpot.Symbol := 'BTCUSDT';
   FSecSpot.Interval := TTypeInterval.ti_15;
   FSecSpot.Limit := 1000;
   FSecSpot.Selected;
@@ -138,11 +138,11 @@ end;
 procedure TMainForm.SetCompiledQty;
 begin
   Memo1.Lines.Add('**********************************************************');
-  QtyFutures := 1; // GetBybitKline(FSecFutures,1000);
+  QtyFutures := GetBybitKline(FSecFutures,1000);
   Memo1.Lines.Add('Futures.Qty :='  + QtyFutures.ToString);
 
   Memo1.Lines.Add('**********************************************************');
-  QtySpot := 1;// GetBybitKline(FSecSpot,1000);
+  QtySpot := GetBybitKline(FSecSpot,1000);
   Memo1.Lines.Add('Stop.Qty :='  + QtySpot.ToString);
 end;
 

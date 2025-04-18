@@ -40,20 +40,29 @@ object WorkBotPanelFrame: TWorkBotPanelFrame
     object EditProfit: TEdit
       Touch.InteractiveGestures = [LongTap, DoubleTap]
       TabOrder = 5
-      Position.X = 20.000000000000000000
-      Position.Y = 332.000000000000000000
+      Position.X = 8.000000000000000000
+      Position.Y = 88.000000000000000000
+      Size.Width = 141.000000000000000000
+      Size.Height = 22.000000000000000000
+      Size.PlatformDefault = False
     end
     object EditProfitFeeRatesTaker: TEdit
       Touch.InteractiveGestures = [LongTap, DoubleTap]
       TabOrder = 4
-      Position.X = 20.000000000000000000
-      Position.Y = 360.000000000000000000
+      Position.X = 8.000000000000000000
+      Position.Y = 116.000000000000000000
+      Size.Width = 141.000000000000000000
+      Size.Height = 22.000000000000000000
+      Size.PlatformDefault = False
     end
     object EditProfitFeeRatesMaker: TEdit
       Touch.InteractiveGestures = [LongTap, DoubleTap]
       TabOrder = 3
-      Position.X = 20.000000000000000000
-      Position.Y = 388.000000000000000000
+      Position.X = 8.000000000000000000
+      Position.Y = 144.000000000000000000
+      Size.Width = 141.000000000000000000
+      Size.Height = 22.000000000000000000
+      Size.PlatformDefault = False
     end
   end
   object LayoutPositionGrid: TLayout

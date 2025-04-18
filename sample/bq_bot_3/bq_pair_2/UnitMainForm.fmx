@@ -2,10 +2,95 @@ object MainForm: TMainForm
   Left = 0
   Top = 0
   Caption = 'Form5'
-  ClientHeight = 678
-  ClientWidth = 838
+  ClientHeight = 492
+  ClientWidth = 722
   FormFactor.Width = 320
   FormFactor.Height = 480
   FormFactor.Devices = [Desktop]
   DesignerMasterStyle = 0
+  object LayoutMemu: TLayout
+    Align = Top
+    Margins.Left = 5.000000000000000000
+    Margins.Top = 5.000000000000000000
+    Margins.Right = 5.000000000000000000
+    Position.X = 5.000000000000000000
+    Position.Y = 5.000000000000000000
+    Size.Width = 712.000000000000000000
+    Size.Height = 36.000000000000000000
+    Size.PlatformDefault = False
+    TabOrder = 0
+    object ButtonStart: TButton
+      Align = Left
+      Size.Width = 81.000000000000000000
+      Size.Height = 36.000000000000000000
+      Size.PlatformDefault = False
+      TabOrder = 0
+      Text = #1057#1090#1072#1088#1090
+      OnClick = ButtonStartClick
+    end
+    object ButtonSell: TButton
+      Align = Right
+      Position.X = 632.000000000000000000
+      Size.Width = 80.000000000000000000
+      Size.Height = 36.000000000000000000
+      Size.PlatformDefault = False
+      TabOrder = 1
+      Text = #1055#1088#1086#1076#1072#1090#1100
+      OnClick = ButtonSellClick
+    end
+    object ButtonBuy: TButton
+      Align = Right
+      Margins.Right = 3.000000000000000000
+      Position.X = 549.000000000000000000
+      Size.Width = 80.000000000000000000
+      Size.Height = 36.000000000000000000
+      Size.PlatformDefault = False
+      TabOrder = 2
+      Text = #1050#1091#1087#1080#1090#1100
+      OnClick = ButtonBuyClick
+    end
+  end
+  object LayoutStatus: TLayout
+    Align = Bottom
+    Margins.Left = 5.000000000000000000
+    Margins.Right = 5.000000000000000000
+    Margins.Bottom = 5.000000000000000000
+    Position.X = 5.000000000000000000
+    Position.Y = 437.000000000000000000
+    Size.Width = 712.000000000000000000
+    Size.Height = 50.000000000000000000
+    Size.PlatformDefault = False
+    TabOrder = 1
+    object ButtonSave: TButton
+      Align = Left
+      Size.Width = 80.000000000000000000
+      Size.Height = 50.000000000000000000
+      Size.PlatformDefault = False
+      TabOrder = 1
+      Text = #1057#1086#1093#1088#1072#1085#1080#1090#1100
+      OnClick = ButtonSaveClick
+    end
+    object ButtonLoad: TButton
+      Align = Left
+      Margins.Left = 5.000000000000000000
+      Position.X = 85.000000000000000000
+      Size.Width = 80.000000000000000000
+      Size.Height = 50.000000000000000000
+      Size.PlatformDefault = False
+      TabOrder = 0
+      Text = #1047#1072#1075#1088#1091#1079#1080#1090#1100
+      OnClick = ButtonLoadClick
+    end
+  end
+  object LayoutClient: TLayout
+    Align = Client
+    Margins.Left = 5.000000000000000000
+    Margins.Top = 2.000000000000000000
+    Margins.Right = 5.000000000000000000
+    Margins.Bottom = 2.000000000000000000
+    Size.Width = 712.000000000000000000
+    Size.Height = 392.000000000000000000
+    Size.PlatformDefault = False
+    TabOrder = 2
+  end
 end

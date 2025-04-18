@@ -39,8 +39,8 @@ object MainForm: TMainForm
   end
   object TabControl1: TTabControl
     Anchors = [akLeft, akTop, akRight, akBottom]
-    Position.X = 8.000000000000000000
-    Position.Y = 60.000000000000000000
+    Position.X = 12.000000000000000000
+    Position.Y = 56.000000000000000000
     Size.Width = 823.000000000000000000
     Size.Height = 306.000000000000000000
     Size.PlatformDefault = False

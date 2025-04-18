@@ -1,0 +1,335 @@
+object PairsFrame: TPairsFrame
+  Size.Width = 984.000000000000000000
+  Size.Height = 355.000000000000000000
+  Size.PlatformDefault = False
+  object StrGrid: TStringGrid
+    Align = Client
+    CanFocus = True
+    ClipChildren = True
+    Size.Width = 984.000000000000000000
+    Size.Height = 272.000000000000000000
+    Size.PlatformDefault = False
+    TabOrder = 0
+    Options = [ColumnResize, ColumnMove, ColLines, RowLines, RowSelect, Tabs, Header, HeaderClick, AutoDisplacement]
+    OnCellClick = StrGridCellClick
+    Viewport.Width = 984.000000000000000000
+    Viewport.Height = 272.000000000000000000
+  end
+  object Rectangle: TRectangle
+    Align = Bottom
+    Margins.Left = 2.000000000000000000
+    Margins.Top = 2.000000000000000000
+    Margins.Right = 2.000000000000000000
+    Margins.Bottom = 2.000000000000000000
+    Position.X = 2.000000000000000000
+    Position.Y = 303.000000000000000000
+    Size.Width = 980.000000000000000000
+    Size.Height = 50.000000000000000000
+    Size.PlatformDefault = False
+    object GridLayout: TGridPanelLayout
+      Align = Client
+      Size.Width = 814.000000000000000000
+      Size.Height = 50.000000000000000000
+      Size.PlatformDefault = False
+      TabOrder = 0
+      ColumnCollection = <
+        item
+          SizeStyle = Absolute
+          Value = 120.000000000000000000
+        end
+        item
+          SizeStyle = Absolute
+          Value = 120.000000000000000000
+        end
+        item
+          SizeStyle = Absolute
+          Value = 80.000000000000000000
+        end
+        item
+          SizeStyle = Absolute
+          Value = 80.000000000000000000
+        end
+        item
+          SizeStyle = Absolute
+          Value = 80.000000000000000000
+        end
+        item
+          SizeStyle = Absolute
+          Value = 80.000000000000000000
+        end
+        item
+          Value = 100.000000000000000000
+        end>
+      ControlCollection = <
+        item
+          Column = 0
+          Control = Text1
+          Row = 0
+        end
+        item
+          Column = 1
+          Control = Text2
+          Row = 0
+        end
+        item
+          Column = 2
+          Control = Text4
+          Row = 0
+        end
+        item
+          Column = 3
+          Control = Text5
+          Row = 0
+        end
+        item
+          Column = 4
+          Control = Text6
+          Row = 0
+        end
+        item
+          Column = 5
+          Control = Text7
+          Row = 0
+        end
+        item
+          Column = 6
+          Control = Text8
+          Row = 0
+        end
+        item
+          Column = 0
+          Control = EditSymbolA
+          Row = 1
+        end
+        item
+          Column = 1
+          Control = EditSymbolB
+          Row = 1
+        end
+        item
+          Column = 2
+          Control = EditQtyA
+          Row = 1
+        end
+        item
+          Column = 3
+          Control = EditQtyB
+          Row = 1
+        end
+        item
+          Column = 4
+          Control = EditTradeBuy
+          Row = 1
+        end
+        item
+          Column = 5
+          Control = EditTradeSell
+          Row = 1
+        end
+        item
+          Column = 6
+          Control = ComboBoxTypePair
+          Row = 1
+        end>
+      RowCollection = <
+        item
+          Value = 50.000000000000000000
+        end
+        item
+          Value = 50.000000000000000000
+        end>
+      object Text1: TText
+        Align = Client
+        Size.Width = 120.000000000000000000
+        Size.Height = 25.000000000000000000
+        Size.PlatformDefault = False
+        Text = 'SymbolA'
+      end
+      object Text2: TText
+        Align = Client
+        Size.Width = 120.000000000000000000
+        Size.Height = 25.000000000000000000
+        Size.PlatformDefault = False
+        Text = 'SymbolB'
+        object Text3: TText
+          Align = Client
+          Size.Width = 120.000000000000000000
+          Size.Height = 25.000000000000000000
+          Size.PlatformDefault = False
+          Text = 'SymbolB'
+        end
+      end
+      object Text4: TText
+        Align = Client
+        Size.Width = 80.000000000000000000
+        Size.Height = 25.000000000000000000
+        Size.PlatformDefault = False
+        Text = 'QtyA'
+      end
+      object Text5: TText
+        Align = Client
+        Size.Width = 80.000000000000000000
+        Size.Height = 25.000000000000000000
+        Size.PlatformDefault = False
+        Text = 'QtyB'
+      end
+      object Text6: TText
+        Align = Client
+        Size.Width = 80.000000000000000000
+        Size.Height = 25.000000000000000000
+        Size.PlatformDefault = False
+        Text = 'Trade.Buy'
+      end
+      object Text7: TText
+        Align = Client
+        Size.Width = 80.000000000000000000
+        Size.Height = 25.000000000000000000
+        Size.PlatformDefault = False
+        Text = 'Trade.Sell'
+      end
+      object Text8: TText
+        Align = Client
+        Size.Width = 254.000000000000000000
+        Size.Height = 25.000000000000000000
+        Size.PlatformDefault = False
+        Text = 'TypePair'
+      end
+      object EditSymbolA: TEdit
+        Touch.InteractiveGestures = [LongTap, DoubleTap]
+        Align = Client
+        TabOrder = 12
+        Margins.Left = 1.000000000000000000
+        Margins.Top = 1.000000000000000000
+        Margins.Right = 1.000000000000000000
+        Margins.Bottom = 1.000000000000000000
+        Size.Width = 118.000000000000000000
+        Size.Height = 23.000000000000000000
+        Size.PlatformDefault = False
+      end
+      object EditSymbolB: TEdit
+        Touch.InteractiveGestures = [LongTap, DoubleTap]
+        Align = Client
+        TabOrder = 11
+        Margins.Left = 1.000000000000000000
+        Margins.Top = 1.000000000000000000
+        Margins.Right = 1.000000000000000000
+        Margins.Bottom = 1.000000000000000000
+        Size.Width = 118.000000000000000000
+        Size.Height = 23.000000000000000000
+        Size.PlatformDefault = False
+      end
+      object EditQtyA: TEdit
+        Touch.InteractiveGestures = [LongTap, DoubleTap]
+        Align = Client
+        TabOrder = 10
+        Margins.Left = 1.000000000000000000
+        Margins.Top = 1.000000000000000000
+        Margins.Right = 1.000000000000000000
+        Margins.Bottom = 1.000000000000000000
+        Size.Width = 78.000000000000000000
+        Size.Height = 23.000000000000000000
+        Size.PlatformDefault = False
+      end
+      object EditQtyB: TEdit
+        Touch.InteractiveGestures = [LongTap, DoubleTap]
+        Align = Client
+        TabOrder = 9
+        Margins.Left = 1.000000000000000000
+        Margins.Top = 1.000000000000000000
+        Margins.Right = 1.000000000000000000
+        Margins.Bottom = 1.000000000000000000
+        Size.Width = 78.000000000000000000
+        Size.Height = 23.000000000000000000
+        Size.PlatformDefault = False
+      end
+      object EditTradeBuy: TEdit
+        Touch.InteractiveGestures = [LongTap, DoubleTap]
+        Align = Client
+        TabOrder = 8
+        Margins.Left = 1.000000000000000000
+        Margins.Top = 1.000000000000000000
+        Margins.Right = 1.000000000000000000
+        Margins.Bottom = 1.000000000000000000
+        Size.Width = 78.000000000000000000
+        Size.Height = 23.000000000000000000
+        Size.PlatformDefault = False
+      end
+      object EditTradeSell: TEdit
+        Touch.InteractiveGestures = [LongTap, DoubleTap]
+        Align = Client
+        TabOrder = 7
+        Margins.Left = 1.000000000000000000
+        Margins.Top = 1.000000000000000000
+        Margins.Right = 1.000000000000000000
+        Margins.Bottom = 1.000000000000000000
+        Size.Width = 78.000000000000000000
+        Size.Height = 23.000000000000000000
+        Size.PlatformDefault = False
+      end
+      object ComboBoxTypePair: TComboBox
+        Align = Client
+        Margins.Left = 1.000000000000000000
+        Margins.Top = 1.000000000000000000
+        Margins.Right = 1.000000000000000000
+        Margins.Bottom = 1.000000000000000000
+        Size.Width = 252.000000000000000000
+        Size.Height = 23.000000000000000000
+        Size.PlatformDefault = False
+        TabOrder = 13
+      end
+    end
+    object ButtonApply: TButton
+      Align = Right
+      Margins.Left = 1.000000000000000000
+      Margins.Top = 2.000000000000000000
+      Margins.Right = 2.000000000000000000
+      Margins.Bottom = 2.000000000000000000
+      Position.X = 898.000000000000000000
+      Position.Y = 2.000000000000000000
+      Size.Width = 80.000000000000000000
+      Size.Height = 46.000000000000000000
+      Size.PlatformDefault = False
+      TabOrder = 1
+      Text = #1055#1088#1080#1084#1077#1085#1080#1090#1100
+      OnClick = ButtonApplyClick
+    end
+    object ButtonAddPair: TButton
+      Align = Right
+      Margins.Left = 2.000000000000000000
+      Margins.Top = 2.000000000000000000
+      Margins.Right = 1.000000000000000000
+      Margins.Bottom = 2.000000000000000000
+      Position.X = 816.000000000000000000
+      Position.Y = 2.000000000000000000
+      Size.Width = 80.000000000000000000
+      Size.Height = 46.000000000000000000
+      Size.PlatformDefault = False
+      TabOrder = 2
+      Text = #1044#1086#1073#1072#1074#1080#1090#1100
+      OnClick = ButtonAddPairClick
+    end
+  end
+  object LayoutTop: TLayout
+    Align = Top
+    Size.Width = 984.000000000000000000
+    Size.Height = 29.000000000000000000
+    Size.PlatformDefault = False
+    TabOrder = 1
+    object RectangleTop: TRectangle
+      Align = Client
+      Margins.Top = 2.000000000000000000
+      Margins.Bottom = 2.000000000000000000
+      Size.Width = 984.000000000000000000
+      Size.Height = 25.000000000000000000
+      Size.PlatformDefault = False
+      object TextPrice: TText
+        Align = Client
+        Margins.Left = 5.000000000000000000
+        Size.Width = 979.000000000000000000
+        Size.Height = 25.000000000000000000
+        Size.PlatformDefault = False
+        TextSettings.HorzAlign = Leading
+      end
+    end
+  end
+end

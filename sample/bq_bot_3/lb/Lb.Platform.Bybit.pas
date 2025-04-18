@@ -160,6 +160,9 @@ procedure TPlatfomBybit.BybitOrderBookOnEventEndLoading(ASender: TObject);
 var
   xBid, xAsk: Double;
 begin
+  if not FBybitOrderBook.GetIsOrderBook then
+    Exit;
+
   xBid := FBybitOrderBook.OrderBook.Bid;
   xAsk := FBybitOrderBook.OrderBook.Ask;
 
@@ -236,7 +239,7 @@ begin
       xPlaceOrder.Side        := _ToTypeSide(ASide);
 
       xPlaceOrder.PositionIdx := 0;
-      xPlaceOrder.OrderType   := TTypeOrder.Market;
+      xPlaceOrder.OrderType   := TTypeOrder.Limit;
       xPlaceOrder.Qty         := AQty;
       xPlaceOrder.Price       := APrice;
       xPlaceOrder.timeInForce := TTypeTimeInForce.GTC;

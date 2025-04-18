@@ -2,7 +2,7 @@ unit Lb.CustomWorkBot;
 
 interface
 
-{$I debug_volt.inc}
+{$I debug_app.inc}
 
 uses
   System.SysUtils,
@@ -16,14 +16,18 @@ uses
   Lb.Journal.Trading;
 
 type
+  TEventOnLogBot = procedure(ASender: TObject; AMsg: String) of object;
+
   ///<summary>
   /// Базовой объект работы
   ///</summary>
   TCustomWorkBot = class(TObject)
   private
+    FOnLogBot: TEventOnLogBot;
     FStateMarket: TStateMarket;
     FTradingPlatform: TTradingPlatform;
     FJournalManager: TJournalManager;
+    FReverseJournalManager: TJournalManager;
   private
     FCurrentPosition: TJournalPosition;
   protected
@@ -37,6 +41,7 @@ type
   protected
     function GetInfoValue: String; virtual;
     procedure SetCloseCurrentPosition(const APosition: TJournalPosition); virtual;
+    procedure DoLog(AMsg: String);
   public
     constructor Create; virtual;
     destructor Destroy; override;
@@ -44,6 +49,8 @@ type
     procedure TradingUpDataCandel(const ATradingPlatform: TTradingPlatform); virtual;
     property JournalManager: TJournalManager read FJournalManager;
     property StateMarket: TStateMarket read FStateMarket;
+  public
+    property OnLogBot: TEventOnLogBot write FOnLogBot;
   end;
 
 implementation
@@ -62,13 +69,22 @@ begin
   FTradingPlatform := nil;
   FCurrentPosition := nil;
   FJournalManager  := TJournalManager.Create;
+  FReverseJournalManager := TJournalManager.Create;
 end;
 
 destructor TCustomWorkBot.Destroy;
 begin
   if Assigned(FJournalManager) then
     FreeAndNil(FJournalManager);
+  if Assigned(FReverseJournalManager) then
+    FreeAndNil(FReverseJournalManager);
   inherited;
+end;
+
+procedure TCustomWorkBot.DoLog(AMsg: String);
+begin
+  if Assigned(FOnLogBot) then
+    FOnLogBot(Self,AMsg);
 end;
 
 function TCustomWorkBot.GetInfoValue: String;
@@ -112,7 +128,7 @@ begin
     begin
       OpenTime := GetNewDateTime;
       OpenPrice := APrice;
-      Qty := 1;
+      Qty := 1; {регулирование объема торговый операций}
       Side := ASide;
       IsActive := True;
       TypeTrade := TTypeTrade.ttOpen;
@@ -199,11 +215,7 @@ begin
           if xPrice <= 0 then
             Exit;
 
-          CloseTime := GetNewDateTime;
-          ClosePrice := xPrice;
-          IsActive := False;
-          TypeTrade := TTypeTrade.ttClose;
-          DoClose;
+          CloseOrder(xPrice);
         end;
       end;
     end;
@@ -218,6 +230,7 @@ begin
   {$IFDEF DBG_WORK_BOT}
   TLogger.LogTree(0,'TWorkBot.EventPositionOpen');
   {$ENDIF}
+
   {$IFDEF DBG_SEND_TRADE}
   xOpenPrice := 0;
   case AJournalPosition.Side of
@@ -240,7 +253,8 @@ end;
 procedure TCustomWorkBot.EventPositionClose(const AJournalPosition: TJournalPosition);
 {$IFDEF DBG_SEND_TRADE}
 var
-  xOpenPrice: Double;
+  xClosePrice: Double;
+  xSide: TTypeBuySell;
 {$ENDIF}
 begin
   {$IFDEF DBG_WORK_BOT}

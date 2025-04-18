@@ -2,7 +2,7 @@ unit UnitMainForm;
 
 interface
 
-{$I debug_volt.inc}
+{$I debug_app.inc}
 
 uses
   System.SysUtils, System.Types, System.UITypes, System.Classes, System.Variants,
@@ -105,7 +105,7 @@ begin
   // 'ldfYDnYhlVU5SU7w89mOnaHi0icy8XctNXtT';
   TPlatfomBybit(TradingPlatform).ApiKey := 't0YI4Ou0TKOTd7WrkE';
   TPlatfomBybit(TradingPlatform).ApiSecret := 'dWcdTGIulDoKOiK4mggPQIkYwmMFGxvFVusp';
-  TPlatfomBybit(TradingPlatform).Interval  := TTypeInterval.ti_1;
+  TPlatfomBybit(TradingPlatform).Interval  := TTypeInterval.ti_30;
 
   // *************************************************************************
   // Торговая панель
@@ -171,7 +171,7 @@ end;
 
 procedure TMainForm.TradingPlatformOnNewCandel(Sender: TObject);
 begin
-  {$IFDEF DEBUG}
+  {$IFDEF DBG_TRADING_NEW_CANDEL}
   LogMsg('TMainForm.TradingPlatformOnNewCandel:');
   {$ENDIF}
   {todo: новая свеча}

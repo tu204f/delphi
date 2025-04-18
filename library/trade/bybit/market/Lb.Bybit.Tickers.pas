@@ -78,7 +78,11 @@ type
     ///<summary>Текущая стадия подготовки контракта к продаже</summary>
     curPreListingPhase: String;
   end;
-  TTickerValueList = TList<TTickerValue>;
+
+  TTickerValueList = class(TList<TTickerValue>)
+  public
+    function IndexOfSymbol(ASymbol: String): Integer;
+  end;
 
   ///<summary>Получаем котировальный стакан - bybit </summary>
   TBybitTickers = class(TBybitHttpClient)
@@ -252,6 +256,25 @@ begin
   //ATickerValues.Sort(TComparer<TTickerValue>.Construct(Comparison));
 end;
 
+{ TTickerValueList }
+
+function TTickerValueList.IndexOfSymbol(ASymbol: String): Integer;
+var
+  i: Integer;
+  xTickerValue: TTickerValue;
+begin
+  Result := -1;
+  for i := 0 to Self.Count - 1 do
+  begin
+    xTickerValue := Self.Items[i];
+    if SameText(xTickerValue.symbol,ASymbol) then
+    begin
+      Result := i;
+      Break;
+    end;
+  end;
+end;
+
 { TBybitTickers }
 
 constructor TBybitTickers.Create;
@@ -337,5 +360,7 @@ begin
   preQty                 := GetStrToJson(AObjectJson.Values['preQty']);
   curPreListingPhase     := GetStrToJson(AObjectJson.Values['curPreListingPhase']);
 end;
+
+
 
 end.

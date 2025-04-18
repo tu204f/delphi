@@ -21,11 +21,7 @@ type
   TTypeTrade = (
     ttNull,
     ttOpen,
-    ttClose,            // Принудительно закрыли
-    ttCloseTakeProfit,  // Закрытие Профит
-    ttCloseStopLoss,    // Закрытие Стоп
-    ttCloseRatesSL,
-    ttCloseRatesTK
+    ttClose
   );
 
   ///<summary>Напровление сделки</summary>
@@ -174,10 +170,6 @@ begin
     ttNull: Result := 'null';
     ttOpen: Result := 'open';
     ttClose: Result := 'close';
-    ttCloseTakeProfit: Result := 'close_take_profit'; // Закрытие Профит
-    ttCloseStopLoss: Result := 'close_stop_loss';     // Закрытие Стоп
-    ttCloseRatesSL: Result := 'close_rates_sl';       // закрыть по профиту
-    ttCloseRatesTK: Result := 'close_rates_tk';       // Заркыть по профигу - убытка
   end;
 end;
 

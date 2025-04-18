@@ -1,0 +1,63 @@
+object MainForm: TMainForm
+  Left = 0
+  Top = 0
+  Caption = 'Form4'
+  ClientHeight = 422
+  ClientWidth = 879
+  FormFactor.Width = 320
+  FormFactor.Height = 480
+  FormFactor.Devices = [Desktop]
+  OnShow = FormShow
+  DesignerMasterStyle = 0
+  object ButtonStartOrStop: TButton
+    Position.X = 8.000000000000000000
+    Position.Y = 8.000000000000000000
+    Size.Width = 109.000000000000000000
+    Size.Height = 45.000000000000000000
+    Size.PlatformDefault = False
+    TabOrder = 0
+    Text = #1057#1090#1072#1088#1090
+    OnClick = ButtonStartOrStopClick
+  end
+  object StrGrid: TStringGrid
+    Anchors = [akLeft, akTop, akRight, akBottom]
+    CanFocus = True
+    ClipChildren = True
+    Position.X = 8.000000000000000000
+    Position.Y = 60.000000000000000000
+    Size.Width = 860.000000000000000000
+    Size.Height = 351.000000000000000000
+    Size.PlatformDefault = False
+    TabOrder = 1
+    Options = [Editing, ColumnResize, ColumnMove, ColLines, RowLines, RowSelect, Tabs, Header, HeaderClick, AutoDisplacement]
+    Viewport.Width = 860.000000000000000000
+    Viewport.Height = 351.000000000000000000
+  end
+  object RectangleStatus: TRectangle
+    Anchors = [akLeft, akTop, akRight]
+    Position.X = 124.000000000000000000
+    Position.Y = 8.000000000000000000
+    Size.Width = 744.000000000000000000
+    Size.Height = 45.000000000000000000
+    Size.PlatformDefault = False
+    object LayoutSatus: TLayout
+      Align = Client
+      Margins.Left = 3.000000000000000000
+      Size.Width = 741.000000000000000000
+      Size.Height = 45.000000000000000000
+      Size.PlatformDefault = False
+      TabOrder = 0
+      object TextParam: TText
+        Align = Client
+        Margins.Left = 5.000000000000000000
+        Margins.Top = 5.000000000000000000
+        Margins.Right = 5.000000000000000000
+        Margins.Bottom = 5.000000000000000000
+        Size.Width = 731.000000000000000000
+        Size.Height = 35.000000000000000000
+        Size.PlatformDefault = False
+        TextSettings.HorzAlign = Leading
+      end
+    end
+  end
+end

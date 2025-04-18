@@ -100,6 +100,7 @@ type
     ///<summary>Limit size for each bid and ask</summary>
     property Limit: Integer read FLimit write SetLimit;
   public
+    function GetIsOrderBook: Boolean;
     property OrderBook: TOrderBook read FOrderBook;
   end;
 
@@ -337,6 +338,9 @@ begin
   BybitModule.Params.SetParam('limit',FLimit.ToString);
 end;
 
-
+function TBybitOrderBook.GetIsOrderBook: Boolean;
+begin
+  Result := Assigned(FOrderBook);
+end;
 
 end.

@@ -1,4 +1,4 @@
-program bq_pair_2;
+program bq_his_candel;
 
 uses
   System.StartUpCopy,
@@ -6,20 +6,21 @@ uses
   UnitMainForm in 'UnitMainForm.pas' {MainForm},
   Lb.Bybit.Encryption in '..\..\..\library\trade\bybit\Lb.Bybit.Encryption.pas',
   Lb.Bybit.SysUtils in '..\..\..\library\trade\bybit\Lb.Bybit.SysUtils.pas',
-  Lb.Bybit.Tickers in '..\..\..\library\trade\bybit\market\Lb.Bybit.Tickers.pas',
-  Lb.Logger in '..\..\..\library\Lb.Logger.pas',
   Lb.Bybit.Trade in '..\..\..\library\trade\bybit\trade\Lb.Bybit.Trade.pas',
+  Lb.Bybit.Kline in '..\..\..\library\trade\bybit\market\Lb.Bybit.Kline.pas',
+  Lb.Bybit.OrderBook in '..\..\..\library\trade\bybit\market\Lb.Bybit.OrderBook.pas',
   Lb.Bybit.ServerTime in '..\..\..\library\trade\bybit\market\Lb.Bybit.ServerTime.pas',
-  UnitPairsFrame in 'frame\UnitPairsFrame.pas' {PairsFrame: TFrame},
-  Lb.Pairs in 'lb\Lb.Pairs.pas',
-  Lb.Trading.Pair in 'lb\Lb.Trading.Pair.pas',
-  Lb.SysUtils in 'lb\Lb.SysUtils.pas';
+  Lb.Logger in '..\..\..\library\Lb.Logger.pas',
+  Lb.Platform.Bybit in '..\lb\Lb.Platform.Bybit.pas',
+  Lb.Platform in '..\lb\Lb.Platform.pas',
+  Lb.SysUtils in '..\lb\Lb.SysUtils.pas',
+  Lb.Indicator in '..\lb\Lb.Indicator.pas',
+  Lb.History.Candel in 'Lb.History.Candel.pas';
 
 {$R *.res}
 
 begin
   TLogger.ClearLog;
-  BybitHostDemo := True;
 
   Application.Initialize;
   Application.CreateForm(TMainForm, MainForm);

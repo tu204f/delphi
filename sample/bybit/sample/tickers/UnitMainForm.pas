@@ -90,7 +90,7 @@ begin
   BybitTickers := TBybitTickers.Create;
   BybitTickers.OnEventEndLoading := BybitTickersOnEventEndLoading;
   BybitTickers.Category := TTypeCategory.tcLinear;
-  BybitTickers.BaseCoin := 'BTCUSDT';
+  //bitTickers.Symbol := 'BTCUSDT-30MAY25';
 end;
 
 destructor TMainForm.Destroy;

@@ -1,5 +1,5 @@
 // Включить возможность выставление заявкими
-// {$DEFINE DBG_SEND_TRADE}
+{$DEFINE DBG_SEND_TRADE}
 
 {$IFDEF DEBUG}
   {$DEFINE DBG_TRADING_NEW_CANDEL}     // Получи новую свячу

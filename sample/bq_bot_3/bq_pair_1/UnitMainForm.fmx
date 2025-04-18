@@ -52,8 +52,8 @@ object MainForm: TMainForm
     Size.Height = 241.000000000000000000
     Size.PlatformDefault = False
     TabOrder = 3
-    Viewport.Width = 445.000000000000000000
-    Viewport.Height = 241.000000000000000000
+    Viewport.Width = 441.000000000000000000
+    Viewport.Height = 237.000000000000000000
   end
   object Button2: TButton
     Position.X = 100.000000000000000000
