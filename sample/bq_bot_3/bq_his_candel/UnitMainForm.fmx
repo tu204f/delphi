@@ -2,8 +2,8 @@ object MainForm: TMainForm
   Left = 0
   Top = 0
   Caption = 'Form4'
-  ClientHeight = 422
-  ClientWidth = 879
+  ClientHeight = 424
+  ClientWidth = 880
   FormFactor.Width = 320
   FormFactor.Height = 480
   FormFactor.Devices = [Desktop]
@@ -17,6 +17,7 @@ object MainForm: TMainForm
     Size.PlatformDefault = False
     TabOrder = 0
     Text = #1057#1090#1072#1088#1090
+    TextSettings.Trimming = None
     OnClick = ButtonStartOrStopClick
   end
   object StrGrid: TStringGrid
@@ -30,8 +31,8 @@ object MainForm: TMainForm
     Size.PlatformDefault = False
     TabOrder = 1
     Options = [Editing, ColumnResize, ColumnMove, ColLines, RowLines, RowSelect, Tabs, Header, HeaderClick, AutoDisplacement]
-    Viewport.Width = 860.000000000000000000
-    Viewport.Height = 351.000000000000000000
+    Viewport.Width = 856.000000000000000000
+    Viewport.Height = 326.000000000000000000
   end
   object RectangleStatus: TRectangle
     Anchors = [akLeft, akTop, akRight]

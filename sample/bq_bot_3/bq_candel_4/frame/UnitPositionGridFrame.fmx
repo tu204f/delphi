@@ -1,17 +1,47 @@
 object PositionGridFrame: TPositionGridFrame
-  Size.Width = 525.000000000000000000
-  Size.Height = 315.000000000000000000
+  Size.Width = 700.000000000000000000
+  Size.Height = 584.000000000000000000
   Size.PlatformDefault = False
   object PositionGrid: TStringGrid
     Align = Client
     CanFocus = True
     ClipChildren = True
-    Size.Width = 525.000000000000000000
-    Size.Height = 315.000000000000000000
+    Size.Width = 700.000000000000000000
+    Size.Height = 336.000000000000000000
     Size.PlatformDefault = False
-    TabOrder = 1
+    TabOrder = 2
     Options = [ColumnResize, ColumnMove, ColLines, RowLines, RowSelect, Tabs, Header, HeaderClick, AutoDisplacement]
-    Viewport.Width = 521.000000000000000000
-    Viewport.Height = 290.000000000000000000
+    OnSelectCell = PositionGridSelectCell
+    Viewport.Width = 696.000000000000000000
+    Viewport.Height = 311.000000000000000000
+  end
+  object ChartPosition: TChart
+    Position.Y = 336.000000000000000000
+    Foot.Font.StyleExt = {00040000000200000004000000}
+    Legend.Title.Font.StyleExt = {00070000000000000004000000}
+    Legend.Visible = False
+    SubFoot.Font.StyleExt = {00040000000200000004000000}
+    Title.Text.Strings = (
+      'TChart')
+    Title.Visible = False
+    View3D = False
+    Zoom.Brush.Kind = None
+    Zoom.Pen.Fill.Color = claSilver
+    Align = Bottom
+    TabOrder = 1
+    Size.Width = 700.000000000000000000
+    Size.Height = 248.000000000000000000
+    Size.PlatformDefault = False
+    ColorPaletteIndex = 13
+    object SeriesProfit: TLineSeries
+      HoverElement = [heCurrent]
+      Brush.BackColor = x00FFFFFF
+      Pointer.InflateMargins = True
+      Pointer.Style = psRectangle
+      XValues.Name = 'X'
+      XValues.Order = loAscending
+      YValues.Name = 'Y'
+      YValues.Order = loNone
+    end
   end
 end

@@ -2,8 +2,8 @@ object MainForm: TMainForm
   Left = 0
   Top = 0
   Caption = 'Form4'
-  ClientHeight = 818
-  ClientWidth = 1073
+  ClientHeight = 820
+  ClientWidth = 1072
   FormFactor.Width = 320
   FormFactor.Height = 480
   FormFactor.Devices = [Desktop]
@@ -17,6 +17,7 @@ object MainForm: TMainForm
     Size.PlatformDefault = False
     TabOrder = 0
     Text = #1057#1090#1072#1088#1090
+    TextSettings.Trimming = None
     OnClick = ButtonStartOrStopClick
   end
   object Rectangle: TRectangle
@@ -58,8 +59,9 @@ object MainForm: TMainForm
       CustomIcon = <
         item
         end>
+      TextSettings.Trimming = None
       IsSelected = True
-      Size.Width = 123.000000000000000000
+      Size.Width = 122.000000000000000000
       Size.Height = 26.000000000000000000
       Size.PlatformDefault = False
       StyleLookup = ''
@@ -72,8 +74,9 @@ object MainForm: TMainForm
       CustomIcon = <
         item
         end>
+      TextSettings.Trimming = None
       IsSelected = False
-      Size.Width = 123.000000000000000000
+      Size.Width = 122.000000000000000000
       Size.Height = 26.000000000000000000
       Size.PlatformDefault = False
       StyleLookup = ''
@@ -86,6 +89,7 @@ object MainForm: TMainForm
       CustomIcon = <
         item
         end>
+      TextSettings.Trimming = None
       IsSelected = False
       Size.Width = 120.000000000000000000
       Size.Height = 26.000000000000000000

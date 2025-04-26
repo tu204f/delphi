@@ -21,21 +21,14 @@ uses
   FMX.Grid,
 
   Lb.SysUtils,
-  Lb.Journal.Trading, FMXTee.Engine, FMXTee.Series, FMXTee.Procs, FMXTee.Chart;
+  Lb.Journal.Trading;
 
 type
   TPositionGridFrame = class(TFrame)
     PositionGrid: TStringGrid;
-    ChartPosition: TChart;
-    SeriesProfit: TLineSeries;
-    procedure PositionGridSelectCell(Sender: TObject; const ACol, ARow: Integer;
-      var CanSelect: Boolean);
   private
     FJournalManager: TJournalManager;
-    FSelectedlPosition: TJournalPosition;
-    procedure EventPositionOnChange(const AJournalPosition: TJournalPosition);
     procedure ShowJournalManager(const AGrid: TStringGrid);
-    procedure SetShowSeriesProfit;
   protected
     property JournalManager: TJournalManager read FJournalManager;
   public
@@ -79,7 +72,6 @@ constructor TPositionGridFrame.Create(AOwner: TComponent);
 begin
   inherited;
   FJournalManager := nil;
-  FSelectedlPosition := nil;
   SetShowPositionGrid;
 end;
 
@@ -87,32 +79,6 @@ destructor TPositionGridFrame.Destroy;
 begin
 
   inherited;
-end;
-
-procedure TPositionGridFrame.EventPositionOnChange(const AJournalPosition: TJournalPosition);
-begin
-  SetShowSeriesProfit;
-end;
-
-procedure TPositionGridFrame.PositionGridSelectCell(Sender: TObject; const ACol,
-  ARow: Integer; var CanSelect: Boolean);
-begin
-  if ARow >= 0 then
-  begin
-    FSelectedlPosition := JournalManager.Positions[ARow];
-    FSelectedlPosition.OnChange := EventPositionOnChange;
-    SetShowSeriesProfit;
-  end;
-end;
-
-procedure TPositionGridFrame.SetShowSeriesProfit;
-begin
-  if Assigned(FSelectedlPosition) then
-  begin
-    SeriesProfit.Clear;
-    for var xV in FSelectedlPosition.Profits do
-      SeriesProfit.AddY(xV);
-  end;
 end;
 
 procedure TPositionGridFrame.ShowJournalManager(const AGrid: TStringGrid);

@@ -195,8 +195,6 @@ var
   xTickerField: TTickerField;
   xTickerValue: TTickerValue;
   xF: TFormatSettings;
-var
-  xComparison: TComparison<TTickerValue>;
 begin
   if not Assigned(AListJson) then
   begin
@@ -249,11 +247,8 @@ begin
       xTickerValue.preQty                 := StrToFloatDef(xTickerField.preQty,0,xF);
       xTickerValue.curPreListingPhase     := xTickerField.curPreListingPhase;
 
-
       ATickerValues.Add(xTickerValue);
     end;
-
-  //ATickerValues.Sort(TComparer<TTickerValue>.Construct(Comparison));
 end;
 
 { TTickerValueList }

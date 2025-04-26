@@ -2,8 +2,6 @@ unit Lb.Breakdown;
 
 interface
 
-{$I debug_app.inc}
-
 uses
   System.SysUtils,
   System.Types,

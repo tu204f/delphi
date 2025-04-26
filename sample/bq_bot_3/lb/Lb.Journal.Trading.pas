@@ -29,6 +29,7 @@ type
   TEventOnNewTrade = procedure(ASander: TObject; ATrade: TJournalTrade) of object;
   TEventOnOpen = procedure(const AJournalPosition: TJournalPosition) of object;
   TEventOnClose = procedure(const AJournalPosition: TJournalPosition) of object;
+  TEventOnChange = procedure(const AJournalPosition: TJournalPosition) of object;
 
   ///<summary>Сделка</summary>
   TJournalTrade = class(TObject)
@@ -64,6 +65,7 @@ type
     FManager: TJournalManager;
     FOnOpen: TEventOnOpen;
     FOnClose: TEventOnClose;
+    FOnChange: TEventOnChange;
   private
     FOpenTime: TDateTime;
     FOpenPrice: Double;
@@ -71,14 +73,20 @@ type
     FClosePrice: Double;
     FSide: TTypeBuySell;
     FQty: Double;
+
     FProfit: Double;
+    FOldProfit: Double;
     FMinProfit: Double;
     FMaxProfit: Double;
+    FProfits: TDoubleList;  // Массив изменение прибыли
+
     FTypeTrade: TTypeTrade;
     FUserKey: String;
     FInfoValue: String;
     FOpenLinkID: String;
     FCloseLinkID: String;
+
+    procedure DoChange;
   private
     FRatesSL: Double;
     FRatesTK: Double;
@@ -91,7 +99,6 @@ type
     function GetProfitFeeRatesMaker: Double;
     function GetProfitFeeRatesTaker: Double;
   private
-
     procedure CalcProfit(const APrice: Double);
     procedure CalcTrilingStopLoss(const APrice: Double);
     procedure ActiveStopLoss(APrice: Double);
@@ -122,6 +129,7 @@ type
     property Profit: Double read FProfit;
     property MaxProfit: Double read FMaxProfit;
     property MinProfit: Double read FMinProfit;
+    property Profits: TDoubleList read FProfits;
   public {Условия позиции}
     ///<summary>
     /// Значение скользящий стоп лосс
@@ -147,6 +155,7 @@ type
   public
     property OnOpen: TEventOnOpen write FOnOpen;
     property OnClose: TEventOnClose write FOnClose;
+    property OnChange: TEventOnChange write FOnChange;
     property Manager: TJournalManager read FManager write FManager;
     property ID: Integer read FID write FID;
   end;
@@ -277,7 +286,10 @@ begin
   FClosePrice := 0;
   FSide := TTypeBuySell.tsNull;
   FQty := 0;
+
+  FOldProfit := 0;
   FProfit := 0;
+
   FTypeTrade := TTypeTrade.ttNull;
   FStopLoss := 0;
   FTakeProfit := 0;
@@ -285,11 +297,12 @@ begin
   FRatesSL := 0;
   FRatesTK := 0;
   FInfoValue := '';
+  FProfits := TDoubleList.Create;
 end;
 
 destructor TJournalPosition.Destroy;
 begin
-
+  FreeAndNil(FProfits);
   inherited;
 end;
 
@@ -297,6 +310,12 @@ procedure TJournalPosition.DoOpen;
 begin
   if Assigned(FOnOpen) then
     FOnOpen(Self);
+end;
+
+procedure TJournalPosition.DoChange;
+begin
+  if Assigned(FOnChange) then
+    FOnChange(Self);
 end;
 
 procedure TJournalPosition.DoClose;
@@ -373,6 +392,13 @@ begin
     FMaxProfit := FProfit;
   if FMinProfit > FProfit then
     FMinProfit := FProfit;
+
+  if FOldProfit <>  FProfit then
+  begin
+    FProfits.Add(FProfit);
+    FOldProfit := FProfit;
+    DoChange;
+  end;
 end;
 
 

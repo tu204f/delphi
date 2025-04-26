@@ -18,7 +18,7 @@
         <Projects Include="sample\history\history.dproj">
             <Dependencies/>
         </Projects>
-        <Projects Include="sample\place\place.dproj">
+        <Projects Include="sample\place\place_order_link.dproj">
             <Dependencies/>
         </Projects>
         <Projects Include="sample\order_book\orderbook.dproj">
@@ -31,6 +31,9 @@
             <Dependencies/>
         </Projects>
         <Projects Include="sample\tickers\tickers.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="sample\position\position.dproj">
             <Dependencies/>
         </Projects>
     </ItemGroup>
@@ -86,14 +89,14 @@
     <Target Name="history:Make">
         <MSBuild Projects="sample\history\history.dproj" Targets="Make"/>
     </Target>
-    <Target Name="place">
-        <MSBuild Projects="sample\place\place.dproj"/>
+    <Target Name="place_order_link">
+        <MSBuild Projects="sample\place\place_order_link.dproj"/>
     </Target>
-    <Target Name="place:Clean">
-        <MSBuild Projects="sample\place\place.dproj" Targets="Clean"/>
+    <Target Name="place_order_link:Clean">
+        <MSBuild Projects="sample\place\place_order_link.dproj" Targets="Clean"/>
     </Target>
-    <Target Name="place:Make">
-        <MSBuild Projects="sample\place\place.dproj" Targets="Make"/>
+    <Target Name="place_order_link:Make">
+        <MSBuild Projects="sample\place\place_order_link.dproj" Targets="Make"/>
     </Target>
     <Target Name="orderbook">
         <MSBuild Projects="sample\order_book\orderbook.dproj"/>
@@ -131,14 +134,23 @@
     <Target Name="tickers:Make">
         <MSBuild Projects="sample\tickers\tickers.dproj" Targets="Make"/>
     </Target>
+    <Target Name="position">
+        <MSBuild Projects="sample\position\position.dproj"/>
+    </Target>
+    <Target Name="position:Clean">
+        <MSBuild Projects="sample\position\position.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="position:Make">
+        <MSBuild Projects="sample\position\position.dproj" Targets="Make"/>
+    </Target>
     <Target Name="Build">
-        <CallTarget Targets="bybit;instrument;recent_trade;candels;history;place;orderbook;indicator;get_oh;tickers"/>
+        <CallTarget Targets="bybit;instrument;recent_trade;candels;history;place_order_link;orderbook;indicator;get_oh;tickers;position"/>
     </Target>
     <Target Name="Clean">
-        <CallTarget Targets="bybit:Clean;instrument:Clean;recent_trade:Clean;candels:Clean;history:Clean;place:Clean;orderbook:Clean;indicator:Clean;get_oh:Clean;tickers:Clean"/>
+        <CallTarget Targets="bybit:Clean;instrument:Clean;recent_trade:Clean;candels:Clean;history:Clean;place_order_link:Clean;orderbook:Clean;indicator:Clean;get_oh:Clean;tickers:Clean;position:Clean"/>
     </Target>
     <Target Name="Make">
-        <CallTarget Targets="bybit:Make;instrument:Make;recent_trade:Make;candels:Make;history:Make;place:Make;orderbook:Make;indicator:Make;get_oh:Make;tickers:Make"/>
+        <CallTarget Targets="bybit:Make;instrument:Make;recent_trade:Make;candels:Make;history:Make;place_order_link:Make;orderbook:Make;indicator:Make;get_oh:Make;tickers:Make;position:Make"/>
     </Target>
     <Import Project="$(BDS)\Bin\CodeGear.Group.Targets" Condition="Exists('$(BDS)\Bin\CodeGear.Group.Targets')"/>
 </Project>

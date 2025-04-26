@@ -253,6 +253,7 @@ begin
   inherited Destroy;
 end;
 
+
 procedure TRealTimeObject.SetObjectJson(const AObjectJson: TJSONObject);
 begin
   OrderID            := GetStrToJson(AObjectJson.Values['orderId']);

@@ -18,6 +18,7 @@ type
   TEventOnSelected     = procedure(ASender: TObject) of object;
   TEventOnMsgInfo      = procedure(ASender: TObject; AMsg: String) of object;
   TEventOnStateMarket  = procedure(ASender: TObject; AStateMarket: TStateMarket) of object;
+  TEventOnOrderBook    = procedure(ASender: TObject; APriceAsk, APriceBid: Double) of object;
 
   ///<summary>
   /// Базовый объект для работы с платформой
@@ -61,11 +62,13 @@ type
   private
     FSymbol: String;
     FOnStateMarket: TEventOnStateMarket;
+    FOnOrderBook: TEventOnOrderBook;
   private
     FValueVolatility: TValueVolatility;
   protected
     FStateMarket: TStateMarket;
     procedure DoStateMarke; virtual;
+    procedure DoOrderBook; virtual;
     procedure DoSelected; override;
   public
     constructor Create; override;
@@ -76,6 +79,7 @@ type
     property StateMarket: TStateMarket read FStateMarket;
     ///<summary>Обновление объекта состояние рынка</summary>
     property OnStateMarket: TEventOnStateMarket write FOnStateMarket;
+    property OnOrderBook: TEventOnOrderBook write FOnOrderBook;
   public
     ///<summary>
     /// Есть потенциальная ошибка зависание заявки
@@ -196,6 +200,12 @@ begin
   FValueVolatility.SetCandels(FStateMarket.Candels);
   if Assigned(FOnStateMarket) then
     FOnStateMarket(Self,FStateMarket);
+end;
+
+procedure TTradingPlatform.DoOrderBook;
+begin
+  if Assigned(FOnOrderBook) then
+    FOnOrderBook(Self,FStateMarket.Ask, FStateMarket.Bid);
 end;
 
 function TTradingPlatform.SendTrade(const ATime: TDateTime; const APrice, AQty: Double; ASide: TTypeBuySell): String;

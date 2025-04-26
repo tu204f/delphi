@@ -79,9 +79,9 @@ begin
   if Assigned(APosition) then
     with APosition do
     begin
-     {Наспрйкм услвия получение прибыли или убытка}
-      RatesSL := 10;
-      RatesTK := 30;
+      {Наспрйкм услвия получение прибыли или убытка}
+      RatesSL := 1;
+      RatesTK := 10;
       if (Triling = 0) and (Profit > RatesSL) then
         Triling := Self.CloseTriling;
     end;

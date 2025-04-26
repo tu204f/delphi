@@ -189,6 +189,12 @@ begin
   begin
     FStateMarket.SetPrice(xAsk,xBid);
     DoStateMarke;
+    DoOrderBook;
+  end
+  else if (xBid > 0) and (xAsk > 0) then
+  begin
+    FStateMarket.SetPrice(xAsk,xBid);
+    DoOrderBook;
   end;
 end;
 

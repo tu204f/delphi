@@ -32,9 +32,6 @@ type
     FCurrentPosition: TJournalPosition;
   protected
     procedure OpenPosition(const APrice: Double; const ASide: TTypeBuySell);
-    procedure OpenPositionBuy;
-    procedure OpenPositionSell;
-    procedure ClosePosition;
   private
     procedure EventPositionOpen(const AJournalPosition: TJournalPosition);
     procedure EventPositionClose(const AJournalPosition: TJournalPosition);
@@ -49,6 +46,10 @@ type
     procedure TradingUpDataCandel(const ATradingPlatform: TTradingPlatform); virtual;
     property JournalManager: TJournalManager read FJournalManager;
     property StateMarket: TStateMarket read FStateMarket;
+  public
+    procedure OpenPositionBuy;
+    procedure OpenPositionSell;
+    procedure ClosePosition;
   public
     property OnLogBot: TEventOnLogBot write FOnLogBot;
   end;

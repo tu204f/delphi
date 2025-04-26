@@ -1,0 +1,116 @@
+object MainForm: TMainForm
+  Left = 0
+  Top = 0
+  Caption = #1056#1077#1072#1083#1080#1079#1091#1077#1084' '#1074#1077#1088#1089#1080#1102' GridBot'
+  ClientHeight = 728
+  ClientWidth = 1016
+  FormFactor.Width = 320
+  FormFactor.Height = 480
+  FormFactor.Devices = [Desktop]
+  DesignerMasterStyle = 0
+  object ButtonStartOrStop: TButton
+    Position.X = 8.000000000000000000
+    Position.Y = 8.000000000000000000
+    Size.Width = 109.000000000000000000
+    Size.Height = 45.000000000000000000
+    Size.PlatformDefault = False
+    TabOrder = 0
+    Text = #1057#1090#1072#1088#1090
+    TextSettings.Trimming = None
+    OnClick = ButtonStartOrStopClick
+  end
+  object Rectangle: TRectangle
+    Anchors = [akLeft, akTop, akRight]
+    Position.X = 125.000000000000000000
+    Position.Y = 8.000000000000000000
+    Size.Width = 883.000000000000000000
+    Size.Height = 45.000000000000000000
+    Size.PlatformDefault = False
+    object GridLayoutStatus: TGridPanelLayout
+      Align = Client
+      Size.Width = 883.000000000000000000
+      Size.Height = 45.000000000000000000
+      Size.PlatformDefault = False
+      TabOrder = 0
+      ColumnCollection = <
+        item
+          Value = 100.000000000000000000
+        end>
+      ControlCollection = <
+        item
+          Column = 0
+          Control = TextStatus
+          Row = 0
+        end
+        item
+          Column = 0
+          Control = TextVolatility
+          Row = 1
+        end>
+      RowCollection = <
+        item
+          Value = 50.000000000000000000
+        end
+        item
+          Value = 50.000000000000000000
+        end>
+      object TextStatus: TText
+        Align = Client
+        Anchors = []
+        Margins.Left = 5.000000000000000000
+        Size.Width = 878.000000000000000000
+        Size.Height = 22.500000000000000000
+        Size.PlatformDefault = False
+        TextSettings.HorzAlign = Leading
+      end
+      object TextVolatility: TText
+        Align = Client
+        Margins.Left = 5.000000000000000000
+        Size.Width = 878.000000000000000000
+        Size.Height = 22.500000000000000000
+        Size.PlatformDefault = False
+        TextSettings.HorzAlign = Leading
+      end
+    end
+  end
+  object TabControl: TTabControl
+    Anchors = [akLeft, akTop, akRight, akBottom]
+    Position.X = 8.000000000000000000
+    Position.Y = 61.000000000000000000
+    Size.Width = 1000.000000000000000000
+    Size.Height = 447.000000000000000000
+    Size.PlatformDefault = False
+    TabIndex = 0
+    TabOrder = 2
+    TabPosition = PlatformDefault
+    Sizes = (
+      1000s
+      421s)
+    object TabItemHistory: TTabItem
+      CustomIcon = <
+        item
+        end>
+      TextSettings.Trimming = None
+      IsSelected = True
+      Size.Width = 143.000000000000000000
+      Size.Height = 26.000000000000000000
+      Size.PlatformDefault = False
+      StyleLookup = ''
+      TabOrder = 0
+      Text = #1048#1089#1090#1086#1088#1080#1095#1077#1089#1082#1080#1077' '#1076#1072#1085#1085#1099#1077
+    end
+  end
+  object MemoLog: TMemo
+    Touch.InteractiveGestures = [Pan, LongTap, DoubleTap]
+    DataDetectorTypes = []
+    Anchors = [akLeft, akRight, akBottom]
+    Position.X = 8.000000000000000000
+    Position.Y = 516.000000000000000000
+    Size.Width = 1000.000000000000000000
+    Size.Height = 204.000000000000000000
+    Size.PlatformDefault = False
+    TabOrder = 3
+    Viewport.Width = 996.000000000000000000
+    Viewport.Height = 200.000000000000000000
+  end
+end

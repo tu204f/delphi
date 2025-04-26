@@ -2,8 +2,8 @@ object MainForm: TMainForm
   Left = 0
   Top = 0
   Caption = 'Form4'
-  ClientHeight = 480
-  ClientWidth = 640
+  ClientHeight = 656
+  ClientWidth = 920
   FormFactor.Width = 320
   FormFactor.Height = 480
   FormFactor.Devices = [Desktop]
@@ -12,15 +12,15 @@ object MainForm: TMainForm
     Touch.InteractiveGestures = [Pan, LongTap, DoubleTap]
     DataDetectorTypes = []
     TextSettings.WordWrap = True
-    Anchors = [akLeft, akTop, akRight, akBottom]
+    Anchors = [akLeft, akTop, akRight]
     Position.X = 180.000000000000000000
     Position.Y = 8.000000000000000000
-    Size.Width = 453.000000000000000000
-    Size.Height = 465.000000000000000000
+    Size.Width = 733.000000000000000000
+    Size.Height = 254.000000000000000000
     Size.PlatformDefault = False
     TabOrder = 2
-    Viewport.Width = 449.000000000000000000
-    Viewport.Height = 461.000000000000000000
+    Viewport.Width = 729.000000000000000000
+    Viewport.Height = 250.000000000000000000
   end
   object ButtonPlaceOrder: TButton
     Position.X = 8.000000000000000000
@@ -30,6 +30,7 @@ object MainForm: TMainForm
     Size.PlatformDefault = False
     TabOrder = 9
     Text = 'Place Order'
+    TextSettings.Trimming = None
     OnClick = ButtonPlaceOrderClick
   end
   object ButtonCancelOrder1: TButton
@@ -40,6 +41,7 @@ object MainForm: TMainForm
     Size.PlatformDefault = False
     TabOrder = 8
     Text = 'Cancel Order (OrderID)'
+    TextSettings.Trimming = None
     OnClick = ButtonCancelOrder1Click
   end
   object ButtonCancelOrder2: TButton
@@ -50,6 +52,7 @@ object MainForm: TMainForm
     Size.PlatformDefault = False
     TabOrder = 7
     Text = 'Cancel Order (OrderlinkID)'
+    TextSettings.Trimming = None
     OnClick = ButtonCancelOrder2Click
   end
   object ButtonAmendOrder1: TButton
@@ -60,6 +63,7 @@ object MainForm: TMainForm
     Size.PlatformDefault = False
     TabOrder = 6
     Text = 'Amend Order (OrderID)'
+    TextSettings.Trimming = None
     OnClick = ButtonAmendOrder1Click
   end
   object ButtonOrders: TButton
@@ -70,6 +74,7 @@ object MainForm: TMainForm
     Size.PlatformDefault = False
     TabOrder = 10
     Text = #1047#1072#1103#1074#1082#1080
+    TextSettings.Trimming = None
     OnClick = ButtonOrdersClick
   end
   object ButtonOnThread: TButton
@@ -80,6 +85,7 @@ object MainForm: TMainForm
     Size.PlatformDefault = False
     TabOrder = 11
     Text = 'ButtonOnThread'
+    TextSettings.Trimming = None
   end
   object ButtonAmendOrder2: TButton
     Position.X = 8.000000000000000000
@@ -89,6 +95,20 @@ object MainForm: TMainForm
     Size.PlatformDefault = False
     TabOrder = 5
     Text = 'Amend Order (OrderLinkID)'
+    TextSettings.Trimming = None
     OnClick = ButtonAmendOrder2Click
+  end
+  object StrGrid: TStringGrid
+    Anchors = [akLeft, akTop, akRight, akBottom]
+    CanFocus = True
+    ClipChildren = True
+    Position.X = 8.000000000000000000
+    Position.Y = 270.000000000000000000
+    Size.Width = 904.000000000000000000
+    Size.Height = 378.000000000000000000
+    Size.PlatformDefault = False
+    TabOrder = 12
+    Viewport.Width = 900.000000000000000000
+    Viewport.Height = 353.000000000000000000
   end
 end

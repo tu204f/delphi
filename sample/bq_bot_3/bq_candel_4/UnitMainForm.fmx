@@ -2,8 +2,8 @@ object MainForm: TMainForm
   Left = 0
   Top = 0
   Caption = 'Form4'
-  ClientHeight = 629
-  ClientWidth = 838
+  ClientHeight = 628
+  ClientWidth = 840
   FormFactor.Width = 320
   FormFactor.Height = 480
   FormFactor.Devices = [Desktop]
@@ -17,6 +17,7 @@ object MainForm: TMainForm
     Size.PlatformDefault = False
     TabOrder = 0
     Text = #1057#1090#1072#1088#1090
+    TextSettings.Trimming = None
     OnClick = ButtonStartOrStopClick
   end
   object Rectangle: TRectangle
@@ -30,21 +31,67 @@ object MainForm: TMainForm
       Align = Client
       Margins.Left = 5.000000000000000000
       Margins.Top = 5.000000000000000000
+      Margins.Right = 2.000000000000000000
       Margins.Bottom = 5.000000000000000000
-      Size.Width = 702.000000000000000000
+      Size.Width = 445.000000000000000000
       Size.Height = 35.000000000000000000
       Size.PlatformDefault = False
       TextSettings.HorzAlign = Leading
     end
+    object ButtonSell: TButton
+      Align = Right
+      Margins.Top = 5.000000000000000000
+      Margins.Right = 5.000000000000000000
+      Margins.Bottom = 5.000000000000000000
+      Position.X = 537.000000000000000000
+      Position.Y = 5.000000000000000000
+      Size.Width = 80.000000000000000000
+      Size.Height = 35.000000000000000000
+      Size.PlatformDefault = False
+      TabOrder = 0
+      Text = 'Sell'
+      TextSettings.Trimming = None
+      OnClick = ButtonSellClick
+    end
+    object ButtonBuy: TButton
+      Align = Right
+      Margins.Top = 5.000000000000000000
+      Margins.Right = 5.000000000000000000
+      Margins.Bottom = 5.000000000000000000
+      Position.X = 452.000000000000000000
+      Position.Y = 5.000000000000000000
+      Size.Width = 80.000000000000000000
+      Size.Height = 35.000000000000000000
+      Size.PlatformDefault = False
+      TabOrder = 1
+      Text = 'Buy'
+      TextSettings.Trimming = None
+      OnClick = ButtonBuyClick
+    end
+    object ButtonClose: TButton
+      Align = Right
+      Margins.Top = 5.000000000000000000
+      Margins.Right = 5.000000000000000000
+      Margins.Bottom = 5.000000000000000000
+      Position.X = 622.000000000000000000
+      Position.Y = 5.000000000000000000
+      Size.Width = 80.000000000000000000
+      Size.Height = 35.000000000000000000
+      Size.PlatformDefault = False
+      TabOrder = 2
+      Text = 'Close'
+      TextSettings.Trimming = None
+      OnClick = ButtonCloseClick
+    end
   end
-  object TabControl1: TTabControl
+  object Z: TTabControl
     Anchors = [akLeft, akTop, akRight, akBottom]
-    Position.X = 12.000000000000000000
-    Position.Y = 56.000000000000000000
+    Position.X = 8.000000000000000000
+    Position.Y = 61.000000000000000000
     Size.Width = 823.000000000000000000
     Size.Height = 306.000000000000000000
     Size.PlatformDefault = False
-    TabIndex = 0
+    TabIndex = 1
     TabOrder = 1
     TabPosition = PlatformDefault
     Sizes = (
@@ -56,8 +103,9 @@ object MainForm: TMainForm
       CustomIcon = <
         item
         end>
-      IsSelected = True
-      Size.Width = 123.000000000000000000
+      TextSettings.Trimming = None
+      IsSelected = False
+      Size.Width = 122.000000000000000000
       Size.Height = 26.000000000000000000
       Size.PlatformDefault = False
       StyleLookup = ''
@@ -70,7 +118,8 @@ object MainForm: TMainForm
       CustomIcon = <
         item
         end>
-      IsSelected = False
+      TextSettings.Trimming = None
+      IsSelected = True
       Size.Width = 120.000000000000000000
       Size.Height = 26.000000000000000000
       Size.PlatformDefault = False

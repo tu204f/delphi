@@ -1,0 +1,17 @@
+object PositionGridFrame: TPositionGridFrame
+  Size.Width = 524.000000000000000000
+  Size.Height = 316.000000000000000000
+  Size.PlatformDefault = False
+  object PositionGrid: TStringGrid
+    Align = Client
+    CanFocus = True
+    ClipChildren = True
+    Size.Width = 524.000000000000000000
+    Size.Height = 316.000000000000000000
+    Size.PlatformDefault = False
+    TabOrder = 1
+    Options = [ColumnResize, ColumnMove, ColLines, RowLines, RowSelect, Tabs, Header, HeaderClick, AutoDisplacement]
+    Viewport.Width = 520.000000000000000000
+    Viewport.Height = 291.000000000000000000
+  end
+end

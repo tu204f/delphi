@@ -21,7 +21,7 @@ uses
   FMX.Grid.Style,
   FMX.Controls.Presentation,
   FMX.ScrollBox,
-  FMX.Grid;
+  FMX.Grid, FMXTee.Engine, FMXTee.Series, FMXTee.Procs, FMXTee.Chart;
 
 type
   ///<summary>

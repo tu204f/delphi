@@ -73,6 +73,7 @@ type
   public
     procedure CopyCandels(const ACandels: TCandelList);
     function FirstCandel: TCandel;
+    procedure SaveFileCSV(const AFileName: String);
   end;
 
   ///<summary>
@@ -87,10 +88,12 @@ type
     FFirstCandelTime: Int64;
     FIsNewCandel: Boolean;
     FOnNewCandel: TNotifyEvent;
+    FOnOrderBookPrice: TNotifyEvent;
     function GetLast: Double;
     function GetServerTime: TDateTime;
   protected
     procedure DoNewCandel;
+    procedure DoOrderBookPrice;
   public
     constructor Create; virtual;
     destructor Destroy; override;
@@ -119,6 +122,7 @@ type
     procedure SetUpDataCandels;
     property Candels: TCandelList read FCandels;
     property OnNewCandel: TNotifyEvent write FOnNewCandel;
+    property OnOrderBookPrice: TNotifyEvent write FOnOrderBookPrice;
   end;
 
   ///<summary>
@@ -358,6 +362,21 @@ begin
     raise Exception.Create('Error Message: Ошибка запроса');
 end;
 
+procedure TCandelList.SaveFileCSV(const AFileName: String);
+var
+  xStr: TStrings;
+  xCandel: TCandel;
+begin
+  xStr := TStringList.Create;
+  try
+    for xCandel in Self do
+      xStr.Add(xCandel.GetToStr);
+    xStr.SaveToFile(AFileName);
+  finally
+    FreeAndNil(xStr);
+  end;
+end;
+
 { TStateMarket }
 
 constructor TStateMarket.Create;
@@ -378,6 +397,12 @@ procedure TStateMarket.DoNewCandel;
 begin
   if Assigned(FOnNewCandel) then
     FOnNewCandel(Self);
+end;
+
+procedure TStateMarket.DoOrderBookPrice;
+begin
+  if Assigned(FOnOrderBookPrice) then
+    FOnOrderBookPrice(Self);
 end;
 
 function TStateMarket.GetLast: Double;

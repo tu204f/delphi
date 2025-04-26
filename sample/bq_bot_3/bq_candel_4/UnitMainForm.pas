@@ -5,10 +5,22 @@ interface
 {$I debug_app.inc}
 
 uses
-  System.SysUtils, System.Types, System.UITypes, System.Classes, System.Variants,
-  FMX.Types, FMX.Controls, FMX.Forms, FMX.Graphics, FMX.Dialogs,
-  FMX.Controls.Presentation, FMX.StdCtrls,
-  System.Rtti, FMX.Grid.Style, FMX.ScrollBox, FMX.Grid,
+  System.SysUtils,
+  System.Types,
+  System.UITypes,
+  System.Classes,
+  System.Variants,
+  FMX.Types,
+  FMX.Controls,
+  FMX.Forms,
+  FMX.Graphics,
+  FMX.Dialogs,
+  FMX.Controls.Presentation,
+  FMX.StdCtrls,
+  System.Rtti,
+  FMX.Grid.Style,
+  FMX.ScrollBox,
+  FMX.Grid,
 
   Lb.Indicator,
   Lb.SysUtils,
@@ -38,15 +50,21 @@ type
     ButtonStartOrStop: TButton;
     Rectangle: TRectangle;
     TextStatus: TText;
-    TabControl1: TTabControl;
+    Z: TTabControl;
     TabItemTrade: TTabItem;
     TabItemPosition: TTabItem;
     PopupMenu: TPopupMenu;
     MenuItemSaveFile: TMenuItem;
     StringGridCandel: TStringGrid;
     MemoLog: TMemo;
+    ButtonSell: TButton;
+    ButtonBuy: TButton;
+    ButtonClose: TButton;
     procedure ButtonStartOrStopClick(Sender: TObject);
     procedure FormShow(Sender: TObject);
+    procedure ButtonBuyClick(Sender: TObject);
+    procedure ButtonSellClick(Sender: TObject);
+    procedure ButtonCloseClick(Sender: TObject);
   private
     procedure TradingPlatformOnStateMarket(ASender: TObject; AStateMarket: TStateMarket);
     procedure TradingPlatformOnNewCandel(Sender: TObject);
@@ -105,7 +123,7 @@ begin
   // 'ldfYDnYhlVU5SU7w89mOnaHi0icy8XctNXtT';
   TPlatfomBybit(TradingPlatform).ApiKey := 't0YI4Ou0TKOTd7WrkE';
   TPlatfomBybit(TradingPlatform).ApiSecret := 'dWcdTGIulDoKOiK4mggPQIkYwmMFGxvFVusp';
-  TPlatfomBybit(TradingPlatform).Interval  := TTypeInterval.ti_30;
+  TPlatfomBybit(TradingPlatform).Interval  := TTypeInterval.ti_1;
 
   // *************************************************************************
   // Торговая панель
@@ -154,6 +172,7 @@ procedure TMainForm.FormShow(Sender: TObject);
 begin
   Self.Caption := 'Пробитие волатильности';
 end;
+
 
 procedure TMainForm.ButtonStartOrStopClick(Sender: TObject);
 begin
@@ -288,5 +307,22 @@ begin
 {$ENDIF}
 end;
 
+procedure TMainForm.ButtonBuyClick(Sender: TObject);
+begin
+  // Купить
+  WorkBotPanelFrame.SelectedWorkBot.OpenPositionBuy;
+end;
+
+procedure TMainForm.ButtonSellClick(Sender: TObject);
+begin
+  // Продать
+  WorkBotPanelFrame.SelectedWorkBot.OpenPositionSell;
+end;
+
+procedure TMainForm.ButtonCloseClick(Sender: TObject);
+begin
+  // Закрыть
+  WorkBotPanelFrame.SelectedWorkBot.ClosePosition;
+end;
 
 end.

@@ -1,4 +1,4 @@
-program place;
+program place_order_link;
 
 uses
   System.StartUpCopy,
@@ -13,6 +13,8 @@ uses
 {$R *.res}
 
 begin
+  BybitHostDemo := True;
+
   Application.Initialize;
   Application.CreateForm(TMainForm, MainForm);
   Application.Run;

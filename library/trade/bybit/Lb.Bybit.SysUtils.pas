@@ -803,31 +803,12 @@ procedure TBybitHttpClient.SetEncryption(const ApiKey, ApiSecret: String);
 begin
   FEncryption.ApiKey := ApiKey;
   FEncryption.ApiSecret := ApiSecret;
-
 end;
 
 procedure TBybitHttpClient.SetThreading;
-var
-  xSignature: String;
 begin
   if Assigned(FTask) then
     raise Exception.Create('Error Message: Задание уже запущенно');
-
-  if not FEncryption.ApiKey.IsEmpty then
-  begin
-    FEncryption.Timestamp := GetNow.ToString;
-    FEncryption.QueryBody := FBybitModule.Query;
-    xSignature := FEncryption.Signature;
-    with BybitModule.Headers do
-    begin
-      Clear;
-      Values['X-BAPI-API-KEY']     := FEncryption.ApiKey;
-      Values['X-BAPI-SIGN']        := xSignature;
-      Values['X-BAPI-SIGN-TYPE']   := '2';
-      Values['X-BAPI-TIMESTAMP']   := FEncryption.Timestamp;
-      Values['X-BAPI-RECV-WINDOW'] := FEncryption.RecvWindow;
-    end;
-  end;
 
   FTask := TTask.Create(
     procedure()
@@ -840,6 +821,22 @@ begin
         TThread.Synchronize(nil,DoEventBeginLoading);
         xHttpClientAPI := TBybitHttpClientAPI.Create;
         try
+          if not FEncryption.ApiKey.IsEmpty then
+          begin
+            FEncryption.Timestamp := GetNow.ToString;
+            FEncryption.QueryBody := FBybitModule.Query;
+            var xSignature := FEncryption.Signature;
+            with BybitModule.Headers do
+            begin
+              Clear;
+              Values['X-BAPI-API-KEY']     := FEncryption.ApiKey;
+              Values['X-BAPI-SIGN']        := xSignature;
+              Values['X-BAPI-SIGN-TYPE']   := '2';
+              Values['X-BAPI-TIMESTAMP']   := FEncryption.Timestamp;
+              Values['X-BAPI-RECV-WINDOW'] := FEncryption.RecvWindow;
+            end;
+          end;
+
           xHttpClientAPI.BybitModule := FBybitModule;
           xHttpClientAPI.Selected;
           FStatusCode := xHttpClientAPI.StatusCode;

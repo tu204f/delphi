@@ -1,0 +1,26 @@
+object HistoryFrame: THistoryFrame
+  Size.Width = 544.000000000000000000
+  Size.Height = 288.000000000000000000
+  Size.PlatformDefault = False
+  object StrGrid: TStringGrid
+    Align = Client
+    CanFocus = True
+    ClipChildren = True
+    PopupMenu = PopupMenu
+    Size.Width = 544.000000000000000000
+    Size.Height = 288.000000000000000000
+    Size.PlatformDefault = False
+    TabOrder = 0
+    Options = [ColumnResize, ColumnMove, ColLines, RowLines, RowSelect, Tabs, Header, HeaderClick, AutoDisplacement]
+    Viewport.Width = 540.000000000000000000
+    Viewport.Height = 263.000000000000000000
+  end
+  object PopupMenu: TPopupMenu
+    Left = 208
+    Top = 112
+    object MenuItemSaveFileCSV: TMenuItem
+      Text = #1057#1086#1093#1088#1072#1085#1080#1090#1100' CSV'
+      OnClick = MenuItemSaveFileCSVClick
+    end
+  end
+end

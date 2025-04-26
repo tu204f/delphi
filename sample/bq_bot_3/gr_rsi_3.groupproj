@@ -24,6 +24,9 @@
         <Projects Include="bq_his_candel\bq_his_candel.dproj">
             <Dependencies/>
         </Projects>
+        <Projects Include="bq_grid_bot\bq_training.dproj">
+            <Dependencies/>
+        </Projects>
     </ItemGroup>
     <ProjectExtensions>
         <Borland.Personality>Default.Personality.12</Borland.Personality>
@@ -95,14 +98,23 @@
     <Target Name="bq_his_candel:Make">
         <MSBuild Projects="bq_his_candel\bq_his_candel.dproj" Targets="Make"/>
     </Target>
+    <Target Name="bq_training">
+        <MSBuild Projects="bq_grid_bot\bq_training.dproj"/>
+    </Target>
+    <Target Name="bq_training:Clean">
+        <MSBuild Projects="bq_grid_bot\bq_training.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="bq_training:Make">
+        <MSBuild Projects="bq_grid_bot\bq_training.dproj" Targets="Make"/>
+    </Target>
     <Target Name="Build">
-        <CallTarget Targets="bq_history;bq_parser;bq_volt_3;bq_candel_4;bq_pair_1;bq_pair_2;bq_his_candel"/>
+        <CallTarget Targets="bq_history;bq_parser;bq_volt_3;bq_candel_4;bq_pair_1;bq_pair_2;bq_his_candel;bq_training"/>
     </Target>
     <Target Name="Clean">
-        <CallTarget Targets="bq_history:Clean;bq_parser:Clean;bq_volt_3:Clean;bq_candel_4:Clean;bq_pair_1:Clean;bq_pair_2:Clean;bq_his_candel:Clean"/>
+        <CallTarget Targets="bq_history:Clean;bq_parser:Clean;bq_volt_3:Clean;bq_candel_4:Clean;bq_pair_1:Clean;bq_pair_2:Clean;bq_his_candel:Clean;bq_training:Clean"/>
     </Target>
     <Target Name="Make">
-        <CallTarget Targets="bq_history:Make;bq_parser:Make;bq_volt_3:Make;bq_candel_4:Make;bq_pair_1:Make;bq_pair_2:Make;bq_his_candel:Make"/>
+        <CallTarget Targets="bq_history:Make;bq_parser:Make;bq_volt_3:Make;bq_candel_4:Make;bq_pair_1:Make;bq_pair_2:Make;bq_his_candel:Make;bq_training:Make"/>
     </Target>
     <Import Project="$(BDS)\Bin\CodeGear.Group.Targets" Condition="Exists('$(BDS)\Bin\CodeGear.Group.Targets')"/>
 </Project>
